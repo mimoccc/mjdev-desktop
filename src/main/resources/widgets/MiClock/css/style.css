@@ -1,0 +1,128 @@
+.container {
+    position: relative;
+    width: 420px;
+    height: 420px;
+    padding: 10px;
+    //background-color: #4682B4;
+    transform: scale(1.47);
+    transform-origin: 0 0;
+}
+
+.dial {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    width: 1px;
+    height: 180px;
+    transform-origin: bottom center;
+}
+
+.cut_line {
+    background-color: white;
+    width: 1px;
+    height: 20px;
+    opacity: 0.5;
+    transition: 1s;
+}
+
+.cut_line.one {
+    opacity: 1;
+    transition: 0s;
+}
+
+.round_img {
+    position: absolute;
+    top: 15px;
+    left: 25px; /*left: 20px;*/
+    width: 615px; /*width: 550px;*/
+}
+
+.circle {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    position: absolute;
+    top: calc(50% - 150px);
+    left: calc(50% - 150px);
+    border: 1px solid white;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 5px solid white;
+    background: #4682B4;
+    z-index: 1001;
+}
+
+.minute_line, .hour_line {
+    position: absolute;
+    top: calc(50% - 1px);
+    left: calc(50% - 1px);
+    width: 2px;
+    height: 140px;
+    background-color: white;
+    transform-origin: top center;
+    transform: rotate(180deg);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.hour_line {
+    height: 70px;
+    opacity: 0.6;
+}
+
+.triangle {
+    width: 0;
+    height: 0;
+    position: absolute;
+    top: 100%;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+}
+
+.triangle_manager {
+    width: 20px;
+    height: 140px;
+    position: absolute;
+    top: 50%;
+    left: calc(50% - 10px);
+    transform-origin: top center;
+    transform: rotate(180deg);
+    transition: all 1s;
+}
+
+@media only screen and (max-width: 768px) {
+    .container {
+        transform: scale(0.823);
+        margin: -10px;
+    }
+
+    .round_img {
+        position: absolute;
+        top: 5px;
+        left: 9px;
+        width: 340px;
+    }
+}
+
+@media screen and (max-width: 1000px) and (min-width: 600px) {
+    .container {
+        transform: scale(1.369);
+        margin: -10px;
+    }
+
+    .round_img {
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        width: 560px;
+    }
+}

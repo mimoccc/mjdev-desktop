@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Mjdev Desktop
+Comment=This session logs you into Mjdev Desktop
+Exec=gnome-session --session mjdev-desktop --debug
+TryExec=gnome-session
+Type=Application
