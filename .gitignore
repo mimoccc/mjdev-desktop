@@ -9,11 +9,8 @@ build/
 ### IntelliJ IDEA ###
 .idea
 .idea/
+/.idea
 /.idea/
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
 *.iws
 *.iml
 *.ipr
@@ -33,19 +30,6 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.vscode/
-
-### Mac OS ###
-.DS_Store!/packages/
-
 ### Packages ###
 packages
 packages/
@@ -54,3 +38,4 @@ packages/
 
 ### Resources ###
 /resources/linux/usr/share/backgrounds/
+
