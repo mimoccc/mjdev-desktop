@@ -1,13 +1,15 @@
 package eu.mjdev.desktop.provider
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.FrameWindowScope
 import eu.mjdev.desktop.components.controlpanel.ControlCenterPage
 import eu.mjdev.desktop.components.controlpanel.pages.*
 import eu.mjdev.desktop.helpers.WindowFocusState
+import eu.mjdev.desktop.helpers.WindowFocusState.Companion.rememberWindowFocusState
 import eu.mjdev.desktop.provider.data.User
 import java.io.BufferedReader
 import java.io.File
@@ -72,7 +74,7 @@ class DesktopProvider(
         }.start()
     }
 
-    fun runCommandForOutput(vararg cmd:String): String {
+    fun runCommandForOutput(vararg cmd: String): String {
         val pb = ProcessBuilder(*cmd)
         val p: Process
         var result = ""
@@ -92,8 +94,27 @@ class DesktopProvider(
         }
         return result
     }
-}
 
-val LocalDesktop = compositionLocalOf {
-    DesktopProvider()
+    companion object {
+        val LocalDesktop = compositionLocalOf {
+            DesktopProvider()
+        }
+
+        @OptIn(ExperimentalComposeUiApi::class)
+        @Composable
+        fun FrameWindowScope.desktopLocalProvider(content: @Composable () -> Unit) {
+            val containerSize = LocalWindowInfo.current.containerSize
+            val currentUser = User.Empty // todo get user
+            val windowFocusState = rememberWindowFocusState(window)
+            CompositionLocalProvider(
+                LocalDesktop provides DesktopProvider(
+                    containerSize = containerSize,
+                    currentUser = currentUser,
+                    windowFocusState = windowFocusState
+                )
+            ) {
+                content()
+            }
+        }
+    }
 }

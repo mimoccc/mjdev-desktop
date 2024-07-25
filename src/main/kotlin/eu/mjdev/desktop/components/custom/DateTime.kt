@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components
+package eu.mjdev.desktop.components.custom
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background

@@ -16,13 +16,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import eu.mjdev.desktop.components.SlideMenuState
-import eu.mjdev.desktop.components.SlideMenuState.Companion.rememberSlideMenuState
-import eu.mjdev.desktop.components.SlidingMenu
 import eu.mjdev.desktop.components.shadow.TopShadow
+import eu.mjdev.desktop.components.slidemenu.SlidingMenu
+import eu.mjdev.desktop.components.slidemenu.VisibilityState
+import eu.mjdev.desktop.components.slidemenu.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @Suppress("FunctionName")
 @Composable
@@ -33,11 +33,11 @@ fun DesktopPanel(
     iconColor: Color = Color.Black,
     iconBackgroundColor: Color = Color.White,
     dividerWidth: Dp = 4.dp,
-    iconSize: DpSize = DpSize(56.dp, 56.dp),
+    iconSize: DpSize = DpSize(48.dp, 48.dp),
     iconPadding: PaddingValues = PaddingValues(4.dp),
     panelAlpha: Float = 0.7f,
     showMenuIcon: Boolean = true,
-    state: SlideMenuState = rememberSlideMenuState(),
+    state: VisibilityState = rememberVisibilityState(),
     onVisibilityChange: (visible: Boolean) -> Unit = {},
     onMenuIconClicked: () -> Unit = {},
     api: DesktopProvider = LocalDesktop.current
@@ -115,6 +115,7 @@ fun DesktopPanel(
                 item {
                     DesktopPanelText(
                         text = api.appsProvider.currentLocale.country,
+                        backgroundHover = Color.White.copy(alpha = 0.3f),
                     )
                 }
             }

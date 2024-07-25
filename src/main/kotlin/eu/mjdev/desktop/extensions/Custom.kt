@@ -2,6 +2,7 @@ package eu.mjdev.desktop.extensions
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.graphics.NativePaint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
@@ -9,6 +10,13 @@ import java.text.DateFormat
 import java.util.*
 
 object Custom {
+
+    fun NativePaint.setMaskFilter(
+        blurRadius: Float
+    ) {
+        this.maskFilter =
+            org.jetbrains.skia.MaskFilter.makeBlur(org.jetbrains.skia.FilterBlurMode.NORMAL, blurRadius / 2, true)
+    }
 
     val dateFlow
         @Composable

@@ -1,7 +1,10 @@
 package eu.mjdev.desktop.components.desktoppanel
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
@@ -19,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.extensions.Compose.color
 import eu.mjdev.desktop.extensions.Compose.noElevation
 import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Preview

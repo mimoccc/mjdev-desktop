@@ -1,7 +1,10 @@
-package eu.mjdev.desktop.components
+package eu.mjdev.desktop.components.background
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -11,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.helpers.Queue.Companion.mutableQueue
 import kotlinx.coroutines.delay
@@ -44,8 +48,10 @@ fun BackgroundImage(
         )
     }
     launchedEffect(currentBackground.value) {
-        delay(switchDelay)
-        currentBackground.value = backgroundQueue.value
-        onChange(currentBackground.value)
+        if (switchDelay > 0) {
+            delay(switchDelay)
+            currentBackground.value = backgroundQueue.value
+            onChange(currentBackground.value)
+        }
     }
 }

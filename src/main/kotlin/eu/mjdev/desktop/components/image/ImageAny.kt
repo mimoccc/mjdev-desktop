@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components
+package eu.mjdev.desktop.components.image
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.fonticon.MaterialIcon
 import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.provider.data.App
 
 @Preview
@@ -26,8 +25,9 @@ fun AppsMenuApp(
     app: App? = null,
     icon: String? = null,
     iconSize: DpSize = DpSize(32.dp, 32.dp),
+    iconTint: Color = Color.Black,
     textColor: Color = Color.White,
-    iconTint: Color = Color.White,
+    backgroundColor: Color = Color.White,
     api: DesktopProvider = LocalDesktop.current,
     onClick: (app: App?) -> Unit = { app?.start() }
 ) = Row(
@@ -36,9 +36,10 @@ fun AppsMenuApp(
 ) {
     val materialIcon = api.appsProvider.iconForApp(app?.name ?: icon) ?: "?".toInt()
     MaterialIcon(
-        modifier = modifier.size(iconSize),
         iconId = materialIcon,
-        tint = iconTint
+        iconSize = iconSize,
+        iconColor = iconTint,
+        iconBackgroundColor = backgroundColor
     )
     TextAny(
         modifier = Modifier.padding(start = 4.dp).fillMaxWidth(),

@@ -22,11 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import eu.mjdev.desktop.components.SlideMenuState
-import eu.mjdev.desktop.components.SlideMenuState.Companion.rememberSlideMenuState
-import eu.mjdev.desktop.components.SlidingMenu
 import eu.mjdev.desktop.components.shadow.LeftShadow
 import eu.mjdev.desktop.components.shadow.RightShadow
+import eu.mjdev.desktop.components.slidemenu.SlidingMenu
+import eu.mjdev.desktop.components.slidemenu.VisibilityState
+import eu.mjdev.desktop.components.slidemenu.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -46,7 +46,7 @@ fun ControlPanel(
     controlCenterIconSize: DpSize,
     pages: List<ControlCenterPage>,
     pagerState: PagerState = rememberPagerState(pageCount = { pages.size }),
-    state: SlideMenuState = rememberSlideMenuState(),
+    state: VisibilityState = rememberVisibilityState(),
     scope: CoroutineScope = rememberCoroutineScope(),
     onVisibilityChange: (visible: Boolean) -> Unit = {},
 ) = SlidingMenu(

@@ -9,11 +9,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import eu.mjdev.desktop.components.DateTime
-import eu.mjdev.desktop.components.PowerBlock
-import eu.mjdev.desktop.components.UserAvatar
 import eu.mjdev.desktop.components.controlpanel.ControlCenterPage
-import eu.mjdev.desktop.extensions.Compose.rectShadow
+import eu.mjdev.desktop.components.custom.DateTime
+import eu.mjdev.desktop.components.custom.PowerBlock
+import eu.mjdev.desktop.components.custom.UserAvatar
+import eu.mjdev.desktop.extensions.Modifier.rectShadow
 
 @Suppress("FunctionName")
 fun MainSettingsPage() = ControlCenterPage(

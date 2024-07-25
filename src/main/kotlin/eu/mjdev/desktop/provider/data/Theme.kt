@@ -9,9 +9,11 @@ import eu.mjdev.desktop.components.fonticon.MaterialIconFont
 import eu.mjdev.desktop.components.fonticon.MaterialSymbolsSharp
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 
+// todo all customizable
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class Theme(
     backgroundColor: Color,
+    backgroundRotationDelay: Long,
 
     panelLocation: PanelLocation,
     panelHideDelay: Long,
@@ -24,7 +26,7 @@ class Theme(
     controlCenterIconColor: Color,
     controlCenterIconSize: DpSize,
 
-    iconSet: MaterialIconFont
+    iconSet: MaterialIconFont,
 ) {
     val backgroundColorState = mutableStateOf(backgroundColor)
     val panelLocationState = mutableStateOf(panelLocation)
@@ -37,6 +39,7 @@ class Theme(
     val controlCenterIconColorState = mutableStateOf(controlCenterIconColor)
     val controlCenterIconSizeState = mutableStateOf(controlCenterIconSize)
     val iconSetState = mutableStateOf(iconSet)
+    val backgroundRotationDelayState = mutableStateOf(backgroundRotationDelay)
 
     var backgroundColor
         get() = backgroundColorState.value
@@ -57,6 +60,7 @@ class Theme(
     val controlCenterIconColor get() = controlCenterIconColorState.value
     val controlCenterIconSize get() = controlCenterIconSizeState.value
     val iconSet get() = iconSetState.value
+    val backgroundRotationDelay get() = backgroundRotationDelayState.value
 
     companion object {
         val Default = Theme(
@@ -73,7 +77,8 @@ class Theme(
             controlCenterDividerColor = Color.SuperDarkGray,
             controlCenterDividerWidth = 2.dp,
             controlCenterIconColor = Color.White,
-            controlCenterIconSize = DpSize(32.dp, 32.dp)
+            controlCenterIconSize = DpSize(32.dp, 32.dp),
+            backgroundRotationDelay = 10000
         )
     }
 }

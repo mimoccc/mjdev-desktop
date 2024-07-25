@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components
+package eu.mjdev.desktop.components.custom
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
@@ -8,7 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.SettingsPower
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,12 +16,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import eu.mjdev.desktop.extensions.Compose.circleBorder
-import eu.mjdev.desktop.extensions.Compose.circleShadow
-import eu.mjdev.desktop.extensions.Compose.clipCircle
 import eu.mjdev.desktop.extensions.Compose.noElevation
-import eu.mjdev.desktop.extensions.Compose.rectShadow
 import eu.mjdev.desktop.extensions.Compose.transparent
+import eu.mjdev.desktop.extensions.Modifier.circleBorder
+import eu.mjdev.desktop.extensions.Modifier.circleShadow
+import eu.mjdev.desktop.extensions.Modifier.clipCircle
+import eu.mjdev.desktop.extensions.Modifier.rectShadow
 
 @Preview
 @Composable

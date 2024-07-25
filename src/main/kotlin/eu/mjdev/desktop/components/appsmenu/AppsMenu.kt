@@ -18,14 +18,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import eu.mjdev.desktop.components.SlideMenuState
-import eu.mjdev.desktop.components.SlideMenuState.Companion.rememberSlideMenuState
-import eu.mjdev.desktop.components.SlidingMenu
-import eu.mjdev.desktop.components.UserAvatar
+import eu.mjdev.desktop.components.custom.UserAvatar
+import eu.mjdev.desktop.components.slidemenu.VisibilityState
+import eu.mjdev.desktop.components.slidemenu.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.provider.data.App
 import eu.mjdev.desktop.provider.data.Category
 
@@ -37,101 +36,88 @@ fun AppsMenu(
     bottomY: Dp = 0.dp,
     backgroundColor: Color = Color.SuperDarkGray,
     menuPadding: PaddingValues = PaddingValues(2.dp),
-    state: SlideMenuState = rememberSlideMenuState(),
+    state: VisibilityState = rememberVisibilityState(),
     api: DesktopProvider = LocalDesktop.current,
     items: MutableState<List<Any>> = remember { mutableStateOf(api.appsProvider.appCategories) },
     onVisibilityChange: (visible: Boolean) -> Unit = {},
+) = AnimatedVisibility(
+    state.isVisible,
+    modifier = modifier,
+    enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
+    exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
 ) {
-    SlidingMenu(
-        modifier = modifier,
-        orientation = Orientation.Vertical,
-        state = state,
-        onVisibilityChange = onVisibilityChange
-    ) { isVisible ->
-        AnimatedVisibility(
-            isVisible,
-            enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
-            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+    Box(
+        modifier = modifier
+            .padding(bottom = bottomY)
+            .width(appMenuExpandedWidth)
+            .heightIn(
+                min = appMenuMinHeight,
+                max = appMenuMinHeight
+            )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(menuPadding)
+                .background(backgroundColor.copy(alpha = 0.7f), RoundedCornerShape(24.dp))
+                .clip(RoundedCornerShape(24.dp))
+                .border(2.dp, backgroundColor, RoundedCornerShape(24.dp))
         ) {
-            Box(
-                modifier = modifier
-                    .padding(bottom = bottomY)
-                    .width(appMenuExpandedWidth)
-                    .heightIn(
-                        min = appMenuMinHeight,
-                        max = appMenuMinHeight
-                    )
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                Box(
+                UserAvatar(
+                    avatarSize = 64.dp,
+                    backgroundColor = backgroundColor,
+                    orientation = Orientation.Horizontal
+                )
+                LazyColumn(
                     modifier = Modifier
+                        .padding(bottom = 48.dp)
                         .fillMaxSize()
-                        .padding(menuPadding)
-                        .background(backgroundColor.copy(alpha = 0.7f), RoundedCornerShape(24.dp))
-                        .clip(RoundedCornerShape(24.dp))
-                        .border(2.dp, backgroundColor, RoundedCornerShape(24.dp))
+                        .padding(24.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        UserAvatar(
-                            avatarSize = 64.dp,
-                            backgroundColor = backgroundColor,
-                            orientation = Orientation.Horizontal
-                        )
-                        LazyColumn(
-                            modifier = Modifier
-                                .padding(bottom = 48.dp)
-                                .fillMaxSize()
-                                .padding(24.dp)
-                        ) {
-                            when (items.value.firstOrNull()) {
-                                is Category -> {
-                                    items(items.value) { item ->
-                                        AppsMenuCategory(
-                                            category = item as Category
-                                        ) { category ->
-                                            items.value =
-                                                api.appsProvider.categoriesAndApps[category.name] ?: emptyList()
-                                        }
-                                    }
+                    when (items.value.firstOrNull()) {
+                        is Category -> {
+                            items(items.value) { item ->
+                                AppsMenuCategory(
+                                    category = item as Category,
+                                    backgroundColor = backgroundColor,
+                                    iconTint = Color.White
+                                ) { category ->
+                                    items.value = api.appsProvider.categoriesAndApps[category.name] ?: emptyList()
                                 }
+                            }
+                        }
 
-                                is App -> {
-                                    items(items.value) { item ->
-                                        AppsMenuApp(
-                                            app = item as App
-                                        ) { app ->
-                                            app?.start()
-                                            state.hide(0)
-
-                                        }
-                                    }
+                        is App -> {
+                            items(items.value) { item ->
+                                AppsMenuApp(
+                                    app = item as App,
+                                    backgroundColor = backgroundColor,
+                                    iconTint = Color.White
+                                ) { app ->
+                                    app?.start()
+                                    state.hide(0)
                                 }
                             }
                         }
                     }
-                    AppsBottomBar(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .align(Alignment.BottomStart)
-                            .background(backgroundColor)
-                    )
                 }
             }
+            AppsBottomBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .align(Alignment.BottomStart)
+                    .background(backgroundColor)
+            )
         }
     }
     launchedEffect(state.isVisible) {
         if (!state.isVisible) {
             items.value = api.appsProvider.appCategories
         }
+        onVisibilityChange(state.isVisible)
     }
-}
-
-@Composable
-fun AppsBottomBar(
-    modifier: Modifier = Modifier
-) = Box(
-    modifier = modifier
-) {
 }
