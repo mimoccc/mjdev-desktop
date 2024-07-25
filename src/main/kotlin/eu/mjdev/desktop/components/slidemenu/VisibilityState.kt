@@ -2,10 +2,9 @@ package eu.mjdev.desktop.components.slidemenu
 
 import androidx.compose.runtime.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@Suppress("CanBeParameter")
+@Suppress("CanBeParameter", "unused")
 class VisibilityState(
     private val scope: CoroutineScope,
     private val startState: Boolean = false,
@@ -20,15 +19,18 @@ class VisibilityState(
     private val visible: MutableState<Boolean> = mutableStateOf(startState)
 
     fun show() {
-        if (enabled) scope.launch {
-            visible.value = true
+        if (!isVisible) {
+            if (enabled) scope.launch {
+                visible.value = true
+            }
         }
     }
 
-    fun hide(delay: Long = 0L) {
-        if (enabled) scope.launch {
-            delay(delay)
-            visible.value = false
+    fun hide() {
+        if (isVisible) {
+            if (enabled) scope.launch {
+                visible.value = false
+            }
         }
     }
 

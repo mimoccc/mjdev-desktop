@@ -4,7 +4,6 @@ package eu.mjdev.desktop.components.fonticon
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,7 +12,10 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.components.icon.ShapedIcon
+import eu.mjdev.desktop.components.text.AutoResizeText
+import eu.mjdev.desktop.components.text.FontSizeRange
 import eu.mjdev.desktop.extensions.Compose.sp
 import eu.mjdev.desktop.extensions.Compose.width
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
@@ -38,11 +40,14 @@ fun MaterialIcon(
     innerPadding = innerPadding,
     outerPadding = outerPadding,
     customContent = {
-        Text(
+        AutoResizeText(
             text = iconId.toChar().toString(),
             modifier = Modifier.align(Alignment.Center),
             color = iconColor,
-            fontSize = (iconSize.height - (innerPadding.width + outerPadding.width)).sp,
+            fontSizeRange = FontSizeRange(
+                min = 16.sp,
+                max = (iconSize.height - (innerPadding.width + outerPadding.width)).sp,
+            ),
             fontFamily = iconicFont.fontFile.fontFamily,
             textAlign = TextAlign.Center
         )

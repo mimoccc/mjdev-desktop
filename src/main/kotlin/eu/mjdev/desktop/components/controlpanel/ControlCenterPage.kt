@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
 class ControlCenterPage(
-    var icon: ImageVector = Icons.Filled.Settings,
+    val icon: ImageVector = Icons.Filled.Settings,
     val name: String = "",
     val content: @Composable (backgroundColor: Color) -> Unit = {}
 )

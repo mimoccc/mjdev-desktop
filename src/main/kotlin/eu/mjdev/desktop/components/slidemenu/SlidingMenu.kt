@@ -12,8 +12,6 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import eu.mjdev.desktop.components.slidemenu.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Suppress("FunctionName")
@@ -24,7 +22,6 @@ fun SlidingMenu(
     state: VisibilityState = rememberVisibilityState(),
     orientation: Orientation = Horizontal,
     onVisibilityChange: (visible: Boolean) -> Unit = {},
-    api: DesktopProvider = LocalDesktop.current,
     content: @Composable (isVisible: Boolean) -> Unit
 ) {
     when (orientation) {
@@ -33,9 +30,7 @@ fun SlidingMenu(
                 .fillMaxHeight()
                 .wrapContentWidth()
                 .onPointerEvent(PointerEventType.Enter) {
-                    if (api.windowFocusState.isFocused) {
-                        state.show()
-                    }
+                    state.show()
                 }
         ) {
             content(state.isVisible)
@@ -46,9 +41,7 @@ fun SlidingMenu(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .onPointerEvent(PointerEventType.Enter) {
-                    if (api.windowFocusState.isFocused) {
-                        state.show()
-                    }
+                    state.show()
                 }
         ) {
             content(state.isVisible)

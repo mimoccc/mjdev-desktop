@@ -2,6 +2,7 @@ package eu.mjdev.desktop.components.appsmenu
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -39,7 +40,9 @@ fun AppsMenuApp(
         iconId = materialIcon,
         iconSize = iconSize,
         iconColor = iconTint,
-        iconBackgroundColor = backgroundColor
+        iconBackgroundColor = backgroundColor,
+        outerPadding = PaddingValues(2.dp),
+        innerPadding = PaddingValues(0.dp)
     )
     TextAny(
         modifier = Modifier.padding(start = 4.dp).fillMaxWidth(),

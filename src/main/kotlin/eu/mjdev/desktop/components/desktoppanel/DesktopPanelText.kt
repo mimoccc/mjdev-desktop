@@ -21,8 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.extensions.Compose.color
 import eu.mjdev.desktop.extensions.Compose.noElevation
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Preview
@@ -33,22 +31,17 @@ fun DesktopPanelText(
     backgroundHover: Color = Color.Red,
     textPadding: PaddingValues = PaddingValues(4.dp),
     buttonState: MutableState<Boolean> = remember { mutableStateOf(false) },
-    api: DesktopProvider = LocalDesktop.current,
     onToolTip: (item: Any?) -> Unit = {},
     onClick: () -> Unit = {},
 ) = Box(
     modifier = Modifier
         .wrapContentSize()
         .onPointerEvent(PointerEventType.Enter) {
-            if (api.windowFocusState.isFocused) {
-                buttonState.value = true
-                onToolTip(text)
-            }
+            buttonState.value = true
+            onToolTip(text)
         }
         .onPointerEvent(PointerEventType.Exit) {
-            if (api.windowFocusState.isFocused) {
-                buttonState.value = false
-            }
+            buttonState.value = false
         }
 ) {
     Button(

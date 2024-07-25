@@ -13,66 +13,92 @@ import java.util.*
 class AppsProvider(
     val desktopProvider: DesktopProvider
 ) {
-    val homeDir by lazy { File(System.getProperty("user.home")) }
+    val homeDir by lazy { runCatching { File(System.getProperty("user.home")) }.getOrNull() }
 
-    private val configDir by lazy { homeDir.resolve(".config") }
-    private val iconsDir by lazy { homeDir.resolve(".icons") }
-    private val themesDir by lazy { homeDir.resolve(".themes") }
-    private val localDir by lazy { homeDir.resolve(".local") }
-    private val localShareDir by lazy { localDir.resolve("share") }
-    private val allAppsDesktopFilesDir by lazy { localShareDir.resolve("applications") }
-    private val autostartDesktopFilesDir by lazy { configDir.resolve("autoStart") }
-    private val backgroundFilesDir by lazy { localShareDir.resolve("backgrounds") }
+    private val configDir by lazy { homeDir?.resolve(".config") }
+    private val iconsDir by lazy { homeDir?.resolve(".icons") }
+    private val themesDir by lazy { homeDir?.resolve(".themes") }
+    private val localDir by lazy { homeDir?.resolve(".local") }
+    private val localShareDir by lazy { localDir?.resolve("share") }
+    private val allAppsDesktopFilesDir by lazy { localShareDir?.resolve("applications") }
+    private val autostartDesktopFilesDir by lazy { configDir?.resolve("autoStart") }
+    private val backgroundFilesDir by lazy { localShareDir?.resolve("backgrounds") }
 
-    private val menusDir by lazy { configDir.resolve("menus") }
+    private val menusDir by lazy { configDir?.resolve("menus") }
 
-    private val gnomeAppsFile by lazy { menusDir.resolve("gnome-applications.menu") } // xml
-    private val backgroundFile by lazy { configDir.resolve("background") } // jpg
+    private val gnomeAppsFile by lazy { menusDir?.resolve("gnome-applications.menu") } // xml
+    private val backgroundFile by lazy { configDir?.resolve("background") } // jpg
 
-    private val mimeApps by lazy { configDir.resolve("mimeapps.list").readLines() } // <mime>=<desktop.file>
-    private val userDirs by lazy { configDir.resolve("user-dirs.dirs").readText() } // <type>="<path>"
-    private val userDirsLocale by lazy { configDir.resolve("user-dirs.locale").readText().toLocale() } //SK_sk
+    private val mimeApps by lazy {
+        runCatching {
+            configDir?.resolve("mimeapps.list")?.readLines()
+        }.getOrNull()
+    } // <mime>=<desktop.file>
+    private val userDirs by lazy {
+        runCatching {
+            configDir?.resolve("user-dirs.dirs")?.readText()
+        }.getOrNull()
+    } // <type>="<path>"
+    private val userDirsLocale by lazy {
+        runCatching {
+            configDir?.resolve("user-dirs.locale")?.readText()?.toLocale()
+        }.getOrNull()
+    } //SK_sk
 
-    private val menusItems by lazy { menusDir.resolve("gnome-applications.menu").readText() } // xml
+    private val menusItems by lazy {
+        runCatching {
+            menusDir?.resolve("gnome-applications.menu")?.readText()
+        }.getOrNull()
+    } // xml
 
-    private val iconThemes by lazy { iconsDir.listFiles() } // folders
-    private val systemThemes by lazy { themesDir.listFiles() } // folders
+    private val iconThemes by lazy { runCatching { iconsDir?.listFiles() }.getOrNull() } // folders
+    private val systemThemes by lazy { runCatching { themesDir?.listFiles() }.getOrNull() } // folders
 
     private val autoStartDesktopFiles
-        get() = autostartDesktopFilesDir.listFiles()?.map { DesktopFile(it) } ?: emptyList()
+        get() = runCatching {
+            autostartDesktopFilesDir?.listFiles()?.map { DesktopFile(it) }
+        }.getOrNull() ?: emptyList()
 
     // todo : probably not all here, need usr and local also
     private val allAppsDesktopFilesLocal
-        get() = allAppsDesktopFilesDir.listFiles()?.filter {
-            it.extension == "desktop"
-        }?.map { DesktopFile(it) } ?: emptyList()
+        get() = runCatching {
+            allAppsDesktopFilesDir?.listFiles()?.filter {
+                it.extension == "desktop"
+            }?.map { DesktopFile(it) }
+        }.getOrNull() ?: emptyList()
 
     private val allAppsDesktopFilesShared
-        get() = File("/usr/share/applications").listFiles()?.filter {
-            it.extension == "desktop"
-        }?.map { DesktopFile(it) } ?: emptyList()
+        get() = runCatching {
+            File("/usr/share/applications").listFiles()?.filter {
+                it.extension == "desktop"
+            }?.map { DesktopFile(it) }
+        }.getOrNull() ?: emptyList()
 
     private val allAppsDesktopFilesFlatPack
-        get() = File("/var/lib/flatpak/exports/share/applications/").listFiles()?.filter {
-            it.extension == "desktop"
-        }?.map { DesktopFile(it) } ?: emptyList()
+        get() = runCatching {
+            File("/var/lib/flatpak/exports/share/applications/").listFiles()?.filter {
+                it.extension == "desktop"
+            }?.map { DesktopFile(it) }
+        }.getOrNull() ?: emptyList()
 
     private val allAppsDesktopFilesSnap
-        get() = File("/var/lib/snapd/desktop/applications/").listFiles()?.filter {
-            it.extension == "desktop"
-        }?.map { DesktopFile(it) } ?: emptyList()
+        get() = runCatching {
+            File("/var/lib/snapd/desktop/applications/").listFiles()?.filter {
+                it.extension == "desktop"
+            }?.map { DesktopFile(it) }
+        }.getOrNull() ?: emptyList()
 
     private val allAppsDesktopFiles
         get() = allAppsDesktopFilesLocal + allAppsDesktopFilesShared + allAppsDesktopFilesFlatPack + allAppsDesktopFilesSnap
 
     val currentLocale: Locale
-        get() = userDirsLocale
+        get() = userDirsLocale ?: Locale.ENGLISH
     val autoStartApps
         get() = autoStartDesktopFiles.map { file -> App(desktopFile = file, file = file.file) }
     val allApps
         get() = allAppsDesktopFiles.map { file -> App(desktopFile = file, file = file.file) }
     val backgrounds
-        get() = backgroundFilesDir.listFiles()?.toList() ?: emptyList<File>()
+        get() = runCatching { backgroundFilesDir?.listFiles()?.toList() }.getOrNull() ?: emptyList<File>()
     val appCategories
         get() = mutableListOf<String>().apply {
             allApps.forEach { app ->
@@ -102,7 +128,7 @@ class AppsProvider(
                 "org.gnome.shell",
                 "favorite-apps"
             ).let { json ->
-                Gson().fromJson(json, List::class.java)
+                Gson().fromJson(json ?: "[]", List::class.java)
             }.mapNotNull { appName ->
                 val deskFile = desktopFiles.firstOrNull { deskFile ->
                     deskFile?.file?.name?.contentEquals(appName.toString()) == true

@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.extensions.Compose.size
 
 @Composable
 fun ShapedIcon(
@@ -29,7 +30,7 @@ fun ShapedIcon(
 ) = Box(
     modifier = Modifier
         .padding(outerPadding)
-        .size(iconSize)
+        .size(iconSize + innerPadding.size + outerPadding.size)
         .background(iconBackgroundColor, iconShape)
         .clip(iconShape)
         .padding(innerPadding)
@@ -38,12 +39,12 @@ fun ShapedIcon(
         customContent()
     } else {
         Icon(
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(iconShape),
+            modifier = Modifier.fillMaxSize(),
             imageVector = imageVector,
             contentDescription = contentDescription,
             tint = iconColor
         )
     }
 }
+
+

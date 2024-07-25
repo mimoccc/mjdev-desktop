@@ -25,9 +25,11 @@ class Theme(
     controlCenterDividerWidth: Dp,
     controlCenterIconColor: Color,
     controlCenterIconSize: DpSize,
+    controlCenterBackgroundAlpha: Float,
 
     iconSet: MaterialIconFont,
 ) {
+
     val backgroundColorState = mutableStateOf(backgroundColor)
     val panelLocationState = mutableStateOf(panelLocation)
     val panelHideDelayState = mutableStateOf(panelHideDelay)
@@ -40,6 +42,7 @@ class Theme(
     val controlCenterIconSizeState = mutableStateOf(controlCenterIconSize)
     val iconSetState = mutableStateOf(iconSet)
     val backgroundRotationDelayState = mutableStateOf(backgroundRotationDelay)
+    val controlCenterBackgroundAlphaState = mutableStateOf(controlCenterBackgroundAlpha)
 
     var backgroundColor
         get() = backgroundColorState.value
@@ -59,6 +62,7 @@ class Theme(
     val controlCenterDividerWidth get() = controlCenterDividerWidthState.value
     val controlCenterIconColor get() = controlCenterIconColorState.value
     val controlCenterIconSize get() = controlCenterIconSizeState.value
+    val controlCenterBackgroundAlpha get() = controlCenterBackgroundAlphaState.value
     val iconSet get() = iconSetState.value
     val backgroundRotationDelay get() = backgroundRotationDelayState.value
 
@@ -78,6 +82,8 @@ class Theme(
             controlCenterDividerWidth = 2.dp,
             controlCenterIconColor = Color.White,
             controlCenterIconSize = DpSize(32.dp, 32.dp),
+            controlCenterBackgroundAlpha = 0.8f,
+
             backgroundRotationDelay = 10000
         )
     }

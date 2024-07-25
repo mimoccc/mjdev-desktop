@@ -2,9 +2,11 @@ package eu.mjdev.desktop.helpers
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.awt.ComposeWindow
+import androidx.compose.ui.window.FrameWindowScope
 import java.awt.event.WindowEvent
 import java.awt.event.WindowFocusListener
 
+@Suppress("MemberVisibilityCanBePrivate")
 class WindowFocusState(
     private val window: ComposeWindow? = null,
     private val onFocusChange: (focused: Boolean) -> Unit = {}
@@ -16,12 +18,12 @@ class WindowFocusState(
 
     override fun windowGainedFocus(p0: WindowEvent?) {
         focusState.value = true
-        onFocusChange(true)
+        onFocusChange(isFocused)
     }
 
     override fun windowLostFocus(p0: WindowEvent?) {
         focusState.value = false
-        onFocusChange(false)
+        onFocusChange(isFocused)
     }
 
     fun init() {
@@ -33,13 +35,10 @@ class WindowFocusState(
     }
 
     companion object {
-        val EMPTY: WindowFocusState = WindowFocusState()
-
         @Composable
-        fun rememberWindowFocusState(
-            window: ComposeWindow,
+        fun FrameWindowScope.windowFocusHandler(
             onFocusChange: (focused: Boolean) -> Unit = {}
-        ): WindowFocusState {
+        ) {
             val state = remember(window) { WindowFocusState(window, onFocusChange) }
             DisposableEffect(Unit) {
                 state.init()
@@ -47,7 +46,6 @@ class WindowFocusState(
                     state.destroy()
                 }
             }
-            return state
         }
     }
 }

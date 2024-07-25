@@ -4,17 +4,11 @@ package eu.mjdev.desktop.extensions
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.unit.*
-import androidx.compose.ui.window.*
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.desktopLocalProvider
 import kotlinx.coroutines.CoroutineScope
 
 object Compose {
@@ -49,10 +43,10 @@ object Compose {
     ) = LaunchedEffect(Unit, block)
 
     @Composable
-    fun launchedEffect(
-        key: Any?,
-        block: suspend CoroutineScope.() -> Unit
-    ) = LaunchedEffect(key, block)
+    fun <T> launchedEffect(
+        key: T,
+        block: suspend CoroutineScope.(key: T) -> Unit
+    ) = LaunchedEffect(key) { block(key) }
 
     @Composable
     fun <T> textFrom(text: T?): String = when (text) {
@@ -84,83 +78,12 @@ object Compose {
         disabledBackgroundColor = Color.Transparent
     )
 
-    @Composable
-    fun FullScreenWindow(
-        visible: Boolean = true,
-        title: String = "",
-        icon: Painter? = null,
-        focusable: Boolean = true,
-        alwaysOnTop: Boolean = false,
-        onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
-        onKeyEvent: (KeyEvent) -> Boolean = { false },
-        onCloseRequest: () -> Unit = {},
-        content: @Composable FrameWindowScope.() -> Unit
-    ) = Window(
-        state = rememberWindowState(
-            placement = WindowPlacement.Fullscreen
-        ),
-        resizable = false,
-        undecorated = true,
-        transparent = true,
-        focusable = focusable,
-        alwaysOnTop = alwaysOnTop,
-        visible = visible,
-        title = title,
-        icon = icon,
-        onPreviewKeyEvent = onPreviewKeyEvent,
-        onKeyEvent = onKeyEvent,
-        onCloseRequest = onCloseRequest,
-        content = {
-            MaterialTheme {
-                desktopLocalProvider {
-                    content()
-                }
-            }
-        }
-    )
+    fun java.awt.Window.setWindowBounds(x: Dp, y: Dp, w: Dp, h: Dp) {
+        setBounds(x.value.toInt(), y.value.toInt(), w.value.toInt(), h.value.toInt())
+    }
 
-    @Composable
-    fun TopWindow(
-        // todo
-        @Suppress("UNUSED_PARAMETER") movable: Boolean = false,
-        position: WindowPosition = WindowPosition.Aligned(Alignment.BottomStart),
-        size: DpSize = DpSize(800.dp, 600.dp),
-        resizable: Boolean = false,
-        undecorated: Boolean = true,
-        visible: Boolean = true,
-        minimized: Boolean = false,
-        title: String = "",
-        icon: Painter? = null,
-        focusable: Boolean = true,
-        onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
-        onKeyEvent: (KeyEvent) -> Boolean = { false },
-        onCloseRequest: () -> Unit = {},
-        content: @Composable FrameWindowScope.() -> Unit
-    ) = Window(
-        state = rememberWindowState(
-            placement = WindowPlacement.Floating,
-            position = position,
-            size = size,
-            isMinimized = minimized
-        ),
-        resizable = resizable,
-        undecorated = undecorated,
-        onCloseRequest = onCloseRequest,
-        visible = visible,
-        transparent = true,
-        title = title,
-        icon = icon,
-        focusable = focusable,
-        alwaysOnTop = true,
-        onPreviewKeyEvent = onPreviewKeyEvent,
-        onKeyEvent = onKeyEvent,
-        content = {
-            MaterialTheme {
-                desktopLocalProvider {
-                    content()
-                }
-            }
-        }
-    )
+    // todo
+//    fun java.awt.Window.resizeTo(w: Dp, h: Dp) {
+//    }
 
 }

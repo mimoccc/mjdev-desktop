@@ -63,7 +63,7 @@ fun UserAvatar(
             }
             Text(
                 modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-                text = api.currentUser.name ?: api.appsProvider.homeDir.name,
+                text = api.currentUser.name ?: api.appsProvider.homeDir?.name ?: "-",
                 color = Color.White,
                 textAlign = TextAlign.Center
             )
@@ -95,7 +95,7 @@ fun UserAvatar(
             }
             Text(
                 modifier = Modifier.padding(start = 16.dp).fillMaxWidth().padding(top = 16.dp),
-                text = api.currentUser.name ?: api.appsProvider.homeDir.name,
+                text = api.currentUser.name ?: api.appsProvider.homeDir?.name ?: "-",
                 color = Color.White,
                 textAlign = TextAlign.Start
             )

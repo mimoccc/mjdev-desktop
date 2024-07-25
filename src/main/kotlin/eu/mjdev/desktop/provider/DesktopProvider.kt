@@ -1,16 +1,14 @@
 package eu.mjdev.desktop.provider
 
-import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.unit.IntSize
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.FrameWindowScope
 import eu.mjdev.desktop.components.controlpanel.ControlCenterPage
 import eu.mjdev.desktop.components.controlpanel.pages.*
-import eu.mjdev.desktop.helpers.WindowFocusState
-import eu.mjdev.desktop.helpers.WindowFocusState.Companion.rememberWindowFocusState
 import eu.mjdev.desktop.provider.data.User
+import java.awt.Toolkit
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -19,12 +17,9 @@ import java.util.*
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
-
 @Suppress("unused")
 class DesktopProvider(
-    val containerSize: IntSize? = null,
-    val currentUser: User = User.Empty,
-    val windowFocusState: WindowFocusState = WindowFocusState.EMPTY
+    val currentUser: User = User.Empty, // todo
 ) {
     private val _currentUser: MutableState<User> = mutableStateOf(currentUser)
 
@@ -46,13 +41,19 @@ class DesktopProvider(
         }
     }
 
+    val containerSize: DpSize by lazy {
+        Toolkit.getDefaultToolkit().screenSize.let {
+            DpSize(
+                it.width.dp,
+                it.height.dp
+            )
+        }
+    }
     val controlCenterPages get() = _controlCenterPages.value
     val appsProvider by lazy { AppsProvider(this) }
 
     init {
-        if (containerSize != null) {
-            currentUser.theme.controlCenterExpandedWidth = containerSize.width.div(4).dp
-        }
+        currentUser.theme.controlCenterExpandedWidth = containerSize.width.div(4)
     }
 
     fun runScript(script: String): Any =
@@ -74,14 +75,13 @@ class DesktopProvider(
         }.start()
     }
 
-    fun runCommandForOutput(vararg cmd: String): String {
+    fun runCommandForOutput(vararg cmd: String): String? = runCatching {
         val pb = ProcessBuilder(*cmd)
         val p: Process
         var result = ""
         try {
             p = pb.start()
             val reader = BufferedReader(InputStreamReader(p.inputStream))
-
             val sj = StringJoiner(System.lineSeparator())
             reader.lines().iterator().forEachRemaining { newElement: String? ->
                 sj.add(newElement)
@@ -92,29 +92,12 @@ class DesktopProvider(
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return result
-    }
+        result
+    }.getOrNull()
 
     companion object {
         val LocalDesktop = compositionLocalOf {
             DesktopProvider()
-        }
-
-        @OptIn(ExperimentalComposeUiApi::class)
-        @Composable
-        fun FrameWindowScope.desktopLocalProvider(content: @Composable () -> Unit) {
-            val containerSize = LocalWindowInfo.current.containerSize
-            val currentUser = User.Empty // todo get user
-            val windowFocusState = rememberWindowFocusState(window)
-            CompositionLocalProvider(
-                LocalDesktop provides DesktopProvider(
-                    containerSize = containerSize,
-                    currentUser = currentUser,
-                    windowFocusState = windowFocusState
-                )
-            ) {
-                content()
-            }
         }
     }
 }

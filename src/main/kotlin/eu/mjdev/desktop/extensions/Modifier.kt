@@ -2,6 +2,7 @@ package eu.mjdev.desktop.extensions
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
@@ -60,6 +61,14 @@ object Modifier {
     @Stable
     @Composable
     fun Modifier.clipCircle() = clip(CircleShape)
+
+    @Stable
+    @Composable
+    fun Modifier.clipRect() = clip(RectangleShape)
+
+    @Stable
+    @Composable
+    fun Modifier.clipRoundRect(round: Dp) = clip(RoundedCornerShape(round))
 
     @Stable
     @Composable
