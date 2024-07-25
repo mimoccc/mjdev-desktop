@@ -41,9 +41,29 @@ class AppsProvider(
     private val autoStartDesktopFiles
         get() = autostartDesktopFilesDir.listFiles()?.map { DesktopFile(it) } ?: emptyList()
 
-    // todo probably not all here, need usr and local also
+    // todo : probably not all here, need usr and local also
+    private val allAppsDesktopFilesLocal
+        get() = allAppsDesktopFilesDir.listFiles()?.filter {
+            it.extension == "desktop"
+        }?.map { DesktopFile(it) } ?: emptyList()
+
+    private val allAppsDesktopFilesShared
+        get() = File("/usr/share/applications").listFiles()?.filter {
+            it.extension == "desktop"
+        }?.map { DesktopFile(it) } ?: emptyList()
+
+    private val allAppsDesktopFilesFlatPack
+        get() = File("/var/lib/flatpak/exports/share/applications/").listFiles()?.filter {
+            it.extension == "desktop"
+        }?.map { DesktopFile(it) } ?: emptyList()
+
+    private val allAppsDesktopFilesSnap
+        get() = File("/var/lib/snapd/desktop/applications/").listFiles()?.filter {
+            it.extension == "desktop"
+        }?.map { DesktopFile(it) } ?: emptyList()
+
     private val allAppsDesktopFiles
-        get() = allAppsDesktopFilesDir.listFiles()?.map { DesktopFile(it) } ?: emptyList()
+        get() = allAppsDesktopFilesLocal + allAppsDesktopFilesShared + allAppsDesktopFilesFlatPack + allAppsDesktopFilesSnap
 
     val currentLocale: Locale
         get() = userDirsLocale
@@ -84,10 +104,14 @@ class AppsProvider(
             ).let { json ->
                 Gson().fromJson(json, List::class.java)
             }.mapNotNull { appName ->
-                desktopFiles.firstOrNull { deskFile ->
+                val deskFile = desktopFiles.firstOrNull { deskFile ->
                     deskFile?.file?.name?.contentEquals(appName.toString()) == true
-                }.let { deskFile ->
+                }
+                if (deskFile != null) {
                     App(desktopFile = deskFile, file = deskFile?.file)
+                } else {
+                    println("Missing desktop file: $appName")
+                    null
                 }
             }.also { list ->
                 emit(list)
