@@ -6,17 +6,22 @@ import java.io.File
 class DesktopFile(
     val file: File
 ) {
-    private val props by lazy {
-        file.readLines().mapNotNull { line ->
-            line.split("=").let { pair ->
-                when (pair.size) {
-                    2 -> Pair(pair[0], pair[1])
-                    1 -> Pair(pair[0], "")
-                    else -> null
-                }
-            }
+    private val content
+        get() = file.readText()
+
+    private val lines
+        get() = content.split("\n").map { line ->
+            line.trim()
+        }
+
+    private val props
+        get() = lines.mapNotNull { line ->
+            if (line.contains("=")) {
+                val first = line.substring(0, line.indexOf('='))
+                val second = line.substring(line.indexOf('=') + 1)
+                Pair(first, second)
+            } else null
         }.toMap()
-    }
 
     val type
         get() = props[Prop_Type] ?: ""

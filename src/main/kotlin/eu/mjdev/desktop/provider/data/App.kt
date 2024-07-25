@@ -33,8 +33,11 @@ class App(
     var iconTint: Color? = null
 
     fun start() = runCatching {
+        println("Starting app: $name [$exec]")
         ProcessBuilder("/bin/bash", "-c", exec).start()
-    }.onFailure { error -> error.printStackTrace() }
+    }.onFailure { error ->
+        error.printStackTrace()
+    }
 
     companion object {
         val Empty: App = App()

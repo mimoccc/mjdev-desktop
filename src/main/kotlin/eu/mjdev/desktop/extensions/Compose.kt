@@ -8,14 +8,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.unit.*
-import androidx.compose.ui.window.FrameWindowScope
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowPlacement
-import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.ui.window.*
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.desktopLocalProvider
 import kotlinx.coroutines.CoroutineScope
 
@@ -125,9 +123,12 @@ object Compose {
     fun TopWindow(
         // todo
         @Suppress("UNUSED_PARAMETER") movable: Boolean = false,
+        position: WindowPosition = WindowPosition.Aligned(Alignment.BottomStart),
+        size: DpSize = DpSize(800.dp, 600.dp),
         resizable: Boolean = false,
         undecorated: Boolean = true,
         visible: Boolean = true,
+        minimized: Boolean = false,
         title: String = "",
         icon: Painter? = null,
         focusable: Boolean = true,
@@ -137,7 +138,10 @@ object Compose {
         content: @Composable FrameWindowScope.() -> Unit
     ) = Window(
         state = rememberWindowState(
-            placement = WindowPlacement.Floating
+            placement = WindowPlacement.Floating,
+            position = position,
+            size = size,
+            isMinimized = minimized
         ),
         resizable = resizable,
         undecorated = undecorated,
