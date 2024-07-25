@@ -13,7 +13,7 @@ class App(
     val version
         get() = desktopFile?.version ?: ""
     val name
-        get() = desktopFile?.name ?: "-"
+        get() = desktopFile?.name ?: ""
     val comment
         get() = desktopFile?.comment ?: ""
     val path

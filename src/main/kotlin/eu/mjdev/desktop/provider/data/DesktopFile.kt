@@ -4,7 +4,7 @@ import java.io.File
 
 @Suppress("ConstPropertyName", "unused")
 class DesktopFile(
-    private val file: File
+    val file: File
 ) {
     private val props by lazy {
         file.readLines().mapNotNull { line ->
@@ -31,7 +31,7 @@ class DesktopFile(
         get() = props[Prop_Comment] ?: ""
 
     val path
-        get() = props[Prop_Path ] ?: ""
+        get() = props[Prop_Path] ?: ""
 
     val exec
         get() = props[Prop_Exec] ?: ""
@@ -60,7 +60,7 @@ class DesktopFile(
         const val Prop_Icon = "Icon" // string
         const val Prop_Categories = "Categories" // string delimited ;
 
-        private fun String.asBoolean() :Boolean = when(this.lowercase()) {
+        private fun String.asBoolean(): Boolean = when (this.lowercase()) {
             "true" -> true
             "1" -> true
             else -> false

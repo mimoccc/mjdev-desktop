@@ -1,6 +1,7 @@
 package eu.mjdev.desktop.components.desktoppanel
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
@@ -26,7 +27,7 @@ import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.provider.data.App
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Preview
 @Composable
 fun DesktopPanelIcon(
@@ -39,6 +40,7 @@ fun DesktopPanelIcon(
     iconSize: DpSize = DpSize(48.dp, 48.dp),
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconState: MutableState<Boolean> = remember { mutableStateOf(false) },
+    onToolTip: (item: Any?) -> Unit = {},
     onClick: () -> Unit = { app?.start() },
 ) {
     val materialIcon = api.appsProvider.iconForApp(app?.name ?: icon) ?: "?".toInt()
@@ -49,6 +51,7 @@ fun DesktopPanelIcon(
             .onPointerEvent(PointerEventType.Enter) {
                 if (api.windowFocusState.isFocused) {
                     iconState.value = true
+                    onToolTip(app)
                 }
             }
             .onPointerEvent(PointerEventType.Exit) {

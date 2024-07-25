@@ -1,10 +1,9 @@
 package org.mjdev.gradle.extensions
 
-import org.gradle.accessors.dm.LibrariesForLibs
-import org.gradle.api.*
+import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.internal.impldep.jakarta.xml.bind.DatatypeConverter
 import org.gradle.kotlin.dsl.extra
-import org.gradle.kotlin.dsl.the
 
 @Suppress("HasPlatformType", "unused", "MemberVisibilityCanBePrivate")
 object ProjectExt {
@@ -18,8 +17,8 @@ object ProjectExt {
     val Project.isAndroidStudio
         get() = project.extra.properties.keys.contains("android.studio.version")
 
-    val Project.libs
-        get() = the<LibrariesForLibs>()
+//    val Project.libs
+//        get() = the<LibrariesForLibs>()
 
 //    fun Project.apply(plugin: Provider<*>) =
 //        project.plugins.apply(plugin.get().toString())

@@ -34,6 +34,7 @@ fun DesktopPanelText(
     textPadding: PaddingValues = PaddingValues(4.dp),
     buttonState: MutableState<Boolean> = remember { mutableStateOf(false) },
     api: DesktopProvider = LocalDesktop.current,
+    onToolTip: (item: Any?) -> Unit = {},
     onClick: () -> Unit = {},
 ) = Box(
     modifier = Modifier
@@ -41,6 +42,7 @@ fun DesktopPanelText(
         .onPointerEvent(PointerEventType.Enter) {
             if (api.windowFocusState.isFocused) {
                 buttonState.value = true
+                onToolTip(text)
             }
         }
         .onPointerEvent(PointerEventType.Exit) {

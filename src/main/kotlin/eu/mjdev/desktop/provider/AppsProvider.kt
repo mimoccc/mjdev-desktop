@@ -3,6 +3,7 @@ package eu.mjdev.desktop.provider
 import com.google.gson.Gson
 import eu.mjdev.desktop.provider.data.App
 import eu.mjdev.desktop.provider.data.Category
+import eu.mjdev.desktop.provider.data.DesktopFile
 import kotlinx.coroutines.flow.flow
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import java.io.File
@@ -37,17 +38,19 @@ class AppsProvider(
     private val iconThemes by lazy { iconsDir.listFiles() } // folders
     private val systemThemes by lazy { themesDir.listFiles() } // folders
 
-    private val autoStartDesktopFiles: List<File>
-        get() = autostartDesktopFilesDir.listFiles()?.toList() ?: emptyList() // List<DesktopFile>
-    private val allAppsDesktopFiles: List<File>
-        get() = allAppsDesktopFilesDir.listFiles()?.toList() ?: emptyList() // List<DesktopFile>
+    private val autoStartDesktopFiles
+        get() = autostartDesktopFilesDir.listFiles()?.map { DesktopFile(it) } ?: emptyList()
+
+    // todo probably not all here, need usr and local also
+    private val allAppsDesktopFiles
+        get() = allAppsDesktopFilesDir.listFiles()?.map { DesktopFile(it) } ?: emptyList()
 
     val currentLocale: Locale
         get() = userDirsLocale
     val autoStartApps
-        get() = autoStartDesktopFiles.map { file -> App(file) }
+        get() = autoStartDesktopFiles.map { file -> App(desktopFile = file, file = file.file) }
     val allApps
-        get() = allAppsDesktopFiles.map { file -> App(file) }
+        get() = allAppsDesktopFiles.map { file -> App(desktopFile = file, file = file.file) }
     val backgrounds
         get() = backgroundFilesDir.listFiles()?.toList() ?: emptyList<File>()
     val appCategories
@@ -69,8 +72,10 @@ class AppsProvider(
             map
         }
 
+    @Suppress("UNNECESSARY_SAFE_CALL")
     val favoriteApps
         get() = flow {
+            val desktopFiles = allAppsDesktopFiles
             desktopProvider.runCommandForOutput(
                 "gsettings",
                 "get",
@@ -78,15 +83,14 @@ class AppsProvider(
                 "favorite-apps"
             ).let { json ->
                 Gson().fromJson(json, List::class.java)
-            }.mapNotNull { deskFileName ->
-                allAppsDesktopFiles.firstOrNull { deskFile ->
-                    @Suppress("UNNECESSARY_SAFE_CALL")
-                    deskFile?.name?.contentEquals(deskFileName.toString()) == true
-                }.let {
-                    App(it)
+            }.mapNotNull { appName ->
+                desktopFiles.firstOrNull { deskFile ->
+                    deskFile?.file?.name?.contentEquals(appName.toString()) == true
+                }.let { deskFile ->
+                    App(desktopFile = deskFile, file = deskFile?.file)
                 }
-            }.also {
-                emit(it)
+            }.also { list ->
+                emit(list)
             }
         }
 
