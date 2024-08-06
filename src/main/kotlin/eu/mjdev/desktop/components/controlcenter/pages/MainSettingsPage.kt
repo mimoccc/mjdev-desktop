@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components.controlpanel.pages
+package eu.mjdev.desktop.components.controlcenter.pages
 
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import eu.mjdev.desktop.components.controlpanel.ControlCenterPage
+import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 import eu.mjdev.desktop.components.custom.DateTime
 import eu.mjdev.desktop.components.custom.PowerBlock
 import eu.mjdev.desktop.components.custom.UserAvatar

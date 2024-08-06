@@ -1,5 +1,7 @@
 package eu.mjdev.desktop.provider.data
 
+import androidx.compose.animation.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -8,10 +10,13 @@ import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.fonticon.MaterialIconFont
 import eu.mjdev.desktop.components.fonticon.MaterialSymbolsSharp
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 // todo all customizable
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class Theme(
+    val scope: CoroutineScope?,
     backgroundColor: Color,
     backgroundRotationDelay: Long,
 
@@ -30,7 +35,7 @@ class Theme(
     iconSet: MaterialIconFont,
 ) {
 
-    val backgroundColorState = mutableStateOf(backgroundColor)
+    val backgroundColorState = Animatable(backgroundColor)
     val panelLocationState = mutableStateOf(panelLocation)
     val panelHideDelayState = mutableStateOf(panelHideDelay)
     val controlCenterLocationState = mutableStateOf(controlCenterLocation)
@@ -47,7 +52,11 @@ class Theme(
     var backgroundColor
         get() = backgroundColorState.value
         set(value) {
-            backgroundColorState.value = value
+            scope?.launch {
+                backgroundColorState.animateTo(value, animationSpec = tween(1500))
+            } ?: {
+                println("Can not set background color")
+            }
         }
     val panelLocation get() = panelLocationState.value
     val panelHideDelay get() = panelHideDelayState.value
@@ -67,7 +76,11 @@ class Theme(
     val backgroundRotationDelay get() = backgroundRotationDelayState.value
 
     companion object {
-        val Default = Theme(
+        @Suppress("FunctionName")
+        fun Default(
+            scope: CoroutineScope?
+        ) = Theme(
+            scope = scope,
             iconSet = MaterialSymbolsSharp,
 
             backgroundColor = Color.SuperDarkGray,

@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components.controlpanel
+package eu.mjdev.desktop.components.controlcenter
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings

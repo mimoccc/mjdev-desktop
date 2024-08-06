@@ -130,9 +130,13 @@ class AppsProvider(
             ).let { json ->
                 Gson().fromJson(json ?: "[]", List::class.java)
             }.mapNotNull { appName ->
-                val deskFile = desktopFiles.firstOrNull { deskFile ->
-                    deskFile?.file?.name?.contentEquals(appName.toString()) == true
-                }
+                val deskFile = desktopFiles.filter { deskFile ->
+                    deskFile?.file?.name?.contains(appName.toString()) == true
+                }.map { deskFile ->
+                    Pair(FuzzySearch.ratio(appName.toString(), deskFile.file.name), deskFile)
+                }.maxByOrNull {
+                    it.first
+                }?.second
                 if (deskFile != null) {
                     App(desktopFile = deskFile, file = deskFile?.file)
                 } else {

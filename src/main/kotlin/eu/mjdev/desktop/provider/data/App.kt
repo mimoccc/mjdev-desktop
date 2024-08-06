@@ -1,7 +1,9 @@
 package eu.mjdev.desktop.provider.data
 
 import androidx.compose.ui.graphics.Color
+import me.xdrop.fuzzywuzzy.FuzzySearch
 import java.io.File
+import kotlin.reflect.full.companionObjectInstance
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class App(
@@ -32,11 +34,22 @@ class App(
     var enabled: Boolean = true
     var iconTint: Color? = null
 
+    val iconBackground: Color
+        get() : Color = runCatching { colorFromName() }.getOrNull() ?: Color.White
+
     fun start() = runCatching {
         println("Starting app: $name [$exec]")
         ProcessBuilder("/bin/bash", "-c", exec).start()
     }.onFailure { error ->
         error.printStackTrace()
+    }
+
+    private fun colorFromName(): Color {
+        val companion = Color::class.companionObjectInstance
+        val members = if (companion != null) companion::class.members.toList() else emptyList()
+        return members.map {
+            Pair(FuzzySearch.ratio(name, it.name), it)
+        }.maxByOrNull { it.first }?.second?.call(null) as? Color ?: Color.White
     }
 
     companion object {

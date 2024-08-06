@@ -5,9 +5,10 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import eu.mjdev.desktop.components.controlpanel.ControlCenterPage
-import eu.mjdev.desktop.components.controlpanel.pages.*
+import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
+import eu.mjdev.desktop.components.controlcenter.pages.*
 import eu.mjdev.desktop.provider.data.User
+import kotlinx.coroutines.CoroutineScope
 import java.awt.Toolkit
 import java.io.BufferedReader
 import java.io.File
@@ -19,7 +20,8 @@ import javax.script.ScriptEngineManager
 
 @Suppress("unused")
 class DesktopProvider(
-    val currentUser: User = User.Empty, // todo
+    private val scope: CoroutineScope? = null,
+    val currentUser: User = User.load(scope), // todo
 ) {
     private val _currentUser: MutableState<User> = mutableStateOf(currentUser)
 
@@ -76,16 +78,16 @@ class DesktopProvider(
     }
 
     fun runCommandForOutput(vararg cmd: String): String? = runCatching {
-        val pb = ProcessBuilder(*cmd)
-        val p: Process
+        val sj = StringJoiner(System.lineSeparator())
         var result = ""
         try {
-            p = pb.start()
-            val reader = BufferedReader(InputStreamReader(p.inputStream))
-            val sj = StringJoiner(System.lineSeparator())
-            reader.lines().iterator().forEachRemaining { newElement: String? ->
-                sj.add(newElement)
-            }
+            val p = ProcessBuilder(*cmd).start()
+            BufferedReader(InputStreamReader(p.inputStream))
+                .lines()
+                .iterator()
+                .forEachRemaining { newElement: String? ->
+                    sj.add(newElement)
+                }
             result = sj.toString()
             p.waitFor()
             p.destroy()

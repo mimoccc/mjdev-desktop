@@ -3,10 +3,11 @@ package eu.mjdev.desktop
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
 import eu.mjdev.desktop.components.appsmenu.AppsMenu
-import eu.mjdev.desktop.components.controlpanel.ControlCenter
+import eu.mjdev.desktop.components.controlcenter.ControlCenter
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanel
 import eu.mjdev.desktop.components.slidemenu.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.provider.DesktopProvider
@@ -17,8 +18,9 @@ import eu.mjdev.desktop.windows.MainWindow
 fun main() = application(
     exitProcessOnExit = true
 ) {
+    val scope = rememberCoroutineScope()
     CompositionLocalProvider(
-        LocalDesktop provides DesktopProvider()
+        LocalDesktop provides DesktopProvider(scope)
     ) {
         MaterialTheme {
             val api: DesktopProvider = LocalDesktop.current

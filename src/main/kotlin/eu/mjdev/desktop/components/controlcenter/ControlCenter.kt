@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components.controlpanel
+package eu.mjdev.desktop.components.controlcenter
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -175,6 +176,16 @@ fun ControlCenter(
             }
             val height = api.containerSize.height
             window.setWindowBounds(x, y, width, height)
+        }
+        DisposableEffect(Unit) {
+            scope.launch {
+                pagerState.scrollToPage(0)
+            }
+            onDispose {
+                scope.launch {
+                    pagerState.scrollToPage(0)
+                }
+            }
         }
     }
 }
