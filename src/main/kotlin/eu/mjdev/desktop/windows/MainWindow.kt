@@ -1,22 +1,26 @@
 package eu.mjdev.desktop.windows
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.mouseClickable
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.input.pointer.isSecondaryPressed
+import eu.mjdev.dadb.helpers.log
 import eu.mjdev.desktop.components.background.BackgroundImage
+import eu.mjdev.desktop.components.menu.ContextMenu
+import eu.mjdev.desktop.components.menu.ContextMenuState
+import eu.mjdev.desktop.components.menu.ContextMenuState.Companion.rememberContextMenuState
 import eu.mjdev.desktop.components.slidemenu.VisibilityState
 import eu.mjdev.desktop.helpers.Palette
 import eu.mjdev.desktop.helpers.Palette.Companion.rememberPalette
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Suppress("FunctionName")
 @Preview
 @Composable
@@ -26,6 +30,8 @@ fun MainWindow(
     menuState: VisibilityState,
     api: DesktopProvider = LocalDesktop.current,
     palette: Palette = rememberPalette(api.currentUser.theme.backgroundColor),
+    onDesktopMenuShow: () -> Unit = {},
+    contextMenuState: ContextMenuState = rememberContextMenuState("item1", "item2"),
     content: @Composable () -> Unit = {}
 ) = FullScreenWindow {
     Box(
@@ -36,10 +42,14 @@ fun MainWindow(
         BackgroundImage(
             modifier = Modifier
                 .fillMaxSize()
-                .onPointerEvent(PointerEventType.Press) {
-                    panelState.hide()
-                    menuState.hide()
-                    controlCenterState.hide()
+                .mouseClickable {
+                    if (buttons.isSecondaryPressed) {
+                        contextMenuState.show()
+                    } else {
+                        panelState.hide()
+                        menuState.hide()
+                        controlCenterState.hide()
+                    }
                 },
             backgroundColor = api.currentUser.theme.backgroundColor,
             backgrounds = api.appsProvider.backgrounds + api.currentUser.config.desktopBackgroundUrls,
@@ -55,6 +65,10 @@ fun MainWindow(
 //        )
         content()
     }
+    ContextMenu(
+        contextMenuState = contextMenuState,
+        onMenuItemClick = { item -> log { "Context menu : $item" } }
+    )
 //    launchedEffect {
 //        runCatching {
 //            Notification("Hello!", "I just wanted to say hello :)").apply {

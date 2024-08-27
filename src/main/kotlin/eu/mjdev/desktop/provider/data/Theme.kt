@@ -90,7 +90,7 @@ class Theme(
             controlCenterIconSize = DpSize(32.dp, 32.dp),
             controlCenterBackgroundAlpha = 0.8f,
 
-            backgroundRotationDelay = 10000
+            backgroundRotationDelay = 60000
         )
     }
 }
