@@ -51,9 +51,12 @@ allprojects {
         // implementation(libs.dbus.java.transport.native.unixsocket)
         // javascript
         // implementation(libs.mozilla.rhino)
+        // gemini ai
+        implementation(libs.google.generativeai)
         // no log
         implementation("org.slf4j:slf4j-nop:2.0.7")
         implementation("me.xdrop:fuzzywuzzy:1.4.0")
+
 //        implementation("com.github.SmartToolFactory:Compose-Extended-Colors:1.0.0-alpha06")
 //        implementation("com.github.SmartToolFactory:Compose-Extended-Gestures:2.0.0")
 //        implementation ("androidx.compose.ui:ui-text-google-fonts:1.6.8")
