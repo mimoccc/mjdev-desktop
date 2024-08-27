@@ -12,7 +12,7 @@ packageVersion = "1.0.0"
 #
 gradle = "8.4.0"
 kotlin = "1.9.22"
-compose = "1.6.11"
+compose = "1.7.0-alpha03"
 okhttp3 = "5.0.0-alpha.12"
 materialKolor = "1.7.0"
 #compose-webview = "1.9.20"
