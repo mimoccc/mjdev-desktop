@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.icon.ShapedIcon
+import kotlin.system.exitProcess
 
 @Composable
 fun AppsBottomBar(
@@ -32,14 +33,20 @@ fun AppsBottomBar(
         ShapedIcon(
             imageVector = Icons.Filled.RestartAlt,
             iconBackgroundColor = Color.White.copy(alpha = 0.7f),
-        )
+        ) {
+            exitProcess(0)
+        }
         ShapedIcon(
             imageVector = Icons.AutoMirrored.Filled.Logout,
             iconBackgroundColor = Color.White.copy(alpha = 0.7f),
-        )
+        ) {
+            exitProcess(0)
+        }
         ShapedIcon(
             imageVector = Icons.Filled.PowerOff,
             iconBackgroundColor = Color.White.copy(alpha = 0.7f),
-        )
+        ) {
+            exitProcess(0)
+        }
     }
 }
