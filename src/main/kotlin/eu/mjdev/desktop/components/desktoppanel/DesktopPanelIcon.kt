@@ -41,7 +41,7 @@ fun DesktopPanelIcon(
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     iconState: MutableState<Boolean> = remember { mutableStateOf(false) },
     onToolTip: (item: Any?) -> Unit = {},
-    onClick: () -> Unit = { app?.start() },
+    onClick: () -> Unit,
 ) {
     val materialIcon = api.appsProvider.iconForApp(app?.name ?: icon) ?: "?".toInt()
     val background = remember(iconState.value) { if (iconState.value) iconBackgroundHover else Color.Transparent }
@@ -73,8 +73,10 @@ fun DesktopPanelIcon(
                 iconBackgroundColor = iconBackgroundColor,
                 iconSize = iconSize,
                 innerPadding = iconPadding,
-                outerPadding = iconOuterPadding,
-            )
+                outerPadding = iconOuterPadding
+            ) {
+                onClick()
+            }
         }
     }
 }

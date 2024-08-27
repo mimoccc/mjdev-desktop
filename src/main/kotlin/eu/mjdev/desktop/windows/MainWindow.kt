@@ -11,7 +11,6 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import eu.mjdev.desktop.components.background.BackgroundImage
 import eu.mjdev.desktop.components.slidemenu.VisibilityState
-import eu.mjdev.desktop.components.window.FullScreenWindow
 import eu.mjdev.desktop.helpers.Palette
 import eu.mjdev.desktop.helpers.Palette.Companion.rememberPalette
 import eu.mjdev.desktop.provider.DesktopProvider
@@ -26,7 +25,8 @@ fun MainWindow(
     panelState: VisibilityState,
     menuState: VisibilityState,
     api: DesktopProvider = LocalDesktop.current,
-    palette: Palette = rememberPalette(api.currentUser.theme.backgroundColor)
+    palette: Palette = rememberPalette(api.currentUser.theme.backgroundColor),
+    content: @Composable () -> Unit = {}
 ) = FullScreenWindow {
     Box(
         modifier = Modifier
@@ -53,6 +53,7 @@ fun MainWindow(
 //            modifier = Modifier
 //                .fillMaxSize()
 //        )
+        content()
     }
 //    launchedEffect {
 //        runCatching {

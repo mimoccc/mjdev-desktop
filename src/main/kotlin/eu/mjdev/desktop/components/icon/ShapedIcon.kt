@@ -1,7 +1,9 @@
 package eu.mjdev.desktop.components.icon
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -16,6 +18,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.extensions.Compose.size
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShapedIcon(
     imageVector: ImageVector = Icons.Filled.Apps,
@@ -27,6 +30,7 @@ fun ShapedIcon(
     iconShape: Shape = CircleShape,
     innerPadding: PaddingValues = PaddingValues(4.dp),
     outerPadding: PaddingValues = PaddingValues(2.dp),
+    onClick: () -> Unit = {}
 ) = Box(
     modifier = Modifier
         .padding(outerPadding)
@@ -34,6 +38,9 @@ fun ShapedIcon(
         .background(iconBackgroundColor, iconShape)
         .clip(iconShape)
         .padding(innerPadding)
+        .onClick {
+            onClick()
+        }
 ) {
     if (customContent != null) {
         customContent()

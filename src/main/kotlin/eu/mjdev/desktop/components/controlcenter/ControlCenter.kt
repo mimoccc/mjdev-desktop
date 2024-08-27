@@ -1,7 +1,6 @@
 package eu.mjdev.desktop.components.controlcenter
 
 import androidx.compose.animation.*
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -32,19 +31,19 @@ import eu.mjdev.desktop.components.shadow.RightShadow
 import eu.mjdev.desktop.components.slidemenu.SlidingMenu
 import eu.mjdev.desktop.components.slidemenu.VisibilityState
 import eu.mjdev.desktop.components.slidemenu.VisibilityState.Companion.rememberVisibilityState
-import eu.mjdev.desktop.components.window.TopWindow
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.extensions.Compose.setWindowBounds
 import eu.mjdev.desktop.helpers.WindowFocusState.Companion.windowFocusHandler
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.windows.TopWindow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Suppress("FunctionName")
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ControlCenter(
+    modifier: Modifier = Modifier,
     api: DesktopProvider = LocalDesktop.current,
     backgroundColor: Color = api.currentUser.theme.backgroundColor,
     backgroundAlpha: Float = api.currentUser.theme.controlCenterBackgroundAlpha,
@@ -71,6 +70,7 @@ fun ControlCenter(
     ) {
         windowFocusHandler { hasFocus -> if (!hasFocus) controlCenterState.hide() }
         SlidingMenu(
+            modifier = modifier,
             orientation = Orientation.Horizontal,
             state = controlCenterState,
             onVisibilityChange = onVisibilityChange

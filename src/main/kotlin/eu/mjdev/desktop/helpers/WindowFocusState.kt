@@ -16,12 +16,12 @@ class WindowFocusState(
     val isFocused: Boolean
         get() = focusState.value
 
-    override fun windowGainedFocus(p0: WindowEvent?) {
+    override fun windowGainedFocus(we: WindowEvent?) {
         focusState.value = true
         onFocusChange(isFocused)
     }
 
-    override fun windowLostFocus(p0: WindowEvent?) {
+    override fun windowLostFocus(we: WindowEvent?) {
         focusState.value = false
         onFocusChange(isFocused)
     }
@@ -39,7 +39,9 @@ class WindowFocusState(
         fun FrameWindowScope.windowFocusHandler(
             onFocusChange: (focused: Boolean) -> Unit = {}
         ) {
-            val state = remember(window) { WindowFocusState(window, onFocusChange) }
+            val state = remember(window) {
+                WindowFocusState(window, onFocusChange)
+            }
             DisposableEffect(Unit) {
                 state.init()
                 onDispose {

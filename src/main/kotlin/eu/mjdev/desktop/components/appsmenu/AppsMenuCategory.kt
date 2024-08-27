@@ -42,7 +42,9 @@ fun AppsMenuCategory(
         iconBackgroundColor = backgroundColor,
         outerPadding = PaddingValues(2.dp),
         innerPadding = PaddingValues(0.dp)
-    )
+    ) {
+        onClick(category)
+    }
     TextAny(
         modifier = Modifier.padding(start = 4.dp).fillMaxWidth(),
         text = category.name,

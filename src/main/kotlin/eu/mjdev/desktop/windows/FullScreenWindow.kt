@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components.window
+package eu.mjdev.desktop.windows
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter

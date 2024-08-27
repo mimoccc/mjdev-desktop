@@ -32,7 +32,7 @@ fun DesktopPanelText(
     textPadding: PaddingValues = PaddingValues(4.dp),
     buttonState: MutableState<Boolean> = remember { mutableStateOf(false) },
     onToolTip: (item: Any?) -> Unit = {},
-    onClick: () -> Unit = {},
+    onClick: () -> Unit,
 ) = Box(
     modifier = Modifier
         .wrapContentSize()

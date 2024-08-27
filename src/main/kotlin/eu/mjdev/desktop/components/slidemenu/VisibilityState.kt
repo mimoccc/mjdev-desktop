@@ -13,7 +13,11 @@ class VisibilityState(
     var isVisible: Boolean
         get() = visible.value
         set(value) {
-            visible.value = value
+            if (enabled) {
+                visible.value = value
+            } else {
+                println("Visible state disabled, can not set value.")
+            }
         }
 
     private val visible: MutableState<Boolean> = mutableStateOf(startState)

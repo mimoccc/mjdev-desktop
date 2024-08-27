@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import eu.mjdev.desktop.components.image.ImageAny
+import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.helpers.Queue.Companion.mutableQueue
 import kotlinx.coroutines.delay
@@ -26,7 +27,7 @@ fun BackgroundImage(
     switchDelay: Long = 5000L,
     fadeInDuration: Long = 3000L,
     fadeOutDuration: Long = 5000L,
-    backgroundColor: Color = Color.Transparent,
+    backgroundColor: Color = Color.SuperDarkGray,
     backgrounds: List<Any> = emptyList(),
     onChange: (bck: Any?) -> Unit = {}
 ) = Box(

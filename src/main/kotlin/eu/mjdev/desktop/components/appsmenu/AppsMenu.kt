@@ -25,7 +25,6 @@ import androidx.compose.ui.window.rememberWindowState
 import eu.mjdev.desktop.components.custom.UserAvatar
 import eu.mjdev.desktop.components.slidemenu.VisibilityState
 import eu.mjdev.desktop.components.slidemenu.VisibilityState.Companion.rememberVisibilityState
-import eu.mjdev.desktop.components.window.TopWindow
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.extensions.Compose.setWindowBounds
 import eu.mjdev.desktop.helpers.WindowFocusState.Companion.windowFocusHandler
@@ -33,6 +32,7 @@ import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.provider.data.App
 import eu.mjdev.desktop.provider.data.Category
+import eu.mjdev.desktop.windows.TopWindow
 
 @Composable
 fun AppsMenu(
@@ -44,7 +44,6 @@ fun AppsMenu(
     backgroundColor: Color = api.currentUser.theme.backgroundColor,
     menuPadding: PaddingValues = PaddingValues(2.dp), // todo
     menuState: VisibilityState = rememberVisibilityState(),
-    panelState: VisibilityState = rememberVisibilityState(),
     items: MutableState<List<Any>> = remember { mutableStateOf(api.appsProvider.appCategories) },
     onVisibilityChange: (visible: Boolean) -> Unit = {},
 ) {
@@ -52,14 +51,18 @@ fun AppsMenu(
         placement = WindowPlacement.Floating,
         position = WindowPosition.Aligned(api.currentUser.theme.panelLocation.alignment),
         size = api.containerSize.copy(
-            width = if (panelState.isVisible) appMenuMinHeight else 0.dp
+            width = if (menuState.isVisible) appMenuMinHeight else 0.dp
         ),
         isMinimized = false
     )
     TopWindow(
         windowState = windowState,
     ) {
-        windowFocusHandler { hasFocus -> if (!hasFocus) menuState.hide() }
+        windowFocusHandler { hasFocus ->
+            if (!hasFocus) {
+                menuState.hide()
+            }
+        }
         AnimatedVisibility(
             menuState.isVisible,
             modifier = modifier,
@@ -105,8 +108,8 @@ fun AppsMenu(
                                             backgroundColor = backgroundColor,
                                             iconTint = Color.White
                                         ) { category ->
-                                            items.value =
-                                                api.appsProvider.categoriesAndApps[category.name] ?: emptyList()
+                                            items.value = api.appsProvider.categoriesAndApps[category.name]
+                                                ?: emptyList()
                                         }
                                     }
                                 }
@@ -141,7 +144,7 @@ fun AppsMenu(
                     true -> (api.containerSize.height - appMenuMinHeight)
                     else -> api.containerSize.height
                 }
-                val width = api.containerSize.width
+                val width = appMenuExpandedWidth
                 val height = when (isVisible) {
                     true -> appMenuMinHeight
                     else -> 0.dp

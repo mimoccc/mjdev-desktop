@@ -31,6 +31,7 @@ fun MaterialIcon(
     contentDescription: String = "",
     outerPadding: PaddingValues = PaddingValues(2.dp),
     iconShape: Shape = CircleShape,
+    onClick: () -> Unit
 ) = ShapedIcon(
     iconSize = iconSize,
     iconColor = iconColor,
@@ -51,5 +52,6 @@ fun MaterialIcon(
             fontFamily = iconicFont.fontFile.fontFamily,
             textAlign = TextAlign.Center
         )
-    }
+    },
+    onClick = onClick
 )

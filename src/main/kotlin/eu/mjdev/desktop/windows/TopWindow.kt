@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components.window
+package eu.mjdev.desktop.windows
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
@@ -10,8 +10,6 @@ import androidx.compose.ui.window.WindowState
 @Composable
 fun TopWindow(
     resizable: Boolean = false,
-    undecorated: Boolean = true,
-    visible: Boolean = true,
     title: String = "",
     icon: Painter? = null,
     focusable: Boolean = true,
@@ -23,9 +21,9 @@ fun TopWindow(
 ) = Window(
     state = windowState,
     resizable = resizable,
-    undecorated = undecorated,
+    undecorated = true,
     onCloseRequest = onCloseRequest,
-    visible = visible,
+    visible = true,
     transparent = true,
     title = title,
     icon = icon,

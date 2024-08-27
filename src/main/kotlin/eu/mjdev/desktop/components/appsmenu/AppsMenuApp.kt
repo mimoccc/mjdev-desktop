@@ -43,7 +43,9 @@ fun AppsMenuApp(
         iconBackgroundColor = backgroundColor,
         outerPadding = PaddingValues(2.dp),
         innerPadding = PaddingValues(0.dp)
-    )
+    ) {
+        onClick(app)
+    }
     TextAny(
         modifier = Modifier.padding(start = 4.dp).fillMaxWidth(),
         text = app?.name ?: "",

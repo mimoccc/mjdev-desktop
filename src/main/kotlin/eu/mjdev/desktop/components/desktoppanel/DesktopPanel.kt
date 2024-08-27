@@ -30,7 +30,6 @@ import eu.mjdev.desktop.components.shadow.TopShadow
 import eu.mjdev.desktop.components.slidemenu.SlidingMenu
 import eu.mjdev.desktop.components.slidemenu.VisibilityState
 import eu.mjdev.desktop.components.slidemenu.VisibilityState.Companion.rememberVisibilityState
-import eu.mjdev.desktop.components.window.TopWindow
 import eu.mjdev.desktop.extensions.Compose.height
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.extensions.Compose.setWindowBounds
@@ -38,11 +37,13 @@ import eu.mjdev.desktop.helpers.WindowFocusState.Companion.windowFocusHandler
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.provider.data.App
+import eu.mjdev.desktop.windows.TopWindow
 
 @OptIn(ExperimentalFoundationApi::class)
 @Suppress("FunctionName")
 @Composable
 fun DesktopPanel(
+    modifier: Modifier = Modifier,
     api: DesktopProvider = LocalDesktop.current,
     backgroundColor: Color = api.currentUser.theme.backgroundColor,
     shadowColor: Color = backgroundColor,
@@ -56,7 +57,7 @@ fun DesktopPanel(
     showMenuIcon: Boolean = true,
     panelState: VisibilityState = rememberVisibilityState(),
     onVisibilityChange: (visible: Boolean) -> Unit = {},
-    onMenuIconClicked: () -> Unit = {},
+    onMenuIconClicked: () -> Unit,
 ) {
     val panelSize = api.containerSize.copy(height = iconSize.height + iconPadding.height + iconOuterPadding.height)
     val windowState: WindowState = rememberWindowState(
@@ -72,6 +73,7 @@ fun DesktopPanel(
     ) {
         windowFocusHandler { hasFocus -> if (!hasFocus) panelState.hide() }
         SlidingMenu(
+            modifier = modifier,
             orientation = Orientation.Vertical,
             state = panelState,
             onVisibilityChange = onVisibilityChange
@@ -158,14 +160,20 @@ fun DesktopPanel(
                                     iconSize = iconSize,
                                     iconPadding = iconPadding,
                                     iconOuterPadding = iconOuterPadding,
-                                    onToolTip = onToolTip
+                                    onToolTip = onToolTip,
+                                    onClick = {
+                                        app.start()
+                                    }
                                 )
                             }
                             item {
                                 DesktopPanelText(
                                     text = api.appsProvider.currentLocale.country,
                                     backgroundHover = Color.White.copy(alpha = 0.3f),
-                                    onToolTip = onToolTip
+                                    onToolTip = onToolTip,
+                                    onClick = {
+                                        // todo
+                                    }
                                 )
                             }
                         }

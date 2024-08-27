@@ -5,6 +5,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import eu.mjdev.dadb.AdbDiscover.Companion.adbDevicesHandler
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.pages.*
 import eu.mjdev.desktop.provider.data.User
@@ -41,6 +42,13 @@ class DesktopProvider(
         scriptManager.getEngineByName("JavaScript").apply {
             // todo
         }
+    }
+
+    val adbHandler = adbDevicesHandler(
+        coroutineScope = scope
+    ) { device ->
+        println("Device discovered : $device")
+        // when device connected
     }
 
     val containerSize: DpSize by lazy {
