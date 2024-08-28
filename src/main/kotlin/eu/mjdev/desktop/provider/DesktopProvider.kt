@@ -9,13 +9,11 @@ import eu.mjdev.dadb.AdbDiscover.Companion.adbDevicesHandler
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.pages.*
 import eu.mjdev.desktop.provider.data.User
+import eu.mjdev.desktop.provider.providers.AppsProvider
 import kotlinx.coroutines.CoroutineScope
 import java.awt.Toolkit
-import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
-import java.io.InputStreamReader
-import java.util.*
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
@@ -85,25 +83,25 @@ class DesktopProvider(
         }.start()
     }
 
-    fun runCommandForOutput(vararg cmd: String): String? = runCatching {
-        val sj = StringJoiner(System.lineSeparator())
-        var result = ""
-        try {
-            val p = ProcessBuilder(*cmd).start()
-            BufferedReader(InputStreamReader(p.inputStream))
-                .lines()
-                .iterator()
-                .forEachRemaining { newElement: String? ->
-                    sj.add(newElement)
-                }
-            result = sj.toString()
-            p.waitFor()
-            p.destroy()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        result
-    }.getOrNull()
+//    fun runCommandForOutput(vararg cmd: String): String? = runCatching {
+//        val sj = StringJoiner(System.lineSeparator())
+//        var result = ""
+//        try {
+//            val p = ProcessBuilder(*cmd).start()
+//            BufferedReader(InputStreamReader(p.inputStream))
+//                .lines()
+//                .iterator()
+//                .forEachRemaining { newElement: String? ->
+//                    sj.add(newElement)
+//                }
+//            result = sj.toString()
+//            p.waitFor()
+//            p.destroy()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//        result
+//    }.getOrNull()
 
     companion object {
         val LocalDesktop = compositionLocalOf {

@@ -10,10 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -78,7 +75,7 @@ fun DesktopPanel(
             state = panelState,
             onVisibilityChange = onVisibilityChange
         ) { isVisible ->
-            val favoriteApps = api.appsProvider.favoriteApps.collectAsState(emptyList())
+            val favoriteApps: State<List<App>> = api.appsProvider.favoriteApps.collectAsState(emptyList())
             val tooltipData: MutableState<Any?> = mutableStateOf(null)
             val onToolTip: (item: Any?) -> Unit = { item -> tooltipData.value = item }
             if (!isVisible) {

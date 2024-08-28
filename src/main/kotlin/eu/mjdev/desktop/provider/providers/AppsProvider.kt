@@ -1,9 +1,13 @@
-package eu.mjdev.desktop.provider
+package eu.mjdev.desktop.provider.providers
 
-import com.google.gson.Gson
+import eu.mjdev.desktop.extensions.Locale.toLocale
+import eu.mjdev.desktop.helpers.Command
+import eu.mjdev.desktop.helpers.Command.Companion.toList
+import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.data.App
 import eu.mjdev.desktop.provider.data.Category
 import eu.mjdev.desktop.provider.data.DesktopFile
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import java.io.File
@@ -119,21 +123,18 @@ class AppsProvider(
         }
 
     @Suppress("UNNECESSARY_SAFE_CALL")
-    val favoriteApps
+    val favoriteApps: Flow<List<App>>
         get() = flow {
-            val desktopFiles = allAppsDesktopFiles
-            desktopProvider.runCommandForOutput(
+            Command(
                 "gsettings",
                 "get",
                 "org.gnome.shell",
                 "favorite-apps"
-            ).let { json ->
-                Gson().fromJson(json ?: "[]", List::class.java)
-            }.mapNotNull { appName ->
-                val deskFile = desktopFiles.filter { deskFile ->
-                    deskFile?.file?.name?.contains(appName.toString()) == true
+            ).execute()?.toList<String>()?.map { appName ->
+                val deskFile = allAppsDesktopFiles.filter { deskFile ->
+                    deskFile?.file?.name?.contains(appName) == true
                 }.map { deskFile ->
-                    Pair(FuzzySearch.ratio(appName.toString(), deskFile.file.name), deskFile)
+                    Pair(FuzzySearch.ratio(appName, deskFile.file.name), deskFile)
                 }.maxByOrNull {
                     it.first
                 }?.second
@@ -144,26 +145,8 @@ class AppsProvider(
                     null
                 }
             }.also { list ->
-                emit(list)
+                emit(list?.filterNotNull() ?: emptyList())
             }
         }
 
-    fun iconForApp(
-        name: String?,
-    ): Int? = runCatching {
-        if (name != null) {
-            desktopProvider.currentUser.theme.iconSet.codePointsFile.icons.map { icon ->
-                Pair(FuzzySearch.ratio(name, icon.key), icon)
-            }.maxByOrNull { it.first }?.second?.value
-        } else null
-    }.getOrNull()
-
-}
-
-private fun String.toLocale() = this.split("_").let { lc ->
-    when (lc.size) {
-        2 -> Locale(lc[0], lc[1])
-        1 -> Locale(lc[0])
-        else -> Locale.ENGLISH
-    }
 }

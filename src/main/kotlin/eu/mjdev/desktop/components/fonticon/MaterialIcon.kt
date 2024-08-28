@@ -49,7 +49,7 @@ fun MaterialIcon(
                 min = 16.sp,
                 max = (iconSize.height - (innerPadding.width + outerPadding.width)).sp,
             ),
-            fontFamily = iconicFont.fontFile.fontFamily,
+            fontFamily = iconicFont.fontFamily,
             textAlign = TextAlign.Center
         )
     },

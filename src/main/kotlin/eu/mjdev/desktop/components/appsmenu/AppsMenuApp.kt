@@ -35,7 +35,7 @@ fun AppsMenuApp(
     modifier = modifier.clickable { onClick(app) },
     verticalAlignment = Alignment.CenterVertically,
 ) {
-    val materialIcon = api.appsProvider.iconForApp(app?.name ?: icon) ?: "?".toInt()
+    val materialIcon = api.currentUser.theme.iconSet.iconForName(app?.name ?: icon) ?: "?".toInt()
     MaterialIcon(
         iconId = materialIcon,
         iconSize = iconSize,

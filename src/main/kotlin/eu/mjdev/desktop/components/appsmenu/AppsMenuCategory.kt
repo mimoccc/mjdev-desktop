@@ -34,7 +34,7 @@ fun AppsMenuCategory(
     modifier = modifier.clickable { onClick(category) },
     verticalAlignment = Alignment.CenterVertically
 ) {
-    val materialIcon = api.appsProvider.iconForApp(category.name) ?: "?".toInt()
+    val materialIcon = api.currentUser.theme.iconSet.iconForName(category.name) ?: "?".toInt()
     MaterialIcon(
         iconId = materialIcon,
         iconSize = iconSize,
