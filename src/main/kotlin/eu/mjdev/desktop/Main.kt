@@ -30,7 +30,14 @@ fun main() = application(
                 panelState = panelState,
                 controlCenterState = controlCenterState,
                 menuState = menuState
-            )
+            ) {
+//                Dialog(
+//                    onDismissRequest = {},
+//                    properties = DialogProperties()
+//                ) {
+//                    Text("dialog content")
+//                }
+            }
             DesktopPanel(
                 panelState = panelState,
                 onMenuIconClicked = {
