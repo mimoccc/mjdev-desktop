@@ -52,7 +52,8 @@ fun main() = application(
             AppsMenu(
                 // todo
                 bottomY = 64.dp,
-                menuState = menuState
+                menuState = menuState,
+                panelState = panelState
             )
             ControlCenter(
                 controlCenterState = controlCenterState

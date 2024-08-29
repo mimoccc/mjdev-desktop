@@ -42,6 +42,7 @@ fun AppsMenu(
     backgroundColor: Color = api.currentUser.theme.backgroundColor,
     menuPadding: PaddingValues = PaddingValues(2.dp), // todo
     menuState: VisibilityState = rememberVisibilityState(),
+    panelState: VisibilityState = rememberVisibilityState(),
     items: MutableState<List<Any>> = remember { mutableStateOf(api.appsProvider.appCategories) },
     enter: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exit: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
@@ -132,6 +133,9 @@ fun AppsMenu(
                     .align(Alignment.BottomStart)
                     .background(backgroundColor)
             )
+        }
+        launchedEffect(panelState.isVisible) { isVisible ->
+            if (!isVisible) menuState.isVisible = false
         }
         launchedEffect(menuState.isVisible) { isVisible ->
             if (!isVisible) {
