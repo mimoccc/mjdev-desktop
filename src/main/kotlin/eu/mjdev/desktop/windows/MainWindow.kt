@@ -67,7 +67,9 @@ fun MainWindow(
     }
     ContextMenu(
         contextMenuState = contextMenuState,
-        onMenuItemClick = { item -> log { "Context menu : $item" } }
+        onMenuItemClick = { item -> log { "Context menu : $item" } },
+        onShow = { onDesktopMenuShow() },
+        onHide = {}
     )
 //    launchedEffect {
 //        runCatching {

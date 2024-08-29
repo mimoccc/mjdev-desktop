@@ -10,6 +10,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
+import eu.mjdev.dadb.helpers.log
 import eu.mjdev.desktop.components.slidemenu.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 
@@ -30,6 +31,7 @@ fun SlidingMenu(
                 .fillMaxHeight()
                 .wrapContentWidth()
                 .onPointerEvent(PointerEventType.Enter) {
+                    log { "Showing sliding menu." }
                     state.show()
                 }
         ) {
@@ -50,9 +52,4 @@ fun SlidingMenu(
     launchedEffect(state.isVisible) {
         onVisibilityChange(state.isVisible)
     }
-//    launchedEffect(windowFocusState.isFocused) {
-//        if (!windowFocusState.isFocused) {
-//            state.hide()
-//        }
-//    }
 }

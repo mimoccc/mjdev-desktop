@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=Mjdev Desktop
+Name=Mjdev Desktop - X11
 Comment=This session logs you into Mjdev Desktop
-Exec=gnome-session --session mjdev-desktop --debug
+Exec=dbus-run-session mutter mjdev-desktop
 TryExec=gnome-session
 Type=Application

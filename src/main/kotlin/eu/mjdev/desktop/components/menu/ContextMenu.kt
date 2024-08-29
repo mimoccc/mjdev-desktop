@@ -1,6 +1,7 @@
 package eu.mjdev.desktop.components.menu
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CursorDropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
@@ -10,13 +11,17 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 
+// todo
 @Composable
 fun ContextMenu(
     backgroundColor: Color = Color.SuperDarkGray,
     textColor: Color = Color.White,
     contextMenuState: ContextMenuState,
+    onShow: () -> Unit = {},
+    onHide: () -> Unit = {},
     onMenuItemClick: (item: String) -> Unit = {}
 ) = listOf(
     contextMenuState.menuRenderCount,
@@ -25,7 +30,7 @@ fun ContextMenu(
     val isActive = renderId == contextMenuState.menuRenderCount
     key(renderId) {
         CursorDropdownMenu(
-            modifier = Modifier.background(backgroundColor),
+            modifier = Modifier.background(color = backgroundColor, shape = RoundedCornerShape(16.dp)),
             expanded = contextMenuState.menuExpanded.value && isActive,
             onDismissRequest = {
                 if (isActive) {

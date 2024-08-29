@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
-import kotlinx.coroutines.CoroutineScope
 
 @Suppress("MemberVisibilityCanBePrivate")
 class User(
@@ -25,13 +24,11 @@ class User(
 
     companion object {
         // todo
-        fun load(
-            scope: CoroutineScope?
-        ) = User(
+        fun load() = User(
             name = null,
             picture = Icons.Filled.AccountCircle,
             config = DesktopConfig.Default,
-            theme = Theme.Default(scope)
+            theme = Theme.Default
         )
     }
 }

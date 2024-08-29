@@ -5,22 +5,28 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
+import dev.shreyaspatil.ai.client.generativeai.type.content
 import eu.mjdev.dadb.AdbDiscover.Companion.adbDevicesHandler
+import eu.mjdev.dadb.helpers.log
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.pages.*
 import eu.mjdev.desktop.provider.data.User
 import eu.mjdev.desktop.provider.providers.AppsProvider
 import kotlinx.coroutines.CoroutineScope
+import java.awt.GraphicsDevice
+import java.awt.GraphicsEnvironment
 import java.awt.Toolkit
 import java.io.File
 import java.io.FileReader
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
-@Suppress("unused")
+@Suppress("unused", "MemberVisibilityCanBePrivate", "CanBeParameter")
 class DesktopProvider(
     private val scope: CoroutineScope? = null,
-    val currentUser: User = User.load(scope), // todo
+    val currentUser: User = User.load(),
+    val geminiApiKey: String = "AIzaSyAGhYvYsTc_7nf4bv7HAQH6q8Pb7mbCKoQ", // todo
 ) {
     private val _currentUser: MutableState<User> = mutableStateOf(currentUser)
 
@@ -60,9 +66,31 @@ class DesktopProvider(
     val controlCenterPages get() = _controlCenterPages.value
     val appsProvider by lazy { AppsProvider(this) }
 
+    val graphicsEnvironment: GraphicsEnvironment
+        get() = GraphicsEnvironment.getLocalGraphicsEnvironment()
+    val graphicsDevice: GraphicsDevice
+        get() = graphicsEnvironment.defaultScreenDevice
+    val isTransparencySupported
+        get() = graphicsDevice.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.TRANSLUCENT)
+
+    val generativeModel: GenerativeModel by lazy {
+        GenerativeModel(
+            modelName = "gemini-1.5-pro-latest",
+            apiKey = geminiApiKey
+        )
+    }
+
     init {
         currentUser.theme.controlCenterExpandedWidth = containerSize.width.div(4)
     }
+
+    suspend fun askGemini(question: String) = runCatching {
+        generativeModel.generateContent(content {
+            text(question)
+        }).text
+    }.onFailure { e ->
+        log { e.message ?: "" }
+    }.getOrNull()
 
     fun runScript(script: String): Any =
         engine.eval(script)

@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,21 +21,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.WindowPlacement
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.WindowState
-import androidx.compose.ui.window.rememberWindowState
 import eu.mjdev.desktop.components.shadow.LeftShadow
 import eu.mjdev.desktop.components.shadow.RightShadow
 import eu.mjdev.desktop.components.slidemenu.SlidingMenu
 import eu.mjdev.desktop.components.slidemenu.VisibilityState
 import eu.mjdev.desktop.components.slidemenu.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
-import eu.mjdev.desktop.extensions.Compose.setWindowBounds
-import eu.mjdev.desktop.helpers.WindowFocusState.Companion.windowFocusHandler
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.windows.TopWindow
+import eu.mjdev.desktop.windows.TopWindowState
+import eu.mjdev.desktop.windows.TopWindowState.Companion.rememberTopWindowState
+import eu.mjdev.desktop.windows.WindowBounds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -57,102 +53,111 @@ fun ControlCenter(
     pagerState: PagerState = rememberPagerState(pageCount = { pages.size }, initialPage = 0),
     controlCenterState: VisibilityState = rememberVisibilityState(),
     scope: CoroutineScope = rememberCoroutineScope(),
-    onVisibilityChange: (visible: Boolean) -> Unit = {},
-) {
-    val windowState: WindowState = rememberWindowState(
-        placement = WindowPlacement.Floating,
-        position = WindowPosition.Aligned(api.currentUser.theme.controlCenterLocation.alignment),
+    enter: EnterTransition = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+    exit: ExitTransition = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
+    windowState: TopWindowState = rememberTopWindowState(
+        position = api.currentUser.theme.controlCenterLocation.alignment,
         size = api.containerSize.copy(width = controlCenterDividerWidth),
-        isMinimized = false
-    )
-    TopWindow(
-        windowState = windowState,
-    ) {
-        windowFocusHandler { hasFocus -> if (!hasFocus) controlCenterState.hide() }
-        SlidingMenu(
-            modifier = modifier,
-            orientation = Orientation.Horizontal,
-            state = controlCenterState,
-            onVisibilityChange = onVisibilityChange
-        ) { isVisible ->
-            if (!isVisible) {
-                Divider(
-                    modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
-                    color = Color.Transparent,
-                    thickness = controlCenterDividerWidth
+        enter = enter,
+        exit = exit,
+        minSize = DpSize(controlCenterDividerWidth, api.containerSize.height),
+        computeBounds = { isVisible ->
+            val containerHeight = api.containerSize.height
+            val containerWidth = api.containerSize.width
+            when {
+                isVisible -> WindowBounds(
+                    containerWidth - controlCenterExpandedWidth,
+                    0.dp,
+                    controlCenterExpandedWidth,
+                    containerHeight
+                )
+
+                else -> WindowBounds(
+                    containerWidth - controlCenterDividerWidth,
+                    0.dp,
+                    controlCenterDividerWidth,
+                    containerHeight
                 )
             }
-            AnimatedVisibility(
-                isVisible,
-                enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-                exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
+        }
+    ),
+    onVisibilityChange: (visible: Boolean) -> Unit = {},
+) = TopWindow(
+    windowState = windowState,
+    onFocusChange = { hasFocus -> if (!hasFocus) controlCenterState.hide() }
+) {
+    SlidingMenu(
+        modifier = modifier,
+        orientation = Orientation.Horizontal,
+        state = controlCenterState,
+        onVisibilityChange = onVisibilityChange
+    ) { isVisible ->
+        if (!isVisible) {
+            Divider(
+                modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
+                color = Color.Transparent,
+                thickness = controlCenterDividerWidth
+            )
+        }
+        LeftShadow(
+            modifier = Modifier.fillMaxHeight().wrapContentSize(),
+            color = shadowColor,
+            contentBackgroundColor = backgroundColor.copy(alpha = backgroundAlpha)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxHeight().wrapContentSize(),
             ) {
-                LeftShadow(
-                    modifier = Modifier.fillMaxHeight().wrapContentSize(),
-                    color = shadowColor,
-                    contentBackgroundColor = backgroundColor.copy(alpha = backgroundAlpha)
+                Divider(
+                    modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
+                    color = controlCenterDividerColor,
+                    thickness = controlCenterDividerWidth
+                )
+                Box(
+                    contentAlignment = Alignment.TopEnd
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxHeight().wrapContentSize(),
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .background(backgroundColor)
+                            .padding(8.dp),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.Start
                     ) {
-                        Divider(
-                            modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
-                            color = controlCenterDividerColor,
-                            thickness = controlCenterDividerWidth
-                        )
-                        Box(
-                            contentAlignment = Alignment.TopEnd
-                        ) {
-                            LazyColumn(
+                        itemsIndexed(pages) { idx, page ->
+                            val isSelected = (pagerState.currentPage == idx)
+                            Icon(
                                 modifier = Modifier
-                                    .fillMaxHeight()
-                                    .background(backgroundColor)
-                                    .padding(8.dp),
-                                verticalArrangement = Arrangement.Top,
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                itemsIndexed(pages) { idx, page ->
-                                    val isSelected = (pagerState.currentPage == idx)
-                                    Icon(
-                                        modifier = Modifier
-                                            .padding(vertical = 8.dp)
-                                            .size(controlCenterIconSize)
-                                            .background(
-                                                color = if (isSelected) Color.White.copy(alpha = 0.4f) else Color.Transparent,
-                                                shape = RoundedCornerShape(8.dp)
-                                            )
-                                            .clickable {
-                                                scope.launch {
-                                                    pagerState.scrollToPage(idx)
-                                                }
-                                            },
-                                        imageVector = page.icon,
-                                        contentDescription = "",
-                                        tint = if (isSelected) backgroundColor else controlCenterIconColor
+                                    .padding(vertical = 8.dp)
+                                    .size(controlCenterIconSize)
+                                    .background(
+                                        color = if (isSelected) Color.White.copy(alpha = 0.4f) else Color.Transparent,
+                                        shape = RoundedCornerShape(8.dp)
                                     )
-                                }
-                            }
-                            RightShadow(
-                                modifier = Modifier.padding(
-                                    end = controlCenterIconSize.width + 8.dp
-                                ).fillMaxHeight().wrapContentSize(),
-                                color = Color.Black,
-                                alpha = 0.3f,
-                                contentBackgroundColor = Color.Transparent
-                            ) {
-                                Row {
-                                    HorizontalPager(
-                                        modifier = Modifier.width(controlCenterExpandedWidth),
-                                        state = pagerState
-                                    ) { page ->
-                                        pages[page].content(backgroundColor)
-                                    }
-                                    Divider(
-                                        modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
-                                        color = controlCenterDividerColor,
-                                        thickness = controlCenterDividerWidth
-                                    )
-                                }
+                                    .clickable {
+                                        scope.launch {
+                                            pagerState.scrollToPage(idx)
+                                        }
+                                    },
+                                imageVector = page.icon,
+                                contentDescription = "",
+                                tint = if (isSelected) backgroundColor else controlCenterIconColor
+                            )
+                        }
+                    }
+                    RightShadow(
+                        modifier = Modifier.padding(
+                            end = controlCenterIconSize.width + 8.dp
+                        ).fillMaxHeight().wrapContentSize(),
+                        color = Color.Black,
+                        alpha = 0.3f,
+                        contentBackgroundColor = Color.Transparent
+                    ) {
+                        Row {
+                            HorizontalPager(
+                                modifier = Modifier.width(controlCenterExpandedWidth),
+                                state = pagerState
+                            ) { page ->
+                                pages[page].content(backgroundColor)
                             }
                             Divider(
                                 modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
@@ -161,31 +166,14 @@ fun ControlCenter(
                             )
                         }
                     }
-                }
-            }
-        }
-        launchedEffect(controlCenterState.isVisible) { isVisible ->
-            val x = when (isVisible) {
-                true -> (api.containerSize.width - controlCenterExpandedWidth)
-                else -> (api.containerSize.width - controlCenterDividerWidth)
-            }
-            val y = 0.dp
-            val width = when (isVisible) {
-                true -> controlCenterExpandedWidth
-                else -> controlCenterDividerWidth
-            }
-            val height = api.containerSize.height
-            window.setWindowBounds(x, y, width, height)
-        }
-        DisposableEffect(Unit) {
-            scope.launch {
-                pagerState.scrollToPage(0)
-            }
-            onDispose {
-                scope.launch {
-                    pagerState.scrollToPage(0)
+                    Divider(
+                        modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
+                        color = controlCenterDividerColor,
+                        thickness = controlCenterDividerWidth
+                    )
                 }
             }
         }
     }
+    launchedEffect(controlCenterState.isVisible) { isVisible -> windowState.isVisible = isVisible }
 }

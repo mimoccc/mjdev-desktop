@@ -22,10 +22,14 @@ fun main() = application(
         LocalDesktop provides DesktopProvider(scope)
     ) {
         MaterialTheme {
-            val api: DesktopProvider = LocalDesktop.current
             val controlCenterState = rememberVisibilityState()
-            val panelState = rememberVisibilityState(true, api.currentUser.config.autoHidePanel)
+            val panelState = rememberVisibilityState()
             val menuState = rememberVisibilityState()
+//            scope.launch {
+//                api.askGemini("How are you today?").let {
+//                    log { "Gemini answer: $it" }
+//                }
+//            }
             MainWindow(
                 panelState = panelState,
                 controlCenterState = controlCenterState,
@@ -46,11 +50,9 @@ fun main() = application(
                 }
             )
             AppsMenu(
+                // todo
                 bottomY = 64.dp,
-                menuState = menuState,
-                onVisibilityChange = { visible ->
-                    log { "Menu visible : $visible" }
-                }
+                menuState = menuState
             )
             ControlCenter(
                 controlCenterState = controlCenterState

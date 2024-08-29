@@ -8,12 +8,10 @@ import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.fonticon.MaterialIconFont
 import eu.mjdev.desktop.components.fonticon.MaterialSymbolsSharp
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
-import kotlinx.coroutines.CoroutineScope
 
 // todo all customizable
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class Theme(
-    val scope: CoroutineScope?,
     backgroundColor: Color,
     backgroundRotationDelay: Long,
 
@@ -69,11 +67,7 @@ class Theme(
     val backgroundRotationDelay get() = backgroundRotationDelayState.value
 
     companion object {
-        @Suppress("FunctionName")
-        fun Default(
-            scope: CoroutineScope?
-        ) = Theme(
-            scope = scope,
+        val Default = Theme(
             iconSet = MaterialSymbolsSharp,
 
             backgroundColor = Color.SuperDarkGray,

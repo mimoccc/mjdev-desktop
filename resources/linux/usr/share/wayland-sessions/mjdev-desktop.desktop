@@ -1,6 +1,7 @@
 [Desktop Entry]
-Name=Mjdev Desktop
+Name=Mjdev Desktop - Wayland
 Comment=This session logs you into Mjdev Desktop
-Exec=gnome-session --session mjdev-desktop --debug
+Exec=dbus-run-session mutter --wayland mjdev-desktop
 TryExec=gnome-session
 Type=Application
+

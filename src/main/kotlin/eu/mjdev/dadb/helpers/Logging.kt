@@ -1,6 +1,7 @@
 package eu.mjdev.dadb.helpers
 
-private val ENABLED = "true" == System.getenv("DADB_LOGGING")
+// todo
+private val ENABLED = true
 
 internal fun log(block: () -> String) {
     if (ENABLED) {

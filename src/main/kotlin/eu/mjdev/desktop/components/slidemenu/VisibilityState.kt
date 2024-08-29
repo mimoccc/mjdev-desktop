@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 class VisibilityState(
     private val scope: CoroutineScope,
     private val startState: Boolean = false,
-    private val enabled: Boolean = true
+    var enabled: Boolean = true
 ) {
     var isVisible: Boolean
         get() = visible.value
