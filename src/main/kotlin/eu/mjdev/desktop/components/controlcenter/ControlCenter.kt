@@ -84,7 +84,9 @@ fun ControlCenter(
     onVisibilityChange: (visible: Boolean) -> Unit = {},
 ) = TopWindow(
     windowState = windowState,
-    onFocusChange = { hasFocus -> if (!hasFocus) controlCenterState.hide() }
+    onFocusChange = { hasFocus ->
+        if (!hasFocus) controlCenterState.hide()
+    }
 ) {
     SlidingMenu(
         modifier = modifier,

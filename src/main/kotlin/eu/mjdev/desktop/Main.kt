@@ -5,7 +5,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
-import eu.mjdev.dadb.helpers.log
 import eu.mjdev.desktop.components.appsmenu.AppsMenu
 import eu.mjdev.desktop.components.controlcenter.ControlCenter
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanel
@@ -45,7 +44,6 @@ fun main() = application(
             DesktopPanel(
                 panelState = panelState,
                 onMenuIconClicked = {
-                    log { "menu icon clicked" }
                     menuState.toggle()
                 }
             )

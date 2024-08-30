@@ -27,33 +27,31 @@ fun TopWindow(
     onCloseRequest: () -> Unit = {},
     onFocusChange: (hasFocus: Boolean) -> Unit = {},
     content: @Composable FrameWindowScope.() -> Unit
-) {
-    Window(
-        state = windowState,
-        resizable = resizable,
-        undecorated = true,
-        onCloseRequest = onCloseRequest,
-        visible = true,
-        transparent = true,
-        title = title,
-        icon = icon,
-        focusable = focusable,
-        alwaysOnTop = true,
-        onPreviewKeyEvent = onPreviewKeyEvent,
-        onKeyEvent = onKeyEvent,
-        content = {
-            windowFocusHandler { hasFocus -> onFocusChange(hasFocus) }
-            windowState.window = window
-            AnimatedVisibility(
-                visible = windowState.isVisible,
-                enter = windowState.enter,
-                exit = windowState.exit,
-            ) {
-                content()
-            }
+) = Window(
+    state = windowState,
+    resizable = resizable,
+    undecorated = true,
+    onCloseRequest = onCloseRequest,
+    visible = true,
+    transparent = true,
+    title = title,
+    icon = icon,
+    focusable = focusable,
+    alwaysOnTop = true,
+    onPreviewKeyEvent = onPreviewKeyEvent,
+    onKeyEvent = onKeyEvent,
+    content = {
+        windowFocusHandler { hasFocus -> onFocusChange(hasFocus) }
+        windowState.window = window
+        AnimatedVisibility(
+            visible = windowState.isVisible,
+            enter = windowState.enter,
+            exit = windowState.exit,
+        ) {
+            content()
         }
-    )
-}
+    }
+)
 
 data class WindowBounds(
     val x: Dp = 0.dp,

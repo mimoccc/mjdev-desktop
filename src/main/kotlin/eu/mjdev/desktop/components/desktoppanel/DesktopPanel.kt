@@ -75,7 +75,9 @@ fun DesktopPanel(
     onMenuIconClicked: () -> Unit,
 ) = TopWindow(
     windowState = windowState,
-    onFocusChange = { hasFocus -> if (!hasFocus) panelState.hide() }
+    onFocusChange = { hasFocus ->
+        if (!hasFocus) panelState.hide()
+    }
 ) {
     SlidingMenu(
         modifier = modifier,

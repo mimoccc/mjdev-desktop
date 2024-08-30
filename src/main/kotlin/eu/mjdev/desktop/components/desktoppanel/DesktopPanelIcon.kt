@@ -73,10 +73,9 @@ fun DesktopPanelIcon(
                 iconBackgroundColor = iconBackgroundColor,
                 iconSize = iconSize,
                 innerPadding = iconPadding,
-                outerPadding = iconOuterPadding
-            ) {
-                onClick()
-            }
+                outerPadding = iconOuterPadding,
+                onClick = onClick
+            )
         }
     }
 }

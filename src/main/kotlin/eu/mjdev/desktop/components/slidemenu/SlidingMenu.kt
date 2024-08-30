@@ -10,7 +10,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import eu.mjdev.dadb.helpers.log
 import eu.mjdev.desktop.components.slidemenu.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 
@@ -22,6 +21,12 @@ fun SlidingMenu(
     modifier: Modifier = Modifier,
     state: VisibilityState = rememberVisibilityState(),
     orientation: Orientation = Horizontal,
+    onPointerEnter: () -> Unit = {
+        state.show()
+    },
+    onPointerLeave: () -> Unit = {
+//        state.hide()
+    },
     onVisibilityChange: (visible: Boolean) -> Unit = {},
     content: @Composable (isVisible: Boolean) -> Unit
 ) {
@@ -30,10 +35,8 @@ fun SlidingMenu(
             modifier = modifier
                 .fillMaxHeight()
                 .wrapContentWidth()
-                .onPointerEvent(PointerEventType.Enter) {
-                    log { "Showing sliding menu." }
-                    state.show()
-                }
+                .onPointerEvent(PointerEventType.Enter) { onPointerEnter() }
+                .onPointerEvent(PointerEventType.Exit) { onPointerLeave() }
         ) {
             content(state.isVisible)
         }

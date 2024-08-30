@@ -46,8 +46,8 @@ fun MaterialIcon(
             modifier = Modifier.align(Alignment.Center),
             color = iconColor,
             fontSizeRange = FontSizeRange(
-                min = 16.sp,
-                max = (iconSize.height - (innerPadding.width + outerPadding.width)).sp,
+                min = 24.sp,
+                max = (iconSize.width + innerPadding.width + outerPadding.width).sp,
             ),
             fontFamily = iconicFont.fontFamily,
             textAlign = TextAlign.Center

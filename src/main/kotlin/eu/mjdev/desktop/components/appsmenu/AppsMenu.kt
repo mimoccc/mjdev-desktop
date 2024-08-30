@@ -64,7 +64,9 @@ fun AppsMenu(
     )
 ) = TopWindow(
     windowState = windowState,
-    onFocusChange = { hasFocus -> if (!hasFocus) menuState.hide() }
+    onFocusChange = { hasFocus ->
+        if (!hasFocus) menuState.hide()
+    }
 ) {
     Box(
         modifier = modifier

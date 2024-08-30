@@ -1,11 +1,16 @@
 package eu.mjdev.desktop.extensions
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
@@ -31,6 +36,19 @@ object Modifier {
         then(onFalse(Modifier))
     } else {
         this
+    }
+
+    fun Modifier.scaleOnPress(
+        interactionSource: InteractionSource,
+        pressScale: Float = 0.95f,
+        leaveScale: Float = 1f
+    ) = composed {
+        val isPressed by interactionSource.collectIsPressedAsState()
+        val scale by animateFloatAsState(if (isPressed) pressScale else leaveScale)
+        this.graphicsLayer {
+            scaleX = scale
+            scaleY = scale
+        }
     }
 
     @Stable

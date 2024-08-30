@@ -37,21 +37,24 @@ fun ShapedIcon(
         .size(iconSize + innerPadding.size + outerPadding.size)
         .background(iconBackgroundColor, iconShape)
         .clip(iconShape)
-        .padding(innerPadding)
         .onClick {
             onClick()
         }
 ) {
-    if (customContent != null) {
-        customContent()
-    } else {
-        Icon(
-            modifier = Modifier.fillMaxSize(),
-            imageVector = imageVector,
-            contentDescription = contentDescription,
-            tint = iconColor
-        )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding),
+    ) {
+        if (customContent != null) {
+            customContent()
+        } else {
+            Icon(
+                modifier = Modifier.fillMaxSize(),
+                imageVector = imageVector,
+                contentDescription = contentDescription,
+                tint = iconColor
+            )
+        }
     }
 }
-
-
