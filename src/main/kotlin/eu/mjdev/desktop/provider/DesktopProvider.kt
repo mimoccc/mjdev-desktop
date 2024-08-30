@@ -8,12 +8,13 @@ import androidx.compose.ui.unit.dp
 import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
 import dev.shreyaspatil.ai.client.generativeai.type.content
 import eu.mjdev.dadb.AdbDiscover.Companion.adbDevicesHandler
-import eu.mjdev.dadb.helpers.log
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.pages.*
+import eu.mjdev.desktop.helpers.ResourceStream
 import eu.mjdev.desktop.provider.data.User
 import eu.mjdev.desktop.provider.providers.AppsProvider
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.runBlocking
 import java.awt.GraphicsDevice
 import java.awt.GraphicsEnvironment
 import java.awt.Toolkit
@@ -22,13 +23,14 @@ import java.io.FileReader
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
-@Suppress("unused", "MemberVisibilityCanBePrivate", "CanBeParameter")
+@Suppress("unused", "MemberVisibilityCanBePrivate", "CanBeParameter", "PrivatePropertyName", "SameParameterValue")
 class DesktopProvider(
     private val scope: CoroutineScope? = null,
-    val currentUser: User = User.load(),
-    val geminiApiKey: String = "AIzaSyAGhYvYsTc_7nf4bv7HAQH6q8Pb7mbCKoQ", // todo
 ) {
-    private val _currentUser: MutableState<User> = mutableStateOf(currentUser)
+    private val __currentUser: User by lazy { User.load() }
+    private val _currentUser: MutableState<User> = mutableStateOf(__currentUser)
+    val currentUser
+        get() = _currentUser.value
 
     private val _controlCenterPages: MutableState<List<ControlCenterPage>> =
         mutableStateOf(
@@ -76,7 +78,7 @@ class DesktopProvider(
     val generativeModel: GenerativeModel by lazy {
         GenerativeModel(
             modelName = "gemini-1.5-pro-latest",
-            apiKey = geminiApiKey
+            apiKey = loadKey("gemini")
         )
     }
 
@@ -84,13 +86,15 @@ class DesktopProvider(
         currentUser.theme.controlCenterExpandedWidth = containerSize.width.div(4)
     }
 
-    suspend fun askGemini(question: String) = runCatching {
+    private fun loadKey(key: String): String = runCatching {
+        ResourceStream("keys/$key.key").string
+    }.getOrNull().orEmpty()
+
+    fun askGemini(question: String): String = runBlocking {
         generativeModel.generateContent(content {
             text(question)
         }).text
-    }.onFailure { e ->
-        log { e.message ?: "" }
-    }.getOrNull()
+    }.orEmpty()
 
     fun runScript(script: String): Any =
         engine.eval(script)

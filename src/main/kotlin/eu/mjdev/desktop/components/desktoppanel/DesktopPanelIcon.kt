@@ -18,7 +18,7 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import eu.mjdev.desktop.components.fonticon.MaterialIcon
+import eu.mjdev.desktop.components.fonticon.FontIcon
 import eu.mjdev.desktop.extensions.Compose.color
 import eu.mjdev.desktop.extensions.Compose.noElevation
 import eu.mjdev.desktop.extensions.Modifier.clipRect
@@ -67,7 +67,7 @@ fun DesktopPanelIcon(
             colors = ButtonDefaults.color(background),
             elevation = ButtonDefaults.noElevation()
         ) {
-            MaterialIcon(
+            FontIcon(
                 iconId = materialIcon,
                 iconColor = iconColor,
                 iconBackgroundColor = iconBackgroundColor,

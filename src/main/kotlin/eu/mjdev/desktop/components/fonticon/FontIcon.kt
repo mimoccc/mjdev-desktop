@@ -21,7 +21,7 @@ import eu.mjdev.desktop.extensions.Compose.width
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @Composable
-fun MaterialIcon(
+fun FontIcon(
     iconicFont: MaterialIconFont = LocalDesktop.current.currentUser.theme.iconSet,
     iconId: Int,
     iconSize: DpSize = DpSize(32.dp, 32.dp),

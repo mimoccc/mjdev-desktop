@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import eu.mjdev.desktop.components.fonticon.MaterialIcon
+import eu.mjdev.desktop.components.fonticon.FontIcon
 import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
@@ -36,7 +36,7 @@ fun AppsMenuApp(
     verticalAlignment = Alignment.CenterVertically,
 ) {
     val materialIcon = api.currentUser.theme.iconSet.iconForName(app?.name ?: icon) ?: "?".toInt()
-    MaterialIcon(
+    FontIcon(
         iconId = materialIcon,
         iconSize = iconSize,
         iconColor = iconTint,
