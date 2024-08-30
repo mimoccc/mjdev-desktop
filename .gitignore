@@ -37,7 +37,5 @@ packages/
 /packages/
 
 ### Resources ###
-/resources/linux/usr/share/backgrounds/
-
-### Keys ###
+/src/main/resources/dependencies/linux/usr/share/backgrounds/
 /src/main/resources/keys/
