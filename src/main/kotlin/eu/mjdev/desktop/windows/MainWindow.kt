@@ -21,7 +21,7 @@ import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @OptIn(ExperimentalFoundationApi::class)
-@Suppress("FunctionName")
+@Suppress("FunctionName", "DEPRECATION")
 @Preview
 @Composable
 fun MainWindow(

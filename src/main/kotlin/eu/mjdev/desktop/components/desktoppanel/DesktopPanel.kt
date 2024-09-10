@@ -52,6 +52,7 @@ fun DesktopPanel(
     panelState: VisibilityState = rememberVisibilityState(),
     enter: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exit: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+    menuState: VisibilityState = rememberVisibilityState(),
     windowState: TopWindowState = rememberTopWindowState(
         position = api.currentUser.theme.panelLocation.alignment,
         size = api.containerSize.copy(height = panelHeight),
@@ -76,7 +77,7 @@ fun DesktopPanel(
 ) = TopWindow(
     windowState = windowState,
     onFocusChange = { hasFocus ->
-        if (!hasFocus) panelState.hide()
+        if (!hasFocus && !menuState.isVisible) panelState.hide()
     }
 ) {
     SlidingMenu(

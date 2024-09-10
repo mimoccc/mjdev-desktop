@@ -108,7 +108,7 @@ fun AppsMenu(
                                     iconTint = Color.White
                                 ) { category ->
                                     items.value = api.appsProvider.categoriesAndApps[category.name]
-                                        ?: emptyList()
+                                        ?.sortedBy { it.name } ?: emptyList()
                                 }
                             }
                         }

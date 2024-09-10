@@ -5,7 +5,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
-import eu.mjdev.dadb.helpers.log
 import eu.mjdev.desktop.components.appsmenu.AppsMenu
 import eu.mjdev.desktop.components.controlcenter.ControlCenter
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanel
@@ -22,14 +21,14 @@ fun main() = application(
         LocalDesktop provides DesktopProvider(scope)
     ) {
         MaterialTheme {
-            val api: DesktopProvider = LocalDesktop.current
+//            val api: DesktopProvider = LocalDesktop.current
             val controlCenterState = rememberVisibilityState()
             val panelState = rememberVisibilityState()
             val menuState = rememberVisibilityState()
             // todo : test
-            api.askGemini("How are you today?").let {
-                log { "Gemini answer: $it" }
-            }
+//            api.askGemini("How are you today?").let {
+//                log { "Gemini answer: $it" }
+//            }
             // todo : test
             MainWindow(
                 panelState = panelState,
@@ -38,6 +37,7 @@ fun main() = application(
             )
             DesktopPanel(
                 panelState = panelState,
+                menuState = menuState,
                 onMenuIconClicked = {
                     menuState.toggle()
                 }
