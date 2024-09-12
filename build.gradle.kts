@@ -29,17 +29,16 @@ allprojects {
         // compose desktop
         implementation(compose.desktop.currentOs)
         // material 3
-        // implementation(compose.material3)
+        implementation(compose.material3)
         // icons
         implementation(compose.materialIconsExtended)
         // foundation
-//        implementation(compose.foundation)
-        // html
-        // implementation(compose.html)
-//         preview
-//        implementation(compose.preview)
-//         resources
-//        implementation(compose.components.resources)
+        implementation(compose.foundation)
+        // preview
+        implementation(compose.preview)
+        // resources
+        implementation(compose.components.resources)
+        // init & desktop files
         implementation(libs.ini4j)
         // http client
         implementation(libs.okhttp.client)

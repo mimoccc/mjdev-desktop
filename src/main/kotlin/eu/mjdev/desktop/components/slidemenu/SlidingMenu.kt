@@ -4,7 +4,9 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.Orientation.Horizontal
 import androidx.compose.foundation.gestures.Orientation.Vertical
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -34,7 +36,6 @@ fun SlidingMenu(
         Horizontal -> Box(
             modifier = modifier
                 .fillMaxHeight()
-                .wrapContentWidth()
                 .onPointerEvent(PointerEventType.Enter) { onPointerEnter() }
                 .onPointerEvent(PointerEventType.Exit) { onPointerLeave() }
         ) {
@@ -44,10 +45,8 @@ fun SlidingMenu(
         Vertical -> Box(
             modifier = modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .onPointerEvent(PointerEventType.Enter) {
-                    state.show()
-                }
+                .onPointerEvent(PointerEventType.Enter) { onPointerEnter() }
+                .onPointerEvent(PointerEventType.Exit) { onPointerLeave() }
         ) {
             content(state.isVisible)
         }

@@ -31,16 +31,7 @@ class DesktopProvider(
     val currentUser
         get() = _currentUser.value
 
-    private val _controlCenterPages: MutableState<List<ControlCenterPage>> =
-        mutableStateOf(
-            listOf(
-                MainSettingsPage(),
-                WifiSettingsPage(),
-                BluetoothSettingsPage(),
-                DisplaySettingsPage(),
-                SoundSettingsPage()
-            )
-        )
+    private val _controlCenterPages: MutableState<List<ControlCenterPage>> = mutableStateOf(CONTROL_CENTER_PAGES)
 
     private val scriptManager by lazy { ScriptEngineManager() }
     private val engine: ScriptEngine by lazy {
@@ -135,6 +126,13 @@ class DesktopProvider(
 //    }.getOrNull()
 
     companion object {
+        private val CONTROL_CENTER_PAGES = listOf(
+            MainSettingsPage(),
+            WifiSettingsPage(),
+            BluetoothSettingsPage(),
+            DisplaySettingsPage(),
+            SoundSettingsPage()
+        )
         val LocalDesktop = compositionLocalOf {
             DesktopProvider()
         }

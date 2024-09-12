@@ -7,14 +7,13 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,8 +32,6 @@ import eu.mjdev.desktop.windows.TopWindow
 import eu.mjdev.desktop.windows.TopWindowState
 import eu.mjdev.desktop.windows.TopWindowState.Companion.rememberTopWindowState
 import eu.mjdev.desktop.windows.WindowBounds
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Suppress("FunctionName")
 @Composable
@@ -49,10 +46,9 @@ fun ControlCenter(
     controlCenterDividerWidth: Dp = api.currentUser.theme.controlCenterDividerWidth,
     controlCenterIconColor: Color = api.currentUser.theme.controlCenterIconColor,
     controlCenterIconSize: DpSize = api.currentUser.theme.controlCenterIconSize,
-    pages: List<ControlCenterPage> = api.controlCenterPages,
-    pagerState: PagerState = rememberPagerState(pageCount = { pages.size }, initialPage = 0),
+    currentPage: MutableState<Int> = remember { mutableStateOf(0) },
+    pages: List<ControlCenterPage> = remember(api.controlCenterPages) { api.controlCenterPages },
     controlCenterState: VisibilityState = rememberVisibilityState(),
-    scope: CoroutineScope = rememberCoroutineScope(),
     enter: EnterTransition = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
     exit: ExitTransition = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
     windowState: TopWindowState = rememberTopWindowState(
@@ -126,19 +122,17 @@ fun ControlCenter(
                         horizontalAlignment = Alignment.Start
                     ) {
                         itemsIndexed(pages) { idx, page ->
-                            val isSelected = (pagerState.currentPage == idx)
+                            val isSelected = (currentPage.value == idx)
                             Icon(
                                 modifier = Modifier
                                     .padding(vertical = 8.dp)
                                     .size(controlCenterIconSize)
                                     .background(
-                                        color = if (isSelected) Color.White.copy(alpha = 0.4f) else Color.Transparent,
+                                        color = if (isSelected) Color.White else Color.Transparent,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .clickable {
-                                        scope.launch {
-                                            pagerState.scrollToPage(idx)
-                                        }
+                                        currentPage.value = idx
                                     },
                                 imageVector = page.icon,
                                 contentDescription = "",
@@ -155,12 +149,7 @@ fun ControlCenter(
                         contentBackgroundColor = Color.Transparent
                     ) {
                         Row {
-                            HorizontalPager(
-                                modifier = Modifier.width(controlCenterExpandedWidth),
-                                state = pagerState
-                            ) { page ->
-                                pages[page].content(backgroundColor)
-                            }
+                            pages[currentPage.value].content(backgroundColor)
                             Divider(
                                 modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
                                 color = controlCenterDividerColor,
