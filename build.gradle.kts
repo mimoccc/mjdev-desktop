@@ -52,7 +52,7 @@ allprojects {
         // javascript
         // implementation(libs.mozilla.rhino)
         // gemini ai
-        implementation(libs.google.generativeai)
+        // implementation(libs.google.generativeai)
         // no log
         implementation("org.slf4j:slf4j-nop:2.0.7")
         implementation("me.xdrop:fuzzywuzzy:1.4.0")

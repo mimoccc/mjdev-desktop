@@ -15,7 +15,7 @@ kotlin = "1.9.22"
 compose = "1.7.0-alpha03"
 okhttp3 = "5.0.0-alpha.12"
 materialKolor = "1.7.0"
-generativeai = "0.5.0-1.0.0-wasm"
+#generativeai = "0.5.0-1.0.0-wasm"
 #compose-webview = "1.9.20"
 #decompose = "3.0.0-alpha07"
 
@@ -23,8 +23,8 @@ generativeai = "0.5.0-1.0.0-wasm"
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 gradle-api = { module = "com.android.tools.build:gradle-api", version.ref = "gradle" }
 #gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-dbus-java-core = { module = "com.github.hypfvieh:dbus-java-core", version = "5.0.0" }
-dbus-java-transport-native-unixsocket = { module = "com.github.hypfvieh:dbus-java-transport-native-unixsocket", version = "5.0.0" }
+#dbus-java-core = { module = "com.github.hypfvieh:dbus-java-core", version = "5.0.0" }
+#dbus-java-transport-native-unixsocket = { module = "com.github.hypfvieh:dbus-java-transport-native-unixsocket", version = "5.0.0" }
 mozilla-rhino = { module = "org.mozilla:rhino", version = "1.7.13" }
 okhttp-client = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp3" }
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
@@ -34,7 +34,7 @@ font-icons-awesome = { module = "br.com.devsrsouza.compose.icons:font-awesome-de
 #decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 #decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
 ini4j = { module = "org.ini4j:ini4j", version = "0.5.4" }
-google-generativeai = { module = "dev.shreyaspatil.generativeai:generativeai-google-jvm", version.ref = "generativeai" }
+#google-generativeai = { module = "dev.shreyaspatil.generativeai:generativeai-google-jvm", version.ref = "generativeai" }
 
 #// open ai
 #//        implementation("com.aallam.openai:openai-client:3.8.2")

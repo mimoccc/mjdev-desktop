@@ -1,19 +1,18 @@
 package eu.mjdev.desktop.provider
 
+//import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
+//import dev.shreyaspatil.ai.client.generativeai.type.content
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
-import dev.shreyaspatil.ai.client.generativeai.type.content
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.pages.*
 import eu.mjdev.desktop.helpers.ResourceStream
 import eu.mjdev.desktop.provider.data.User
 import eu.mjdev.desktop.provider.providers.AppsProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.runBlocking
 import java.awt.GraphicsDevice
 import java.awt.GraphicsEnvironment
 import java.awt.Toolkit
@@ -22,7 +21,7 @@ import java.io.FileReader
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
-@Suppress("unused", "MemberVisibilityCanBePrivate", "CanBeParameter", "PrivatePropertyName", "SameParameterValue")
+@Suppress("unused", "MemberVisibilityCanBePrivate", "PrivatePropertyName", "SameParameterValue")
 class DesktopProvider(
     private val scope: CoroutineScope? = null,
 ) {
@@ -65,12 +64,12 @@ class DesktopProvider(
     val isTransparencySupported
         get() = graphicsDevice.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.TRANSLUCENT)
 
-    val generativeModel: GenerativeModel by lazy {
-        GenerativeModel(
-            modelName = "gemini-1.5-pro-latest",
-            apiKey = loadKey("gemini")
-        )
-    }
+//    val generativeModel: GenerativeModel by lazy {
+//        GenerativeModel(
+//            modelName = "gemini-1.5-pro-latest",
+//            apiKey = loadKey("gemini")
+//        )
+//    }
 
     init {
         currentUser.theme.controlCenterExpandedWidth = containerSize.width.div(4)
@@ -80,11 +79,11 @@ class DesktopProvider(
         ResourceStream("keys/$key.key").string
     }.getOrNull().orEmpty()
 
-    fun askGemini(question: String): String = runBlocking {
-        generativeModel.generateContent(content {
-            text(question)
-        }).text
-    }.orEmpty()
+//    fun askGemini(question: String): String = runBlocking {
+//        generativeModel.generateContent(content {
+//            text(question)
+//        }).text
+//    }.orEmpty()
 
     fun runScript(script: String): Any =
         engine.eval(script)

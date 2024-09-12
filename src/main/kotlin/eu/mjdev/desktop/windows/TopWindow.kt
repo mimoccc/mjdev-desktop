@@ -2,6 +2,7 @@ package eu.mjdev.desktop.windows
 
 import androidx.compose.animation.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.key.KeyEvent
@@ -125,17 +126,19 @@ class TopWindowState(
                     else -> WindowBounds(0.dp, 0.dp, 0.dp, 0.dp)
                 }
             }
-        ) = TopWindowState(
-            containerSize = containerSize,
-            placement = placement,
-            position = position,
-            size = size,
-            minSize = minSize,
-            computeBounds = computeBounds,
-            enter = enter,
-            exit = exit,
-            visible = visible
-        )
+        ) = remember(visible) {
+            TopWindowState(
+                containerSize = containerSize,
+                placement = placement,
+                position = position,
+                size = size,
+                minSize = minSize,
+                computeBounds = computeBounds,
+                enter = enter,
+                exit = exit,
+                visible = visible
+            )
+        }
 
         @Composable
         fun rememberTopWindowState(
