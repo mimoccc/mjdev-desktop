@@ -7,7 +7,6 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
 import dev.shreyaspatil.ai.client.generativeai.type.content
-import eu.mjdev.dadb.AdbDiscover.Companion.adbDevicesHandler
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.pages.*
 import eu.mjdev.desktop.helpers.ResourceStream
@@ -50,12 +49,12 @@ class DesktopProvider(
         }
     }
 
-    val adbHandler = adbDevicesHandler(
-        coroutineScope = scope
-    ) { device ->
-        println("Device discovered : $device")
-        // when device connected
-    }
+//    val adbHandler = adbDevicesHandler(
+//        coroutineScope = scope
+//    ) { device ->
+//        println("Device discovered : $device")
+//        // when device connected
+//    }
 
     val containerSize: DpSize by lazy {
         Toolkit.getDefaultToolkit().screenSize.let {
