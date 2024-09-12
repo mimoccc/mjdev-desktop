@@ -2,8 +2,8 @@ package org.mjdev.gradle.extensions
 
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.internal.impldep.jakarta.xml.bind.DatatypeConverter
 import org.gradle.kotlin.dsl.extra
+import java.lang.Boolean.parseBoolean
 
 @Suppress("HasPlatformType", "unused", "MemberVisibilityCanBePrivate")
 object ProjectExt {
@@ -12,7 +12,7 @@ object ProjectExt {
         get() = project.extra.properties["android.studio.version"]
 
     val Project.runningFromAndroidStudio
-        get() = DatatypeConverter.parseBoolean(project.extra.properties["android.injected.invoked.from.ide"].toString())
+        get() = parseBoolean(project.extra.properties["android.injected.invoked.from.ide"].toString())
 
     val Project.isAndroidStudio
         get() = project.extra.properties.keys.contains("android.studio.version")

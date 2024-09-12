@@ -40,6 +40,7 @@ allprojects {
 //        implementation(compose.preview)
 //         resources
 //        implementation(compose.components.resources)
+        implementation(libs.ini4j)
         // http client
         implementation(libs.okhttp.client)
         // palette

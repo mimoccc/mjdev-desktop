@@ -33,6 +33,7 @@ font-icons-awesome = { module = "br.com.devsrsouza.compose.icons:font-awesome-de
 #compose-webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "compose-webview" }
 #decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 #decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
+ini4j = { module = "org.ini4j:ini4j", version = "0.5.4" }
 google-generativeai = { module = "dev.shreyaspatil.generativeai:generativeai-google-jvm", version.ref = "generativeai" }
 
 #// open ai

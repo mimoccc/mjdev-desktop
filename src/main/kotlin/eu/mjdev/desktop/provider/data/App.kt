@@ -37,9 +37,11 @@ class App(
     val iconBackground: Color
         get() : Color = runCatching { colorFromName() }.getOrNull() ?: Color.White
 
+    // todo :  replace all params with what needed
     fun start() = runCatching {
-        println("Starting app: $name [$exec]")
-        ProcessBuilder("/bin/bash", "-c", exec).start()
+        val cleanExec = exec.replace("%u", "").replace("%U", "")
+        println("Starting app: $name [$cleanExec]")
+        ProcessBuilder("/bin/bash", "-c", cleanExec).start()
     }.onFailure { error ->
         error.printStackTrace()
     }

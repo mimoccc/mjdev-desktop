@@ -46,6 +46,7 @@ fun AppsMenu(
     items: MutableState<List<Any>> = remember { mutableStateOf(api.appsProvider.appCategories) },
     enter: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exit: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+    appMenuMaxHeight: Dp = api.containerSize.height - bottomY,
     windowState: TopWindowState = rememberTopWindowState(
         position = api.currentUser.theme.panelLocation.alignment,
         size = DpSize(appMenuMinWidth, appMenuMinHeight),
@@ -74,7 +75,7 @@ fun AppsMenu(
             .width(appMenuMinWidth)
             .heightIn(
                 min = appMenuMinHeight,
-                max = appMenuMinHeight
+                max = appMenuMaxHeight
             )
     ) {
         Box(

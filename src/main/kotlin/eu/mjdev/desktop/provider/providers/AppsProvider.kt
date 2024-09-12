@@ -9,7 +9,6 @@ import eu.mjdev.desktop.provider.data.Category
 import eu.mjdev.desktop.provider.data.DesktopFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import me.xdrop.fuzzywuzzy.FuzzySearch
 import java.io.File
 import java.util.*
 
@@ -93,7 +92,10 @@ class AppsProvider(
         }.getOrNull() ?: emptyList()
 
     private val allAppsDesktopFiles
-        get() = allAppsDesktopFilesLocal + allAppsDesktopFilesShared + allAppsDesktopFilesFlatPack + allAppsDesktopFilesSnap
+        get() = allAppsDesktopFilesLocal +
+                allAppsDesktopFilesShared +
+                allAppsDesktopFilesFlatPack +
+                allAppsDesktopFilesSnap
 
     val currentLocale: Locale
         get() = userDirsLocale ?: Locale.ENGLISH
@@ -122,7 +124,6 @@ class AppsProvider(
             map
         }
 
-    @Suppress("UNNECESSARY_SAFE_CALL")
     val favoriteApps: Flow<List<App>>
         get() = flow {
             Command(
@@ -130,20 +131,12 @@ class AppsProvider(
                 "get",
                 "org.gnome.shell",
                 "favorite-apps"
-            ).execute()?.toList<String>()?.map { appName ->
-                val deskFile = allAppsDesktopFiles.filter { deskFile ->
-                    deskFile?.file?.name?.contains(appName) == true
+            ).execute()?.toList<String>()?.map { deskFileName ->
+                allAppsDesktopFiles.filter { deskFile ->
+                    deskFile.file.name.contentEquals(deskFileName) == true
                 }.map { deskFile ->
-                    Pair(FuzzySearch.ratio(appName, deskFile.file.name), deskFile)
-                }.maxByOrNull {
-                    it.first
-                }?.second
-                if (deskFile != null) {
-                    App(desktopFile = deskFile, file = deskFile?.file)
-                } else {
-                    println("Missing desktop file: $appName")
-                    null
-                }
+                    App(desktopFile = deskFile, file = deskFile.file)
+                }.firstOrNull()
             }.also { list ->
                 emit(list?.filterNotNull() ?: emptyList())
             }
