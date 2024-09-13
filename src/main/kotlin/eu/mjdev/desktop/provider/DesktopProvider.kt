@@ -1,7 +1,5 @@
 package eu.mjdev.desktop.provider
 
-//import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
-//import dev.shreyaspatil.ai.client.generativeai.type.content
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateOf

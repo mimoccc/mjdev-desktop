@@ -16,82 +16,66 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.custom.UserAvatar
-import eu.mjdev.desktop.components.slidemenu.VisibilityState
-import eu.mjdev.desktop.components.slidemenu.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.components.sliding.VisibilityState
+import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.provider.data.App
 import eu.mjdev.desktop.provider.data.Category
-import eu.mjdev.desktop.windows.TopWindow
-import eu.mjdev.desktop.windows.TopWindowState
-import eu.mjdev.desktop.windows.TopWindowState.Companion.rememberTopWindowState
-import eu.mjdev.desktop.windows.WindowBounds
+import eu.mjdev.desktop.windows.ChromeWindow
 
 @Composable
 fun AppsMenu(
-    modifier: Modifier = Modifier,
     api: DesktopProvider = LocalDesktop.current,
-    appMenuMinWidth: Dp = 480.dp, // todo
-    appMenuMinHeight: Dp = 640.dp, // todo
-    bottomY: Dp = 64.dp, // todo panel height
-    backgroundColor: Color = api.currentUser.theme.backgroundColor,
-    menuPadding: PaddingValues = PaddingValues(2.dp), // todo
-    menuState: VisibilityState = rememberVisibilityState(),
     panelState: VisibilityState = rememberVisibilityState(),
-    items: MutableState<List<Any>> = remember { mutableStateOf(api.appsProvider.appCategories) },
-    enter: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
-    exit: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
-    appMenuMaxHeight: Dp = api.containerSize.height - bottomY,
-    windowState: TopWindowState = rememberTopWindowState(
-        position = api.currentUser.theme.panelLocation.alignment,
-        size = DpSize(appMenuMinWidth, appMenuMinHeight),
-        exit = exit,
-        enter = enter,
-        visible = menuState.isVisible,
-        computeBounds = { isVisible ->
-            val containerHeight = api.containerSize.height
-            WindowBounds(
-                0.dp,
-                if (isVisible) (containerHeight - appMenuMinHeight) else containerHeight,
-                appMenuMinWidth,
-                if (isVisible) appMenuMinHeight else 0.dp
-            )
-        }
+    menuState: VisibilityState = rememberVisibilityState(),
+    appMenuMinWidth: Dp = api.currentUser.theme.appMenuMinWidth,
+    appMenuMinHeight: Dp = api.currentUser.theme.appMenuMinHeight,
+    appMenuBackgroundColor: Color = api.currentUser.theme.backgroundColor,
+    menuPadding: PaddingValues = PaddingValues(api.currentUser.theme.appMenuOuterPadding),// todo
+    enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
+    exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+    items: MutableState<List<Any>> = remember(api.appsProvider) { mutableStateOf(api.appsProvider.appCategories) },
+) = ChromeWindow(
+    visible = menuState.isVisible,
+    enterAnimation = enterAnimation,
+    exitAnimation = exitAnimation,
+    position = WindowPosition.Absolute(
+        panelState.bounds.x,
+        api.containerSize.height - (panelState.bounds.height + appMenuMinHeight)
     )
-) = TopWindow(
-    windowState = windowState,
-    onFocusChange = { hasFocus ->
-        if (!hasFocus) menuState.hide()
-    }
 ) {
     Box(
-        modifier = modifier
-            .padding(bottom = bottomY)
+        modifier = Modifier
             .width(appMenuMinWidth)
             .heightIn(
                 min = appMenuMinHeight,
-                max = appMenuMaxHeight
+                max = appMenuMinHeight
             )
+            .onPlaced {
+                // menuState.bounds = it.toDPBounds()
+            }
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(menuPadding)
-                .background(backgroundColor.copy(alpha = 0.7f), RoundedCornerShape(24.dp))
+                .background(appMenuBackgroundColor.copy(alpha = 0.7f), RoundedCornerShape(24.dp))
                 .clip(RoundedCornerShape(24.dp))
-                .border(2.dp, backgroundColor, RoundedCornerShape(24.dp))
+                .border(2.dp, appMenuBackgroundColor, RoundedCornerShape(24.dp))
         ) {
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
                 UserAvatar(
                     avatarSize = 64.dp,
-                    backgroundColor = backgroundColor,
+                    backgroundColor = appMenuBackgroundColor,
                     orientation = Orientation.Horizontal
                 )
                 LazyColumn(
@@ -105,7 +89,7 @@ fun AppsMenu(
                             items(items.value) { item ->
                                 AppsMenuCategory(
                                     category = item as Category,
-                                    backgroundColor = backgroundColor,
+                                    backgroundColor = appMenuBackgroundColor,
                                     iconTint = Color.White
                                 ) { category ->
                                     items.value = api.appsProvider.categoriesAndApps[category.name]
@@ -118,7 +102,7 @@ fun AppsMenu(
                             items(items.value) { item ->
                                 AppsMenuApp(
                                     app = item as App,
-                                    backgroundColor = backgroundColor,
+                                    backgroundColor = appMenuBackgroundColor,
                                     iconTint = Color.White
                                 ) { app ->
                                     app?.start()
@@ -134,16 +118,17 @@ fun AppsMenu(
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .align(Alignment.BottomStart)
-                    .background(backgroundColor)
+                    .background(appMenuBackgroundColor),
+                backButtonVisible = items.value.first() is App,// todo
+                onBackClick = {
+                    items.value = api.appsProvider.appCategories
+                }
             )
         }
-        launchedEffect(panelState.isVisible) { isVisible ->
-            if (!isVisible) menuState.isVisible = false
-        }
-        launchedEffect(menuState.isVisible) { isVisible ->
-            if (!isVisible) {
-                items.value = api.appsProvider.appCategories
-            }
+    }
+    launchedEffect(menuState.isVisible) {
+        if (!menuState.isVisible) {
+            items.value = api.appsProvider.appCategories
         }
     }
 }

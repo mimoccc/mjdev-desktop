@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.PowerOff
 import androidx.compose.material.icons.filled.RestartAlt
@@ -17,34 +18,52 @@ import kotlin.system.exitProcess
 
 @Composable
 fun AppsBottomBar(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    iconBackgroundColor: Color = Color.White,
+    iconColor: Color = Color.Black,
+    backButtonVisible: Boolean = false,
+    onBackClick: () -> Unit
 ) = Box(
     modifier = modifier.padding(8.dp)
 ) {
     Row(
         modifier = Modifier.align(Alignment.BottomStart)
     ) {
-
+        if (backButtonVisible) {
+            ShapedIcon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                iconColor = iconColor,
+                iconBackgroundColor = iconBackgroundColor,
+                onClick = onBackClick
+            )
+        }
     }
-
+    Row(
+        modifier = Modifier.align(Alignment.BottomCenter)
+    ) {
+        // todo : center content if needed
+    }
     Row(
         modifier = Modifier.align(Alignment.BottomEnd)
     ) {
         ShapedIcon(
             imageVector = Icons.Filled.RestartAlt,
-            iconBackgroundColor = Color.White.copy(alpha = 0.7f),
+            iconColor = iconColor,
+            iconBackgroundColor = iconBackgroundColor,
         ) {
             exitProcess(0)
         }
         ShapedIcon(
             imageVector = Icons.AutoMirrored.Filled.Logout,
-            iconBackgroundColor = Color.White.copy(alpha = 0.7f),
+            iconColor = iconColor,
+            iconBackgroundColor = iconBackgroundColor,
         ) {
             exitProcess(0)
         }
         ShapedIcon(
             imageVector = Icons.Filled.PowerOff,
-            iconBackgroundColor = Color.White.copy(alpha = 0.7f),
+            iconColor = iconColor,
+            iconBackgroundColor = iconBackgroundColor,
         ) {
             exitProcess(0)
         }

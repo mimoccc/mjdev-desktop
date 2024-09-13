@@ -1,10 +1,11 @@
-package eu.mjdev.desktop.components.slidemenu
+package eu.mjdev.desktop.components.sliding
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.Orientation.Horizontal
 import androidx.compose.foundation.gestures.Orientation.Vertical
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -12,8 +13,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import eu.mjdev.desktop.components.slidemenu.VisibilityState.Companion.rememberVisibilityState
-import eu.mjdev.desktop.extensions.Compose.launchedEffect
+import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Suppress("FunctionName")
@@ -29,8 +29,7 @@ fun SlidingMenu(
     onPointerLeave: () -> Unit = {
 //        state.hide()
     },
-    onVisibilityChange: (visible: Boolean) -> Unit = {},
-    content: @Composable (isVisible: Boolean) -> Unit
+    content: @Composable BoxScope.(isVisible: Boolean) -> Unit
 ) {
     when (orientation) {
         Horizontal -> Box(
@@ -50,8 +49,5 @@ fun SlidingMenu(
         ) {
             content(state.isVisible)
         }
-    }
-    launchedEffect(state.isVisible) {
-        onVisibilityChange(state.isVisible)
     }
 }

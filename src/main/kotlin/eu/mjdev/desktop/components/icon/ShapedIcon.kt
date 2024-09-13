@@ -21,6 +21,7 @@ import eu.mjdev.desktop.extensions.Compose.size
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShapedIcon(
+    modifier: Modifier = Modifier,
     imageVector: ImageVector = Icons.Filled.Apps,
     iconBackgroundColor: Color = Color.White,
     iconColor: Color = Color.Black,
@@ -32,7 +33,7 @@ fun ShapedIcon(
     outerPadding: PaddingValues = PaddingValues(2.dp),
     onClick: () -> Unit = {}
 ) = Box(
-    modifier = Modifier
+    modifier = modifier
         .padding(outerPadding)
         .size(iconSize + innerPadding.size + outerPadding.size)
         .background(iconBackgroundColor, iconShape)

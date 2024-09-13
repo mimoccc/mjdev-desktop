@@ -28,6 +28,10 @@ class Theme(
     controlCenterBackgroundAlpha: Float,
 
     iconSet: MaterialIconFont,
+
+    appMenuMinWidth: Dp,
+    appMenuMinHeight: Dp,
+    appMenuOuterPadding: Dp,
 ) {
 
     val backgroundColorState = mutableStateOf(backgroundColor)
@@ -43,6 +47,10 @@ class Theme(
     val iconSetState = mutableStateOf(iconSet)
     val backgroundRotationDelayState = mutableStateOf(backgroundRotationDelay)
     val controlCenterBackgroundAlphaState = mutableStateOf(controlCenterBackgroundAlpha)
+
+    val appMenuMinWidthState = mutableStateOf(appMenuMinWidth)
+    val appMenuMinHeightState = mutableStateOf(appMenuMinHeight)
+    val appMenuOuterPaddingState = mutableStateOf(appMenuOuterPadding)
 
     var backgroundColor
         get() = backgroundColorState.value
@@ -66,6 +74,10 @@ class Theme(
     val iconSet get() = iconSetState.value
     val backgroundRotationDelay get() = backgroundRotationDelayState.value
 
+    val appMenuMinWidth get() = appMenuMinWidthState.value
+    val appMenuMinHeight get() = appMenuMinHeightState.value
+    val appMenuOuterPadding get() = appMenuOuterPaddingState.value
+
     companion object {
         val Default = Theme(
             iconSet = MaterialSymbolsSharp,
@@ -84,7 +96,11 @@ class Theme(
             controlCenterIconSize = DpSize(32.dp, 32.dp),
             controlCenterBackgroundAlpha = 0.8f,
 
-            backgroundRotationDelay = 60000
+            backgroundRotationDelay = 60000,
+
+            appMenuMinWidth = 480.dp,
+            appMenuMinHeight = 640.dp,
+            appMenuOuterPadding = 2.dp
         )
     }
 }

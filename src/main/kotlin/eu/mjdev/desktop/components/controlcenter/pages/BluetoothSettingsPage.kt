@@ -1,6 +1,5 @@
 package eu.mjdev.desktop.components.controlcenter.pages
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
@@ -14,6 +13,6 @@ fun BluetoothSettingsPage() = ControlCenterPage(
     name = "Bluetooth"
 ) { backgroundColor ->
     Box(
-        modifier = Modifier.fillMaxSize().background(backgroundColor)
+        modifier = Modifier.fillMaxSize()
     )
 }

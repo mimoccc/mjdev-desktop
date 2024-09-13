@@ -92,10 +92,10 @@ class AppsProvider(
         }.getOrNull() ?: emptyList()
 
     private val allAppsDesktopFiles
-        get() = allAppsDesktopFilesLocal +
+        get() = (allAppsDesktopFilesLocal +
                 allAppsDesktopFilesShared +
                 allAppsDesktopFilesFlatPack +
-                allAppsDesktopFilesSnap
+                allAppsDesktopFilesSnap).distinctBy { it.file.name }
 
     val currentLocale: Locale
         get() = userDirsLocale ?: Locale.ENGLISH

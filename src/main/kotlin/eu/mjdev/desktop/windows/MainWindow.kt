@@ -4,6 +4,7 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.mouseClickable
 import androidx.compose.runtime.Composable
@@ -14,7 +15,7 @@ import eu.mjdev.desktop.components.background.BackgroundImage
 import eu.mjdev.desktop.components.menu.ContextMenu
 import eu.mjdev.desktop.components.menu.ContextMenuState
 import eu.mjdev.desktop.components.menu.ContextMenuState.Companion.rememberContextMenuState
-import eu.mjdev.desktop.components.slidemenu.VisibilityState
+import eu.mjdev.desktop.components.sliding.VisibilityState
 import eu.mjdev.desktop.helpers.Palette
 import eu.mjdev.desktop.helpers.Palette.Companion.rememberPalette
 import eu.mjdev.desktop.provider.DesktopProvider
@@ -32,7 +33,7 @@ fun MainWindow(
     palette: Palette = rememberPalette(api.currentUser.theme.backgroundColor),
     onDesktopMenuShow: () -> Unit = {},
     contextMenuState: ContextMenuState = rememberContextMenuState("item1", "item2"),
-    content: @Composable () -> Unit = {}
+    content: @Composable BoxScope.() -> Unit = {}
 ) = FullScreenWindow {
     Box(
         modifier = Modifier
@@ -55,8 +56,11 @@ fun MainWindow(
             backgrounds = api.appsProvider.backgrounds + api.currentUser.config.desktopBackgroundUrls,
             switchDelay = api.currentUser.theme.backgroundRotationDelay,
             onChange = { src ->
-                palette.update(src)
-                api.currentUser.theme.backgroundColor = palette.backgroundColor
+                palette.apply {
+                    update(src)
+                }.also { p ->
+                    api.currentUser.theme.backgroundColor = p.backgroundColor
+                }
             }
         )
 //        WidgetsPanel(

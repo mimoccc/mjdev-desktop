@@ -49,6 +49,13 @@ object Compose {
     ) = LaunchedEffect(key) { block(key) }
 
     @Composable
+    fun <T, E> launchedEffect(
+        key1: T,
+        key2: E,
+        block: suspend CoroutineScope.(key1: T, key2: E) -> Unit
+    ) = LaunchedEffect(key1, key2) { block(key1, key2) }
+
+    @Composable
     fun <T> textFrom(text: T?): String = when (text) {
         null -> ""
         is Unit -> ""
@@ -77,13 +84,5 @@ object Compose {
         disabledContentColor = Color.Transparent,
         disabledBackgroundColor = Color.Transparent
     )
-
-    fun java.awt.Window.setWindowBounds(x: Dp, y: Dp, w: Dp, h: Dp) {
-        setBounds(x.value.toInt(), y.value.toInt(), w.value.toInt(), h.value.toInt())
-    }
-
-    // todo
-//    fun java.awt.Window.resizeTo(w: Dp, h: Dp) {
-//    }
 
 }
