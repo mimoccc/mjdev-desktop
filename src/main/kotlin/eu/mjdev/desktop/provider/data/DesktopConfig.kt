@@ -7,10 +7,10 @@ class DesktopConfig(
     desktopBackgroundUrls: List<Any> = emptyList()
 ) {
     val desktopBackgroundUrlsState = mutableStateOf(desktopBackgroundUrls.toMutableList())
-    val desktopBackgroundUrls get() = desktopBackgroundUrlsState.value
+    val desktopBackgrounds get() = desktopBackgroundUrlsState.value
 
     fun addBackground(path: String) {
-        desktopBackgroundUrls.add(path)
+        desktopBackgrounds.add(path)
     }
 
     companion object {

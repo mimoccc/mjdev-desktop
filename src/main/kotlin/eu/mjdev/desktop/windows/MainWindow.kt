@@ -53,8 +53,7 @@ fun MainWindow(
                     }
                 },
             backgroundColor = api.currentUser.theme.backgroundColor,
-            backgrounds = //api.appsProvider.backgrounds +
-            api.currentUser.config.desktopBackgroundUrls,
+            backgrounds = api.appsProvider.backgrounds + api.currentUser.config.desktopBackgrounds,
             switchDelay = api.currentUser.theme.backgroundRotationDelay,
             onChange = { src ->
                 palette.apply {
