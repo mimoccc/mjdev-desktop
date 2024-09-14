@@ -10,6 +10,23 @@ plugins {
 group = libs.versions.packageName.get()
 version = libs.versions.packageVersion.get()
 
+//kotlin {
+//    jvmToolchain(8)
+//    jvmToolchain {
+//        (this as JavaToolchainSpec).apply {
+//            languageVersion.set(JavaLanguageVersion.of(8))
+//        }
+//    }
+//    compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
+//}
+
+//java {
+//    toolchain {
+//        languageVersion.set(JavaLanguageVersion.of(8))
+//    }
+//    targetCompatibility = JavaVersion.VERSION_1_8
+//}
+
 allprojects {
     repositories {
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
@@ -51,10 +68,12 @@ allprojects {
         implementation(libs.coil.compose)
         implementation(libs.coil.mp)
 //        implementation(libs.coil.gif)
-        implementation(libs.coil.network.ktor)
+        implementation(libs.coil.network.okhttp)
         // glide
 //        implementation(libs.glide)
+//        implementation(libs.landscapist.glide)
         // palette
+//        implementation(libs.landscapist.palette)
         implementation(libs.material.kolor)
         // json
         implementation(libs.google.gson)

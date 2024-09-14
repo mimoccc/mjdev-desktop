@@ -29,6 +29,7 @@ fun BackgroundImage(
     fadeOutDuration: Long = 5000L,
     backgroundColor: Color = Color.SuperDarkGray,
     backgrounds: List<Any> = emptyList(),
+    onError: (Throwable) -> Unit = { e -> e.printStackTrace() },
     onChange: (bck: Any?) -> Unit = {}
 ) = Box(
     modifier = modifier.background(backgroundColor)
@@ -45,7 +46,8 @@ fun BackgroundImage(
         ImageAny(
             modifier = modifier,
             contentScale = ContentScale.Crop,
-            src = value
+            src = value,
+            onFail = onError
         )
     }
     launchedEffect(currentBackground.value) {

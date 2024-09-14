@@ -49,16 +49,25 @@ fun DesktopPanel(
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     panelAlpha: Float = 0.7f,
     showMenuIcon: Boolean = true,
+    panelContentPadding: PaddingValues = PaddingValues(4.dp),
     panelState: VisibilityState = rememberVisibilityState(),
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+    tooltipHeight: Dp = 64.dp,
     tooltipData: MutableState<Any?> = mutableStateOf(null),
     onTooltip: (item: Any?) -> Unit = { item -> tooltipData.value = item },
     panelHeight: (visible: Boolean) -> Dp = { visible ->
-        if (visible) iconSize.height + iconOuterPadding.height else dividerWidth
+        if (visible) iconSize.height + iconOuterPadding.height + tooltipHeight + panelContentPadding.height
+        else dividerWidth
     },
     onMenuIconClicked: () -> Unit = {},
     onFocusChange: (Boolean) -> Unit = {},
+    tooltipConverter: (Any?) -> TooltipData = { item ->
+        when (item) {
+            is App -> TooltipData(title = item.name, description = item.comment)
+            else -> TooltipData(title = item.toString())
+        }
+    }
 ) = ChromeWindow(
     visible = true,
     enterAnimation = enterAnimation,
@@ -78,75 +87,91 @@ fun DesktopPanel(
         orientation = Vertical,
         state = panelState,
     ) { isVisible ->
-        if (!isVisible) {
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(dividerWidth),
-                color = Color.Transparent,
-                thickness = dividerWidth
-            )
-        } else {
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dividerWidth),
+            color = Color.Transparent,
+            thickness = dividerWidth
+        )
+        if (isVisible) {
             TooltipArea(
                 modifier = Modifier.fillMaxWidth().wrapContentHeight(),
                 tooltip = {
-                    // todo more types
-                    when (tooltipData.value) {
-                        is App -> DesktopPanelAppTooltip(tooltipData.value as App)
-                        else -> {}
-                    }
+                    DesktopPanelTooltip(
+                        tooltipData.value,
+                        converter = tooltipConverter
+                    )
                 },
                 tooltipPlacement = TooltipPlacement.CursorPoint(
                     alignment = Alignment.TopEnd,
                     offset = DpOffset(32.dp, 32.dp)
                 )
             ) {
-                TopShadow(
-                    modifier = Modifier.fillMaxWidth()
-                        .wrapContentHeight()
-                        .onPlaced(panelState::onPlaced),
-                    color = shadowColor,
-                    contentBackgroundColor = backgroundColor.copy(alpha = panelAlpha)
-                ) {
+                Column {
                     Box(
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight().background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    backgroundColor.copy(alpha = 0.3f),
-                                    backgroundColor.copy(alpha = 0.7f),
-                                    backgroundColor.copy(alpha = 0.3f),
-                                )
-                            )
-                        )
+                        modifier = Modifier.fillMaxWidth()
+                            .height(tooltipHeight)
+                    )
+                    TopShadow(
+                        modifier = Modifier.fillMaxWidth()
+                            .wrapContentHeight()
+                            .onPlaced(panelState::onPlaced),
+                        color = shadowColor,
+                        contentBackgroundColor = backgroundColor.copy(alpha = panelAlpha)
                     ) {
-                        if (showMenuIcon) {
-                            DesktopMenuIcon(
-                                modifier = Modifier.align(Alignment.CenterStart),
-                                iconColor = iconColor,
-                                iconBackgroundColor = iconBackgroundColor,
-                                iconSize = iconSize,
-                                iconPadding = iconPadding,
-                                iconOuterPadding = iconOuterPadding,
-                                onTooltip = onTooltip,
-                                onClick = onMenuIconClicked
+                        Column {
+                            Divider(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(2.dp),
+                                color = Color.White.copy(0.1f),
+                                thickness = 2.dp
                             )
-                        }
-                        DesktopPanelFavoriteApps(
-                            modifier = Modifier.align(Alignment.Center),
-                            iconColor = iconColor,
-                            iconBackgroundColor = iconBackgroundColor,
-                            iconSize = iconSize,
-                            iconPadding = iconPadding,
-                            iconOuterPadding = iconOuterPadding,
-                            onTooltip = onTooltip
-                        )
-                        DesktopPanelLanguage(
-                            modifier = Modifier.align(Alignment.CenterEnd),
-                            onTooltip = onTooltip,
-                            onClick = {
-                                // todo
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                                    .wrapContentHeight()
+                                    .background(
+                                        brush = Brush.verticalGradient(
+                                            colors = listOf(
+                                                backgroundColor.copy(alpha = 0.3f),
+                                                backgroundColor.copy(alpha = 0.7f),
+                                                backgroundColor.copy(alpha = 0.3f),
+                                            )
+                                        )
+                                    )
+                                    .padding(panelContentPadding)
+                            ) {
+                                if (showMenuIcon) {
+                                    DesktopMenuIcon(
+                                        modifier = Modifier.align(Alignment.CenterStart),
+                                        iconColor = iconColor,
+                                        iconBackgroundColor = iconBackgroundColor,
+                                        iconSize = iconSize,
+                                        iconPadding = iconPadding,
+                                        iconOuterPadding = iconOuterPadding,
+                                        onTooltip = onTooltip,
+                                        onClick = onMenuIconClicked
+                                    )
+                                }
+                                DesktopPanelFavoriteApps(
+                                    modifier = Modifier.align(Alignment.Center),
+                                    iconColor = iconColor,
+                                    iconBackgroundColor = iconBackgroundColor,
+                                    iconSize = iconSize,
+                                    iconPadding = iconPadding,
+                                    iconOuterPadding = iconOuterPadding,
+                                    onTooltip = onTooltip
+                                )
+                                DesktopPanelLanguage(
+                                    modifier = Modifier.align(Alignment.CenterEnd),
+                                    onTooltip = onTooltip,
+                                    onClick = {
+                                        // todo
+                                    }
+                                )
                             }
-                        )
+                        }
                     }
                 }
             }

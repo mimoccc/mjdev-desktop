@@ -129,6 +129,13 @@ fun ControlCenter(
                             contentBackgroundColor = Color.Transparent
                         ) {
                             Row {
+                                Divider(
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .width(2.dp),
+                                    color = Color.White.copy(0.1f),
+                                    thickness = 2.dp
+                                )
                                 Box(
                                     modifier = Modifier.width(controlCenterExpandedWidth),
                                 ) {

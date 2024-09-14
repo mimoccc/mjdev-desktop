@@ -71,7 +71,7 @@ fun AppsMenu(
                 .padding(menuPadding)
                 .background(appMenuBackgroundColor.copy(alpha = 0.7f), RoundedCornerShape(24.dp))
                 .clip(RoundedCornerShape(24.dp))
-                .border(2.dp, appMenuBackgroundColor, RoundedCornerShape(24.dp))
+                .border(2.dp, Color.White.copy(0.1f), RoundedCornerShape(24.dp))
         ) {
             Column(
                 modifier = Modifier.fillMaxSize()

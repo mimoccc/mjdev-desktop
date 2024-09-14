@@ -24,6 +24,7 @@ fun DesktopMenuIcon(
     modifier = modifier
 ) {
     DesktopPanelIcon(
+        contentDescription = "System menu",
         icon = "menu",
         iconColor = iconColor,
         iconBackgroundColor = iconBackgroundColor,

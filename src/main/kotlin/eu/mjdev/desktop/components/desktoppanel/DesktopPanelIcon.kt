@@ -40,6 +40,7 @@ fun DesktopPanelIcon(
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     iconState: MutableState<Boolean> = remember { mutableStateOf(false) },
+    contentDescription: String? = null,
     onToolTip: (item: Any?) -> Unit = {},
     onClick: () -> Unit,
 ) {
@@ -51,7 +52,7 @@ fun DesktopPanelIcon(
             .clipRect()
             .onPointerEvent(PointerEventType.Enter) {
                 iconState.value = true
-                onToolTip(app)
+                onToolTip(app ?: contentDescription)
             }
             .onPointerEvent(PointerEventType.Exit) {
                 iconState.value = false
