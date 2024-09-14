@@ -129,7 +129,9 @@ class DesktopProvider(
             WifiSettingsPage(),
             BluetoothSettingsPage(),
             DisplaySettingsPage(),
-            SoundSettingsPage()
+            SoundSettingsPage(),
+            AIPage(),
+            DevicesPage()
         )
 
         val LocalDesktop = compositionLocalOf {
