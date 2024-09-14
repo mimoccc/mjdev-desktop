@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -81,9 +82,20 @@ fun AppsMenu(
                     backgroundColor = appMenuBackgroundColor,
                     orientation = Orientation.Horizontal
                 )
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(2.dp)
+                        .padding(
+                            start = 2.dp,
+                            end = 2.dp
+                        ),
+                    color = Color.White.copy(0.1f),
+                    thickness = 2.dp
+                )
                 LazyColumn(
                     modifier = Modifier
-                        .padding(bottom = 48.dp)
+                        .padding(bottom = 62.dp)
                         .fillMaxSize()
                         .padding(24.dp)
                 ) {
@@ -116,17 +128,34 @@ fun AppsMenu(
                     }
                 }
             }
-            AppsBottomBar(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .align(Alignment.BottomStart)
-                    .background(appMenuBackgroundColor),
-                backButtonVisible = items.value.first() is App,// todo
-                onBackClick = {
-                    items.value = api.appsProvider.appCategories
-                }
-            )
+                    .align(Alignment.BottomStart),
+            ) {
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(2.dp)
+                        .padding(
+                            start = 2.dp,
+                            end = 2.dp
+                        ),
+                    color = Color.White.copy(0.1f),
+                    thickness = 2.dp
+                )
+                AppsBottomBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .background(appMenuBackgroundColor),
+                    backButtonVisible = items.value.first() is App,// todo
+                    onBackClick = {
+                        items.value = api.appsProvider.appCategories
+                    }
+                )
+            }
         }
     }
     launchedEffect(menuState.isVisible) {

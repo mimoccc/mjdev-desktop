@@ -28,6 +28,7 @@ fun main() = application(
     }
 
     val handlePanelFocus: (Boolean) -> Unit = {
+
     }
 
     val handleControlCenterFocus: (Boolean) -> Unit = {
@@ -50,7 +51,7 @@ fun main() = application(
             ) {
                 DesktopPanel(
                     panelState = panelState,
-                    onMenuIconClicked = { menuState.toggle() },
+                    onMenuIconClicked = { if (!menuState.isVisible) menuState.show() },
                     onFocusChange = { focus -> handlePanelFocus(focus) }
                 )
                 AppsMenu(
