@@ -49,7 +49,8 @@ fun AppsMenu(
     position = WindowPosition.Absolute(
         panelState.bounds.x,
         api.containerSize.height - (panelState.bounds.height + appMenuMinHeight)
-    )
+    ),
+    onFocusChange = { focus -> if (!focus) menuState.hide() }
 ) {
     Box(
         modifier = Modifier

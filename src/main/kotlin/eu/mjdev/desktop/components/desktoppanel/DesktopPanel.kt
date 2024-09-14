@@ -53,7 +53,7 @@ fun DesktopPanel(
     panelState: VisibilityState = rememberVisibilityState(),
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
-
+    menuState: VisibilityState = rememberVisibilityState(),
     tooltipData: MutableState<Any?> = mutableStateOf(null),
     onTooltip: (item: Any?) -> Unit = { item -> tooltipData.value = item },
     panelHeight: (visible: Boolean) -> Dp = { visible ->
@@ -68,7 +68,8 @@ fun DesktopPanel(
     size = DpSize(
         api.containerSize.width,
         panelHeight(panelState.isVisible)
-    )
+    ),
+    onFocusChange = { focus -> if (!focus && !menuState.isVisible) panelState.hide() }
 ) {
     SlidingMenu(
         modifier = Modifier.fillMaxWidth(),

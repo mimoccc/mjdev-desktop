@@ -56,7 +56,8 @@ fun ControlCenter(
         DpSize(controlCenterExpandedWidth, api.containerSize.height)
     } else {
         DpSize(controlCenterDividerWidth, api.containerSize.height)
-    }
+    },
+    onFocusChange = { focus -> if (!focus) controlCenterState.hide() }
 ) {
     SlidingMenu(
         modifier = Modifier.fillMaxHeight(),

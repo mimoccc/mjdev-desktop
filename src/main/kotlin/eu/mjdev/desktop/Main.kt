@@ -30,6 +30,7 @@ fun main() = application(
                 menuState = menuState
             ) {
                 DesktopPanel(
+                    menuState = menuState,
                     panelState = panelState,
                     onMenuIconClicked = {
                         menuState.toggle()
