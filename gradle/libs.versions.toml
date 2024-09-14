@@ -15,6 +15,9 @@ kotlin = "1.9.22"
 compose = "1.7.0-alpha03"
 okhttp3 = "5.0.0-alpha.12"
 materialKolor = "1.7.0"
+coil3 = "3.0.0-alpha06"
+ktor = "3.0.0-wasm2"
+kotlinxCoroutinesSwing = "1.8.0"
 #generativeai = "0.5.0-1.0.0-wasm"
 #compose-webview = "1.9.20"
 #decompose = "3.0.0-alpha07"
@@ -25,6 +28,12 @@ gradle-api = { module = "com.android.tools.build:gradle-api", version.ref = "gra
 #gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 #dbus-java-core = { module = "com.github.hypfvieh:dbus-java-core", version = "5.0.0" }
 #dbus-java-transport-native-unixsocket = { module = "com.github.hypfvieh:dbus-java-transport-native-unixsocket", version = "5.0.0" }
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3" }
+coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil3" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil3" }
+coil-mp = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
+#coil-gif = { module = "io.coil-kt.coil3:coil-gif", version = "2.2.7" }
 mozilla-rhino = { module = "org.mozilla:rhino", version = "1.7.13" }
 okhttp-client = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp3" }
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
@@ -34,7 +43,9 @@ font-icons-awesome = { module = "br.com.devsrsouza.compose.icons:font-awesome-de
 #decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 #decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
 ini4j = { module = "org.ini4j:ini4j", version = "0.5.4" }
+kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinxCoroutinesSwing" }
 #google-generativeai = { module = "dev.shreyaspatil.generativeai:generativeai-google-jvm", version.ref = "generativeai" }
+glide = { module = "com.github.bumptech.glide:glide", version = "4.16.0" }
 
 #// open ai
 #//        implementation("com.aallam.openai:openai-client:3.8.2")

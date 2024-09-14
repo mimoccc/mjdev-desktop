@@ -3,10 +3,9 @@ package eu.mjdev.desktop
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.application
 import eu.mjdev.desktop.components.appsmenu.AppsMenu
+import eu.mjdev.desktop.components.controlcenter.ControlCenter
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanel
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.provider.DesktopProvider
@@ -17,8 +16,8 @@ fun main() = application(
     exitProcessOnExit = true
 ) {
     val scope = rememberCoroutineScope()
-    val controlCenterState = rememberVisibilityState(enabled = false, startState = true)
-    val panelState = rememberVisibilityState(enabled = false, startState = true)
+    val controlCenterState = rememberVisibilityState()
+    val panelState = rememberVisibilityState()
     val menuState = rememberVisibilityState()
 
     MaterialTheme {
@@ -31,7 +30,6 @@ fun main() = application(
                 menuState = menuState
             ) {
                 DesktopPanel(
-                    modifier = Modifier.align(Alignment.BottomCenter),
                     panelState = panelState,
                     onMenuIconClicked = {
                         menuState.toggle()
@@ -41,10 +39,9 @@ fun main() = application(
                     menuState = menuState,
                     panelState = panelState
                 )
-//                ControlCenter(
-//                    modifier = Modifier.align(Alignment.TopEnd),
-//                    controlCenterState = controlCenterState
-//                )
+                ControlCenter(
+                    controlCenterState = controlCenterState
+                )
             }
         }
     }

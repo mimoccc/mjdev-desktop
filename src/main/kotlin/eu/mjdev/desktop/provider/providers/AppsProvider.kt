@@ -104,7 +104,9 @@ class AppsProvider(
     val allApps
         get() = allAppsDesktopFiles.map { file -> App(desktopFile = file, file = file.file) }
     val backgrounds
-        get() = runCatching { backgroundFilesDir?.listFiles()?.toList() }.getOrNull() ?: emptyList<File>()
+        get() = runCatching {
+            backgroundFilesDir?.listFiles()?.toList()?.sortedBy { it.name }
+        }.getOrNull() ?: emptyList<File>()
     val appCategories
         get() = mutableListOf<String>().apply {
             allApps.forEach { app ->
@@ -133,7 +135,8 @@ class AppsProvider(
                 "favorite-apps"
             ).execute()?.toList<String>()?.map { deskFileName ->
                 allAppsDesktopFiles.filter { deskFile ->
-                    deskFile.file.name.contentEquals(deskFileName) == true
+                    @Suppress("PlatformExtensionReceiverOfInline")
+                    deskFile.file.name.contentEquals(deskFileName)
                 }.map { deskFile ->
                     App(desktopFile = deskFile, file = deskFile.file)
                 }.firstOrNull()

@@ -21,7 +21,7 @@ import javax.script.ScriptEngineManager
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "PrivatePropertyName", "SameParameterValue")
 class DesktopProvider(
-    private val scope: CoroutineScope? = null,
+    private val scope: CoroutineScope? = null
 ) {
     private val __currentUser: User by lazy { User.load() }
     private val _currentUser: MutableState<User> = mutableStateOf(__currentUser)
@@ -36,6 +36,7 @@ class DesktopProvider(
             // todo
         }
     }
+
 
 //    val adbHandler = adbDevicesHandler(
 //        coroutineScope = scope
@@ -130,6 +131,7 @@ class DesktopProvider(
             DisplaySettingsPage(),
             SoundSettingsPage()
         )
+
         val LocalDesktop = compositionLocalOf {
             DesktopProvider()
         }

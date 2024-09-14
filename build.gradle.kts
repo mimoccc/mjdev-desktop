@@ -24,6 +24,8 @@ allprojects {
         mavenCentral()
     }
     dependencies {
+//        implementation(libs.ktor.java)
+        runtimeOnly(libs.kotlinx.coroutines.swing)
         // reflection
         implementation(kotlin("reflect"))
         // compose desktop
@@ -42,6 +44,16 @@ allprojects {
         implementation(libs.ini4j)
         // http client
         implementation(libs.okhttp.client)
+        // ktor wasm
+        implementation(libs.ktor.client.core)
+        // coil
+        implementation(libs.coil.compose.core)
+        implementation(libs.coil.compose)
+        implementation(libs.coil.mp)
+//        implementation(libs.coil.gif)
+        implementation(libs.coil.network.ktor)
+        // glide
+//        implementation(libs.glide)
         // palette
         implementation(libs.material.kolor)
         // json
@@ -55,6 +67,7 @@ allprojects {
         // implementation(libs.google.generativeai)
         // no log
         implementation("org.slf4j:slf4j-nop:2.0.7")
+        // fuzzy search
         implementation("me.xdrop:fuzzywuzzy:1.4.0")
 
 //        implementation("com.github.SmartToolFactory:Compose-Extended-Colors:1.0.0-alpha06")

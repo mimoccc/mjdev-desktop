@@ -9,6 +9,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.*
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.compose.LocalPlatformContext
+import coil3.memory.MemoryCache
+import coil3.request.CachePolicy
 import kotlinx.coroutines.CoroutineScope
 
 object Compose {
@@ -84,5 +89,27 @@ object Compose {
         disabledContentColor = Color.Transparent,
         disabledBackgroundColor = Color.Transparent
     )
+
+    @Composable
+    fun imageLoaderContext() = LocalPlatformContext.current
+
+    @Composable
+    fun imageLoaderMemoryCache() = MemoryCache.Builder()
+        .maxSizePercent(imageLoaderContext(), 0.3)
+        .strongReferencesEnabled(true)
+        .build()
+
+    @Composable
+    fun AsyncImageLoader(
+        imageLoaderContext: PlatformContext = imageLoaderContext(),
+        imageLoaderMemoryCache: MemoryCache = imageLoaderMemoryCache()
+    ) = ImageLoader.Builder(imageLoaderContext)
+        .memoryCachePolicy(CachePolicy.ENABLED)
+        .components {
+//            add(SvgDecoder.Factory())
+//            add(GifDecoder.Factory())
+        }
+        .memoryCache { imageLoaderMemoryCache }
+        .build()
 
 }

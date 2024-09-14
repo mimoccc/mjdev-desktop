@@ -35,8 +35,11 @@ class Theme(
 ) {
 
     val backgroundColorState = mutableStateOf(backgroundColor)
+    val backgroundRotationDelayState = mutableStateOf(backgroundRotationDelay)
+
     val panelLocationState = mutableStateOf(panelLocation)
     val panelHideDelayState = mutableStateOf(panelHideDelay)
+
     val controlCenterLocationState = mutableStateOf(controlCenterLocation)
     val controlPanelHideDelayState = mutableStateOf(controlPanelHideDelay)
     var controlCenterExpandedWidthState = mutableStateOf(controlCenterExpandedWidth)
@@ -44,9 +47,8 @@ class Theme(
     val controlCenterDividerWidthState = mutableStateOf(controlCenterDividerWidth)
     val controlCenterIconColorState = mutableStateOf(controlCenterIconColor)
     val controlCenterIconSizeState = mutableStateOf(controlCenterIconSize)
+
     val iconSetState = mutableStateOf(iconSet)
-    val backgroundRotationDelayState = mutableStateOf(backgroundRotationDelay)
-    val controlCenterBackgroundAlphaState = mutableStateOf(controlCenterBackgroundAlpha)
 
     val appMenuMinWidthState = mutableStateOf(appMenuMinWidth)
     val appMenuMinHeightState = mutableStateOf(appMenuMinHeight)
@@ -57,8 +59,11 @@ class Theme(
         set(value) {
             backgroundColorState.value = value
         }
+
     val panelLocation get() = panelLocationState.value
     val panelHideDelay get() = panelHideDelayState.value
+
+    val controlCenterBackgroundAlphaState = mutableStateOf(controlCenterBackgroundAlpha)
     val controlCenterLocation get() = controlCenterLocationState.value
     val controlPanelHideDelay get() = controlPanelHideDelayState.value
     var controlCenterExpandedWidth
@@ -71,7 +76,9 @@ class Theme(
     val controlCenterIconColor get() = controlCenterIconColorState.value
     val controlCenterIconSize get() = controlCenterIconSizeState.value
     val controlCenterBackgroundAlpha get() = controlCenterBackgroundAlphaState.value
+
     val iconSet get() = iconSetState.value
+
     val backgroundRotationDelay get() = backgroundRotationDelayState.value
 
     val appMenuMinWidth get() = appMenuMinWidthState.value
