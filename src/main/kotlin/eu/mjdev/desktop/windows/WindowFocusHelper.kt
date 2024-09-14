@@ -2,10 +2,11 @@ package eu.mjdev.desktop.windows
 
 import androidx.compose.ui.awt.ComposeWindow
 import java.awt.event.WindowEvent
-import java.awt.event.WindowEvent.WINDOW_CLOSED
+import java.awt.event.WindowEvent.*
 import java.awt.event.WindowFocusListener
 import java.awt.event.WindowStateListener
 
+@Suppress("MemberVisibilityCanBePrivate")
 class WindowFocusHelper(
     val onFocusChange: WindowFocusHelper.(window: ComposeWindow?, focus: Boolean) -> Unit
 ) : WindowFocusListener, WindowStateListener {
@@ -35,6 +36,8 @@ class WindowFocusHelper(
         when (e?.newState) {
             null -> Unit
             WINDOW_CLOSED -> window?.let { unregister(it) }
+            WINDOW_ACTIVATED -> onFocusChange(window, true)
+            WINDOW_DEACTIVATED -> onFocusChange(window, false)
         }
     }
 }

@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent.WINDOW_CLOSED
 import java.awt.event.WindowEvent.WINDOW_OPENED
 import java.awt.event.WindowStateListener
 
+@Suppress("MemberVisibilityCanBePrivate")
 class WindowStateHelper(
     val onOpened: WindowStateHelper.(window: ComposeWindow?) -> Unit = {},
     val onClosed: WindowStateHelper.(window: ComposeWindow?) -> Unit = {},
@@ -79,5 +80,9 @@ class WindowStateHelper(
                 // todo
             }
         }
+    }
+
+    fun requestFocus() {
+        window?.requestFocus()
     }
 }

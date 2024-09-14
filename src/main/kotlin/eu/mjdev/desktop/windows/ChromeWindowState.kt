@@ -21,11 +21,11 @@ class ChromeWindowState(
     var onOpened: MutableList<() -> Unit> = mutableStateListOf()
     var onClosed: MutableList<() -> Unit> = mutableStateListOf()
 
-    val focusHelper: WindowFocusHelper = WindowFocusHelper({ _, focus ->
+    val focusHelper: WindowFocusHelper = WindowFocusHelper { _, focus ->
         this@ChromeWindowState.onFocusChange.forEach {
             it.invoke(focus)
         }
-    })
+    }
 
     val stateHelper: WindowStateHelper = WindowStateHelper({
         setSize(size)
@@ -56,6 +56,10 @@ class ChromeWindowState(
     @Suppress("CanBePrimaryConstructorProperty")
     override var placement: WindowPlacement = placement
     override var isMinimized: Boolean = false
+
+    fun requestFocus() {
+        stateHelper.requestFocus()
+    }
 
     fun updatePositionAndSize() {
         stateHelper.setSize(size)

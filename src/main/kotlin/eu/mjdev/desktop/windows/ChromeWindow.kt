@@ -111,13 +111,14 @@ fun ChromeWindow(
 ) {
     val animState = rememberAnimState(visible)
     val wnState = rememberWnState()
-    windowState.onOpened.add({
+    windowState.onOpened.add {
+        windowState.requestFocus()
         windowState.updatePositionAndSize()
         if (visible) {
             animState.value.targetState = true
         }
         onOpened()
-    })
+    }
     windowState.onClosed.add(onClosed)
     windowState.onFocusChange.add(onFocusChange)
     WindowEx(
