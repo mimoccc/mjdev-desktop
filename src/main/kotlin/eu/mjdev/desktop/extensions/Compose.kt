@@ -100,7 +100,7 @@ object Compose {
         .build()
 
     @Composable
-    fun AsyncImageLoader(
+    fun asyncImageLoader(
         imageLoaderContext: PlatformContext = imageLoaderContext(),
         imageLoaderMemoryCache: MemoryCache = imageLoaderMemoryCache()
     ) = ImageLoader.Builder(imageLoaderContext)

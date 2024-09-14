@@ -67,8 +67,17 @@ allprojects {
         implementation(libs.coil.compose.core)
         implementation(libs.coil.compose)
         implementation(libs.coil.mp)
+        implementation(libs.coil.svg)
 //        implementation(libs.coil.gif)
         implementation(libs.coil.network.okhttp)
+        // video vlc
+        implementation("uk.co.caprica:vlcj:4.8.2")
+        // media player
+        implementation("io.github.khubaibkhan4:mediaplayer-kmp:1.0.9")
+        // music
+        implementation(libs.korau)
+        // gif
+//        implementation(libs.accompanist.drawablepainter)
         // glide
 //        implementation(libs.glide)
 //        implementation(libs.landscapist.glide)

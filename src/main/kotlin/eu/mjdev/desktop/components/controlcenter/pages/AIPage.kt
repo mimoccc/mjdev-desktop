@@ -10,8 +10,8 @@ import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 @Suppress("FunctionName")
 fun AIPage() = ControlCenterPage(
     icon = Icons.Filled.Campaign,
-    name = "Bluetooth"
-) { backgroundColor ->
+    name = "AI"
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {

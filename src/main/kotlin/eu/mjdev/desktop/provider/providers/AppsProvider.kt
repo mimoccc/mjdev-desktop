@@ -26,6 +26,8 @@ class AppsProvider(
     private val allAppsDesktopFilesDir by lazy { localShareDir?.resolve("applications") }
     private val autostartDesktopFilesDir by lazy { configDir?.resolve("autoStart") }
     private val backgroundFilesDir by lazy { localShareDir?.resolve("backgrounds") }
+    // todo
+//    private val userBackgroundFilesDir by lazy { homeDir?.resolve("pictures") }
 
     private val menusDir by lazy { configDir?.resolve("menus") }
 

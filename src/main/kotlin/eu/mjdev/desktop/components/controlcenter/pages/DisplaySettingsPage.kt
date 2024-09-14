@@ -11,7 +11,7 @@ import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 fun DisplaySettingsPage() = ControlCenterPage(
     icon = Icons.Filled.ScreenshotMonitor,
     name = "Display"
-) { backgroundColor ->
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     )

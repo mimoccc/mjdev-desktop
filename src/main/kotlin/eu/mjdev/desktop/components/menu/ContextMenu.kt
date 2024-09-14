@@ -20,8 +20,8 @@ fun ContextMenu(
     backgroundColor: Color = Color.SuperDarkGray,
     textColor: Color = Color.White,
     contextMenuState: ContextMenuState,
-    onShow: () -> Unit = {},
-    onHide: () -> Unit = {},
+//    onShow: () -> Unit = {},
+//    onHide: () -> Unit = {},
     onMenuItemClick: (item: String) -> Unit = {}
 ) = listOf(
     contextMenuState.menuRenderCount,

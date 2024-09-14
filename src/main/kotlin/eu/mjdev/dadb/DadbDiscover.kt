@@ -9,7 +9,7 @@ class AdbDiscover(
     coroutineScope: CoroutineScope? = null,
     discoverDelay: Long = 1000L,
     onAdded: suspend (Dadb) -> Unit,
-    onRemoved: suspend (Dadb) -> Unit,
+//    onRemoved: suspend (Dadb) -> Unit,
 ) {
     val devices = mutableMapOf<String, Dadb>()
 
@@ -33,12 +33,12 @@ class AdbDiscover(
     companion object {
         fun adbDevicesHandler(
             coroutineScope: CoroutineScope? = null,
-            onRemoved: suspend (Dadb) -> Unit = {},
+//            onRemoved: suspend (Dadb) -> Unit = {},
             onAdded: suspend (Dadb) -> Unit = {},
         ) = AdbDiscover(
             coroutineScope = coroutineScope,
             onAdded = onAdded,
-            onRemoved = onRemoved
+//            onRemoved = onRemoved
         )
     }
 }

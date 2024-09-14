@@ -31,7 +31,7 @@ fun MainWindow(
     menuState: VisibilityState,
     api: DesktopProvider = LocalDesktop.current,
     palette: Palette = rememberPalette(api.currentUser.theme.backgroundColor),
-    onDesktopMenuShow: () -> Unit = {},
+//    onDesktopMenuShow: () -> Unit = {},
     contextMenuState: ContextMenuState = rememberContextMenuState("item1", "item2"),
     content: @Composable BoxScope.() -> Unit = {}
 ) = FullScreenWindow {
@@ -72,8 +72,8 @@ fun MainWindow(
     ContextMenu(
         contextMenuState = contextMenuState,
         onMenuItemClick = { item -> log { "Context menu : $item" } },
-        onShow = { onDesktopMenuShow() },
-        onHide = {}
+//        onShow = { onDesktopMenuShow() },
+//        onHide = {}
     )
 //    launchedEffect {
 //        runCatching {

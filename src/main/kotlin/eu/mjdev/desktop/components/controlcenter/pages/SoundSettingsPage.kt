@@ -11,7 +11,7 @@ import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 fun SoundSettingsPage() = ControlCenterPage(
     icon = Icons.Filled.Headphones,
     name = "Sound"
-) { backgroundColor ->
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     )

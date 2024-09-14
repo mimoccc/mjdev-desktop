@@ -8,6 +8,7 @@ import eu.mjdev.desktop.components.appsmenu.AppsMenu
 import eu.mjdev.desktop.components.controlcenter.ControlCenter
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanel
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.windows.MainWindow
@@ -20,16 +21,16 @@ fun main() = application(
     val panelState = rememberVisibilityState()
     val menuState = rememberVisibilityState()
 
-    val handleMenuFocus: (Boolean) -> Unit = { focus ->
+    val handleMenuFocus: (Boolean) -> Unit = {
         if (!menuState.isWindowFocus) {
             menuState.hide()
         }
     }
 
-    val handlePanelFocus: (Boolean) -> Unit = { focus ->
+    val handlePanelFocus: (Boolean) -> Unit = {
     }
 
-    val handleControlCenterFocus: (Boolean) -> Unit = { focus ->
+    val handleControlCenterFocus: (Boolean) -> Unit = {
         if (!controlCenterState.isWindowFocus) {
             controlCenterState.hide()
         }
@@ -37,7 +38,10 @@ fun main() = application(
 
     MaterialTheme {
         CompositionLocalProvider(
-            LocalDesktop provides DesktopProvider(scope)
+            LocalDesktop provides DesktopProvider(
+                scope = scope,
+                imageLoader = asyncImageLoader()
+            ),
         ) {
             MainWindow(
                 panelState = panelState,

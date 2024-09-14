@@ -10,8 +10,8 @@ import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 @Suppress("FunctionName")
 fun DevicesPage() = ControlCenterPage(
     icon = Icons.Filled.MobileFriendly,
-    name = "Bluetooth"
-) { backgroundColor ->
+    name = "Connected devices"
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {

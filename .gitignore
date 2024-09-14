@@ -43,3 +43,7 @@ src/main/resources/dependencies/linux/usr/share/backgrounds
 src/main/resources/keys
 /src/main/resources/keys
 /src/main/resources/keys/
+
+### out ###
+/out
+/out/
