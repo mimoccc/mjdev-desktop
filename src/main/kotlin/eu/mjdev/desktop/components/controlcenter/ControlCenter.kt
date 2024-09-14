@@ -117,7 +117,7 @@ fun ControlCenter(
                         }
                         RightShadow(
                             modifier = Modifier.padding(
-                                end = controlCenterIconSize.width + 18.dp
+                                end = controlCenterIconSize.width + 16.dp
                             ).fillMaxHeight().wrapContentSize(),
                             color = Color.Red,
                             alpha = 0.3f,
