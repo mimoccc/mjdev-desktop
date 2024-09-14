@@ -26,6 +26,7 @@ import eu.mjdev.desktop.extensions.Compose.noElevation
 @Preview
 @Composable
 fun DesktopPanelText(
+    modifier: Modifier = Modifier,
     text: String = "button",
     textColor: Color = Color.White,
     backgroundHover: Color = Color.Red,
@@ -34,7 +35,7 @@ fun DesktopPanelText(
     onToolTip: (item: Any?) -> Unit = {},
     onClick: () -> Unit,
 ) = Box(
-    modifier = Modifier
+    modifier = modifier
         .wrapContentSize()
         .onPointerEvent(PointerEventType.Enter) {
             buttonState.value = true

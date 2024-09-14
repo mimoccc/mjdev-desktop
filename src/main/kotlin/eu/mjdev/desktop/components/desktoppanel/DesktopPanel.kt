@@ -7,10 +7,10 @@ import androidx.compose.foundation.TooltipPlacement
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation.Vertical
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -21,6 +21,9 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
+import eu.mjdev.desktop.components.desktoppanel.applets.DesktopMenuIcon
+import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelFavoriteApps
+import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelLanguage
 import eu.mjdev.desktop.components.shadow.TopShadow
 import eu.mjdev.desktop.components.sliding.SlidingMenu
 import eu.mjdev.desktop.components.sliding.VisibilityState
@@ -50,9 +53,9 @@ fun DesktopPanel(
     panelState: VisibilityState = rememberVisibilityState(),
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
-    favoriteApps: State<List<App>> = api.appsProvider.favoriteApps.collectAsState(emptyList()),
+
     tooltipData: MutableState<Any?> = mutableStateOf(null),
-    onToolTip: (item: Any?) -> Unit = { item -> tooltipData.value = item },
+    onTooltip: (item: Any?) -> Unit = { item -> tooltipData.value = item },
     panelHeight: (visible: Boolean) -> Dp = { visible ->
         if (visible) iconSize.height + iconOuterPadding.height else dividerWidth
     },
@@ -102,7 +105,7 @@ fun DesktopPanel(
                     color = shadowColor,
                     contentBackgroundColor = backgroundColor.copy(alpha = panelAlpha)
                 ) {
-                    LazyRow(
+                    Box(
                         modifier = Modifier.fillMaxWidth().wrapContentHeight().background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
@@ -111,59 +114,36 @@ fun DesktopPanel(
                                     backgroundColor.copy(alpha = 0.3f),
                                 )
                             )
-                        ),
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
+                        )
                     ) {
                         if (showMenuIcon) {
-                            item {
-                                DesktopPanelIcon(
-                                    icon = "menu",
-                                    iconColor = iconColor,
-                                    iconBackgroundColor = iconBackgroundColor,
-                                    iconBackgroundHover = Color.White.copy(alpha = 0.4f),
-                                    iconSize = iconSize,
-                                    iconPadding = iconPadding,
-                                    iconOuterPadding = iconOuterPadding,
-                                    onToolTip = onToolTip,
-                                    onClick = {
-                                        onMenuIconClicked()
-                                    }
-                                )
-                                Divider(
-                                    modifier = Modifier
-                                        .padding(2.dp)
-                                        .height(iconSize.height - 8.dp)
-                                        .width(2.dp)
-                                        .background(Color.White.copy(alpha = 0.4f))
-                                )
-                            }
-                        }
-                        items(favoriteApps.value) { app ->
-                            DesktopPanelIcon(
-                                app = app,
+                            DesktopMenuIcon(
+                                modifier = Modifier.align(Alignment.CenterStart),
                                 iconColor = iconColor,
                                 iconBackgroundColor = iconBackgroundColor,
-                                iconBackgroundHover = Color.White.copy(alpha = 0.4f),
                                 iconSize = iconSize,
                                 iconPadding = iconPadding,
                                 iconOuterPadding = iconOuterPadding,
-                                onToolTip = onToolTip,
-                                onClick = {
-                                    app.start()
-                                }
+                                onTooltip = onTooltip,
+                                onClick = onMenuIconClicked
                             )
                         }
-                        item {
-                            DesktopPanelText(
-                                text = api.appsProvider.currentLocale.country,
-                                backgroundHover = Color.White.copy(alpha = 0.4f),
-                                onToolTip = onToolTip,
-                                onClick = {
-                                    // todo
-                                }
-                            )
-                        }
+                        DesktopPanelFavoriteApps(
+                            modifier = Modifier.align(Alignment.Center),
+                            iconColor = iconColor,
+                            iconBackgroundColor = iconBackgroundColor,
+                            iconSize = iconSize,
+                            iconPadding = iconPadding,
+                            iconOuterPadding = iconOuterPadding,
+                            onTooltip = onTooltip
+                        )
+                        DesktopPanelLanguage(
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            onTooltip = onTooltip,
+                            onClick = {
+                                // todo
+                            }
+                        )
                     }
                 }
             }
