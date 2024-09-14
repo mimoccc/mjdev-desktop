@@ -42,6 +42,7 @@ fun AppsMenu(
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     items: MutableState<List<Any>> = remember(api.appsProvider) { mutableStateOf(api.appsProvider.appCategories) },
+    onFocusChange: (Boolean) -> Unit = {},
 ) = ChromeWindow(
     visible = menuState.isVisible,
     enterAnimation = enterAnimation,
@@ -50,7 +51,10 @@ fun AppsMenu(
         panelState.bounds.x,
         api.containerSize.height - (panelState.bounds.height + appMenuMinHeight)
     ),
-    onFocusChange = { focus -> if (!focus) menuState.hide() }
+    onFocusChange = { focused ->
+        menuState.onFocusChange(focused)
+        onFocusChange(focused)
+    }
 ) {
     Box(
         modifier = Modifier
@@ -59,9 +63,7 @@ fun AppsMenu(
                 min = appMenuMinHeight,
                 max = appMenuMinHeight
             )
-            .onPlaced {
-                // menuState.bounds = it.toDPBounds()
-            }
+            .onPlaced(menuState::onPlaced)
     ) {
         Box(
             modifier = Modifier

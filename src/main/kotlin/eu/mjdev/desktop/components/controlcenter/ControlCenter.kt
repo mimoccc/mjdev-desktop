@@ -47,6 +47,7 @@ fun ControlCenter(
     scope: CoroutineScope = rememberCoroutineScope(),
     enterAnimation: EnterTransition = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
     exitAnimation: ExitTransition = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
+    onFocusChange: (Boolean) -> Unit = {},
 ) = ChromeWindow(
     visible = true,
     enterAnimation = enterAnimation,
@@ -57,7 +58,10 @@ fun ControlCenter(
     } else {
         DpSize(controlCenterDividerWidth, api.containerSize.height)
     },
-    onFocusChange = { focus -> if (!focus) controlCenterState.hide() }
+    onFocusChange = { focused ->
+        controlCenterState.onFocusChange(focused)
+        onFocusChange(focused)
+    }
 ) {
     SlidingMenu(
         modifier = Modifier.fillMaxHeight(),

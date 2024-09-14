@@ -29,7 +29,6 @@ import eu.mjdev.desktop.components.sliding.SlidingMenu
 import eu.mjdev.desktop.components.sliding.VisibilityState
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.height
-import eu.mjdev.desktop.helpers.DpBounds.Companion.toDpBounds
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.provider.data.App
@@ -53,13 +52,13 @@ fun DesktopPanel(
     panelState: VisibilityState = rememberVisibilityState(),
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
-    menuState: VisibilityState = rememberVisibilityState(),
     tooltipData: MutableState<Any?> = mutableStateOf(null),
     onTooltip: (item: Any?) -> Unit = { item -> tooltipData.value = item },
     panelHeight: (visible: Boolean) -> Dp = { visible ->
         if (visible) iconSize.height + iconOuterPadding.height else dividerWidth
     },
     onMenuIconClicked: () -> Unit = {},
+    onFocusChange: (Boolean) -> Unit = {},
 ) = ChromeWindow(
     visible = true,
     enterAnimation = enterAnimation,
@@ -69,7 +68,10 @@ fun DesktopPanel(
         api.containerSize.width,
         panelHeight(panelState.isVisible)
     ),
-    onFocusChange = { focus -> if (!focus && !menuState.isVisible) panelState.hide() }
+    onFocusChange = { focused ->
+        panelState.onFocusChange(focused)
+        onFocusChange(focused)
+    }
 ) {
     SlidingMenu(
         modifier = Modifier.fillMaxWidth(),
@@ -100,9 +102,9 @@ fun DesktopPanel(
                 )
             ) {
                 TopShadow(
-                    modifier = Modifier.fillMaxWidth().wrapContentHeight().onPlaced {
-                        panelState.bounds = it.toDpBounds()
-                    },
+                    modifier = Modifier.fillMaxWidth()
+                        .wrapContentHeight()
+                        .onPlaced(panelState::onPlaced),
                     color = shadowColor,
                     contentBackgroundColor = backgroundColor.copy(alpha = panelAlpha)
                 ) {

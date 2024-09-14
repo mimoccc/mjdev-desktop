@@ -20,6 +20,21 @@ fun main() = application(
     val panelState = rememberVisibilityState()
     val menuState = rememberVisibilityState()
 
+    val handleMenuFocus: (Boolean) -> Unit = { focus ->
+        if (!menuState.isWindowFocus) {
+            menuState.hide()
+        }
+    }
+
+    val handlePanelFocus: (Boolean) -> Unit = { focus ->
+    }
+
+    val handleControlCenterFocus: (Boolean) -> Unit = { focus ->
+        if (!controlCenterState.isWindowFocus) {
+            controlCenterState.hide()
+        }
+    }
+
     MaterialTheme {
         CompositionLocalProvider(
             LocalDesktop provides DesktopProvider(scope)
@@ -30,18 +45,18 @@ fun main() = application(
                 menuState = menuState
             ) {
                 DesktopPanel(
-                    menuState = menuState,
                     panelState = panelState,
-                    onMenuIconClicked = {
-                        menuState.toggle()
-                    }
+                    onMenuIconClicked = { menuState.toggle() },
+                    onFocusChange = { focus -> handlePanelFocus(focus) }
                 )
                 AppsMenu(
                     menuState = menuState,
-                    panelState = panelState
+                    panelState = panelState,
+                    onFocusChange = { focus -> handleMenuFocus(focus) }
                 )
                 ControlCenter(
-                    controlCenterState = controlCenterState
+                    controlCenterState = controlCenterState,
+                    onFocusChange = { focus -> handleControlCenterFocus(focus) }
                 )
             }
         }

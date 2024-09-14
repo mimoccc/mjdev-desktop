@@ -1,8 +1,10 @@
 package eu.mjdev.desktop.components.sliding
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.unit.DpSize
 import eu.mjdev.desktop.helpers.DpBounds
+import eu.mjdev.desktop.helpers.DpBounds.Companion.toDpBounds
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import kotlinx.coroutines.CoroutineScope
@@ -17,12 +19,12 @@ class VisibilityState(
 ) {
     val visibleState: MutableState<Boolean> = mutableStateOf(startState)
     val boundsState: MutableState<DpBounds> = mutableStateOf(DpBounds.Zero)
+    val focusState: MutableState<Boolean> = mutableStateOf(false)
 
     var bounds: DpBounds
         get() = boundsState.value
         set(value) {
             boundsState.value = value
-            println("Bounds : $value")
         }
 
     var isVisible: Boolean
@@ -34,6 +36,9 @@ class VisibilityState(
                 println("Visible state disabled, can not set value.")
             }
         }
+
+    val isWindowFocus
+        get() = isVisible && focusState.value
 
     fun show() {
         if (!isVisible) {
@@ -53,6 +58,14 @@ class VisibilityState(
 
     fun toggle() {
         visibleState.value = !visibleState.value
+    }
+
+    fun onPlaced(lc: LayoutCoordinates) {
+        bounds = lc.toDpBounds()
+    }
+
+    fun onFocusChange(focus: Boolean) {
+        focusState.value = focus
     }
 
     companion object {
