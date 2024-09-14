@@ -70,19 +70,11 @@ allprojects {
         implementation(libs.coil.svg)
 //        implementation(libs.coil.gif)
         implementation(libs.coil.network.okhttp)
-        // video vlc
-        implementation("uk.co.caprica:vlcj:4.8.2")
-        // media player
-        implementation("io.github.khubaibkhan4:mediaplayer-kmp:1.0.9")
+        // ffmpeg
+        implementation("org.bytedeco:ffmpeg-platform:6.1.1-1.5.10")
         // music
-        implementation(libs.korau)
-        // gif
-//        implementation(libs.accompanist.drawablepainter)
-        // glide
-//        implementation(libs.glide)
-//        implementation(libs.landscapist.glide)
+//        implementation(libs.korau)
         // palette
-//        implementation(libs.landscapist.palette)
         implementation(libs.material.kolor)
         // json
         implementation(libs.google.gson)

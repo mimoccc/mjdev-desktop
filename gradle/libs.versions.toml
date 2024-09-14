@@ -18,7 +18,7 @@ materialKolor = "1.7.0"
 coil3 = "3.0.0-alpha06"
 ktor = "3.0.0-wasm2"
 kotlinxCoroutinesSwing = "1.8.0"
-korau = "4.0.10"
+#korau = "4.0.10"
 #lanscapist = "2.3.8"
 #generativeai = "0.5.0-1.0.0-wasm"
 #compose-webview = "1.9.20"
@@ -39,8 +39,8 @@ coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil3" }
 coil-mp = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil3" }
-coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil3" }
-korau = { module = "com.soywiz.korlibs.korau:korau", version.ref = "korau" }
+#coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil3" }
+#korau = { module = "com.soywiz.korlibs.korau:korau", version.ref = "korau" }
 #accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version = "0.35.0-alpha" }
 #coil-gif = { module = "io.coil-kt.coil3:coil-gif", version = "2.2.7" }
 #landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version.ref = "lanscapist" }

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import java.io.File
@@ -14,11 +13,11 @@ import java.io.File
 fun VideoPlayerView(
     modifier: Modifier = Modifier,
     src: Any?,
-    alignment: Alignment,
-    alpha: Float,
-    contentDescription: String?,
-    colorFilter: ColorFilter?,
-    contentScale: ContentScale,
+    alignment: Alignment = Alignment.Center,
+    alpha: Float = 1f,
+    contentDescription: String? = "",
+    colorFilter: ColorFilter? = null,
+    contentScale: ContentScale = ContentScale.Crop,
     onFail: (Throwable) -> Unit = { e -> e.printStackTrace() }
 ) = Box(
     modifier = modifier,
@@ -29,18 +28,8 @@ fun VideoPlayerView(
         is File -> src.absolutePath
         else -> src.toString()
     }
-    VideoPlayerDirect(
-        modifier = Modifier.alpha(alpha).align(alignment),
-        url = mediaUrl
+    VideoPlayerFFMpeg(
+        modifier = Modifier.align(alignment),
+        file = mediaUrl
     )
-//    runCatching {
-//        DesktopWebView(
-//            modifier = Modifier.alpha(alpha).align(alignment),
-//            url = mediaUrl
-//        ) {
-//            println("Loading Video: $it")
-//        }
-//    }.onFailure { e->
-//        onFail(e)
-//    }
 }
