@@ -31,9 +31,14 @@ fun main() = application(
 
     }
 
-    val handleControlCenterFocus: (Boolean) -> Unit = {
-        if (!controlCenterState.isWindowFocus) {
-            controlCenterState.hide()
+    val handleControlCenterFocus: (Boolean) -> Unit = { focus ->
+        if (focus) {
+//            menuState.hide()
+//            panelState.hide()
+        } else {
+            if (!controlCenterState.isWindowFocus) {
+                controlCenterState.hide()
+            }
         }
     }
 

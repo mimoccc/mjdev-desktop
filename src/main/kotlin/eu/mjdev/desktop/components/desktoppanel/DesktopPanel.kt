@@ -58,7 +58,7 @@ fun DesktopPanel(
     onTooltip: (item: Any?) -> Unit = { item -> tooltipData.value = item },
     panelHeight: (visible: Boolean) -> Dp = { visible ->
         if (visible)
-            iconSize.height + iconOuterPadding.height + tooltipHeight + panelContentPadding.height + 10.dp
+            iconSize.height + iconOuterPadding.height + tooltipHeight + panelContentPadding.height + 6.dp
         else
             dividerWidth
     },
