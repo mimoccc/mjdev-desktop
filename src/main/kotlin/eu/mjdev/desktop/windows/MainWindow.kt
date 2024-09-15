@@ -34,7 +34,12 @@ fun MainWindow(
 //    onDesktopMenuShow: () -> Unit = {},
     contextMenuState: ContextMenuState = rememberContextMenuState("item1", "item2"),
     content: @Composable BoxScope.() -> Unit = {}
-) = FullScreenWindow {
+) = FullScreenWindow(
+    onFocusChange = {
+        // todo better solution
+        window?.toBack()
+    }
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()

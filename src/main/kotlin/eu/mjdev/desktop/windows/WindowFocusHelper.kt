@@ -24,10 +24,6 @@ class WindowFocusHelper(
         window.removeWindowStateListener(this)
     }
 
-    fun requestFocus() {
-        window?.requestFocus()
-    }
-
     override fun windowGainedFocus(e: WindowEvent?) {
         onFocusChange(window, true)
     }

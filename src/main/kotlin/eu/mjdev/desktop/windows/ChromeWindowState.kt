@@ -17,13 +17,13 @@ class ChromeWindowState(
     closeAction: WindowCloseAction,
 ) : WindowState {
 
-    var onFocusChange: MutableList<(focus: Boolean) -> Unit> = mutableStateListOf()
+    var onFocusChange: MutableList<ChromeWindowState.(focus: Boolean) -> Unit> = mutableStateListOf()
     var onOpened: MutableList<() -> Unit> = mutableStateListOf()
     var onClosed: MutableList<() -> Unit> = mutableStateListOf()
 
     val focusHelper: WindowFocusHelper = WindowFocusHelper { _, focus ->
         this@ChromeWindowState.onFocusChange.forEach {
-            it.invoke(focus)
+            it.invoke(this@ChromeWindowState, focus)
         }
     }
 
@@ -37,6 +37,9 @@ class ChromeWindowState(
             it.invoke()
         }
     })
+
+    val window
+        get() = stateHelper.window
 
     @Suppress("CanBePrimaryConstructorProperty")
     val closeAction: WindowCloseAction = closeAction

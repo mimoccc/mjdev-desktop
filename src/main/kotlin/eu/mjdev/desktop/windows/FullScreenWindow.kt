@@ -12,6 +12,8 @@ import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindow
 @Composable
 fun FullScreenWindow(
     api: DesktopProvider = LocalDesktop.current,
+    enabled: Boolean = true,
+    focusable: Boolean = true,
     onCloseRequest: () -> Unit = {},
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
     onKeyEvent: (KeyEvent) -> Boolean = { false },
@@ -20,18 +22,19 @@ fun FullScreenWindow(
         size = api.containerSize,
         position = WindowPosition.Aligned(Alignment.Center)
     ),
+    onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     content: @Composable ChromeWindowScope.() -> Unit = {}
 ) = ChromeWindow(
     windowState = windowState,
+    enabled = enabled,
     resizable = false,
     transparent = true,
+    focusable = focusable,
     visible = true,
-    focusable = false,
     alwaysOnTop = false,
     onPreviewKeyEvent = onPreviewKeyEvent,
     onKeyEvent = onKeyEvent,
     onCloseRequest = onCloseRequest,
-    onFocusChange = {
-    },
+    onFocusChange = onFocusChange,
     content = content
 )

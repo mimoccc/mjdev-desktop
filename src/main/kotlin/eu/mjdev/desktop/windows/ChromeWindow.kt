@@ -30,7 +30,7 @@ fun ChromeWindow(
     onCloseRequest: () -> Unit = {},
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
     onKeyEvent: (KeyEvent) -> Boolean = { false },
-    onFocusChange: (Boolean) -> Unit = {},
+    onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     onOpened: () -> Unit = {},
     onClosed: () -> Unit = {},
     content: @Composable ChromeWindowScope.() -> Unit = {}
@@ -68,7 +68,7 @@ fun ChromeWindow(
     onCloseRequest: () -> Unit = {},
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
     onKeyEvent: (KeyEvent) -> Boolean = { false },
-    onFocusChange: (Boolean) -> Unit = {},
+    onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     onOpened: () -> Unit = {},
     onClosed: () -> Unit = {},
     content: @Composable ChromeWindowScope.() -> Unit = {}
@@ -105,7 +105,7 @@ fun ChromeWindow(
     onCloseRequest: () -> Unit = {},
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
     onKeyEvent: (KeyEvent) -> Boolean = { false },
-    onFocusChange: (Boolean) -> Unit = {},
+    onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     onOpened: () -> Unit = {},
     onClosed: () -> Unit = {},
     content: @Composable ChromeWindowScope.() -> Unit = {}
@@ -113,7 +113,9 @@ fun ChromeWindow(
     val animState = rememberAnimState(visible)
     val wnState = rememberWnState()
     windowState.onOpened.add {
-        windowState.requestFocus()
+        if (focusable) {
+            windowState.requestFocus()
+        }
         windowState.updatePositionAndSize()
         if (visible) {
             animState.value.targetState = true
