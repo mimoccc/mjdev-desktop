@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.mjdev.gradle.extensions.ProjectExt.createTask
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -76,6 +75,17 @@ allprojects {
 //        implementation("com.github.SmartToolFactory:Compose-Extended-Gestures:2.0.0")
 //        implementation ("androidx.compose.ui:ui-text-google-fonts:1.6.8")
     }
+}
+
+fun Project.createTask(
+    name: String,
+    group: String = "mjdev",
+    description: String = "",
+    configureAction: Task.() -> Unit
+) = tasks.create(name).apply {
+    this.group = group
+    this.description = description
+    configureAction.invoke(this)
 }
 
 compose {
