@@ -7,6 +7,7 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.window.WindowPosition
+import eu.mjdev.desktop.windows.ChromeWindowScope.Companion.withChromeWindowScope
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberAnimState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberWnState
@@ -32,7 +33,7 @@ fun ChromeWindow(
     onFocusChange: (Boolean) -> Unit = {},
     onOpened: () -> Unit = {},
     onClosed: () -> Unit = {},
-    content: @Composable () -> Unit = {}
+    content: @Composable ChromeWindowScope.() -> Unit = {}
 ) = ChromeWindow(
     windowState,
     visible,
@@ -70,7 +71,7 @@ fun ChromeWindow(
     onFocusChange: (Boolean) -> Unit = {},
     onOpened: () -> Unit = {},
     onClosed: () -> Unit = {},
-    content: @Composable () -> Unit = {}
+    content: @Composable ChromeWindowScope.() -> Unit = {}
 ) = ChromeWindow(
     windowState,
     visible,
@@ -107,7 +108,7 @@ fun ChromeWindow(
     onFocusChange: (Boolean) -> Unit = {},
     onOpened: () -> Unit = {},
     onClosed: () -> Unit = {},
-    content: @Composable () -> Unit = {}
+    content: @Composable ChromeWindowScope.() -> Unit = {}
 ) {
     val animState = rememberAnimState(visible)
     val wnState = rememberWnState()
@@ -143,7 +144,13 @@ fun ChromeWindow(
                 enter = enterAnimation,
                 exit = exitAnimation
             ) {
-                content()
+                withChromeWindowScope(
+                    windowState,
+                    animState,
+                    wnState
+                ) {
+                    content()
+                }
             }
         }
     )

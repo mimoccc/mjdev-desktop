@@ -20,7 +20,7 @@ fun FullScreenWindow(
         size = api.containerSize,
         position = WindowPosition.Aligned(Alignment.Center)
     ),
-    content: @Composable () -> Unit = {}
+    content: @Composable ChromeWindowScope.() -> Unit = {}
 ) = ChromeWindow(
     windowState = windowState,
     resizable = false,

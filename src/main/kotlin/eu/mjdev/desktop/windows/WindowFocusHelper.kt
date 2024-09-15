@@ -6,7 +6,7 @@ import java.awt.event.WindowEvent.*
 import java.awt.event.WindowFocusListener
 import java.awt.event.WindowStateListener
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 class WindowFocusHelper(
     val onFocusChange: WindowFocusHelper.(window: ComposeWindow?, focus: Boolean) -> Unit
 ) : WindowFocusListener, WindowStateListener {
@@ -22,6 +22,10 @@ class WindowFocusHelper(
     fun unregister(window: ComposeWindow) {
         window.removeWindowFocusListener(this)
         window.removeWindowStateListener(this)
+    }
+
+    fun requestFocus() {
+        window?.requestFocus()
     }
 
     override fun windowGainedFocus(e: WindowEvent?) {
