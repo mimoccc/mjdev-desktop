@@ -8,10 +8,10 @@ class DesktopFile(
     val file: File
 ) {
     private val content
-        get() = Ini(file)
+        get() = runCatching { if (file.exists()) Ini(file) else null }.getOrNull()
 
     private val props
-        get() = content.get("Desktop Entry")
+        get() = content?.get("Desktop Entry")
 
     val type
         get() = props?.get(Prop_Type) ?: ""

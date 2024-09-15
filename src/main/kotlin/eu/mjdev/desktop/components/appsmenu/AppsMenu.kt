@@ -120,7 +120,7 @@ fun AppsMenu(
                                     backgroundColor = appMenuBackgroundColor,
                                     iconTint = Color.White
                                 ) { app ->
-                                    app?.start()
+                                    app?.let { api.appsProvider.startApp(it) }
                                     menuState.hide()
                                 }
                             }

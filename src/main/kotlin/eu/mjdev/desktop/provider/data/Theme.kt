@@ -86,28 +86,30 @@ class Theme(
     val appMenuOuterPadding get() = appMenuOuterPaddingState.value
 
     companion object {
-        val Default = Theme(
-            iconSet = MaterialSymbolsSharp,
+        val Default by lazy {
+            Theme(
+                iconSet = MaterialSymbolsSharp,
 
-            backgroundColor = Color.SuperDarkGray,
+                backgroundColor = Color.SuperDarkGray,
 
-            panelLocation = PanelLocation.Bottom,
-            panelHideDelay = 5000L,
+                panelLocation = PanelLocation.Bottom,
+                panelHideDelay = 5000L,
 
-            controlCenterLocation = ControlCenterLocation.Right,
-            controlPanelHideDelay = 5000L,
-            controlCenterExpandedWidth = 480.dp,
-            controlCenterDividerColor = Color.SuperDarkGray,
-            controlCenterDividerWidth = 2.dp,
-            controlCenterIconColor = Color.White,
-            controlCenterIconSize = DpSize(32.dp, 32.dp),
-            controlCenterBackgroundAlpha = 0.8f,
+                controlCenterLocation = ControlCenterLocation.Right,
+                controlPanelHideDelay = 5000L,
+                controlCenterExpandedWidth = 480.dp,
+                controlCenterDividerColor = Color.SuperDarkGray,
+                controlCenterDividerWidth = 2.dp,
+                controlCenterIconColor = Color.White,
+                controlCenterIconSize = DpSize(32.dp, 32.dp),
+                controlCenterBackgroundAlpha = 0.8f,
 
-            backgroundRotationDelay = 60000,
+                backgroundRotationDelay = 60000,
 
-            appMenuMinWidth = 480.dp,
-            appMenuMinHeight = 640.dp,
-            appMenuOuterPadding = 2.dp
-        )
+                appMenuMinWidth = 480.dp,
+                appMenuMinHeight = 640.dp,
+                appMenuOuterPadding = 2.dp
+            )
+        }
     }
 }

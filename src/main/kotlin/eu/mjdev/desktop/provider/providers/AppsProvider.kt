@@ -1,14 +1,15 @@
 package eu.mjdev.desktop.provider.providers
 
+import androidx.compose.runtime.mutableStateListOf
+import eu.mjdev.desktop.extensions.Custom.invalidate
 import eu.mjdev.desktop.extensions.Locale.toLocale
 import eu.mjdev.desktop.helpers.Command
 import eu.mjdev.desktop.helpers.Command.Companion.toList
+import eu.mjdev.desktop.helpers.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.data.App
 import eu.mjdev.desktop.provider.data.Category
 import eu.mjdev.desktop.provider.data.DesktopFile
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.util.*
 
@@ -128,23 +129,61 @@ class AppsProvider(
             map
         }
 
-    val favoriteApps: Flow<List<App>>
-        get() = flow {
-            Command(
-                "gsettings",
-                "get",
-                "org.gnome.shell",
-                "favorite-apps"
-            ).execute()?.toList<String>()?.map { deskFileName ->
+//    val runningApps = mutableStateListOf<App>()
+
+//    val runningAppsSize: Int
+//        get() = runningApps.size
+
+    val favoriteApps = mutableStateListOf<App>()
+
+//    private fun clearNonRunning() {
+//        if (runningApps.size > 0) {
+//            with(runningApps.iterator()) {
+//                val app = next()
+//                if (!isRunning(app)) {
+//                    remove()
+//                }
+//            }
+//        }
+//    }
+
+//    private fun isRunning(app: App) =
+//        ProcessHandle.allProcesses().filter {
+//            it.isAlive && it.pid() == app.processId
+//        }.count() > 0
+
+    fun startApp(app: App) {
+        app.onStart {
+            favoriteApps.invalidate()
+        }.onStop { result ->
+            favoriteApps.invalidate()
+            if (result != EmptyException) {
+                result.printStackTrace()
+            }
+        }.start()
+    }
+
+    init {
+        Command(
+            "gsettings",
+            "get",
+            "org.gnome.shell",
+            "favorite-apps"
+        ).execute()
+            ?.toList<String>()
+            ?.mapNotNull { deskFileName ->
                 allAppsDesktopFiles.filter { deskFile ->
                     @Suppress("PlatformExtensionReceiverOfInline")
                     deskFile.file.name.contentEquals(deskFileName)
                 }.map { deskFile ->
-                    App(desktopFile = deskFile, file = deskFile.file)
+                    App(
+                        desktopFile = deskFile,
+                        file = deskFile.file
+                    )
                 }.firstOrNull()
-            }.also { list ->
-                emit(list?.filterNotNull() ?: emptyList())
+            }?.also { favorite ->
+                favoriteApps.addAll(favorite)
             }
-        }
+    }
 
 }

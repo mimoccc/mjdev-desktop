@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,14 +21,13 @@ import eu.mjdev.desktop.provider.data.App
 fun DesktopPanelFavoriteApps(
     modifier: Modifier = Modifier,
     api: DesktopProvider = LocalDesktop.current,
-    favoriteApps: State<List<App>> = api.appsProvider.favoriteApps.collectAsState(emptyList()),
     iconColor: Color = Color.Black,
     iconBackgroundColor: Color = Color.White,
     iconSize: DpSize = DpSize(56.dp, 56.dp),
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     onTooltip: (item: Any?) -> Unit = {},
-    onClick: (app: App) -> Unit = { app -> app.start() },
+    onClick: (app: App) -> Unit = { app -> api.appsProvider.startApp(app) },
 ) = Box(
     modifier = modifier
 ) {
@@ -39,9 +36,10 @@ fun DesktopPanelFavoriteApps(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        items(favoriteApps.value) { app ->
+        items(api.appsProvider.favoriteApps) { app ->
             DesktopPanelIcon(
                 app = app,
+                isRunning = app.isRunning,
                 iconColor = iconColor,
                 iconBackgroundColor = iconBackgroundColor,
                 iconBackgroundHover = Color.White.copy(alpha = 0.4f),

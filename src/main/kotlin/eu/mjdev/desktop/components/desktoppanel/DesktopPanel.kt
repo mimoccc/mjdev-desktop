@@ -57,7 +57,7 @@ fun DesktopPanel(
     tooltipData: MutableState<Any?> = mutableStateOf(null),
     onTooltip: (item: Any?) -> Unit = { item -> tooltipData.value = item },
     panelHeight: (visible: Boolean) -> Dp = { visible ->
-        if (visible) iconSize.height + iconOuterPadding.height + tooltipHeight + panelContentPadding.height
+        if (visible) iconSize.height + iconOuterPadding.height + tooltipHeight + panelContentPadding.height + 8.dp
         else dividerWidth
     },
     onMenuIconClicked: () -> Unit = {},

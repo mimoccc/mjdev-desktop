@@ -30,7 +30,7 @@ fun AppsMenuApp(
     textColor: Color = Color.White,
     backgroundColor: Color = Color.White,
     api: DesktopProvider = LocalDesktop.current,
-    onClick: (app: App?) -> Unit = { app?.start() }
+    onClick: (app: App?) -> Unit = { app?.let { api.appsProvider.startApp(it) } }
 ) = Row(
     modifier = modifier.clickable { onClick(app) },
     verticalAlignment = Alignment.CenterVertically,

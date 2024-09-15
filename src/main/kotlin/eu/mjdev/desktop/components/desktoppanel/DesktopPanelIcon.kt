@@ -32,6 +32,7 @@ import eu.mjdev.desktop.provider.data.App
 fun DesktopPanelIcon(
     api: DesktopProvider = LocalDesktop.current,
     app: App? = null,
+    isRunning: Boolean = false,
     icon: String? = null,
     iconColor: Color = Color.Black,
     iconBackgroundColor: Color = Color.White,
@@ -44,8 +45,9 @@ fun DesktopPanelIcon(
     onToolTip: (item: Any?) -> Unit = {},
     onClick: () -> Unit,
 ) {
-    val materialIcon = api.currentUser.theme.iconSet.iconForName(app?.name ?: icon) ?: "?".toInt()
-    val background = remember(iconState.value) { if (iconState.value) iconBackgroundHover else Color.Transparent }
+    val iconName = app?.name ?: icon
+    val materialIcon = api.currentUser.theme.iconSet.iconForName(iconName) ?: "?".toInt()
+    val background = if (iconState.value || isRunning) iconBackgroundHover else Color.Transparent
     Box(
         modifier = Modifier
             .size(iconSize)

@@ -2,6 +2,7 @@ package eu.mjdev.desktop.extensions
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.NativePaint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.channelFlow
@@ -51,5 +52,11 @@ object Custom {
                 } while (true)
             }
         }.collectAsState(initial = "00:00:00")
+
+    // todo better solution
+    fun <T> SnapshotStateList<T>.invalidate() = toList().also {
+        clear()
+        addAll(it)
+    }
 
 }

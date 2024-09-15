@@ -39,7 +39,7 @@ fun main() = application(
 
     MaterialTheme {
         CompositionLocalProvider(
-            LocalDesktop provides DesktopProvider(
+            LocalDesktop providesDefault DesktopProvider(
                 scope = scope,
                 imageLoader = asyncImageLoader()
             ),

@@ -105,26 +105,6 @@ class DesktopProvider(
         }.start()
     }
 
-//    fun runCommandForOutput(vararg cmd: String): String? = runCatching {
-//        val sj = StringJoiner(System.lineSeparator())
-//        var result = ""
-//        try {
-//            val p = ProcessBuilder(*cmd).start()
-//            BufferedReader(InputStreamReader(p.inputStream))
-//                .lines()
-//                .iterator()
-//                .forEachRemaining { newElement: String? ->
-//                    sj.add(newElement)
-//                }
-//            result = sj.toString()
-//            p.waitFor()
-//            p.destroy()
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//        result
-//    }.getOrNull()
-
     companion object {
         private val CONTROL_CENTER_PAGES = listOf(
             MainSettingsPage(),
