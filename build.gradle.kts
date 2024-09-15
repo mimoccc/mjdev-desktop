@@ -62,6 +62,12 @@ allprojects {
         implementation(libs.slf4j.nop)
         // fuzzy search
         implementation(libs.fuzzywuzzy)
+        // sockets
+//        implementation("com.kohlschutter.junixsocket:junixsocket-core:2.3.2")
+        // x11 client
+//        implementation("com.github.moaxcp.x11:x11-client:0.18.2")
+        // jwm
+//        implementation("io.github.humbleui:jwm:0.4.8")
         // jna
 //        implementation("net.java.dev.jna:jna-platform:5.6.0")
         // dbus

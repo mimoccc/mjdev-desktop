@@ -14,6 +14,7 @@ import coil3.PlatformContext
 import coil3.compose.LocalPlatformContext
 import coil3.memory.MemoryCache
 import coil3.request.CachePolicy
+import coil3.svg.SvgDecoder
 import kotlinx.coroutines.CoroutineScope
 
 object Compose {
@@ -106,7 +107,7 @@ object Compose {
     ) = ImageLoader.Builder(imageLoaderContext)
         .memoryCachePolicy(CachePolicy.ENABLED)
         .components {
-//            add(SvgDecoder.Factory())
+            add(SvgDecoder.Factory())
 //            add(GifDecoder.Factory())
         }
         .memoryCache { imageLoaderMemoryCache }

@@ -139,15 +139,15 @@ fun ChromeWindow(
         stateHelper = windowState.stateHelper,
         focusHelper = windowState.focusHelper,
         content = {
-            AnimatedVisibility(
-                animState.value,
-                enter = enterAnimation,
-                exit = exitAnimation
+            withChromeWindowScope(
+                windowState,
+                animState,
+                wnState
             ) {
-                withChromeWindowScope(
-                    windowState,
-                    animState,
-                    wnState
+                AnimatedVisibility(
+                    animState.value,
+                    enter = enterAnimation,
+                    exit = exitAnimation
                 ) {
                     content()
                 }

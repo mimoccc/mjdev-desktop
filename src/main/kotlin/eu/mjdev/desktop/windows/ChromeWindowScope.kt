@@ -1,6 +1,7 @@
 package eu.mjdev.desktop.windows
 
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.Dp
@@ -63,11 +64,14 @@ class ChromeWindowScope(
         stateHelper.setPosition(position)
 
     companion object {
+        @Composable
         fun FrameWindowScope.withChromeWindowScope(
             windowState: ChromeWindowState,
             animState: State<MutableTransitionState<Boolean>>,
             windowVisibleState: MutableState<Boolean>,
-            block: ChromeWindowScope.() -> Unit
-        ) = ChromeWindowScope(this, windowState, animState, windowVisibleState).apply(block)
+            block: @Composable ChromeWindowScope.() -> Unit
+        ) = with(ChromeWindowScope(this, windowState, animState, windowVisibleState)) {
+            block()
+        }
     }
 }

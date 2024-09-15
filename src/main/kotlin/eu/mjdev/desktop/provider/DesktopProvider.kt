@@ -39,7 +39,6 @@ class DesktopProvider(
         }
     }
 
-
 //    val adbHandler = adbDevicesHandler(
 //        coroutineScope = scope
 //    ) { device ->
