@@ -28,10 +28,10 @@ import eu.mjdev.desktop.components.shadow.TopShadow
 import eu.mjdev.desktop.components.sliding.SlidingMenu
 import eu.mjdev.desktop.components.sliding.VisibilityState
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.extensions.Compose.height
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
-import eu.mjdev.desktop.provider.data.App
 import eu.mjdev.desktop.windows.ChromeWindow
 
 @OptIn(ExperimentalFoundationApi::class)

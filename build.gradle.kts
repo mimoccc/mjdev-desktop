@@ -10,23 +10,6 @@ plugins {
 group = libs.versions.packageName.get()
 version = libs.versions.packageVersion.get()
 
-//kotlin {
-//    jvmToolchain(8)
-//    jvmToolchain {
-//        (this as JavaToolchainSpec).apply {
-//            languageVersion.set(JavaLanguageVersion.of(8))
-//        }
-//    }
-//    compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
-//}
-
-//java {
-//    toolchain {
-//        languageVersion.set(JavaLanguageVersion.of(8))
-//    }
-//    targetCompatibility = JavaVersion.VERSION_1_8
-//}
-
 allprojects {
     repositories {
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
@@ -41,10 +24,10 @@ allprojects {
         mavenCentral()
     }
     dependencies {
-//        implementation(libs.ktor.java)
-        runtimeOnly(libs.kotlinx.coroutines.swing)
         // reflection
-        implementation(kotlin("reflect"))
+//        implementation(kotlin("reflect"))
+        // coroutines
+        runtimeOnly(libs.kotlinx.coroutines.swing)
         // compose desktop
         implementation(compose.desktop.currentOs)
         // material 3
@@ -61,8 +44,6 @@ allprojects {
         implementation(libs.ini4j)
         // http client
         implementation(libs.okhttp.client)
-        // ktor wasm
-        implementation(libs.ktor.client.core)
         // coil
         implementation(libs.coil.compose.core)
         implementation(libs.coil.compose)
@@ -71,13 +52,19 @@ allprojects {
 //        implementation(libs.coil.gif)
         implementation(libs.coil.network.okhttp)
         // ffmpeg
-        implementation("org.bytedeco:ffmpeg-platform:6.1.1-1.5.10")
+        implementation(libs.ffmpeg.platform)
         // music
 //        implementation(libs.korau)
         // palette
         implementation(libs.material.kolor)
         // json
         implementation(libs.google.gson)
+        // no log
+        implementation(libs.slf4j.nop)
+        // fuzzy search
+        implementation(libs.fuzzywuzzy)
+        // jna
+//        implementation("net.java.dev.jna:jna-platform:5.6.0")
         // dbus
         // implementation(libs.dbus.java.core)
         // implementation(libs.dbus.java.transport.native.unixsocket)
@@ -85,11 +72,6 @@ allprojects {
         // implementation(libs.mozilla.rhino)
         // gemini ai
         // implementation(libs.google.generativeai)
-        // no log
-        implementation("org.slf4j:slf4j-nop:2.0.7")
-        // fuzzy search
-        implementation("me.xdrop:fuzzywuzzy:1.4.0")
-
 //        implementation("com.github.SmartToolFactory:Compose-Extended-Colors:1.0.0-alpha06")
 //        implementation("com.github.SmartToolFactory:Compose-Extended-Gestures:2.0.0")
 //        implementation ("androidx.compose.ui:ui-text-google-fonts:1.6.8")

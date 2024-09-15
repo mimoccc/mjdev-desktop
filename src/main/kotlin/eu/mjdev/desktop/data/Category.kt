@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.provider.data
+package eu.mjdev.desktop.data
 
 data class Category(
     val name : String

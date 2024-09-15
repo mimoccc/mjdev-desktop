@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.provider.data
+package eu.mjdev.desktop.data
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle

@@ -24,11 +24,11 @@ import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.custom.UserAvatar
 import eu.mjdev.desktop.components.sliding.VisibilityState
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.data.App
+import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
-import eu.mjdev.desktop.provider.data.App
-import eu.mjdev.desktop.provider.data.Category
 import eu.mjdev.desktop.windows.ChromeWindow
 
 @Composable

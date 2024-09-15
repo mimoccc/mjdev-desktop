@@ -15,9 +15,9 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.fonticon.FontIcon
 import eu.mjdev.desktop.components.text.TextAny
+import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
-import eu.mjdev.desktop.provider.data.Category
 
 @Preview
 @Composable

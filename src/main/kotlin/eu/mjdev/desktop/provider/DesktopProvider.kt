@@ -8,8 +8,8 @@ import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.pages.*
+import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.helpers.ResourceStream
-import eu.mjdev.desktop.provider.data.User
 import eu.mjdev.desktop.provider.providers.AppsProvider
 import kotlinx.coroutines.CoroutineScope
 import java.awt.GraphicsDevice

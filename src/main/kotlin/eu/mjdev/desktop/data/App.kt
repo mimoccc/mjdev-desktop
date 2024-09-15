@@ -1,12 +1,10 @@
-package eu.mjdev.desktop.provider.data
+package eu.mjdev.desktop.data
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.helpers.EmptyException.Companion.EmptyException
-import me.xdrop.fuzzywuzzy.FuzzySearch
 import java.io.File
-import kotlin.reflect.full.companionObjectInstance
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class App(
@@ -35,36 +33,52 @@ class App(
         get() = desktopFile.runInTerminal
 
     var iconTint: Color? = null
-    val iconBackground: Color
-        get() : Color = runCatching { colorFromName() }.getOrNull() ?: Color.White
+    val iconBackground: Color = Color.White
 
     val onStopHandler: MutableState<(Throwable) -> Unit> = mutableStateOf({})
-    val onStartHandler: MutableState<() -> Unit> = mutableStateOf({})
+    val onStartingHandler: MutableState<() -> Unit> = mutableStateOf({})
+    val onStartedHandler: MutableState<() -> Unit> = mutableStateOf({})
 
     var process: Process? = null
-    val isRunning: Boolean get() = process?.isAlive ?: false
+    val isRunning: Boolean
+        get() = (process?.isAlive ?: false)
+
+    var isStarted: Boolean = false
 
     // todo :  replace all params with what needed
+    val cleanExec
+        get() = exec.replace("%u", "").replace("%U", "")
+
     fun start() = runCatching {
-        val cleanExec = exec.replace("%u", "").replace("%U", "")
+        triggerStart()
         println("Starting app: $name [$cleanExec]")
         ProcessBuilder("/bin/bash", "-c", cleanExec).start().also {
             process = it
-        }.onExit().thenRun {
-            onStopHandler.value.invoke(EmptyException)
+        }.apply {
+            onExit().thenRun {
+                triggerStop()
+            }
         }
+        triggerStarted()
     }.onFailure { error ->
-        onStopHandler.value.invoke(error)
-    }.onSuccess {
-        onStartHandler.value.invoke()
+        triggerStop(error)
     }
 
-    private fun colorFromName(): Color {
-        val companion = Color::class.companionObjectInstance
-        val members = if (companion != null) companion::class.members.toList() else emptyList()
-        return members.map {
-            Pair(FuzzySearch.ratio(name, it.name), it)
-        }.maxByOrNull { it.first }?.second?.call(null) as? Color ?: Color.White
+    fun triggerStart() {
+        isStarted = true
+        onStartingHandler.value.invoke()
+    }
+
+    fun triggerStarted() {
+        isStarted = true
+        onStartedHandler.value.invoke()
+    }
+
+    fun triggerStop() = triggerStop(null)
+
+    fun triggerStop(result: Throwable?) {
+        isStarted = false
+        onStopHandler.value.invoke(result ?: EmptyException)
     }
 
     fun onStop(function: (Throwable) -> Unit): App {
@@ -72,9 +86,40 @@ class App(
         return this
     }
 
-    fun onStart(function: () -> Unit): App {
-        onStartHandler.value = function
+    fun onStarting(function: () -> Unit): App {
+        onStartingHandler.value = function
         return this
+    }
+
+    fun onStarted(function: () -> Unit): App {
+        onStartedHandler.value = function
+        return this
+    }
+
+//    private fun isRunning() =
+//        ProcessHandle.allProcesses().filter {
+//            it.pid() == process?.pid()
+//        }.count() > 0
+
+    fun requestWindowFocus() {
+        // todo
+    }
+
+    fun minimizeWindow() {
+        // todo
+    }
+
+    fun maximizeWindow() {
+        // todo
+    }
+
+    fun closeWindow() {
+        // todo
+        exit()
+    }
+
+    fun exit() {
+        process?.destroy()
     }
 
     override fun equals(other: Any?): Boolean {

@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.provider.data
+package eu.mjdev.desktop.data
 
 import org.ini4j.Ini
 import java.io.File

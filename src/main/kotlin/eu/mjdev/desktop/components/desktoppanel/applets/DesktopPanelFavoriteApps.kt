@@ -13,9 +13,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanelIcon
+import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
-import eu.mjdev.desktop.provider.data.App
 
 @Composable
 fun DesktopPanelFavoriteApps(
@@ -40,6 +40,7 @@ fun DesktopPanelFavoriteApps(
             DesktopPanelIcon(
                 app = app,
                 isRunning = app.isRunning,
+                isStarting = app.isStarted,
                 iconColor = iconColor,
                 iconBackgroundColor = iconBackgroundColor,
                 iconBackgroundHover = Color.White.copy(alpha = 0.4f),
