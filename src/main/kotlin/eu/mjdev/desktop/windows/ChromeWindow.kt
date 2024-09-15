@@ -25,6 +25,7 @@ fun ChromeWindow(
     enabled: Boolean = true,
     focusable: Boolean = true,
     alwaysOnTop: Boolean = true,
+    alwaysOnBottom: Boolean = false,
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     onCloseRequest: () -> Unit = {},
@@ -42,6 +43,7 @@ fun ChromeWindow(
     enabled,
     focusable,
     alwaysOnTop,
+    alwaysOnBottom,
     enterAnimation,
     exitAnimation,
     onCloseRequest,
@@ -63,6 +65,7 @@ fun ChromeWindow(
     enabled: Boolean = true,
     focusable: Boolean = true,
     alwaysOnTop: Boolean = true,
+    alwaysOnBottom: Boolean = false,
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     onCloseRequest: () -> Unit = {},
@@ -80,6 +83,7 @@ fun ChromeWindow(
     enabled,
     focusable,
     alwaysOnTop,
+    alwaysOnBottom,
     enterAnimation,
     exitAnimation,
     onCloseRequest,
@@ -100,6 +104,7 @@ fun ChromeWindow(
     enabled: Boolean = true,
     focusable: Boolean = true,
     alwaysOnTop: Boolean = true,
+    alwaysOnBottom: Boolean = false,
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     onCloseRequest: () -> Unit = {},
@@ -113,7 +118,9 @@ fun ChromeWindow(
     val animState = rememberAnimState(visible)
     val wnState = rememberWnState()
     windowState.onOpened.add {
-        if (focusable) {
+        if (alwaysOnBottom) {
+            windowState.window?.toBack()
+        } else {
             windowState.requestFocus()
         }
         windowState.updatePositionAndSize()
@@ -136,6 +143,7 @@ fun ChromeWindow(
         enabled,
         focusable,
         alwaysOnTop,
+        alwaysOnBottom,
         onPreviewKeyEvent,
         onKeyEvent,
         stateHelper = windowState.stateHelper,

@@ -21,6 +21,7 @@ fun WindowEx(
     enabled: Boolean = true,
     focusable: Boolean = true,
     alwaysOnTop: Boolean = false,
+    alwaysOnBottom: Boolean = false,
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
     onKeyEvent: (KeyEvent) -> Boolean = { false },
     focusHelper: WindowFocusHelper,
@@ -43,6 +44,11 @@ fun WindowEx(
     content = {
         content()
         with(window) {
+            if (alwaysOnBottom) {
+                toBack()
+            } else if (alwaysOnTop) {
+                toFront()
+            }
             stateHelper.register(this)
             focusHelper.register(this)
         }

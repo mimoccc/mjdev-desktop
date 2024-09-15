@@ -1,25 +1,25 @@
 package eu.mjdev.desktop.components.sliding
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.unit.DpSize
 import eu.mjdev.desktop.helpers.DpBounds
 import eu.mjdev.desktop.helpers.DpBounds.Companion.toDpBounds
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
-@Suppress("CanBeParameter", "unused")
+@Suppress("CanBeParameter", "unused", "MemberVisibilityCanBePrivate")
 class VisibilityState(
-    private val scope: CoroutineScope,
     private val startState: Boolean = false,
     var enabled: Boolean = true,
     val containerSize: DpSize = DpSize.Zero
 ) {
-    val visibleState: MutableState<Boolean> = mutableStateOf(startState)
-    val boundsState: MutableState<DpBounds> = mutableStateOf(DpBounds.Zero)
-    val focusState: MutableState<Boolean> = mutableStateOf(false)
+    private val visibleState: MutableState<Boolean> = mutableStateOf(startState)
+    private val boundsState: MutableState<DpBounds> = mutableStateOf(DpBounds.Zero)
+    private val focusState: MutableState<Boolean> = mutableStateOf(false)
 
     var bounds: DpBounds
         get() = boundsState.value
@@ -38,11 +38,11 @@ class VisibilityState(
         }
 
     val isWindowFocus
-        get() = isVisible && focusState.value
+        get() = focusState.value
 
     fun show() {
         if (!isVisible) {
-            if (enabled) scope.launch {
+            if (enabled) {
                 visibleState.value = true
             }
         }
@@ -50,7 +50,7 @@ class VisibilityState(
 
     fun hide() {
         if (isVisible) {
-            if (enabled) scope.launch {
+            if (enabled) {
                 visibleState.value = false
             }
         }
@@ -75,9 +75,8 @@ class VisibilityState(
             enabled: Boolean = true,
             api: DesktopProvider = LocalDesktop.current,
         ): VisibilityState {
-            val scope = rememberCoroutineScope()
             return remember(startState, enabled, api.containerSize) {
-                VisibilityState(scope, startState, enabled, api.containerSize)
+                VisibilityState(startState, enabled, api.containerSize)
             }
         }
     }

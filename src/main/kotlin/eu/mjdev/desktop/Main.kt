@@ -21,24 +21,22 @@ fun main() = application(
     val panelState = rememberVisibilityState()
     val menuState = rememberVisibilityState()
 
-    val handleMenuFocus: (Boolean) -> Unit = {
-        if (!menuState.isWindowFocus) {
+    val handleMenuFocus: (Boolean) -> Unit = { focus ->
+        if (!menuState.isWindowFocus && !focus) {
             menuState.hide()
         }
     }
 
-    val handlePanelFocus: (Boolean) -> Unit = {
-
+    val handlePanelFocus: (Boolean) -> Unit = { //focus ->
+//        val somethingVisible = menuState.isVisible || controlCenterState.isVisible
+//        if (!focus && !somethingVisible) {
+//            panelState.hide()
+//        }
     }
 
     val handleControlCenterFocus: (Boolean) -> Unit = { focus ->
-        if (focus) {
-//            menuState.hide()
-//            panelState.hide()
-        } else {
-            if (!controlCenterState.isWindowFocus) {
-                controlCenterState.hide()
-            }
+        if (!focus) {
+            controlCenterState.hide()
         }
     }
 
@@ -56,7 +54,9 @@ fun main() = application(
             ) {
                 DesktopPanel(
                     panelState = panelState,
-                    onMenuIconClicked = { if (!menuState.isVisible) menuState.show() },
+                    onMenuIconClicked = {
+                        menuState.toggle()
+                    },
                     onFocusChange = { focus -> handlePanelFocus(focus) }
                 )
                 AppsMenu(
