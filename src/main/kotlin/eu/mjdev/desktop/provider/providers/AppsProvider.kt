@@ -13,7 +13,7 @@ import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 import java.util.*
 
-@Suppress("unused", "MemberVisibilityCanBePrivate")
+@Suppress("unused", "MemberVisibilityCanBePrivate", "UNNECESSARY_SAFE_CALL")
 class AppsProvider(
     val desktopProvider: DesktopProvider
 ) {
@@ -108,7 +108,7 @@ class AppsProvider(
         get() = allAppsDesktopFiles.map { file -> App(desktopFile = file, file = file.file) }
     val backgrounds
         get() = runCatching {
-            backgroundFilesDir?.listFiles()?.toList()?.sortedBy { it.name }
+            backgroundFilesDir?.listFiles()?.toList()?.sortedBy { it.name }?.filter { it.isFile }
         }.getOrNull() ?: emptyList<File>()
     val appCategories
         get() = mutableListOf<String>().apply {
@@ -133,8 +133,7 @@ class AppsProvider(
 
     fun startApp(app: App) {
         if (app.isRunning) {
-            // todo : focus window
-            app.closeWindow()
+            app.requestWindowFocus()
         } else {
             app.onStarting {
                 favoriteApps.invalidate()
@@ -159,8 +158,7 @@ class AppsProvider(
             ?.toList<String>()
             ?.mapNotNull { deskFileName ->
                 allAppsDesktopFiles.filter { deskFile ->
-                    @Suppress("PlatformExtensionReceiverOfInline")
-                    deskFile.file.name.contentEquals(deskFileName)
+                    deskFile.file.name?.contentEquals(deskFileName) == true
                 }.map { deskFile ->
                     App(
                         desktopFile = deskFile,

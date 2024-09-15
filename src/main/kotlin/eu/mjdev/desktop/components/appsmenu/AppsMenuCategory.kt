@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,7 +35,8 @@ fun AppsMenuCategory(
     modifier = modifier.clickable { onClick(category) },
     verticalAlignment = Alignment.CenterVertically
 ) {
-    val materialIcon = api.currentUser.theme.iconSet.iconForName(category.name) ?: "?".toInt()
+    val categoryName = remember(category) { category.name }
+    val materialIcon = remember(categoryName) { api.currentUser.theme.iconSet.iconForName(categoryName) ?: "?".toInt() }
     FontIcon(
         iconId = materialIcon,
         iconSize = iconSize,

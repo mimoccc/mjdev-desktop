@@ -14,10 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.icon.ShapedIcon
-import kotlin.system.exitProcess
+import eu.mjdev.desktop.provider.DesktopProvider
+import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @Composable
 fun AppsBottomBar(
+    api: DesktopProvider = LocalDesktop.current,
     modifier: Modifier = Modifier,
     iconBackgroundColor: Color = Color.White,
     iconColor: Color = Color.Black,
@@ -51,21 +53,21 @@ fun AppsBottomBar(
             iconColor = iconColor,
             iconBackgroundColor = iconBackgroundColor,
         ) {
-            exitProcess(0)
+            api.restart()
         }
         ShapedIcon(
             imageVector = Icons.AutoMirrored.Filled.Logout,
             iconColor = iconColor,
             iconBackgroundColor = iconBackgroundColor,
         ) {
-            exitProcess(0)
+            api.logOut()
         }
         ShapedIcon(
             imageVector = Icons.Filled.PowerOff,
             iconColor = iconColor,
             iconBackgroundColor = iconBackgroundColor,
         ) {
-            exitProcess(0)
+            api.shutdown()
         }
     }
 }

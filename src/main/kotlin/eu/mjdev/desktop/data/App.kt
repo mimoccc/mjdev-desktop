@@ -4,9 +4,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.helpers.EmptyException.Companion.EmptyException
+import eu.mjdev.desktop.windows.WindowsTracker
 import java.io.File
 
-@Suppress("unused", "MemberVisibilityCanBePrivate")
+@Suppress("unused", "MemberVisibilityCanBePrivate", "HasPlatformType")
 class App(
     val file: File = File("nonexistent_file_path"),
     val desktopFile: DesktopFile = DesktopFile(file),
@@ -48,6 +49,9 @@ class App(
     // todo :  replace all params with what needed
     val cleanExec
         get() = exec.replace("%u", "").replace("%U", "")
+
+    val runningProcesses
+        get() = ProcessHandle.allProcesses()
 
     fun start() = runCatching {
         triggerStart()
@@ -96,26 +100,20 @@ class App(
         return this
     }
 
-//    private fun isRunning() =
-//        ProcessHandle.allProcesses().filter {
-//            it.pid() == process?.pid()
-//        }.count() > 0
-
     fun requestWindowFocus() {
-        // todo
+        WindowsTracker().getWindowByPid(process?.pid())?.toFront() ?: closeWindow()
     }
 
     fun minimizeWindow() {
-        // todo
+        WindowsTracker().getWindowByPid(process?.pid())?.minimize()
     }
 
     fun maximizeWindow() {
-        // todo
+        WindowsTracker().getWindowByPid(process?.pid())?.maximize()
     }
 
     fun closeWindow() {
-        // todo
-        exit()
+        WindowsTracker().getWindowByPid(process?.pid())?.close() ?: exit()
     }
 
     fun exit() {

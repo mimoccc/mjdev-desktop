@@ -113,4 +113,14 @@ object Compose {
         .memoryCache { imageLoaderMemoryCache }
         .build()
 
+    //    Toolkit.getDefaultToolkit().addAWTEventListener({ event ->
+//        }, AWTEvent.MOUSE_EVENT_MASK or AWTEvent.FOCUS_EVENT_MASK
+//    )
+
+//    Toolkit.getDefaultToolkit().addAWTEventListener(object:AWTEventListener {
+//        override fun eventDispatched(event: AWTEvent?) {
+//            println(event)
+//        }
+//    }, AWTEvent.WINDOW_EVENT_MASK)
+
 }

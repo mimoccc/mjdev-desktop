@@ -5,6 +5,7 @@ package eu.mjdev.desktop.components.fonticon
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,8 +23,8 @@ import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @Composable
 fun FontIcon(
-    iconicFont: MaterialIconFont = LocalDesktop.current.currentUser.theme.iconSet,
     iconId: Int,
+    iconicFont: MaterialIconFont = LocalDesktop.current.currentUser.theme.iconSet,
     iconSize: DpSize = DpSize(32.dp, 32.dp),
     iconColor: Color = Color.Black,
     iconBackgroundColor: Color = Color.White,
@@ -41,14 +42,17 @@ fun FontIcon(
     innerPadding = innerPadding,
     outerPadding = outerPadding,
     customContent = {
+        val rememberSize = remember(iconicFont, iconSize, innerPadding, outerPadding, iconShape) {
+            FontSizeRange(
+                min = 24.sp,
+                max = (iconSize.width + innerPadding.width + outerPadding.width).sp,
+            )
+        }
         AutoResizeText(
             text = iconId.toChar().toString(),
             modifier = Modifier.align(Alignment.Center),
             color = iconColor,
-            fontSizeRange = FontSizeRange(
-                min = 24.sp,
-                max = (iconSize.width + innerPadding.width + outerPadding.width).sp,
-            ),
+            fontSizeRange = rememberSize,
             fontFamily = iconicFont.fontFamily,
             textAlign = TextAlign.Center
         )

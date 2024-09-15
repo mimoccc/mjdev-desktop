@@ -51,8 +51,8 @@ fun DesktopPanelIcon(
     onToolTip: (item: Any?) -> Unit = {},
     onClick: () -> Unit,
 ) {
-    val iconName = app?.name ?: icon
-    val materialIcon = api.currentUser.theme.iconSet.iconForName(iconName) ?: "?".toInt()
+    val iconName = remember(app, icon) { app?.name ?: icon }
+    val materialIcon = remember(iconName) { api.currentUser.theme.iconSet.iconForName(iconName) ?: "?".toInt() }
     val background = when {
         (iconState.value || isRunning) -> iconBackgroundHover
         else -> Color.Transparent

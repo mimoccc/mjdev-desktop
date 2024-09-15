@@ -11,5 +11,8 @@ class FontFile(
     private val ttfResource: ResourceStream = ResourceStream(ttfFileName),
     private val fontWeight: FontWeight = FontWeight.Normal,
     private val font: Font = Font(ttfFileName, ttfResource.bytes, fontWeight),
-    val fontFamily: FontFamily = FontFamily(font)
-)
+) {
+    val fontFamily by lazy {
+        FontFamily(font)
+    }
+}

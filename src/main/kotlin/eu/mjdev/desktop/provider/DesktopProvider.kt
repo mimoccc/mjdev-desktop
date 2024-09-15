@@ -19,6 +19,7 @@ import java.io.File
 import java.io.FileReader
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
+import kotlin.system.exitProcess
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "PrivatePropertyName", "SameParameterValue")
 class DesktopProvider(
@@ -102,6 +103,29 @@ class DesktopProvider(
             directory(directory)
             command(cmd)
         }.start()
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun login(
+        user: String,
+        password: String
+    ) {
+        // todo
+    }
+
+    fun logOut() {
+        // todo
+        exitProcess(0)
+    }
+
+    fun shutdown() {
+        // todo
+        exitProcess(0)
+    }
+
+    fun restart() {
+        // todo
+        exitProcess(0)
     }
 
     companion object {

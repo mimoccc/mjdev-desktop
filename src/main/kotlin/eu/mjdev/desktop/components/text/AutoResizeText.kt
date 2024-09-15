@@ -34,7 +34,7 @@ fun AutoResizeText(
     maxLines: Int = Int.MAX_VALUE,
     style: TextStyle = LocalTextStyle.current,
 ) {
-    var fontSizeValue by remember { mutableStateOf(fontSizeRange.max.value) }
+    var fontSizeValue by remember(text, fontSizeRange) { mutableStateOf(fontSizeRange.max.value) }
     var readyToDraw by remember { mutableStateOf(false) }
     Text(
         text = text,
@@ -51,8 +51,8 @@ fun AutoResizeText(
         softWrap = softWrap,
         style = style,
         fontSize = fontSizeValue.sp,
-        onTextLayout = {
-            if (it.didOverflowHeight && !readyToDraw) {
+        onTextLayout = { textLayout ->
+            if (textLayout.didOverflowHeight && !readyToDraw) {
                 val nextFontSizeValue = fontSizeValue - fontSizeRange.step.value
                 if (nextFontSizeValue <= fontSizeRange.min.value) {
                     fontSizeValue = fontSizeRange.min.value
