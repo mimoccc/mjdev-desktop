@@ -9,6 +9,7 @@ import coil3.ImageLoader
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.pages.*
 import eu.mjdev.desktop.data.User
+import eu.mjdev.desktop.helpers.ConnectivityManager
 import eu.mjdev.desktop.helpers.ResourceStream
 import eu.mjdev.desktop.provider.providers.AppsProvider
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +25,9 @@ import kotlin.system.exitProcess
 @Suppress("unused", "MemberVisibilityCanBePrivate", "PrivatePropertyName", "SameParameterValue")
 class DesktopProvider(
     val scope: CoroutineScope? = null,
-    val imageLoader: ImageLoader? = null
+    val imageLoader: ImageLoader? = null,
+    val connection: ConnectivityManager = ConnectivityManager(),
+    private val scriptManager: ScriptEngineManager = ScriptEngineManager()
 ) {
     private val __currentUser: User by lazy { User.load() }
     private val _currentUser: MutableState<User> = mutableStateOf(__currentUser)
@@ -33,7 +36,6 @@ class DesktopProvider(
 
     private val _controlCenterPages: MutableState<List<ControlCenterPage>> = mutableStateOf(CONTROL_CENTER_PAGES)
 
-    private val scriptManager by lazy { ScriptEngineManager() }
     private val engine: ScriptEngine by lazy {
         scriptManager.getEngineByName("JavaScript").apply {
             // todo
@@ -131,6 +133,7 @@ class DesktopProvider(
     companion object {
         private val CONTROL_CENTER_PAGES = listOf(
             MainSettingsPage(),
+            EthSettingsPage(),
             WifiSettingsPage(),
             BluetoothSettingsPage(),
             DisplaySettingsPage(),

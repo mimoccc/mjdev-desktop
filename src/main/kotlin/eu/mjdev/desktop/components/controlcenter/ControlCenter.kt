@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
+import eu.mjdev.desktop.components.controlcenter.ControlCenterPage.Companion.rememberControlCenterScope
 import eu.mjdev.desktop.components.shadow.LeftShadow
 import eu.mjdev.desktop.components.shadow.RightShadow
 import eu.mjdev.desktop.components.sliding.SlidingMenu
@@ -63,6 +64,12 @@ fun ControlCenter(
         onFocusChange(focused)
     }
 ) {
+    val cscope = rememberControlCenterScope(backgroundColor, api)
+    val pagesFiltered = remember(pages) {
+        derivedStateOf {
+            pages.filter { p -> p.condition.invoke(cscope) }
+        }
+    }
     SlidingMenu(
         modifier = Modifier.fillMaxHeight(),
         orientation = Horizontal,
@@ -99,7 +106,7 @@ fun ControlCenter(
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.Start
                         ) {
-                            itemsIndexed(pages) { idx, page ->
+                            itemsIndexed(pagesFiltered.value) { idx, page ->
                                 val isSelected = (pagerState.value == idx)
                                 Icon(
                                     modifier = Modifier
@@ -139,13 +146,8 @@ fun ControlCenter(
                                 Box(
                                     modifier = Modifier.width(controlCenterExpandedWidth),
                                 ) {
-                                    with(
-                                        ControlCenterPage.ControlCenterPageScope(
-                                            backgroundColor,
-                                            api
-                                        )
-                                    ) {
-                                        pages[pagerState.value].content(this)
+                                    with(pagesFiltered.value[pagerState.value]) {
+                                        content(cscope)
                                     }
                                 }
                                 Divider(

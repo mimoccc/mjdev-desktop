@@ -67,6 +67,8 @@ allprojects {
         implementation(libs.charts)
         // qr code
         implementation("io.github.alexzhirkevich:qrose:1.0.1")
+        // connectivity
+        implementation("dev.tmapps:konnection:1.4.1")
         // bar code
 //        implementation("io.github.alexzhirkevich:qrose-oned:1.0.1")
         // flow extensions
