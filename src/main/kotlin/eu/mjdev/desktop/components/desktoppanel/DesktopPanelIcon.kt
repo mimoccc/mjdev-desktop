@@ -42,7 +42,8 @@ fun DesktopPanelIcon(
     icon: String? = null,
     iconColor: Color = Color.Black,
     iconBackgroundColor: Color = Color.White,
-    iconBackgroundHover: Color = Color.Red,
+    iconBackgroundHover: Color = Color.White,
+    iconColorRunning: Color = Color.White,
     iconSize: DpSize = DpSize(48.dp, 48.dp),
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
@@ -54,7 +55,7 @@ fun DesktopPanelIcon(
     val iconName = remember(app, icon) { app?.name ?: icon }
     val materialIcon = remember(iconName) { api.currentUser.theme.iconSet.iconForName(iconName) ?: "?".toInt() }
     val background = when {
-        (iconState.value || isRunning) -> iconBackgroundHover
+        iconState.value -> iconBackgroundHover
         else -> Color.Transparent
     }
     Box(
@@ -82,7 +83,7 @@ fun DesktopPanelIcon(
             FontIcon(
                 iconId = materialIcon,
                 iconColor = iconColor,
-                iconBackgroundColor = iconBackgroundColor,
+                iconBackgroundColor = if (isRunning) iconColorRunning else iconBackgroundColor,
                 iconSize = iconSize,
                 innerPadding = iconPadding,
                 outerPadding = iconOuterPadding,
@@ -96,7 +97,7 @@ fun DesktopPanelIcon(
             CircularProgressIndicator(
                 modifier = Modifier.size(iconSize),
                 color = Color.White,
-                strokeWidth = 10.dp,
+                strokeWidth = 4.dp,
                 backgroundColor = Color.Transparent
             )
         }

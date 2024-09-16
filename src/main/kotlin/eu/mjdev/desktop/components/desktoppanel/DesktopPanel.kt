@@ -40,9 +40,10 @@ import eu.mjdev.desktop.windows.ChromeWindow
 fun DesktopPanel(
     api: DesktopProvider = LocalDesktop.current,
     backgroundColor: Color = api.currentUser.theme.backgroundColor,
-    shadowColor: Color = Color.Black.copy(alpha = 0.3f),
+//    shadowColor: Color = Color.Black.copy(alpha = 0.3f),
     iconColor: Color = Color.Black,
-    iconBackgroundColor: Color = Color.White,
+    iconColorRunning: Color = Color.White.copy(0.8f),
+    iconBackgroundColor: Color = Color.White.copy(0.6f),
     dividerWidth: Dp = 4.dp,
     iconSize: DpSize = DpSize(56.dp, 56.dp),
     iconPadding: PaddingValues = PaddingValues(4.dp),
@@ -118,7 +119,6 @@ fun DesktopPanel(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(tooltipHeight)
-
                     )
                     Column(
                         modifier = Modifier
@@ -129,12 +129,12 @@ fun DesktopPanel(
                                     colors = listOf(
                                         backgroundColor.copy(alpha = 0.3f),
                                         backgroundColor.copy(alpha = 0.7f),
-                                        backgroundColor.copy(alpha = 0.3f),
+                                        backgroundColor.copy(alpha = 0.8f),
                                     )
                                 )
                             )
                             .topShadow(
-                                color = shadowColor,
+                                color = backgroundColor.copy(alpha = 0.3f),
                                 offsetY = 4.dp,
                                 blur = 10.dp
                             )
@@ -149,7 +149,7 @@ fun DesktopPanel(
                         )
                         Box(
                             modifier = Modifier.fillMaxWidth()
-                                .wrapContentHeight()
+                                .padding(top = 4.dp)
                                 .padding(panelContentPadding)
                         ) {
                             if (showMenuIcon) {
@@ -168,6 +168,7 @@ fun DesktopPanel(
                                 modifier = Modifier.align(Alignment.Center),
                                 iconColor = iconColor,
                                 iconBackgroundColor = iconBackgroundColor,
+                                iconColorRunning = iconColorRunning,
                                 iconSize = iconSize,
                                 iconPadding = iconPadding,
                                 iconOuterPadding = iconOuterPadding,
