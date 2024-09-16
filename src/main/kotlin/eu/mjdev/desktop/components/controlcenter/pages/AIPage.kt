@@ -1,20 +1,83 @@
 package eu.mjdev.desktop.components.controlcenter.pages
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
+import kotlinx.coroutines.launch
 
 @Suppress("FunctionName")
 fun AIPage() = ControlCenterPage(
     icon = Icons.Filled.Campaign,
-    name = "AI"
+    name = "AI",
 ) {
+    val questionsList = remember { mutableStateListOf<String>() }
+    val request = remember { mutableStateOf("") }
+    val onDone: (String) -> Unit = { what ->
+        if (what.isNotEmpty()) {
+            questionsList.add(what)
+            api.aiProvider.ask(what) { _, res ->
+                talk(res)
+            }
+        }
+    }
     Box(
         modifier = Modifier.fillMaxSize()
+            .background(backgroundColor)
     ) {
-
+        Row {
+            Column(
+                modifier = Modifier.fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth()
+                        .weight(1f)
+                        .background(Color.Black.copy(alpha = 0.3f), RoundedCornerShape(8.dp)),
+                ) {
+                    itemsIndexed(questionsList) { idx, text ->
+                        Text(
+                            modifier = Modifier.padding(4.dp)
+                                .fillMaxWidth()
+                                .background(Color.White.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                .padding(4.dp),
+                            text = "${idx + 1}. $text"
+                        )
+                    }
+                }
+                OutlinedTextField(
+                    modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
+                    value = request.value,
+                    onValueChange = { t: String ->
+                        request.value = t
+                        if (t.contains("\n")) {
+                            scope.launch {
+                                onDone(t.replace("\n", ""))
+                            }
+                            request.value = ""
+                        }
+                    },
+                    maxLines = 4,
+                    minLines = 4,
+                    shape = RoundedCornerShape(8.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        backgroundColor = Color.White.copy(alpha = 0.3f)
+                    )
+                )
+            }
+        }
     }
 }

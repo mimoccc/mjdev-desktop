@@ -79,6 +79,9 @@ allprojects {
         implementation("com.github.skydoves:flexible-bottomsheet-material3:0.1.5")
         // fs watcher
         implementation("io.github.irgaly.kfswatch:kfswatch:1.3.0")
+        // tts
+        implementation("nl.marc-apps:tts:2.5.0")
+        implementation("nl.marc-apps:tts-compose:2.5.0")
         // bar code
 //        implementation("io.github.alexzhirkevich:qrose-oned:1.0.1")
         // flow extensions

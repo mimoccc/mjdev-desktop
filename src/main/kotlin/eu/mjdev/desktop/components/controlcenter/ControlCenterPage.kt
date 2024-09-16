@@ -17,7 +17,10 @@ class ControlCenterPage(
     class ControlCenterPageScope(
         val backgroundColor: Color,
         val api: DesktopProvider
-    )
+    ) {
+        val scope
+            get() = api.scope
+    }
 
     companion object {
         @Composable

@@ -90,11 +90,6 @@ fun ControlCenter(
                 Row(
                     modifier = Modifier.fillMaxHeight().wrapContentSize(),
                 ) {
-                    Divider(
-                        modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
-                        color = controlCenterDividerColor,
-                        thickness = controlCenterDividerWidth
-                    )
                     Box(
                         contentAlignment = Alignment.TopEnd
                     ) {
@@ -127,11 +122,18 @@ fun ControlCenter(
                                 )
                             }
                         }
+                        Divider(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(2.dp),
+                            color = Color.White.copy(0.1f),
+                            thickness = 2.dp
+                        )
                         RightShadow(
                             modifier = Modifier.padding(
                                 end = controlCenterIconSize.width + 16.dp
                             ).fillMaxHeight().wrapContentSize(),
-                            color = Color.Red,
+                            color = Color.Black,
                             alpha = 0.3f,
                             contentBackgroundColor = Color.Transparent
                         ) {
