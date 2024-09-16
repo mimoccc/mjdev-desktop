@@ -19,7 +19,7 @@ class KCEFHelper(
         if (!initialized.value && !restartRequired.value) {
             scope?.launch(Dispatchers.IO) {
                 KCEF.init(builder = {
-                    installDir(File("kcef-bundle"))
+                    installDir(File("/tmp/kcef-bundle"))
                     progress {
                         onDownloading {
                             downloading.value = max(it, 0F).toInt()

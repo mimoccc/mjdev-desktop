@@ -15,7 +15,6 @@ import eu.mjdev.desktop.components.charts.MemoryChart
 import eu.mjdev.desktop.components.controlcenter.ControlCenter
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanel
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
-import eu.mjdev.desktop.components.web.ComposeWebView
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
@@ -68,9 +67,9 @@ fun main() = application(
                 controlCenterState = controlCenterState,
                 menuState = menuState
             ) {
-                ComposeWebView(
-                    modifier = Modifier.size(640.dp, 480.dp).align(Alignment.Center)
-                )
+//                ComposeWebView(
+//                    modifier = Modifier.size(640.dp, 480.dp).align(Alignment.Center)
+//                )
                 MemoryChart(
                     modifier = Modifier.size(350.dp, 300.dp).align(Alignment.BottomEnd)
                 )
