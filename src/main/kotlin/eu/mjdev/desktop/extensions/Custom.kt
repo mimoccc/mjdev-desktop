@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.NativePaint
+import eu.mjdev.desktop.helpers.streams.ResourceStream
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
@@ -58,5 +59,9 @@ object Custom {
         clear()
         addAll(it)
     }
+
+    fun loadKey(key: String): String = runCatching {
+        ResourceStream("keys/$key.key").string
+    }.getOrNull().orEmpty()
 
 }

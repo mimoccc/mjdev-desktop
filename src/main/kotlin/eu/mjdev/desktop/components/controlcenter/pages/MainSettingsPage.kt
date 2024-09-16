@@ -43,18 +43,47 @@ fun MainSettingsPage() = ControlCenterPage(
                 backgroundColor = backgroundColor
             )
         }
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
         ) {
-            PowerBlock(
-                backgroundColor = backgroundColor,
-                onPowerButtonClick = {
-                    // todo : dialog
-                    api.shutdown()
-                }
-            )
+//            FlexibleBottomSheet(
+//                onDismissRequest = {},
+//                sheetState = rememberFlexibleBottomSheetState(
+//                    flexibleSheetSize = FlexibleSheetSize(
+//                        fullyExpanded = 0.9f,
+//                        intermediatelyExpanded = 0.5f,
+//                        slightlyExpanded = 0.15f,
+//                    ),
+//                    isModal = true,
+//                    skipSlightlyExpanded = true,
+//                ),
+//                containerColor = backgroundColor,
+//            ) {
+//                Text(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(8.dp),
+//                    text = "This is Flexible Bottom Sheet",
+//                    textAlign = TextAlign.Center,
+//                    color = Color.White,
+//                )
+//            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .align(Alignment.BottomCenter)
+            ) {
+                PowerBlock(
+                    backgroundColor = backgroundColor,
+                    onPowerButtonClick = {
+                        // todo : dialog
+                        api.shutdown()
+                    }
+                )
+            }
         }
     }
 }

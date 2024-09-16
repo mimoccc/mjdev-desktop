@@ -9,11 +9,13 @@ import coil3.ImageLoader
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.pages.*
 import eu.mjdev.desktop.data.User
-import eu.mjdev.desktop.helpers.ConnectivityManager
-import eu.mjdev.desktop.helpers.KCEFHelper
-import eu.mjdev.desktop.helpers.ResourceStream
-import eu.mjdev.desktop.provider.providers.AppsProvider
+import eu.mjdev.desktop.helpers.adb.AdbDiscover.Companion.adbDevicesHandler
+import eu.mjdev.desktop.helpers.managers.ConnectivityManager
+import eu.mjdev.desktop.helpers.managers.FileSystemWatcher
+import eu.mjdev.desktop.helpers.managers.KCEFHelper
+import eu.mjdev.desktop.provider.AIProvider.AiPluginNull
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.awt.GraphicsDevice
 import java.awt.GraphicsEnvironment
 import java.awt.Toolkit
@@ -25,11 +27,12 @@ import kotlin.system.exitProcess
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "PrivatePropertyName", "SameParameterValue")
 class DesktopProvider(
-    val scope: CoroutineScope? = null,
+    val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
     val imageLoader: ImageLoader? = null,
     val connection: ConnectivityManager = ConnectivityManager(),
     val scriptManager: ScriptEngineManager = ScriptEngineManager(),
-    val kcefHelper: KCEFHelper = KCEFHelper(scope)
+    val kcefHelper: KCEFHelper = KCEFHelper(scope),
+    val aiProvider: AIProvider = AIProvider(AiPluginNull())
 ) {
     private val __currentUser: User by lazy { User.load() }
     private val _currentUser: MutableState<User> = mutableStateOf(__currentUser)
@@ -44,12 +47,12 @@ class DesktopProvider(
         }
     }
 
-//    val adbHandler = adbDevicesHandler(
-//        coroutineScope = scope
-//    ) { device ->
-//        println("Device discovered : $device")
-//        // when device connected
-//    }
+    val adbHandler = adbDevicesHandler(
+        coroutineScope = scope
+    ) { device ->
+        println("Device discovered : $device")
+        // when device connected
+    }
 
     val containerSize: DpSize by lazy {
         Toolkit.getDefaultToolkit().screenSize.let {
@@ -60,7 +63,7 @@ class DesktopProvider(
         }
     }
     val controlCenterPages get() = _controlCenterPages.value
-    val appsProvider by lazy { AppsProvider(this) }
+    val appsProvider = AppsProvider(this)
 
     val graphicsEnvironment: GraphicsEnvironment
         get() = GraphicsEnvironment.getLocalGraphicsEnvironment()
@@ -69,30 +72,19 @@ class DesktopProvider(
     val isTransparencySupported
         get() = graphicsDevice.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.TRANSLUCENT)
 
-//    val generativeModel: GenerativeModel by lazy {
-//        GenerativeModel(
-//            modelName = "gemini-1.5-pro-latest",
-//            apiKey = loadKey("gemini")
-//        )
-//    }
+    val mounts = FileSystemWatcher(scope) {
+        println("Mounted: ${this.targetDirectory}")
+    }
 
     init {
         currentUser.theme.controlCenterExpandedWidth = containerSize.width.div(4)
+        mounts.init()
     }
 
     fun dispose() {
         kcefHelper.dispose()
+        mounts.dispose()
     }
-
-    private fun loadKey(key: String): String = runCatching {
-        ResourceStream("keys/$key.key").string
-    }.getOrNull().orEmpty()
-
-//    fun askGemini(question: String): String = runBlocking {
-//        generativeModel.generateContent(content {
-//            text(question)
-//        }).text
-//    }.orEmpty()
 
     fun runScript(script: String): Any =
         engine.eval(script)

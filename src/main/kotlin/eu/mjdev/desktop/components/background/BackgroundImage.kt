@@ -17,7 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
-import eu.mjdev.desktop.helpers.Queue.Companion.mutableQueue
+import eu.mjdev.desktop.helpers.internal.Queue.Companion.mutableQueue
 import kotlinx.coroutines.delay
 
 @Preview

@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.unit.DpSize
-import eu.mjdev.desktop.helpers.DpBounds
-import eu.mjdev.desktop.helpers.DpBounds.Companion.toDpBounds
+import eu.mjdev.desktop.helpers.internal.DpBounds
+import eu.mjdev.desktop.helpers.internal.DpBounds.Companion.toDpBounds
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 

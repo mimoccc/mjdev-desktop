@@ -62,6 +62,9 @@ fun main() = application(
             ),
         ) {
             val api: DesktopProvider = LocalDesktop.current
+//            api.aiProvider.ask("weather in prague").let {
+//                println(it)
+//            }
             MainWindow(
                 panelState = panelState,
                 controlCenterState = controlCenterState,

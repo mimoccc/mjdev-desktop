@@ -1,6 +1,6 @@
 package eu.mjdev.desktop.components.fonticon
 
-import eu.mjdev.desktop.helpers.ResourceStream
+import eu.mjdev.desktop.helpers.streams.ResourceStream
 
 class CodePointsFile(
     private val codepointsFileName: String,

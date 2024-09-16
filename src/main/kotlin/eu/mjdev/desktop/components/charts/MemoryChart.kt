@@ -11,8 +11,8 @@ import androidx.compose.ui.graphics.Color
 import com.aay.compose.baseComponents.model.LegendPosition
 import eu.mjdev.desktop.components.draggable.DraggableView
 import eu.mjdev.desktop.extensions.Compose.DarkDarkGray
-import eu.mjdev.desktop.helpers.MemInfo
-import eu.mjdev.desktop.helpers.MemInfo.Companion.toReadable
+import eu.mjdev.desktop.helpers.system.MemInfo
+import eu.mjdev.desktop.helpers.system.MemInfo.Companion.toReadable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 

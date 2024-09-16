@@ -24,9 +24,9 @@ google-gson = "2.8.9"
 mozilla-rhino = "1.7.13"
 ini4j = "0.5.4"
 charts = "Beta-0.0.5"
+generativeai = "0.5.0-1.0.0-wasm"
 #korau = "4.0.10"
 #lanscapist = "2.3.8"
-#generativeai = "0.5.0-1.0.0-wasm"
 #compose-webview = "1.9.20"
 #decompose = "3.0.0-alpha07"
 
@@ -48,6 +48,7 @@ slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j-nop" }
 fuzzywuzzy = { module = "me.xdrop:fuzzywuzzy", version.ref = "fuzzywuzzy" }
 ffmpeg-platform = { module = "org.bytedeco:ffmpeg-platform", version.ref = "ffmpeg-platform" }
 charts = { module = "io.github.thechance101:chart", version.ref = "charts" }
+google-generativeai = { module = "dev.shreyaspatil.generativeai:generativeai-google-jvm", version.ref = "generativeai" }
 
 #coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil3" }
 #korau = { module = "com.soywiz.korlibs.korau:korau", version.ref = "korau" }
@@ -62,7 +63,6 @@ charts = { module = "io.github.thechance101:chart", version.ref = "charts" }
 #compose-webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "compose-webview" }
 #decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 #decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
-#google-generativeai = { module = "dev.shreyaspatil.generativeai:generativeai-google-jvm", version.ref = "generativeai" }
 #// open ai
 #//        implementation("com.aallam.openai:openai-client:3.8.2")
 #// byte buffer

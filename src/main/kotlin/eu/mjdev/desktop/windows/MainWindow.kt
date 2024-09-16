@@ -10,14 +10,14 @@ import androidx.compose.foundation.mouseClickable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.isSecondaryPressed
-import eu.mjdev.dadb.helpers.log
 import eu.mjdev.desktop.components.background.BackgroundImage
 import eu.mjdev.desktop.components.menu.ContextMenu
 import eu.mjdev.desktop.components.menu.ContextMenuState
 import eu.mjdev.desktop.components.menu.ContextMenuState.Companion.rememberContextMenuState
 import eu.mjdev.desktop.components.sliding.VisibilityState
-import eu.mjdev.desktop.helpers.Palette
-import eu.mjdev.desktop.helpers.Palette.Companion.rememberPalette
+import eu.mjdev.desktop.helpers.adb.helpers.log
+import eu.mjdev.desktop.helpers.internal.Palette
+import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberPalette
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 

@@ -65,6 +65,8 @@ allprojects {
         implementation(libs.fuzzywuzzy)
         // graphs
         implementation(libs.charts)
+        // gemini ai
+        implementation(libs.google.generativeai)
         // compose debugger
         implementation("io.github.theapache64:rebugger:1.0.0-rc03")
         // qr code
@@ -73,12 +75,14 @@ allprojects {
         implementation("dev.tmapps:konnection:1.4.1")
         // web
         implementation("io.github.kevinnzou:compose-webview-multiplatform:1.9.40-alpha01")
+        // bottom sheet flexible
+        implementation("com.github.skydoves:flexible-bottomsheet-material3:0.1.5")
+        // fs watcher
+        implementation("io.github.irgaly.kfswatch:kfswatch:1.3.0")
         // bar code
 //        implementation("io.github.alexzhirkevich:qrose-oned:1.0.1")
         // flow extensions
 //        implementation("io.github.hoc081098:FlowExt:1.0.0-RC")
-        // drag & drop
-//        implementation("com.mohamedrejeb.dnd:compose-dnd:0.2.0")
         // metadata
 //        implementation("com.ashampoo:kim:0.18.4")
         // html
@@ -96,8 +100,7 @@ allprojects {
         // implementation(libs.dbus.java.transport.native.unixsocket)
         // javascript
         // implementation(libs.mozilla.rhino)
-        // gemini ai
-        // implementation(libs.google.generativeai)
+
 //        implementation("com.github.SmartToolFactory:Compose-Extended-Colors:1.0.0-alpha06")
 //        implementation("com.github.SmartToolFactory:Compose-Extended-Gestures:2.0.0")
 //        implementation ("androidx.compose.ui:ui-text-google-fonts:1.6.8")

@@ -3,7 +3,7 @@ package eu.mjdev.desktop.data
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
-import eu.mjdev.desktop.helpers.EmptyException.Companion.EmptyException
+import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.windows.WindowsTracker
 import java.io.File
 
