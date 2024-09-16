@@ -27,7 +27,7 @@ import eu.mjdev.desktop.extensions.Modifier.rectShadow
 @Composable
 fun PowerBlock(
     backgroundColor: Color,
-    shadowColor: Color = Color.Black,
+    shadowColor: Color = Color.Black.copy(alpha = 0.3f),
     bottomBoxHeight: Dp = 128.dp,
     iconHeight: Dp = 64.dp,
     onPowerButtonClick: () -> Unit = {}

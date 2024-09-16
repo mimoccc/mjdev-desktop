@@ -19,11 +19,10 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage.Companion.rememberControlCenterScope
-import eu.mjdev.desktop.components.shadow.LeftShadow
-import eu.mjdev.desktop.components.shadow.RightShadow
 import eu.mjdev.desktop.components.sliding.SlidingMenu
 import eu.mjdev.desktop.components.sliding.VisibilityState
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.extensions.Modifier.rightShadow
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.windows.ChromeWindow
@@ -36,8 +35,7 @@ fun ControlCenter(
     api: DesktopProvider = LocalDesktop.current,
     backgroundColor: Color = api.currentUser.theme.backgroundColor,
     backgroundAlpha: Float = api.currentUser.theme.controlCenterBackgroundAlpha,
-    shadowColor: Color = backgroundColor, // todo theme
-    controlCenterDividerColor: Color = backgroundColor,// todo theme
+    shadowColor: Color = Color.Black.copy(alpha = 0.3f), // todo theme
     controlCenterExpandedWidth: Dp = api.currentUser.theme.controlCenterExpandedWidth,
     controlCenterDividerWidth: Dp = api.currentUser.theme.controlCenterDividerWidth,
     controlCenterIconColor: Color = api.currentUser.theme.controlCenterIconColor,
@@ -82,10 +80,11 @@ fun ControlCenter(
                 thickness = controlCenterDividerWidth
             )
         } else {
-            LeftShadow(
-                modifier = Modifier.fillMaxHeight().wrapContentSize(),
-                color = shadowColor,
-                contentBackgroundColor = backgroundColor.copy(alpha = backgroundAlpha)
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .wrapContentSize()
+                    .background(backgroundColor.copy(alpha = backgroundAlpha)),
             ) {
                 Row(
                     modifier = Modifier.fillMaxHeight().wrapContentSize(),
@@ -122,20 +121,13 @@ fun ControlCenter(
                                 )
                             }
                         }
-                        Divider(
+                        Box(
                             modifier = Modifier
+                                .padding(
+                                    end = controlCenterIconSize.width + 16.dp
+                                )
                                 .fillMaxHeight()
-                                .width(2.dp),
-                            color = Color.White.copy(0.1f),
-                            thickness = 2.dp
-                        )
-                        RightShadow(
-                            modifier = Modifier.padding(
-                                end = controlCenterIconSize.width + 16.dp
-                            ).fillMaxHeight().wrapContentSize(),
-                            color = Color.Black,
-                            alpha = 0.3f,
-                            contentBackgroundColor = Color.Transparent
+                                .wrapContentSize(),
                         ) {
                             Row {
                                 Divider(
@@ -146,22 +138,23 @@ fun ControlCenter(
                                     thickness = 2.dp
                                 )
                                 Box(
-                                    modifier = Modifier.width(controlCenterExpandedWidth),
+                                    modifier = Modifier
+                                        .width(controlCenterExpandedWidth)
+                                        .rightShadow(
+                                            color = shadowColor,
+                                            offsetX = 4.dp,
+                                            blur = 10.dp,
+                                        ),
                                 ) {
                                     with(pagesFiltered.value[pagerState.value]) {
                                         content(cscope)
                                     }
                                 }
-                                Divider(
-                                    modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
-                                    color = controlCenterDividerColor,
-                                    thickness = controlCenterDividerWidth
-                                )
                             }
                         }
                         Divider(
                             modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
-                            color = controlCenterDividerColor,
+                            color = Color.White.copy(0.1f),
                             thickness = controlCenterDividerWidth
                         )
                     }

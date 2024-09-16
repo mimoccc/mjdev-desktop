@@ -27,7 +27,7 @@ fun MainSettingsPage() = ControlCenterPage(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.TopCenter)
-                .rectShadow(8.dp, Color.Black)
+                .rectShadow(8.dp, Color.Black.copy(alpha = 0.3f))
         ) {
             UserAvatar(
                 backgroundColor = backgroundColor,

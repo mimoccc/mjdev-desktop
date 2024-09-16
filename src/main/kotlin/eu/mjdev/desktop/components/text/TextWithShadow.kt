@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 fun TextWithShadow(
     modifier: Modifier = Modifier,
     shadowSize: Dp = 4.dp,
-    shadowColor: Color = Color.Black,
+    shadowColor: Color = Color.Black.copy(alpha = 0.3f),
     offsetX: Dp = 0.dp,
     offsetY: Dp = 0.dp,
     fontWeight: FontWeight = FontWeight.Normal,
