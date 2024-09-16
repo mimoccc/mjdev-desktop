@@ -20,9 +20,6 @@ import java.awt.GraphicsDevice
 import java.awt.GraphicsEnvironment
 import java.awt.Toolkit
 import java.io.File
-import java.io.FileReader
-import javax.script.ScriptEngine
-import javax.script.ScriptEngineManager
 import kotlin.system.exitProcess
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "PrivatePropertyName", "SameParameterValue")
@@ -30,7 +27,7 @@ class DesktopProvider(
     val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
     val imageLoader: ImageLoader? = null,
     val connection: ConnectivityManager = ConnectivityManager(),
-    val scriptManager: ScriptEngineManager = ScriptEngineManager(),
+//    val scriptManager: ScriptEngineManager = ScriptEngineManager(),
     val kcefHelper: KCEFHelper = KCEFHelper(scope),
     val aiProvider: AIProvider = AIProvider(scope, AiPluginGemini(scope))
 ) {
@@ -41,11 +38,11 @@ class DesktopProvider(
 
     private val _controlCenterPages: MutableState<List<ControlCenterPage>> = mutableStateOf(CONTROL_CENTER_PAGES)
 
-    private val engine: ScriptEngine by lazy {
-        scriptManager.getEngineByName("JavaScript").apply {
-            // todo
-        }
-    }
+//    private val engine: ScriptEngine by lazy {
+//        scriptManager.getEngineByName("JavaScript").apply {
+//            // todo
+//        }
+//    }
 
     val adbHandler = adbDevicesHandler(
         coroutineScope = scope
@@ -86,11 +83,11 @@ class DesktopProvider(
         mounts.dispose()
     }
 
-    fun runScript(script: String): Any =
-        engine.eval(script)
+//    fun runScript(script: String): Any =
+//        engine.eval(script)
 
-    fun runScript(file: File): Any =
-        engine.eval(FileReader(file))
+//    fun runScript(file: File): Any =
+//        engine.eval(FileReader(file))
 
     fun executeCmd(cmd: String) {
         ProcessBuilder().apply {
