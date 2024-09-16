@@ -23,6 +23,7 @@ ffmpeg-platform = "6.1.1-1.5.10"
 google-gson = "2.8.9"
 mozilla-rhino = "1.7.13"
 ini4j = "0.5.4"
+charts = "Beta-0.0.5"
 #korau = "4.0.10"
 #lanscapist = "2.3.8"
 #generativeai = "0.5.0-1.0.0-wasm"
@@ -46,6 +47,7 @@ coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil3" }
 slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j-nop" }
 fuzzywuzzy = { module = "me.xdrop:fuzzywuzzy", version.ref = "fuzzywuzzy" }
 ffmpeg-platform = { module = "org.bytedeco:ffmpeg-platform", version.ref = "ffmpeg-platform" }
+charts = { module = "io.github.thechance101:chart", version.ref = "charts" }
 
 #coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil3" }
 #korau = { module = "com.soywiz.korlibs.korau:korau", version.ref = "korau" }

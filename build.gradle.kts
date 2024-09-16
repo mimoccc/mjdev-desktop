@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.compose.desktop)
     alias(libs.plugins.kotlin.serialization)
+//    id("dev.datlag.sekret") version "2.0.0-alpha-07"
 }
 
 group = libs.versions.packageName.get()
@@ -62,6 +63,16 @@ allprojects {
         implementation(libs.slf4j.nop)
         // fuzzy search
         implementation(libs.fuzzywuzzy)
+        // graphs
+        implementation(libs.charts)
+        // flow extensions
+//        implementation("io.github.hoc081098:FlowExt:1.0.0-RC")
+        // drag & drop
+//        implementation("com.mohamedrejeb.dnd:compose-dnd:0.2.0")
+        // metadata
+//        implementation("com.ashampoo:kim:0.18.4")
+        // html
+//        implementation("com.github.Hamamas:Kotlin-Wasm-Html-Interop:1.0.1")
         // sockets
 //        implementation("com.kohlschutter.junixsocket:junixsocket-core:2.3.2")
         // x11 client

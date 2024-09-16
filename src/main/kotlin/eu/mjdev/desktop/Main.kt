@@ -1,10 +1,15 @@
 package eu.mjdev.desktop
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
 import eu.mjdev.desktop.components.appsmenu.AppsMenu
+import eu.mjdev.desktop.components.charts.MemoryChart
 import eu.mjdev.desktop.components.controlcenter.ControlCenter
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanel
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
@@ -52,6 +57,9 @@ fun main() = application(
                 controlCenterState = controlCenterState,
                 menuState = menuState
             ) {
+                MemoryChart(
+                    modifier = Modifier.size(350.dp, 300.dp).align(Alignment.BottomEnd)
+                )
                 DesktopPanel(
                     panelState = panelState,
                     onMenuIconClicked = {
