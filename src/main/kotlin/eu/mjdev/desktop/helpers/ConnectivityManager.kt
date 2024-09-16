@@ -15,6 +15,10 @@ class ConnectivityManager {
     val isEthAdapterAvailable
         get() = true
 
+    // todo
+    val isBthAdapterAvailable
+        get() = true
+
     val isConnected
         get() = connection.isConnected()
 

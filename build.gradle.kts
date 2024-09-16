@@ -65,6 +65,8 @@ allprojects {
         implementation(libs.fuzzywuzzy)
         // graphs
         implementation(libs.charts)
+        // compose debugger
+        implementation("io.github.theapache64:rebugger:1.0.0-rc03")
         // qr code
         implementation("io.github.alexzhirkevich:qrose:1.0.1")
         // connectivity

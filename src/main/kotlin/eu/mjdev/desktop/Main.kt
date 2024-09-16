@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
+import com.theapache64.rebugger.RebuggerConfig
 import eu.mjdev.desktop.components.appsmenu.AppsMenu
 import eu.mjdev.desktop.components.charts.MemoryChart
 import eu.mjdev.desktop.components.controlcenter.ControlCenter
@@ -44,6 +45,13 @@ fun main() = application(
             controlCenterState.hide()
         }
     }
+
+    RebuggerConfig.init(
+        tag = "Composition",
+        logger = { tag, message ->
+            println("$tag >  $message")
+        }
+    )
 
     MaterialTheme {
         CompositionLocalProvider(

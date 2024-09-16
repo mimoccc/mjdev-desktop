@@ -10,7 +10,8 @@ import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 @Suppress("FunctionName")
 fun BluetoothSettingsPage() = ControlCenterPage(
     icon = Icons.Filled.Bluetooth,
-    name = "Bluetooth"
+    name = "Bluetooth",
+    condition = { api.connection.isBthAdapterAvailable }
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
