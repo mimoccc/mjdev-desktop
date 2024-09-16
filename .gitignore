@@ -50,3 +50,8 @@ src/main/resources/keys
 /cache
 /cache/
 cache/
+
+### kcef ###
+kcef-bundle/
+/kcef-bundle
+/kcef-bundle/
