@@ -19,17 +19,20 @@ import kotlinx.coroutines.CoroutineScope
 
 object Compose {
 
-    val Color.Companion.SuperDarkGray: Color
+    val Color.Companion.SuperDarkGray
         get() = Color(0xff202020)
 
-    val Color.Companion.DarkDarkGray: Color
+    val Color.Companion.DarkDarkGray
         get() = Color(0xff404040)
 
-    val Color.Companion.MediumDarkGray: Color
+    val Color.Companion.MediumDarkGray
         get() = Color(0xff808080)
 
-    val Color.Companion.LiteDarkGray: Color
+    val Color.Companion.LiteDarkGray
         get() = Color(0xffc0c0c0)
+
+    val Color.Companion.DarkBlue
+        get() = Color(0xff202060)
 
     val PaddingValues.width: Dp
         get() = calculateLeftPadding(LayoutDirection.Ltr) + calculateRightPadding(LayoutDirection.Ltr)

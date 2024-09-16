@@ -10,6 +10,7 @@ import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.pages.*
 import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.helpers.ConnectivityManager
+import eu.mjdev.desktop.helpers.KCEFHelper
 import eu.mjdev.desktop.helpers.ResourceStream
 import eu.mjdev.desktop.provider.providers.AppsProvider
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +28,8 @@ class DesktopProvider(
     val scope: CoroutineScope? = null,
     val imageLoader: ImageLoader? = null,
     val connection: ConnectivityManager = ConnectivityManager(),
-    private val scriptManager: ScriptEngineManager = ScriptEngineManager()
+    val scriptManager: ScriptEngineManager = ScriptEngineManager(),
+    val kcefHelper: KCEFHelper = KCEFHelper(scope)
 ) {
     private val __currentUser: User by lazy { User.load() }
     private val _currentUser: MutableState<User> = mutableStateOf(__currentUser)
@@ -76,6 +78,10 @@ class DesktopProvider(
 
     init {
         currentUser.theme.controlCenterExpandedWidth = containerSize.width.div(4)
+    }
+
+    fun dispose() {
+        kcefHelper.dispose()
     }
 
     private fun loadKey(key: String): String = runCatching {

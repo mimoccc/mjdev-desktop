@@ -4,12 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun DraggableView(
@@ -17,6 +20,7 @@ fun DraggableView(
     dragEnabled: Boolean = true,
     backgroundColor: Color = Color.Transparent,
     dragBackgroundColor: Color = Color.White.copy(alpha = 0.3f),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     content: @Composable BoxScope.() -> Unit = {}
 ) {
     var position by remember { mutableStateOf(Offset.Zero) }
@@ -42,10 +46,11 @@ fun DraggableView(
                         isDragging = false
                     }
                 )
-            },
+            }.padding(contentPadding),
         content = {
             Box(
-                modifier = Modifier.background(if (isDragging) dragBackgroundColor else backgroundColor)
+                modifier = Modifier
+                    .background(if (isDragging) dragBackgroundColor else backgroundColor)
             ) {
                 content()
             }

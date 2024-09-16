@@ -71,6 +71,8 @@ allprojects {
         implementation("io.github.alexzhirkevich:qrose:1.0.1")
         // connectivity
         implementation("dev.tmapps:konnection:1.4.1")
+        // web
+        implementation("io.github.kevinnzou:compose-webview-multiplatform:1.9.40-alpha01")
         // bar code
 //        implementation("io.github.alexzhirkevich:qrose-oned:1.0.1")
         // flow extensions
@@ -116,8 +118,12 @@ fun Project.createTask(
 compose {
     desktop {
         application {
-//            jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
-//            jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED")
+            jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
+            jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED")
+            if (System.getProperty("os.name").contains("Mac")) {
+                jvmArgs("--add-opens", "java.desktop/sun.lwawt=ALL-UNNAMED")
+                jvmArgs("--add-opens", "java.desktop/sun.lwawt.macosx=ALL-UNNAMED")
+            }
             mainClass = "eu.mjdev.desktop.MainKt"
             nativeDistributions {
                 packageName = libs.versions.appName.get()

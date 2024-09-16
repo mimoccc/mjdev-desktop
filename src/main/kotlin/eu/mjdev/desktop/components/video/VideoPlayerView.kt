@@ -6,7 +6,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import java.io.File
 
 @Suppress("UNUSED_PARAMETER")
 @Composable
@@ -20,16 +19,15 @@ fun VideoPlayerView(
     contentScale: ContentScale = ContentScale.Crop,
     onFail: (Throwable) -> Unit = { e -> e.printStackTrace() }
 ) = Box(
-    modifier = modifier,
-    contentAlignment = Alignment.Center
+    modifier = modifier
 ) {
-    val mediaUrl = when (src) {
-        is String -> src
-        is File -> src.absolutePath
-        else -> src.toString()
-    }
-    VideoPlayerFFMpeg(
-        modifier = Modifier.align(alignment),
-        file = mediaUrl
-    )
+    // todo
+//    VideoPlayerFFMpeg(
+//        modifier = Modifier.fillMaxSize().align(alignment),
+//        file = when (src) {
+//            is String -> src
+//            is File -> src.absolutePath
+//            else -> src.toString()
+//        }
+//    )
 }
