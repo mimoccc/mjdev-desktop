@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,6 +29,7 @@ fun DesktopPanelFavoriteApps(
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     onTooltip: (item: Any?) -> Unit = {},
+    apps: SnapshotStateList<App> = remember(api.appsProvider.favoriteApps) { api.appsProvider.favoriteApps },
     onClick: (app: App) -> Unit = { app -> api.appsProvider.startApp(app) },
 ) = Box(
     modifier = modifier
@@ -36,7 +39,7 @@ fun DesktopPanelFavoriteApps(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        items(api.appsProvider.favoriteApps) { app ->
+        items(apps) { app ->
             DesktopPanelIcon(
                 app = app,
                 isRunning = app.isRunning,

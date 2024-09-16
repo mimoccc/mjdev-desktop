@@ -83,8 +83,6 @@ allprojects {
         implementation("nl.marc-apps:tts:2.5.0")
         implementation("nl.marc-apps:tts-compose:2.5.0")
 
-        // mjdev-desktop_1.0.0-1_amd64.deb
-
         // bar code
 //        implementation("io.github.alexzhirkevich:qrose-oned:1.0.1")
         // flow extensions

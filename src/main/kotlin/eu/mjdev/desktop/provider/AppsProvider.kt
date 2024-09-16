@@ -9,6 +9,8 @@ import eu.mjdev.desktop.extensions.Locale.toLocale
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.helpers.system.Command
 import eu.mjdev.desktop.helpers.system.Command.Companion.toList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
 
@@ -16,6 +18,9 @@ import java.util.*
 class AppsProvider(
     val desktopProvider: DesktopProvider
 ) {
+    val scope
+        get() = desktopProvider.scope
+
     val homeDir by lazy { runCatching { File(System.getProperty("user.home")) }.getOrNull() }
 
     private val configDir by lazy { homeDir?.resolve(".config") }
@@ -59,45 +64,51 @@ class AppsProvider(
     private val iconThemes by lazy { runCatching { iconsDir?.listFiles() }.getOrNull() } // folders
     private val systemThemes by lazy { runCatching { themesDir?.listFiles() }.getOrNull() } // folders
 
-    private val autoStartDesktopFiles
-        get() = runCatching {
+    private val autoStartDesktopFiles by lazy {
+        runCatching {
             autostartDesktopFilesDir?.listFiles()?.map { DesktopFile(it) }
         }.getOrNull() ?: emptyList()
+    }
 
     // todo : probably not all here, need usr and local also
-    private val allAppsDesktopFilesLocal
-        get() = runCatching {
+    private val allAppsDesktopFilesLocal by lazy {
+        runCatching {
             allAppsDesktopFilesDir?.listFiles()?.filter {
                 it.extension == "desktop"
             }?.map { DesktopFile(it) }
         }.getOrNull() ?: emptyList()
+    }
 
-    private val allAppsDesktopFilesShared
-        get() = runCatching {
+    private val allAppsDesktopFilesShared by lazy {
+        runCatching {
             File("/usr/share/applications").listFiles()?.filter {
                 it.extension == "desktop"
             }?.map { DesktopFile(it) }
         }.getOrNull() ?: emptyList()
+    }
 
-    private val allAppsDesktopFilesFlatPack
-        get() = runCatching {
+    private val allAppsDesktopFilesFlatPack by lazy {
+        runCatching {
             File("/var/lib/flatpak/exports/share/applications/").listFiles()?.filter {
                 it.extension == "desktop"
             }?.map { DesktopFile(it) }
         }.getOrNull() ?: emptyList()
+    }
 
-    private val allAppsDesktopFilesSnap
-        get() = runCatching {
+    private val allAppsDesktopFilesSnap by lazy {
+        runCatching {
             File("/var/lib/snapd/desktop/applications/").listFiles()?.filter {
                 it.extension == "desktop"
             }?.map { DesktopFile(it) }
         }.getOrNull() ?: emptyList()
+    }
 
-    private val allAppsDesktopFiles
-        get() = (allAppsDesktopFilesLocal +
+    private val allAppsDesktopFiles by lazy {
+        (allAppsDesktopFilesLocal +
                 allAppsDesktopFilesShared +
                 allAppsDesktopFilesFlatPack +
                 allAppsDesktopFilesSnap).distinctBy { it.file.name }
+    }
 
     val currentLocale: Locale
         get() = userDirsLocale ?: Locale.ENGLISH
@@ -131,19 +142,21 @@ class AppsProvider(
     val favoriteApps = mutableStateListOf<App>()
 
     fun startApp(app: App) {
-        if (app.isRunning) {
-            app.requestWindowFocus()
-        } else {
-            app.onStarting {
-                favoriteApps.invalidate()
-            }.onStarted {
-                favoriteApps.invalidate()
-            }.onStop { result ->
-                favoriteApps.invalidate()
-                if (result != EmptyException) {
-                    result.printStackTrace()
-                }
-            }.start()
+        scope.launch(Dispatchers.IO) {
+            if (app.isRunning) {
+                app.requestWindowFocus()
+            } else {
+                app.onStarting {
+                    favoriteApps.invalidate()
+                }.onStarted {
+                    favoriteApps.invalidate()
+                }.onStop { result ->
+                    favoriteApps.invalidate()
+                    if (result != EmptyException) {
+                        result.printStackTrace()
+                    }
+                }.start()
+            }
         }
     }
 
