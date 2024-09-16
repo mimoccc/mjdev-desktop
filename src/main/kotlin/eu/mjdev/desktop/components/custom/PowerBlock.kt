@@ -29,7 +29,8 @@ fun PowerBlock(
     backgroundColor: Color,
     shadowColor: Color = Color.Black,
     bottomBoxHeight: Dp = 128.dp,
-    iconHeight: Dp = 64.dp
+    iconHeight: Dp = 64.dp,
+    onPowerButtonClick: () -> Unit = {}
 ) = Column(
     modifier = Modifier.fillMaxWidth()
 ) {
@@ -54,7 +55,7 @@ fun PowerBlock(
                 .circleBorder(4.dp, backgroundColor)
                 .circleShadow(color = shadowColor),
             contentPadding = PaddingValues(1.dp),
-            onClick = {},
+            onClick = onPowerButtonClick,
             colors = ButtonDefaults.transparent(),
             elevation = ButtonDefaults.noElevation()
         ) {

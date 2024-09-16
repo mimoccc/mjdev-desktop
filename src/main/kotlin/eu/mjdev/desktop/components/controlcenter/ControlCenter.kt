@@ -139,7 +139,14 @@ fun ControlCenter(
                                 Box(
                                     modifier = Modifier.width(controlCenterExpandedWidth),
                                 ) {
-                                    pages[pagerState.value].content(backgroundColor)
+                                    with(
+                                        ControlCenterPage.ControlCenterPageScope(
+                                            backgroundColor,
+                                            api
+                                        )
+                                    ) {
+                                        pages[pagerState.value].content(this)
+                                    }
                                 }
                                 Divider(
                                     modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),

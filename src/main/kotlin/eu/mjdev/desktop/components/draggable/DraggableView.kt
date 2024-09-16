@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components
+package eu.mjdev.desktop.components.draggable
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures

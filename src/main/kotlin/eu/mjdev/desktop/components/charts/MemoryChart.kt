@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.aay.compose.baseComponents.model.LegendPosition
-import eu.mjdev.desktop.components.DraggableView
+import eu.mjdev.desktop.components.draggable.DraggableView
 import eu.mjdev.desktop.extensions.Compose.DarkDarkGray
 import eu.mjdev.desktop.helpers.MemInfo
 import eu.mjdev.desktop.helpers.MemInfo.Companion.toReadable

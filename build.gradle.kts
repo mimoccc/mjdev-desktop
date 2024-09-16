@@ -65,6 +65,10 @@ allprojects {
         implementation(libs.fuzzywuzzy)
         // graphs
         implementation(libs.charts)
+        // qr code
+        implementation("io.github.alexzhirkevich:qrose:1.0.1")
+        // bar code
+//        implementation("io.github.alexzhirkevich:qrose-oned:1.0.1")
         // flow extensions
 //        implementation("io.github.hoc081098:FlowExt:1.0.0-RC")
         // drag & drop

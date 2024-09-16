@@ -19,7 +19,7 @@ import eu.mjdev.desktop.extensions.Modifier.rectShadow
 fun MainSettingsPage() = ControlCenterPage(
     icon = Icons.Filled.Home,
     name = "Home"
-) { backgroundColor ->
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -49,7 +49,11 @@ fun MainSettingsPage() = ControlCenterPage(
                 .align(Alignment.BottomCenter)
         ) {
             PowerBlock(
-                backgroundColor = backgroundColor
+                backgroundColor = backgroundColor,
+                onPowerButtonClick = {
+                    // todo : dialog
+                    api.shutdown()
+                }
             )
         }
     }
