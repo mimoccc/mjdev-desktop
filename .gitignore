@@ -15,6 +15,8 @@ build/
 *.iml
 *.ipr
 out/
+/out
+/out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
@@ -44,6 +46,7 @@ src/main/resources/keys
 /src/main/resources/keys
 /src/main/resources/keys/
 
-### out ###
-/out
-/out/
+### cache ###
+/cache
+/cache/
+cache/
