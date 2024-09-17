@@ -24,13 +24,17 @@ fun AIPage() = ControlCenterPage(
     icon = Icons.Filled.Campaign,
     name = "AI",
 ) {
-    val questionsList = remember { mutableStateListOf<String>() }
+    val questionsList = remember { mutableStateListOf<Pair<String, String>>() }
     val request = remember { mutableStateOf("") }
     val onDone: (String) -> Unit = { what ->
         if (what.isNotEmpty()) {
-            questionsList.add(what)
+            questionsList.add(Pair(what, ""))
             api.aiProvider.ask(what) { _, res ->
-                talk(res)
+                res.replace("* **", "").replace("**", "").let { resx ->
+                    questionsList.removeIf { it.first == what }
+                    questionsList.add(Pair(what, resx))
+                    talk(resx)
+                }
             }
         }
     }
@@ -48,14 +52,30 @@ fun AIPage() = ControlCenterPage(
                         .weight(1f)
                         .background(Color.Black.copy(alpha = 0.3f), RoundedCornerShape(8.dp)),
                 ) {
-                    itemsIndexed(questionsList) { idx, text ->
-                        Text(
+                    itemsIndexed(questionsList) { idx, textData ->
+                        Column(
                             modifier = Modifier.padding(4.dp)
                                 .fillMaxWidth()
-                                .background(Color.White.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                .background(Color.White.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
                                 .padding(4.dp),
-                            text = "${idx + 1}. $text"
-                        )
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(4.dp)
+                                    .fillMaxWidth()
+                                    .background(Color.White.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
+                                    .padding(8.dp),
+                                text = "${idx + 1}. ${textData.first}",
+                                color = Color.White
+                            )
+                            Text(
+                                modifier = Modifier.padding(4.dp)
+                                    .fillMaxWidth()
+                                    .background(Color.White.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
+                                    .padding(8.dp),
+                                text = textData.second,
+                                color = Color.White.copy(alpha = 0.9f)
+                            )
+                        }
                     }
                 }
                 OutlinedTextField(
@@ -74,7 +94,7 @@ fun AIPage() = ControlCenterPage(
                     minLines = 4,
                     shape = RoundedCornerShape(8.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        backgroundColor = Color.White.copy(alpha = 0.3f)
+                        backgroundColor = Color.White.copy(alpha = 0.1f)
                     )
                 )
             }
