@@ -29,7 +29,7 @@ fun main() = application(
     val menuState = rememberVisibilityState()
 
     val handleMenuFocus: (Boolean) -> Unit = { focus ->
-        if (!menuState.isWindowFocus && !focus) {
+        if (!menuState.isWindowFocus && !focus && !controlCenterState.isWindowFocus) {
             menuState.hide()
         }
     }

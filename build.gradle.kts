@@ -96,7 +96,9 @@ allprojects {
         // jwm
 //        implementation("io.github.humbleui:jwm:0.4.8")
         // jna
-//        implementation("net.java.dev.jna:jna-platform:5.6.0")
+        implementation("net.java.dev.jna:jna-platform:5.6.0")
+        // hid
+//        implementation('org.hid4java:hid4java')
         // dbus
         // implementation(libs.dbus.java.core)
         // implementation(libs.dbus.java.transport.native.unixsocket)

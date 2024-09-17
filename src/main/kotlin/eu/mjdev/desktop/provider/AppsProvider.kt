@@ -16,10 +16,10 @@ import java.util.*
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "UNNECESSARY_SAFE_CALL")
 class AppsProvider(
-    val desktopProvider: DesktopProvider
+    val api: DesktopProvider
 ) {
     val scope
-        get() = desktopProvider.scope
+        get() = api.scope
 
     val homeDir by lazy { runCatching { File(System.getProperty("user.home")) }.getOrNull() }
 
@@ -144,7 +144,8 @@ class AppsProvider(
     fun startApp(app: App) {
         scope.launch(Dispatchers.IO) {
             if (app.isRunning) {
-                app.requestWindowFocus()
+                // todo menu to switch
+                app.requestWindowFocus(api)
             } else {
                 app.onStarting {
                     favoriteApps.invalidate()
@@ -156,6 +157,7 @@ class AppsProvider(
                         result.printStackTrace()
                     }
                 }.start()
+                favoriteApps.invalidate()
             }
         }
     }

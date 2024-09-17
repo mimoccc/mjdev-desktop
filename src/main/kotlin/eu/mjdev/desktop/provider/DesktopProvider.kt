@@ -14,6 +14,7 @@ import eu.mjdev.desktop.helpers.managers.ConnectivityManager
 import eu.mjdev.desktop.helpers.managers.FileSystemWatcher
 import eu.mjdev.desktop.helpers.managers.KCEFHelper
 import eu.mjdev.desktop.provider.AIProvider.AiPluginGemini
+import eu.mjdev.desktop.windows.WindowsTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.awt.GraphicsDevice
@@ -29,7 +30,8 @@ class DesktopProvider(
     val connection: ConnectivityManager = ConnectivityManager(),
 //    val scriptManager: ScriptEngineManager = ScriptEngineManager(),
     val kcefHelper: KCEFHelper = KCEFHelper(scope),
-    val aiProvider: AIProvider = AIProvider(scope, AiPluginGemini(scope))
+    val aiProvider: AIProvider = AIProvider(scope, AiPluginGemini(scope)),
+    val windowsTracker: WindowsTracker = WindowsTracker()
 ) {
     private val __currentUser: User by lazy { User.load() }
     private val _currentUser: MutableState<User> = mutableStateOf(__currentUser)

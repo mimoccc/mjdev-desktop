@@ -4,7 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
-import eu.mjdev.desktop.windows.WindowsTracker
+import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "HasPlatformType")
@@ -42,7 +42,7 @@ class App(
 
     var process: Process? = null
     val isRunning: Boolean
-        get() = (process?.isAlive ?: false)
+        get() = (process?.isAlive ?: false) || process?.children()?.anyMatch { it.isAlive } == true
 
     var isStarted: Boolean = false
 
@@ -100,20 +100,20 @@ class App(
         return this
     }
 
-    fun requestWindowFocus() {
-        WindowsTracker().getWindowByPid(process?.pid())?.toFront() ?: closeWindow()
+    fun requestWindowFocus(api: DesktopProvider) {
+        api.windowsTracker.getWindowByPid(process?.pid())?.toFront() ?: closeWindow(api)
     }
 
-    fun minimizeWindow() {
-        WindowsTracker().getWindowByPid(process?.pid())?.minimize()
+    fun minimizeWindow(api: DesktopProvider) {
+        api.windowsTracker.getWindowByPid(process?.pid())?.minimize()
     }
 
-    fun maximizeWindow() {
-        WindowsTracker().getWindowByPid(process?.pid())?.maximize()
+    fun maximizeWindow(api: DesktopProvider) {
+        api.windowsTracker.getWindowByPid(process?.pid())?.maximize()
     }
 
-    fun closeWindow() {
-        WindowsTracker().getWindowByPid(process?.pid())?.close() ?: exit()
+    fun closeWindow(api: DesktopProvider) {
+        api.windowsTracker.getWindowByPid(process?.pid())?.close() ?: exit()
     }
 
     fun exit() {
