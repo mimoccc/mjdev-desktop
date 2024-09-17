@@ -26,32 +26,31 @@ class WindowsTracker {
 
     @Suppress("DEPRECATED_IDENTITY_EQUALS")
     private fun recurse(root: Window, depth: Int): List<SystemWindow> {
-        return runCatching {
-            val windowList = mutableListOf<SystemWindow>()
-            val windowRef = WindowByReference()
-            val parentRef = WindowByReference()
-            val childrenRef = PointerByReference()
-            val childCountRef = IntByReference()
-            x11.XQueryTree(display, root, windowRef, parentRef, childrenRef, childCountRef)
-            if (childrenRef.value == null) return emptyList()
-            val ids: LongArray
-            if (Native.LONG_SIZE === java.lang.Long.BYTES) {
-                ids = childrenRef.value.getLongArray(0, childCountRef.value)
-            } else if (Native.LONG_SIZE === Integer.BYTES) {
-                val intIds: IntArray = childrenRef.value.getIntArray(0, childCountRef.value)
-                ids = LongArray(intIds.size)
-                for (i in intIds.indices) {
-                    ids[i] = intIds[i].toLong()
-                }
-            } else return emptyList()
+        val windowList = mutableListOf<SystemWindow>()
+        val windowRef = WindowByReference()
+        val parentRef = WindowByReference()
+        val childrenRef = PointerByReference()
+        val childCountRef = IntByReference()
+        x11.XQueryTree(display, root, windowRef, parentRef, childrenRef, childCountRef)
+        if (childrenRef.value == null) return emptyList()
+        val ids: LongArray
+        if (Native.LONG_SIZE === java.lang.Long.BYTES) {
+            ids = childrenRef.value.getLongArray(0, childCountRef.value)
+        } else if (Native.LONG_SIZE === Integer.BYTES) {
+            val intIds: IntArray = childrenRef.value.getIntArray(0, childCountRef.value)
+            ids = LongArray(intIds.size)
+            for (i in intIds.indices) {
+                ids[i] = intIds[i].toLong()
+            }
+        } else return emptyList()
 //            throw IllegalStateException("Unexpected size for Native.LONG_SIZE" + Native.LONG_SIZE)
-            for (id in ids) {
-                if (id == 0L) continue
-                val window = Window(id)
-                val name = XTextProperty()
-                val pids = mutableListOf<Long>()
-                // todo
-                x11.XGetWMName(display, window, name)
+        for (id in ids) {
+            if (id == 0L) continue
+            val window = Window(id)
+            val name = XTextProperty()
+            val pids = mutableListOf<Long>()
+            // todo
+            x11.XGetWMName(display, window, name)
 //            x11.XGetWindowAttributes()
 //            x11.XGetGeometry()
 //            x11.XGetWMHints()
@@ -60,19 +59,23 @@ class WindowsTracker {
 //            x11.XGetKeyboardMapping()
 //            x11.XGetModifierMapping()
 //            x11.XGetKeyboardControl()
-                windowList.add(
-                    SystemWindow(
-                        this,
-                        id,
-                        name.value ?: "",
-                        pids
-                    )
+            windowList.add(
+                SystemWindow(
+                    this,
+                    id,
+                    name.value ?: "",
+                    pids
                 )
+            )
+            // todo error free memory
+//            try {
 //                x11.XFree(name.getPointer())
-                recurse(window, depth + 1)
-            }
-            windowList
-        }.getOrNull() ?: emptyList()
+//            } catch (t: Throwable) {
+//                t.printStackTrace()
+//            }
+            recurse(window, depth + 1)
+        }
+        return windowList
     }
 
     class SystemWindow(
@@ -82,23 +85,23 @@ class WindowsTracker {
         val pids: List<Long>
     ) : IWindow {
         override fun toBack() {
-
+            // todo
         }
 
         override fun toFront() {
-
+            // todo
         }
 
         override fun minimize() {
-
+            // todo
         }
 
         override fun maximize() {
-
+            // todo
         }
 
         override fun close() {
-
+            // todo
         }
     }
 

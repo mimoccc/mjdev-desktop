@@ -35,7 +35,7 @@ object Custom {
                     delay(5000L)
                 } while (true)
             }
-        }.collectAsState(initial = "1.1.1970")
+        }.collectAsState(initial = "")
 
     val timeFlow
         @Composable
@@ -52,7 +52,7 @@ object Custom {
                     delay(200L)
                 } while (true)
             }
-        }.collectAsState(initial = "00:00:00")
+        }.collectAsState(initial = "")
 
     // todo better solution
     fun <T> SnapshotStateList<T>.invalidate() = toList().also {
