@@ -211,7 +211,7 @@ class WindowsManager {
         return ret
     }
 
-    fun get_property(
+    private fun get_property(
         window: Window?,
         xa_prop_type: Atom,
         prop_name: String?,
@@ -255,7 +255,7 @@ class WindowsManager {
         return ret_prop.value
     }
 
-    fun client_msg(
+    private fun client_msg(
         window: Window,
         msg: String,
         data0: Long,
@@ -290,7 +290,7 @@ class WindowsManager {
         ) EXIT_SUCCESS else EXIT_FAILURE
     }
 
-    fun activate_window(
+    private fun activate_window(
         window: Window,
         switch_desktop: Boolean
     ): Boolean {
@@ -314,7 +314,7 @@ class WindowsManager {
         return EXIT_SUCCESS
     }
 
-    fun get_active_window(): Window? = get_property_as_window(
+    private fun get_active_window(): Window? = get_property_as_window(
         x11.XDefaultRootWindow(display),
         XA_WINDOW,
         "_NET_ACTIVE_WINDOW"

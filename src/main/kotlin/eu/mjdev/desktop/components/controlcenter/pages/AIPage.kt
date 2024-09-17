@@ -29,7 +29,7 @@ fun AIPage() = ControlCenterPage(
     val onDone: (String) -> Unit = { what ->
         if (what.isNotEmpty()) {
             questionsList.add(Pair(what, ""))
-            api.aiProvider.ask(what) { _, res ->
+            api.ai.ask(what) { _, res ->
                 res.replace("* **", "").replace("**", "").let { resx ->
                     questionsList.removeIf { it.first == what }
                     questionsList.add(Pair(what, resx))

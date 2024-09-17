@@ -61,7 +61,7 @@ fun Clock(
             val parsed = time.split(":")
             val isZeroMinutes = (parsed.getOrNull(1) ?: "-") == "00"
             if (talkEveryHour && isZeroMinutes) {
-                api.aiProvider.talk("It is ${parsed.firstOrNull()} hour")
+                api.ai.talk("It is ${parsed.firstOrNull()} hour")
             }
         }
     }

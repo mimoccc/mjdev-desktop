@@ -123,12 +123,16 @@ class App(
     }
 
     fun isWindowFocus(api: DesktopProvider): Boolean =
-        api.windowsTracker.isWindowActive(pids)
+        api.windows.isWindowActive(pids)
+
+    fun hasWindow(api: DesktopProvider) =
+        api.windows.getWindowsByPids(pids).isNotEmpty()
 
     fun requestWindowFocus(api: DesktopProvider) {
-        val windows = api.windowsTracker.getWindowsByPids(pids)
+        val windows = api.windows.getWindowsByPids(pids)
         if (windows.isNotEmpty()) {
             println("Got windows:${windows.size}")
+            println("$windows")
             windows.forEach { w -> w.toFront() }
         } else {
             closeWindow(api)
@@ -136,7 +140,7 @@ class App(
     }
 
     fun minimizeWindow(api: DesktopProvider) {
-        val windows = api.windowsTracker.getWindowsByPids(pids)
+        val windows = api.windows.getWindowsByPids(pids)
         if (windows.isNotEmpty()) {
             windows.forEach { w -> w.minimize() }
         } else {
@@ -145,7 +149,7 @@ class App(
     }
 
     fun maximizeWindow(api: DesktopProvider) {
-        val windows = api.windowsTracker.getWindowsByPids(pids)
+        val windows = api.windows.getWindowsByPids(pids)
         if (windows.isNotEmpty()) {
             windows.forEach { w -> w.maximize() }
         } else {
@@ -154,7 +158,7 @@ class App(
     }
 
     fun closeWindow(api: DesktopProvider) {
-        val windows = api.windowsTracker.getWindowsByPids(pids)
+        val windows = api.windows.getWindowsByPids(pids)
         if (windows.isNotEmpty()) {
             windows.forEach { w -> w.close() }
         } else {

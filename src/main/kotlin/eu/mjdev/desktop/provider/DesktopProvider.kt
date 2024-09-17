@@ -30,8 +30,8 @@ class DesktopProvider(
     val connection: ConnectivityManager = ConnectivityManager(),
 //    val scriptManager: ScriptEngineManager = ScriptEngineManager(),
     val kcefHelper: KCEFHelper = KCEFHelper(scope),
-    val aiProvider: AIProvider = AIProvider(scope, AiPluginGemini(scope)),
-    val windowsTracker: WindowsManager = WindowsManager()
+    val ai: AIProvider = AIProvider(scope, AiPluginGemini(scope)),
+    val windows: WindowsManager = WindowsManager()
 ) {
     private val __currentUser: User by lazy { User.load() }
     private val _currentUser: MutableState<User> = mutableStateOf(__currentUser)
@@ -83,7 +83,7 @@ class DesktopProvider(
     fun dispose() {
         kcefHelper.dispose()
         mounts.dispose()
-        windowsTracker.dispose()
+        windows.dispose()
     }
 
 //    fun runScript(script: String): Any =
