@@ -145,7 +145,11 @@ class AppsProvider(
         scope.launch(Dispatchers.IO) {
             if (app.isRunning) {
                 // todo menu to switch
-                app.requestWindowFocus(api)
+                if (app.isWindowFocus(api)) {
+                    app.minimizeWindow(api)
+                } else {
+                    app.requestWindowFocus(api)
+                }
             } else {
                 app.onStarting {
                     favoriteApps.invalidate()

@@ -6,6 +6,10 @@ import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
+import kotlin.jvm.optionals.getOrNull
+
+val Process.command: String?
+    get() = info().command().getOrNull()
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "HasPlatformType")
 class App(
@@ -47,16 +51,33 @@ class App(
     var isStarted: Boolean = false
 
     // todo :  replace all params with what needed
-    val cleanExec
-        get() = exec.replace("%u", "").replace("%U", "")
+    val cmd
+        get() = exec.replace("%u", "").replace("%U", "").trim()
+
+    val command
+        get() = process?.command
+
+    val pids: List<Long>
+        get() = getProcessPids(process?.toHandle())
 
     val runningProcesses
         get() = ProcessHandle.allProcesses()
 
+    fun getProcessPids(p: ProcessHandle?): List<Long> {
+        val pids = mutableListOf<Long>()
+        if (p != null) {
+            pids.add(p.pid())
+            p.children().forEach { pch ->
+                pids.addAll(getProcessPids(pch))
+            }
+        }
+        return pids
+    }
+
     fun start() = runCatching {
         triggerStart()
-        println("Starting app: $name [$cleanExec]")
-        ProcessBuilder("/bin/bash", "-c", cleanExec).start().also {
+        println("Starting app: $name [$cmd]")
+        ProcessBuilder(cmd).start().also {
             process = it
         }.apply {
             onExit().thenRun {
@@ -100,20 +121,44 @@ class App(
         return this
     }
 
+    fun isWindowFocus(api: DesktopProvider): Boolean =
+        api.windowsTracker.isWindowActive(pids)
+
     fun requestWindowFocus(api: DesktopProvider) {
-        api.windowsTracker.getWindowByPid(process?.pid())?.toFront() ?: closeWindow(api)
+        val windows = api.windowsTracker.getWindowsByPids(pids)
+        if (windows.isNotEmpty()) {
+            println("Got windows:${windows.size}")
+            windows.forEach { w -> w.toFront() }
+        } else {
+            closeWindow(api)
+        }
     }
 
     fun minimizeWindow(api: DesktopProvider) {
-        api.windowsTracker.getWindowByPid(process?.pid())?.minimize()
+        val windows = api.windowsTracker.getWindowsByPids(pids)
+        if (windows.isNotEmpty()) {
+            windows.forEach { w -> w.minimize() }
+        } else {
+            closeWindow(api)
+        }
     }
 
     fun maximizeWindow(api: DesktopProvider) {
-        api.windowsTracker.getWindowByPid(process?.pid())?.maximize()
+        val windows = api.windowsTracker.getWindowsByPids(pids)
+        if (windows.isNotEmpty()) {
+            windows.forEach { w -> w.maximize() }
+        } else {
+            closeWindow(api)
+        }
     }
 
     fun closeWindow(api: DesktopProvider) {
-        api.windowsTracker.getWindowByPid(process?.pid())?.close() ?: exit()
+        val windows = api.windowsTracker.getWindowsByPids(pids)
+        if (windows.isNotEmpty()) {
+            windows.forEach { w -> w.close() }
+        } else {
+            exit()
+        }
     }
 
     fun exit() {

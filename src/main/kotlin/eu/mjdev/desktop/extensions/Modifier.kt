@@ -197,9 +197,18 @@ object Modifier {
         val blur: Dp,
         val spread: Dp,
     ) : ModifierNodeElement<DropShadowNode>() {
-        override fun create() = DropShadowNode(shape, color, offsetX, offsetY, blur, spread)
+        override fun create() = DropShadowNode(
+            shape,
+            color,
+            offsetX,
+            offsetY,
+            blur,
+            spread
+        )
 
-        override fun update(node: DropShadowNode) {
+        override fun update(
+            node: DropShadowNode
+        ) {
             node.shape = shape
             node.color = color
             node.offsetX = offsetX
