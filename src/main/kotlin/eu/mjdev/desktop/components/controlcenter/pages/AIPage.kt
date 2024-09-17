@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 fun AIPage() = ControlCenterPage(
     icon = Icons.Filled.Campaign,
     name = "AI",
+    condition = { ai.isAvailable() }
 ) {
     val questionsList = remember { mutableStateListOf<Pair<String, String>>() }
     val request = remember { mutableStateOf("") }
@@ -94,7 +95,10 @@ fun AIPage() = ControlCenterPage(
                     shape = RoundedCornerShape(8.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         backgroundColor = Color.White.copy(alpha = 0.1f),
-                        textColor = Color.White.copy(alpha = 0.9f)
+                        textColor = Color.White.copy(alpha = 0.9f),
+                        cursorColor = Color.White,
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.Black
                     )
                 )
             }

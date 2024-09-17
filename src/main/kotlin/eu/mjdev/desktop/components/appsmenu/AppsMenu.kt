@@ -24,8 +24,8 @@ import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVis
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
-import eu.mjdev.desktop.helpers.Animations.AppsMenuEnterAnimation
-import eu.mjdev.desktop.helpers.Animations.AppsMenuExitAnimation
+import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
+import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.windows.ChromeWindow

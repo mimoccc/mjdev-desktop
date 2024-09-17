@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.helpers
+package eu.mjdev.desktop.helpers.animation
 
 import androidx.compose.animation.*
 

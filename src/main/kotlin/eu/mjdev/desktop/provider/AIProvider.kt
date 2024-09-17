@@ -14,7 +14,8 @@ class AIProvider(
     val scope: CoroutineScope,
     var pluginAI: IAIPlugin = AiPluginNull(scope),
     val pluginSTT: ISTTPlugin = STTPluginNull(scope),
-    val pluginTTS: TTSPlugin = TTSPluginMain(scope)
+    val pluginTTS: TTSPlugin = TTSPluginMain(scope),
+    val isAvailable: () -> Boolean = { pluginAI !is AiPluginNull }
 ) {
     fun ask(
         question: String,

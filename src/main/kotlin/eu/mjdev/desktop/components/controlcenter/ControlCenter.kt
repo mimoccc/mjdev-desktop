@@ -20,13 +20,13 @@ import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
-import eu.mjdev.desktop.components.controlcenter.ControlCenterPage.Companion.rememberControlCenterScope
+import eu.mjdev.desktop.components.controlcenter.ControlCenterPage.ControlCenterPageScope
 import eu.mjdev.desktop.components.sliding.SlidingMenu
 import eu.mjdev.desktop.components.sliding.VisibilityState
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Modifier.rightShadow
-import eu.mjdev.desktop.helpers.Animations.ControlCenterEnterAnimation
-import eu.mjdev.desktop.helpers.Animations.ControlCenterExitAnimation
+import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
+import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.windows.ChromeWindow
@@ -50,7 +50,6 @@ fun ControlCenter(
     val backgroundColor by remember { api.currentUser.theme.backgroundColorState }
     val backgroundAlpha by remember { api.currentUser.theme.controlCenterBackgroundAlphaState }
     val backgroundInvoker = remember { { backgroundColor } }
-    val cscope = rememberControlCenterScope(backgroundInvoker, api)
     val controlCenterExpandedWidth by remember { api.currentUser.theme.controlCenterExpandedWidthState }
     val controlCenterDividerWidth by remember { api.currentUser.theme.controlCenterDividerWidthState }
     val controlCenterIconColor by remember { api.currentUser.theme.controlCenterIconColorState }
@@ -58,7 +57,7 @@ fun ControlCenter(
     val pages by remember { api.controlCenterPagesState }
     val pagesFiltered = remember(pages) {
         derivedStateOf {
-            pages.filter { p -> p.condition.invoke(cscope) }
+            pages.filter { p -> p.condition.invoke(api) }
         }
     }
     ChromeWindow(
@@ -76,7 +75,6 @@ fun ControlCenter(
             onFocusChange(focused)
         }
     ) {
-
         SlidingMenu(
             modifier = Modifier.fillMaxHeight(),
             orientation = Horizontal,
@@ -160,7 +158,7 @@ fun ControlCenter(
                                             ),
                                     ) {
                                         with(pagesFiltered.value[pagerState.value]) {
-                                            content(cscope)
+                                            content(ControlCenterPageScope(api, backgroundInvoker, cache))
                                         }
                                     }
                                 }

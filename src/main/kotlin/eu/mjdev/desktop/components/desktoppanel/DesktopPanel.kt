@@ -29,8 +29,8 @@ import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVis
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.extensions.Compose.height
 import eu.mjdev.desktop.extensions.Modifier.topShadow
-import eu.mjdev.desktop.helpers.Animations.DesktopPanelEnterAnimation
-import eu.mjdev.desktop.helpers.Animations.DesktopPanelExitAnimation
+import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelEnterAnimation
+import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelExitAnimation
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.windows.ChromeWindow

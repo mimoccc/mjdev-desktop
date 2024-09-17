@@ -11,7 +11,7 @@ import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 fun BluetoothSettingsPage() = ControlCenterPage(
     icon = Icons.Filled.Bluetooth,
     name = "Bluetooth",
-    condition = { api.connection.isBthAdapterAvailable }
+    condition = { connection.isBthAdapterAvailable }
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
