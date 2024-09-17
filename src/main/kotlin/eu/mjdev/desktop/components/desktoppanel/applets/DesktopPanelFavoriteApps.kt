@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,31 +29,35 @@ fun DesktopPanelFavoriteApps(
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     onTooltip: (item: Any?) -> Unit = {},
-    apps: SnapshotStateList<App> = remember(api.appsProvider.favoriteApps) { api.appsProvider.favoriteApps },
-    onClick: (app: App) -> Unit = { app -> api.appsProvider.startApp(app) },
-) = Box(
-    modifier = modifier
+    onAppClick: (app: App) -> Unit,
+    onContextMenuClick: (app: App) -> Unit
 ) {
-    LazyRow(
-        modifier = Modifier.wrapContentHeight(),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
+    val apps = remember(api.appsProvider.favoriteApps.size) { api.appsProvider.favoriteApps }
+    Box(
+        modifier = modifier
     ) {
-        items(apps) { app ->
-            DesktopPanelIcon(
-                app = app,
-                isRunning = app.isRunning,
-                isStarting = app.isStarted,
-                iconColor = iconColor,
-                iconBackgroundColor = iconBackgroundColor,
-                iconColorRunning = iconColorRunning,
-                iconBackgroundHover = Color.White.copy(alpha = 0.4f),
-                iconSize = iconSize,
-                iconPadding = iconPadding,
-                iconOuterPadding = iconOuterPadding,
-                onToolTip = onTooltip,
-                onClick = { onClick(app) }
-            )
+        LazyRow(
+            modifier = Modifier.wrapContentHeight(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items(apps) { app ->
+                DesktopPanelIcon(
+                    app = app,
+                    isRunning = app.isRunning,
+                    isStarting = app.isStarted,
+                    iconColor = iconColor,
+                    iconBackgroundColor = iconBackgroundColor,
+                    iconColorRunning = iconColorRunning,
+                    iconBackgroundHover = Color.White.copy(alpha = 0.4f),
+                    iconSize = iconSize,
+                    iconPadding = iconPadding,
+                    iconOuterPadding = iconOuterPadding,
+                    onToolTip = onTooltip,
+                    onClick = { onAppClick(app) },
+                    onContextMenuClick = { onContextMenuClick(app) }
+                )
+            }
         }
     }
 }

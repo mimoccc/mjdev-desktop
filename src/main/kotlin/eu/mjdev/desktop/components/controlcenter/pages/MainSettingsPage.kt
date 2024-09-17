@@ -32,7 +32,10 @@ fun MainSettingsPage() = ControlCenterPage(
             UserAvatar(
                 backgroundColor = backgroundColor,
                 avatarSize = 128.dp,
-                orientation = Orientation.Vertical
+                orientation = Orientation.Vertical,
+                onUserAvatarClick = {
+                    // todo
+                }
             )
             Divider(
                 modifier = Modifier.fillMaxWidth().height(2.dp),

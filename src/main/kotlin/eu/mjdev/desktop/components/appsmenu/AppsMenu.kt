@@ -44,6 +44,21 @@ fun AppsMenu(
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     items: MutableState<List<Any>> = remember(api.appsProvider) { mutableStateOf(api.appsProvider.appCategories) },
     onFocusChange: (Boolean) -> Unit = {},
+    onAppClick: (App) -> Unit = { app ->
+        api.appsProvider.startApp(app)
+    },
+    onCategoryClick: (Category) -> Unit = { category ->
+        items.value = api.appsProvider.categoriesAndApps[category.name]?.sortedBy { it.name } ?: emptyList()
+    },
+    onAppContextMenuClick: (App) -> Unit = {
+        // todo
+    },
+    onCategoryContextMenuClick: (Category) -> Unit = {
+        // todo
+    },
+    onUserAvatarClick: () -> Unit = {
+        // todo
+    }
 ) = ChromeWindow(
     visible = menuState.isVisible,
     enterAnimation = enterAnimation,
@@ -80,7 +95,8 @@ fun AppsMenu(
                 UserAvatar(
                     avatarSize = 64.dp,
                     backgroundColor = appMenuBackgroundColor,
-                    orientation = Orientation.Horizontal
+                    orientation = Orientation.Horizontal,
+                    onUserAvatarClick = onUserAvatarClick
                 )
                 Divider(
                     modifier = Modifier
@@ -105,11 +121,10 @@ fun AppsMenu(
                                 AppsMenuCategory(
                                     category = item as Category,
                                     backgroundColor = appMenuBackgroundColor,
-                                    iconTint = Color.White
-                                ) { category ->
-                                    items.value = api.appsProvider.categoriesAndApps[category.name]
-                                        ?.sortedBy { it.name } ?: emptyList()
-                                }
+                                    iconTint = Color.White,
+                                    onClick = { onCategoryClick(item) },
+                                    onContextMenuClick = { onCategoryContextMenuClick(item) }
+                                )
                             }
                         }
 
@@ -118,11 +133,14 @@ fun AppsMenu(
                                 AppsMenuApp(
                                     app = item as App,
                                     backgroundColor = appMenuBackgroundColor,
-                                    iconTint = Color.White
-                                ) { app ->
-                                    app?.let { api.appsProvider.startApp(it) }
-                                    menuState.hide()
-                                }
+                                    iconTint = Color.White,
+                                    onClick = {
+                                        onAppClick(item)
+                                    },
+                                    onContextMenuClick = {
+                                        onAppContextMenuClick(item)
+                                    }
+                                )
                             }
                         }
                     }
@@ -153,6 +171,9 @@ fun AppsMenu(
                     backButtonVisible = items.value.first() is App,// todo
                     onBackClick = {
                         items.value = api.appsProvider.appCategories
+                    },
+                    onContextMenuClick = {
+                        // todo : context menu
                     }
                 )
             }

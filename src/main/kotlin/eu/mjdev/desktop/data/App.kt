@@ -15,6 +15,7 @@ val Process.command: String?
 class App(
     val file: File = File("nonexistent_file_path"),
     val desktopFile: DesktopFile = DesktopFile(file),
+    val isFavorite: Boolean = false
 ) {
     val type
         get() = desktopFile.type
@@ -77,7 +78,7 @@ class App(
     fun start() = runCatching {
         triggerStart()
         println("Starting app: $name [$cmd]")
-        ProcessBuilder(cmd).start().also {
+        ProcessBuilder("/bin/bash", "-c", cmd).start().also {
             process = it
         }.apply {
             onExit().thenRun {

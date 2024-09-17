@@ -40,7 +40,6 @@ import eu.mjdev.desktop.windows.ChromeWindow
 fun DesktopPanel(
     api: DesktopProvider = LocalDesktop.current,
     backgroundColor: Color = api.currentUser.theme.backgroundColor,
-//    shadowColor: Color = Color.Black.copy(alpha = 0.3f),
     iconColor: Color = Color.Black,
     iconColorRunning: Color = Color.White.copy(0.8f),
     iconBackgroundColor: Color = Color.White.copy(0.6f),
@@ -51,8 +50,8 @@ fun DesktopPanel(
     showMenuIcon: Boolean = true,
     panelContentPadding: PaddingValues = PaddingValues(
         start = 4.dp,
-        bottom = 4.dp,
-        top = 4.dp
+        top = 4.dp,
+        end = 4.dp
     ),
     panelState: VisibilityState = rememberVisibilityState(),
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
@@ -66,13 +65,25 @@ fun DesktopPanel(
         else
             dividerWidth
     },
-    onMenuIconClicked: () -> Unit = {},
-    onFocusChange: (Boolean) -> Unit = {},
     tooltipConverter: (Any?) -> TooltipData = { item ->
         when (item) {
             is App -> TooltipData(title = item.name, description = item.comment)
             else -> TooltipData(title = item.toString())
         }
+    },
+    onMenuIconClicked: () -> Unit = {
+        // todo
+    },
+    onMenuIconContextMenuClicked: () -> Unit = {
+        // todo
+    },
+    onFocusChange: (Boolean) -> Unit = {},
+    onAppClick: (App) -> Unit = { app -> api.appsProvider.startApp(app) },
+    onAppContextMenuClick: (App) -> Unit = {
+        // todo
+    },
+    onLanguageClick: () -> Unit = {
+        // todo
     }
 ) = ChromeWindow(
     visible = true,
@@ -161,7 +172,8 @@ fun DesktopPanel(
                                     iconPadding = iconPadding,
                                     iconOuterPadding = iconOuterPadding,
                                     onTooltip = onTooltip,
-                                    onClick = onMenuIconClicked
+                                    onClick = { onMenuIconClicked() },
+                                    onContextMenuClick = onMenuIconContextMenuClicked
                                 )
                             }
                             DesktopPanelFavoriteApps(
@@ -172,14 +184,14 @@ fun DesktopPanel(
                                 iconSize = iconSize,
                                 iconPadding = iconPadding,
                                 iconOuterPadding = iconOuterPadding,
-                                onTooltip = onTooltip
+                                onTooltip = onTooltip,
+                                onAppClick = onAppClick,
+                                onContextMenuClick = onAppContextMenuClick
                             )
                             DesktopPanelLanguage(
                                 modifier = Modifier.align(Alignment.CenterEnd),
                                 onTooltip = onTooltip,
-                                onClick = {
-                                    // todo
-                                }
+                                onClick = onLanguageClick
                             )
                         }
                     }

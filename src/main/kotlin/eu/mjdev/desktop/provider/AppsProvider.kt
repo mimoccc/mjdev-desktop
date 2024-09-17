@@ -152,11 +152,19 @@ class AppsProvider(
                 }
             } else {
                 app.onStarting {
-                    favoriteApps.invalidate()
+                    if (favoriteApps.contains(app)) {
+                        favoriteApps.invalidate()
+                    } else {
+                        favoriteApps.add(app)
+                    }
                 }.onStarted {
                     favoriteApps.invalidate()
                 }.onStop { result ->
-                    favoriteApps.invalidate()
+                    if (!app.isFavorite) {
+                        favoriteApps.remove(app)
+                    } else {
+                        favoriteApps.invalidate()
+                    }
                     if (result != EmptyException) {
                         result.printStackTrace()
                     }
@@ -180,7 +188,8 @@ class AppsProvider(
                 }.map { deskFile ->
                     App(
                         desktopFile = deskFile,
-                        file = deskFile.file
+                        file = deskFile.file,
+                        isFavorite = true
                     )
                 }.firstOrNull()
             }?.also { favorite ->

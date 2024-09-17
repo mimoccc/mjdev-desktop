@@ -1,12 +1,13 @@
 package eu.mjdev.desktop.components.controlcenter
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation.Horizontal
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.mouseClickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -14,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -29,7 +31,8 @@ import eu.mjdev.desktop.windows.ChromeWindow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Suppress("FunctionName")
+@OptIn(ExperimentalFoundationApi::class)
+@Suppress("FunctionName", "DEPRECATION")
 @Composable
 fun ControlCenter(
     api: DesktopProvider = LocalDesktop.current,
@@ -47,6 +50,7 @@ fun ControlCenter(
     enterAnimation: EnterTransition = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
     exitAnimation: ExitTransition = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
     onFocusChange: (Boolean) -> Unit = {},
+    onContextMenuClick: () -> Unit = {}
 ) = ChromeWindow(
     visible = true,
     enterAnimation = enterAnimation,
@@ -110,9 +114,13 @@ fun ControlCenter(
                                             color = if (isSelected) Color.White else Color.Transparent,
                                             shape = RoundedCornerShape(8.dp)
                                         )
-                                        .clickable {
-                                            scope.launch {
-                                                pagerState.value = idx
+                                        .mouseClickable {
+                                            if (buttons.isSecondaryPressed) {
+                                                onContextMenuClick()
+                                            } else {
+                                                scope.launch {
+                                                    pagerState.value = idx
+                                                }
                                             }
                                         },
                                     imageVector = page.icon,

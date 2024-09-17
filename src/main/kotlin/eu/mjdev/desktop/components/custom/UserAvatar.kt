@@ -30,6 +30,7 @@ fun UserAvatar(
     avatarSize: Dp = 128.dp,
     orientation: Orientation = Orientation.Vertical,
     api: DesktopProvider = LocalDesktop.current,
+    onUserAvatarClick: () -> Unit
 ) = Box(
     modifier = Modifier
         .fillMaxWidth()
@@ -48,7 +49,7 @@ fun UserAvatar(
                     .size(avatarSize)
                     .clipCircle(),
                 contentPadding = PaddingValues(0.dp),
-                onClick = {},
+                onClick = onUserAvatarClick,
                 colors = ButtonDefaults.transparent(),
                 elevation = ButtonDefaults.noElevation()
             ) {

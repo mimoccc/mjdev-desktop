@@ -32,6 +32,7 @@ fun FontIcon(
     contentDescription: String = "",
     outerPadding: PaddingValues = PaddingValues(2.dp),
     iconShape: Shape = CircleShape,
+    onRightClick: () -> Unit,
     onClick: () -> Unit
 ) = ShapedIcon(
     iconSize = iconSize,
@@ -57,5 +58,6 @@ fun FontIcon(
             textAlign = TextAlign.Center
         )
     },
-    onClick = onClick
+    onClick = onClick,
+    onRightClick = onRightClick
 )

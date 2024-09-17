@@ -24,6 +24,7 @@ fun AppsBottomBar(
     iconBackgroundColor: Color = Color.White,
     iconColor: Color = Color.Black,
     backButtonVisible: Boolean = false,
+    onContextMenuClick: () -> Unit,
     onBackClick: () -> Unit
 ) = Box(
     modifier = modifier.padding(8.dp)
@@ -36,6 +37,7 @@ fun AppsBottomBar(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 iconColor = iconColor,
                 iconBackgroundColor = iconBackgroundColor,
+                onRightClick = onContextMenuClick,
                 onClick = onBackClick
             )
         }
@@ -52,22 +54,22 @@ fun AppsBottomBar(
             imageVector = Icons.Filled.RestartAlt,
             iconColor = iconColor,
             iconBackgroundColor = iconBackgroundColor,
-        ) {
-            api.restart()
-        }
+            onRightClick = onContextMenuClick,
+            onClick = { api.restart() }
+        )
         ShapedIcon(
             imageVector = Icons.AutoMirrored.Filled.Logout,
             iconColor = iconColor,
             iconBackgroundColor = iconBackgroundColor,
-        ) {
-            api.logOut()
-        }
+            onRightClick = onContextMenuClick,
+            onClick = { api.logOut() }
+        )
         ShapedIcon(
             imageVector = Icons.Filled.PowerOff,
             iconColor = iconColor,
             iconBackgroundColor = iconBackgroundColor,
-        ) {
-            api.shutdown()
-        }
+            onRightClick = onContextMenuClick,
+            onClick = { api.shutdown() }
+        )
     }
 }

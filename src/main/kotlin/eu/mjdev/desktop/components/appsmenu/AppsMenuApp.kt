@@ -1,16 +1,18 @@
 package eu.mjdev.desktop.components.appsmenu
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.mouseClickable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -20,6 +22,8 @@ import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
+@Suppress("DEPRECATION")
+@OptIn(ExperimentalFoundationApi::class)
 @Preview
 @Composable
 fun AppsMenuApp(
@@ -31,9 +35,16 @@ fun AppsMenuApp(
     textColor: Color = Color.White,
     backgroundColor: Color = Color.White,
     api: DesktopProvider = LocalDesktop.current,
-    onClick: (app: App?) -> Unit = { app?.let { api.appsProvider.startApp(it) } }
+    onClick: () -> Unit,
+    onContextMenuClick: () -> Unit
 ) = Row(
-    modifier = modifier.clickable { onClick(app) },
+    modifier = modifier.mouseClickable {
+        if (buttons.isSecondaryPressed) {
+            onContextMenuClick()
+        } else {
+            onClick()
+        }
+    },
     verticalAlignment = Alignment.CenterVertically,
 ) {
     val appIconName = remember(app, icon) { app?.name ?: icon }
@@ -44,10 +55,10 @@ fun AppsMenuApp(
         iconColor = iconTint,
         iconBackgroundColor = backgroundColor,
         outerPadding = PaddingValues(2.dp),
-        innerPadding = PaddingValues(0.dp)
-    ) {
-        onClick(app)
-    }
+        innerPadding = PaddingValues(0.dp),
+        onClick = onClick,
+        onRightClick = onContextMenuClick
+    )
     TextAny(
         modifier = Modifier.padding(start = 4.dp).fillMaxWidth(),
         text = app?.name ?: "",

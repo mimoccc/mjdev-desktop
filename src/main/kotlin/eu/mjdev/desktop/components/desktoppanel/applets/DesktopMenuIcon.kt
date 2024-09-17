@@ -18,8 +18,9 @@ fun DesktopMenuIcon(
     iconSize: DpSize = DpSize(56.dp, 56.dp),
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
-    onTooltip: (item: Any?) -> Unit = {},
-    onClick: () -> Unit = {},
+    onTooltip: (item: Any?) -> Unit,
+    onClick: () -> Unit,
+    onContextMenuClick: () -> Unit
 ) = Row(
     modifier = modifier
 ) {
@@ -33,7 +34,8 @@ fun DesktopMenuIcon(
         iconPadding = iconPadding,
         iconOuterPadding = iconOuterPadding,
         onToolTip = onTooltip,
-        onClick = onClick
+        onClick = onClick,
+        onContextMenuClick = onContextMenuClick
     )
     Divider(
         modifier = Modifier

@@ -15,11 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.fonticon.FontIcon
@@ -35,7 +32,6 @@ import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 @Composable
 fun DesktopPanelIcon(
     api: DesktopProvider = LocalDesktop.current,
-    hapticFeedback: HapticFeedback = LocalHapticFeedback.current,
     app: App? = null,
     isRunning: Boolean = false,
     isStarting: Boolean = false,
@@ -49,8 +45,9 @@ fun DesktopPanelIcon(
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     iconState: MutableState<Boolean> = remember { mutableStateOf(false) },
     contentDescription: String? = null,
-    onToolTip: (item: Any?) -> Unit = {},
+    onToolTip: (item: Any?) -> Unit,
     onClick: () -> Unit,
+    onContextMenuClick: () -> Unit
 ) {
     val iconName = remember(app, icon) { app?.name ?: icon }
     val materialIcon = remember(iconName) { api.currentUser.theme.iconSet.iconForName(iconName) ?: "?".toInt() }
@@ -87,10 +84,8 @@ fun DesktopPanelIcon(
                 iconSize = iconSize,
                 innerPadding = iconPadding,
                 outerPadding = iconOuterPadding,
-                onClick = {
-                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onClick()
-                }
+                onClick = onClick,
+                onRightClick = onContextMenuClick
             )
         }
         if (isStarting) {

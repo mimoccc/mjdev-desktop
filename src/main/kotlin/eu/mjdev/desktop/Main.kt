@@ -1,5 +1,6 @@
 package eu.mjdev.desktop
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
@@ -71,7 +72,7 @@ fun main() = application(
 //                    modifier = Modifier.size(640.dp, 480.dp).align(Alignment.Center)
 //                )
                 MemoryChart(
-                    modifier = Modifier.size(350.dp, 300.dp).align(Alignment.BottomEnd)
+                    modifier = Modifier.padding(bottom = 64.dp).size(350.dp, 300.dp).align(Alignment.BottomEnd)
                 )
                 DesktopPanel(
                     panelState = panelState,
