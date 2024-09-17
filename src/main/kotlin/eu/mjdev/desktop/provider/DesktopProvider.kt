@@ -38,7 +38,7 @@ class DesktopProvider(
     val currentUser
         get() = _currentUser.value
 
-    private val _controlCenterPages: MutableState<List<ControlCenterPage>> = mutableStateOf(CONTROL_CENTER_PAGES)
+    val controlCenterPagesState: MutableState<List<ControlCenterPage>> = mutableStateOf(CONTROL_CENTER_PAGES)
 
 //    private val engine: ScriptEngine by lazy {
 //        scriptManager.getEngineByName("JavaScript").apply {
@@ -61,7 +61,7 @@ class DesktopProvider(
             )
         }
     }
-    val controlCenterPages get() = _controlCenterPages.value
+    val controlCenterPages get() = controlCenterPagesState.value
     val appsProvider = AppsProvider(this)
 
     val graphicsEnvironment: GraphicsEnvironment

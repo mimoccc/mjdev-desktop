@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.compose.desktop)
     alias(libs.plugins.kotlin.serialization)
 //    id("dev.datlag.sekret") version "2.0.0-alpha-07"
+//    id("com.bintray.gradle.plugins.bintray")
 }
 
 group = libs.versions.packageName.get()
@@ -53,8 +54,6 @@ allprojects {
         implementation(libs.coil.network.okhttp)
         // ffmpeg
         implementation(libs.ffmpeg.platform)
-        // music
-//        implementation(libs.korau)
         // palette
         implementation(libs.material.kolor)
         // json
@@ -67,10 +66,13 @@ allprojects {
         implementation(libs.charts)
         // gemini ai
         implementation(libs.google.generativeai)
-        // compose debugger
-        implementation("io.github.theapache64:rebugger:1.0.0-rc03")
+        // jna
+        implementation(libs.jna.platform)
         // qr code
-        implementation("io.github.alexzhirkevich:qrose:1.0.1")
+        implementation(libs.qrose)
+        // tts
+        implementation(libs.tts)
+        // testing yet
         // connectivity
         implementation("dev.tmapps:konnection:1.4.1")
         // web
@@ -79,8 +81,13 @@ allprojects {
         implementation("com.github.skydoves:flexible-bottomsheet-material3:0.1.5")
         // fs watcher
         implementation("io.github.irgaly.kfswatch:kfswatch:1.3.0")
-        // tts
-        implementation("nl.marc-apps:tts:2.5.0")
+        // compose debugger
+//        implementation("io.github.theapache64:rebugger:1.0.0-rc03")
+        // music
+//        implementation(libs.korau)
+        // dbus
+//        implementation("org.freedesktop.dbus:dbus-java:1.2.0") // Replace with the desired version
+//        implementation("org.freedesktop.dbus:dbus-java-annotations:1.2.0")// Replace with the desired version
         // bar code
 //        implementation("io.github.alexzhirkevich:qrose-oned:1.0.1")
         // flow extensions
@@ -95,8 +102,7 @@ allprojects {
 //        implementation("com.github.moaxcp.x11:x11-client:0.18.2")
         // jwm
 //        implementation("io.github.humbleui:jwm:0.4.8")
-        // jna
-        implementation("net.java.dev.jna:jna-platform:5.6.0")
+
         // hid
 //        implementation('org.hid4java:hid4java')
         // dbus
@@ -121,6 +127,40 @@ fun Project.createTask(
     this.description = description
     configureAction.invoke(this)
 }
+
+//tasks.withType(Copy::class) {
+//    from {
+//        fileTree("native") {
+//            include "*.so", "*.dylib", "*.dll"
+//        }
+//    }
+//    into {
+//        configurations.runtimeClasspath.files.collect { it.absolutePath }
+//    }
+//}
+
+//bintray {
+//    user = 'your_bintray_username'
+//    key = 'your_bintray_api_key'
+//
+//    publish = true
+//    pkg {
+//        repo = 'your_repository_name'
+//        name = project.name
+//        desc = 'Your desktop Compose application'
+//        version = project.version
+//        licenses = ['Apache-2.0']
+//        vcsUrl = 'https://github.com/your_username/your_project'
+//
+//        // Configure deb package dependencies
+//        deb {
+//            packageDescription = 'Your desktop Compose application'
+//            packageVersion = project.version
+//            packageArchitecture = 'amd64'  // Adjust based on your target architecture
+//            packageDepends = ['dbus-java', 'libgtk-3-dev']  // Replace with your actual dependencies
+//        }
+//    }
+//}
 
 compose {
     desktop {

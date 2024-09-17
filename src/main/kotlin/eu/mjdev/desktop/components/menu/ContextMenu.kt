@@ -5,10 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CursorDropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -60,7 +57,7 @@ fun ContextMenu(
 class ContextMenuState(
     val menuExpanded: MutableState<Boolean> = mutableStateOf(false),
     val menuRenderCount: MutableState<Int> = mutableStateOf(0),
-    val items: List<String> = listOf<String>()
+    val items: List<String> = listOf()
 ) {
     fun show() {
         menuExpanded.value = true
@@ -72,9 +69,10 @@ class ContextMenuState(
 
     companion object {
         @Composable
-        fun rememberContextMenuState(vararg items: String) =
+        fun rememberContextMenuState(vararg items: String) = remember {
             ContextMenuState(
                 items = items.asList()
             )
+        }
     }
 }

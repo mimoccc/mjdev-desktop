@@ -1,6 +1,7 @@
 package eu.mjdev.desktop.components.desktoppanel
 
-import androidx.compose.animation.*
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.TooltipPlacement
@@ -8,9 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation.Vertical
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -30,6 +29,8 @@ import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVis
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.extensions.Compose.height
 import eu.mjdev.desktop.extensions.Modifier.topShadow
+import eu.mjdev.desktop.helpers.Animations.DesktopPanelEnterAnimation
+import eu.mjdev.desktop.helpers.Animations.DesktopPanelExitAnimation
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.windows.ChromeWindow
@@ -39,7 +40,6 @@ import eu.mjdev.desktop.windows.ChromeWindow
 @Composable
 fun DesktopPanel(
     api: DesktopProvider = LocalDesktop.current,
-    backgroundColor: Color = api.currentUser.theme.backgroundColor,
     iconColor: Color = Color.Black,
     iconColorRunning: Color = Color.White.copy(0.8f),
     iconBackgroundColor: Color = Color.White.copy(0.6f),
@@ -48,16 +48,12 @@ fun DesktopPanel(
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     showMenuIcon: Boolean = true,
-    panelContentPadding: PaddingValues = PaddingValues(
-        start = 4.dp,
-        top = 4.dp,
-        end = 4.dp
-    ),
+    panelContentPadding: PaddingValues = PaddingValues(4.dp),
     panelState: VisibilityState = rememberVisibilityState(),
-    enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
-    exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+    enterAnimation: EnterTransition = DesktopPanelEnterAnimation,
+    exitAnimation: ExitTransition = DesktopPanelExitAnimation,
     tooltipHeight: Dp = 64.dp,
-    tooltipData: MutableState<Any?> = mutableStateOf(null),
+    tooltipData: MutableState<Any?> = remember { mutableStateOf(null) },
     onTooltip: (item: Any?) -> Unit = { item -> tooltipData.value = item },
     panelHeight: (visible: Boolean) -> Dp = { visible ->
         if (visible)
@@ -84,115 +80,118 @@ fun DesktopPanel(
     },
     onLanguageClick: () -> Unit = {
         // todo
-    }
-) = ChromeWindow(
-    visible = true,
-    enterAnimation = enterAnimation,
-    exitAnimation = exitAnimation,
-    position = WindowPosition.Aligned(Alignment.BottomCenter),
-    size = DpSize(
-        api.containerSize.width,
-        panelHeight(panelState.isVisible)
-    ),
-    onFocusChange = { focused ->
-        panelState.onFocusChange(focused)
-        onFocusChange(focused)
-    }
+    },
 ) {
-    SlidingMenu(
-        modifier = Modifier.fillMaxWidth(),
-        orientation = Vertical,
-        state = panelState,
-    ) { isVisible ->
-        Divider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(dividerWidth),
-            color = Color.Transparent,
-            thickness = dividerWidth
-        )
-        if (isVisible) {
-            TooltipArea(
-                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-                tooltip = {
-                    DesktopPanelTooltip(
-                        tooltipData.value,
-                        converter = tooltipConverter
+    val backgroundColor by remember { api.currentUser.theme.backgroundColorState }
+    ChromeWindow(
+        visible = true,
+        enterAnimation = enterAnimation,
+        exitAnimation = exitAnimation,
+        position = WindowPosition.Aligned(Alignment.BottomCenter),
+        size = DpSize(
+            api.containerSize.width,
+            panelHeight(panelState.isVisible)
+        ),
+        onFocusChange = { focused ->
+            panelState.onFocusChange(focused)
+            onFocusChange(focused)
+        }
+    ) {
+        SlidingMenu(
+            modifier = Modifier.fillMaxWidth(),
+            orientation = Vertical,
+            state = panelState,
+        ) { isVisible ->
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(dividerWidth),
+                color = Color.Transparent,
+                thickness = dividerWidth
+            )
+            if (isVisible) {
+                TooltipArea(
+                    modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+                    tooltip = {
+                        DesktopPanelTooltip(
+                            tooltipData.value,
+                            converter = tooltipConverter
+                        )
+                    },
+                    tooltipPlacement = TooltipPlacement.CursorPoint(
+                        alignment = Alignment.TopEnd,
+                        offset = DpOffset(32.dp, 32.dp)
                     )
-                },
-                tooltipPlacement = TooltipPlacement.CursorPoint(
-                    alignment = Alignment.TopEnd,
-                    offset = DpOffset(32.dp, 32.dp)
-                )
-            ) {
-                Column {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(tooltipHeight)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(
-                                        backgroundColor.copy(alpha = 0.3f),
-                                        backgroundColor.copy(alpha = 0.7f),
-                                        backgroundColor.copy(alpha = 0.8f),
-                                    )
-                                )
-                            )
-                            .topShadow(
-                                color = backgroundColor.copy(alpha = 0.3f),
-                                offsetY = 4.dp,
-                                blur = 10.dp
-                            )
-                            .onPlaced(panelState::onPlaced),
-                    ) {
-                        Divider(
+                ) {
+                    Column {
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(2.dp),
-                            color = Color.White.copy(0.1f),
-                            thickness = 2.dp
+                                .height(tooltipHeight)
                         )
-                        Box(
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(top = 4.dp)
-                                .padding(panelContentPadding)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .background(
+                                    brush = Brush.verticalGradient(
+                                        colors = listOf(
+                                            backgroundColor.copy(alpha = 0.3f),
+                                            backgroundColor.copy(alpha = 0.7f),
+                                            backgroundColor.copy(alpha = 0.8f),
+                                        )
+                                    )
+                                )
+                                .topShadow(
+                                    color = backgroundColor.copy(alpha = 0.3f),
+                                    offsetY = 4.dp,
+                                    blur = 10.dp
+                                )
+                                .onPlaced(panelState::onPlaced),
                         ) {
-                            if (showMenuIcon) {
-                                DesktopMenuIcon(
-                                    modifier = Modifier.align(Alignment.CenterStart),
+                            Divider(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(2.dp),
+                                color = Color.White.copy(0.1f),
+                                thickness = 2.dp
+                            )
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(top = 4.dp)
+                                    .padding(panelContentPadding)
+                            ) {
+                                if (showMenuIcon) {
+                                    DesktopMenuIcon(
+                                        modifier = Modifier.align(Alignment.CenterStart),
+                                        iconColor = iconColor,
+                                        iconBackgroundColor = iconBackgroundColor,
+                                        iconSize = iconSize,
+                                        iconPadding = iconPadding,
+                                        iconOuterPadding = iconOuterPadding,
+                                        onTooltip = onTooltip,
+                                        onClick = { onMenuIconClicked() },
+                                        onContextMenuClick = onMenuIconContextMenuClicked
+                                    )
+                                }
+                                DesktopPanelFavoriteApps(
+                                    modifier = Modifier.align(Alignment.Center),
                                     iconColor = iconColor,
                                     iconBackgroundColor = iconBackgroundColor,
+                                    iconColorRunning = iconColorRunning,
                                     iconSize = iconSize,
                                     iconPadding = iconPadding,
                                     iconOuterPadding = iconOuterPadding,
                                     onTooltip = onTooltip,
-                                    onClick = { onMenuIconClicked() },
-                                    onContextMenuClick = onMenuIconContextMenuClicked
+                                    onAppClick = onAppClick,
+                                    onContextMenuClick = onAppContextMenuClick
+                                )
+                                DesktopPanelLanguage(
+                                    modifier = Modifier.align(Alignment.CenterEnd),
+                                    onTooltip = onTooltip,
+                                    onClick = onLanguageClick
                                 )
                             }
-                            DesktopPanelFavoriteApps(
-                                modifier = Modifier.align(Alignment.Center),
-                                iconColor = iconColor,
-                                iconBackgroundColor = iconBackgroundColor,
-                                iconColorRunning = iconColorRunning,
-                                iconSize = iconSize,
-                                iconPadding = iconPadding,
-                                iconOuterPadding = iconOuterPadding,
-                                onTooltip = onTooltip,
-                                onAppClick = onAppClick,
-                                onContextMenuClick = onAppContextMenuClick
-                            )
-                            DesktopPanelLanguage(
-                                modifier = Modifier.align(Alignment.CenterEnd),
-                                onTooltip = onTooltip,
-                                onClick = onLanguageClick
-                            )
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 package eu.mjdev.desktop.helpers.internal
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
@@ -10,12 +11,17 @@ import eu.mjdev.desktop.extensions.Image.loadPicture
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Suppress("unused")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class Palette(
     private val scope: CoroutineScope,
-    private val baseColor: Color = Color.Transparent
+    private val baseColor: Color = Color.SuperDarkGray
 ) {
-    var backgroundColor: Color = Color.SuperDarkGray
+    val backgroundColorState = mutableStateOf(baseColor)
+    var backgroundColor
+        get() = backgroundColorState.value
+        set(value) {
+            backgroundColorState.value = value
+        }
 
     fun update(src: Any?) = scope.launch {
         loadPicture(src)
@@ -28,9 +34,9 @@ class Palette(
     companion object {
         @Composable
         fun rememberPalette(
-            backgroundColor: Color = Color.SuperDarkGray,
+            baseColor: Color = Color.SuperDarkGray,
             scope: CoroutineScope = rememberCoroutineScope()
-        ) = remember(scope, backgroundColor) { Palette(scope, backgroundColor) }
+        ) = remember { Palette(scope, baseColor) }
     }
 }
 

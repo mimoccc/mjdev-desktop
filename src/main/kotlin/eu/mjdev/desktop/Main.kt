@@ -1,6 +1,5 @@
 package eu.mjdev.desktop
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
@@ -10,7 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
-import com.theapache64.rebugger.RebuggerConfig
 import eu.mjdev.desktop.components.appsmenu.AppsMenu
 import eu.mjdev.desktop.components.charts.MemoryChart
 import eu.mjdev.desktop.components.controlcenter.ControlCenter
@@ -25,6 +23,10 @@ fun main() = application(
     exitProcessOnExit = true
 ) {
     val scope = rememberCoroutineScope()
+    val api = DesktopProvider(
+        scope = scope,
+        imageLoader = asyncImageLoader()
+    )
     val controlCenterState = rememberVisibilityState()
     val panelState = rememberVisibilityState()
     val menuState = rememberVisibilityState()
@@ -48,21 +50,17 @@ fun main() = application(
         }
     }
 
-    RebuggerConfig.init(
-        tag = "Composition",
-        logger = { tag, message ->
-            println("$tag >  $message")
-        }
-    )
+//    RebuggerConfig.init(
+//        tag = "Composition",
+//        logger = { tag, message ->
+//            println("$tag >  $message")
+//        }
+//    )
 
     MaterialTheme {
         CompositionLocalProvider(
-            LocalDesktop providesDefault DesktopProvider(
-                scope = scope,
-                imageLoader = asyncImageLoader()
-            ),
+            LocalDesktop provides api
         ) {
-            val api: DesktopProvider = LocalDesktop.current
             MainWindow(
                 panelState = panelState,
                 controlCenterState = controlCenterState,
@@ -72,13 +70,12 @@ fun main() = application(
 //                    modifier = Modifier.size(640.dp, 480.dp).align(Alignment.Center)
 //                )
                 MemoryChart(
-                    modifier = Modifier.padding(bottom = 64.dp).size(350.dp, 300.dp).align(Alignment.BottomEnd)
+                    modifier = Modifier.size(350.dp, 300.dp)
+                        .align(Alignment.BottomEnd)
                 )
                 DesktopPanel(
                     panelState = panelState,
-                    onMenuIconClicked = {
-                        menuState.toggle()
-                    },
+                    onMenuIconClicked = { menuState.toggle() },
                     onFocusChange = { focus -> handlePanelFocus(focus) }
                 )
                 AppsMenu(

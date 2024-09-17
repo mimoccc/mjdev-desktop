@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 class DesktopConfig(
     desktopBackgroundUrls: List<Any> = emptyList()
 ) {
-    val desktopBackgroundUrlsState = mutableStateOf(desktopBackgroundUrls.toMutableList())
-    val desktopBackgrounds get() = desktopBackgroundUrlsState.value
+    val desktopBackgroundsState = mutableStateOf(desktopBackgroundUrls.toMutableList())
+    val desktopBackgrounds get() = desktopBackgroundsState.value
 
     fun addBackground(path: String) {
         desktopBackgrounds.add(path)

@@ -135,6 +135,7 @@ class App(
             println("$windows")
             windows.forEach { w -> w.toFront() }
         } else {
+            println("No window for process PID: [${pids.joinToString { p -> "$p," }}]")
             closeWindow(api)
         }
     }

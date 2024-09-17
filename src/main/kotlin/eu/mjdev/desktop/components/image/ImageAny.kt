@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.image
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +36,8 @@ fun ImageAny(
         it.endsWith(".gif") || it.endsWith(".mp4") || it.endsWith(".mpg")
     }
     when {
+        src == null -> Box(modifier = modifier)
+
         isVideo -> VideoPlayerView(
             modifier = modifier,
             src = src,

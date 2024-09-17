@@ -1,6 +1,7 @@
 package eu.mjdev.desktop.components.controlcenter
 
-import androidx.compose.animation.*
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation.Horizontal
@@ -16,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.isSecondaryPressed
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
@@ -25,6 +25,8 @@ import eu.mjdev.desktop.components.sliding.SlidingMenu
 import eu.mjdev.desktop.components.sliding.VisibilityState
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Modifier.rightShadow
+import eu.mjdev.desktop.helpers.Animations.ControlCenterEnterAnimation
+import eu.mjdev.desktop.helpers.Animations.ControlCenterExitAnimation
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.windows.ChromeWindow
@@ -36,135 +38,139 @@ import kotlinx.coroutines.launch
 @Composable
 fun ControlCenter(
     api: DesktopProvider = LocalDesktop.current,
-    backgroundColor: Color = api.currentUser.theme.backgroundColor,
-    backgroundAlpha: Float = api.currentUser.theme.controlCenterBackgroundAlpha,
     shadowColor: Color = Color.Black.copy(alpha = 0.3f), // todo theme
-    controlCenterExpandedWidth: Dp = api.currentUser.theme.controlCenterExpandedWidth,
-    controlCenterDividerWidth: Dp = api.currentUser.theme.controlCenterDividerWidth,
-    controlCenterIconColor: Color = api.currentUser.theme.controlCenterIconColor,
-    controlCenterIconSize: DpSize = api.currentUser.theme.controlCenterIconSize,
-    pages: List<ControlCenterPage> = api.controlCenterPages,
     pagerState: MutableState<Int> = remember { mutableStateOf(0) },
     controlCenterState: VisibilityState = rememberVisibilityState(),
     scope: CoroutineScope = rememberCoroutineScope(),
-    enterAnimation: EnterTransition = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-    exitAnimation: ExitTransition = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
+    enterAnimation: EnterTransition = ControlCenterEnterAnimation,
+    exitAnimation: ExitTransition = ControlCenterExitAnimation,
     onFocusChange: (Boolean) -> Unit = {},
     onContextMenuClick: () -> Unit = {}
-) = ChromeWindow(
-    visible = true,
-    enterAnimation = enterAnimation,
-    exitAnimation = exitAnimation,
-    position = WindowPosition.Aligned(Alignment.TopEnd),
-    size = if (controlCenterState.isVisible) {
-        DpSize(controlCenterExpandedWidth, api.containerSize.height)
-    } else {
-        DpSize(controlCenterDividerWidth, api.containerSize.height)
-    },
-    onFocusChange = { focused ->
-        controlCenterState.onFocusChange(focused)
-        onFocusChange(focused)
-    }
 ) {
-    val cscope = rememberControlCenterScope(backgroundColor, api)
+    val backgroundColor by remember { api.currentUser.theme.backgroundColorState }
+    val backgroundAlpha by remember { api.currentUser.theme.controlCenterBackgroundAlphaState }
+    val backgroundInvoker = remember { { backgroundColor } }
+    val cscope = rememberControlCenterScope(backgroundInvoker, api)
+    val controlCenterExpandedWidth by remember { api.currentUser.theme.controlCenterExpandedWidthState }
+    val controlCenterDividerWidth by remember { api.currentUser.theme.controlCenterDividerWidthState }
+    val controlCenterIconColor by remember { api.currentUser.theme.controlCenterIconColorState }
+    val controlCenterIconSize by remember { api.currentUser.theme.controlCenterIconSizeState }
+    val pages by remember { api.controlCenterPagesState }
     val pagesFiltered = remember(pages) {
         derivedStateOf {
             pages.filter { p -> p.condition.invoke(cscope) }
         }
     }
-    SlidingMenu(
-        modifier = Modifier.fillMaxHeight(),
-        orientation = Horizontal,
-        state = controlCenterState,
-    ) { isVisible ->
-        if (!isVisible) {
-            Divider(
-                modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
-                color = Color.Transparent,
-                thickness = controlCenterDividerWidth
-            )
+    ChromeWindow(
+        visible = true,
+        enterAnimation = enterAnimation,
+        exitAnimation = exitAnimation,
+        position = WindowPosition.Aligned(Alignment.TopEnd),
+        size = if (controlCenterState.isVisible) {
+            DpSize(controlCenterExpandedWidth, api.containerSize.height)
         } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .wrapContentSize()
-                    .background(backgroundColor.copy(alpha = backgroundAlpha)),
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxHeight().wrapContentSize(),
+            DpSize(controlCenterDividerWidth, api.containerSize.height)
+        },
+        onFocusChange = { focused ->
+            controlCenterState.onFocusChange(focused)
+            onFocusChange(focused)
+        }
+    ) {
+
+        SlidingMenu(
+            modifier = Modifier.fillMaxHeight(),
+            orientation = Horizontal,
+            state = controlCenterState,
+        ) { isVisible ->
+            if (!isVisible) {
+                Divider(
+                    modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
+                    color = Color.Transparent,
+                    thickness = controlCenterDividerWidth
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .wrapContentSize()
+                        .background(backgroundColor.copy(alpha = backgroundAlpha)),
                 ) {
-                    Box(
-                        contentAlignment = Alignment.TopEnd
+                    Row(
+                        modifier = Modifier.fillMaxHeight().wrapContentSize(),
                     ) {
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .background(backgroundColor)
-                                .padding(8.dp),
-                            verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            itemsIndexed(pagesFiltered.value) { idx, page ->
-                                val isSelected = (pagerState.value == idx)
-                                Icon(
-                                    modifier = Modifier
-                                        .padding(vertical = 8.dp)
-                                        .size(controlCenterIconSize)
-                                        .background(
-                                            color = if (isSelected) Color.White else Color.Transparent,
-                                            shape = RoundedCornerShape(8.dp)
-                                        )
-                                        .mouseClickable {
-                                            if (buttons.isSecondaryPressed) {
-                                                onContextMenuClick()
-                                            } else {
-                                                scope.launch {
-                                                    pagerState.value = idx
-                                                }
-                                            }
-                                        },
-                                    imageVector = page.icon,
-                                    contentDescription = "",
-                                    tint = if (isSelected) backgroundColor else controlCenterIconColor
-                                )
-                            }
-                        }
                         Box(
-                            modifier = Modifier
-                                .padding(
-                                    end = controlCenterIconSize.width + 16.dp
-                                )
-                                .fillMaxHeight()
-                                .wrapContentSize(),
+                            contentAlignment = Alignment.TopEnd
                         ) {
-                            Row {
-                                Divider(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .width(2.dp),
-                                    color = Color.White.copy(0.1f),
-                                    thickness = 2.dp
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .width(controlCenterExpandedWidth)
-                                        .rightShadow(
-                                            color = shadowColor,
-                                            offsetX = 4.dp,
-                                            blur = 10.dp,
-                                        ),
-                                ) {
-                                    with(pagesFiltered.value[pagerState.value]) {
-                                        content(cscope)
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .background(backgroundColor)
+                                    .padding(8.dp),
+                                verticalArrangement = Arrangement.Top,
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                itemsIndexed(pagesFiltered.value) { idx, page ->
+                                    val isSelected = (pagerState.value == idx)
+                                    Icon(
+                                        modifier = Modifier
+                                            .padding(vertical = 8.dp)
+                                            .size(controlCenterIconSize)
+                                            .background(
+                                                color = if (isSelected) Color.White else Color.Transparent,
+                                                shape = RoundedCornerShape(8.dp)
+                                            )
+                                            .mouseClickable {
+                                                if (buttons.isSecondaryPressed) {
+                                                    onContextMenuClick()
+                                                } else {
+                                                    scope.launch {
+                                                        pagerState.value = idx
+                                                    }
+                                                }
+                                            },
+                                        imageVector = page.icon,
+                                        contentDescription = "",
+                                        tint = if (isSelected) backgroundColor else controlCenterIconColor
+                                    )
+                                }
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .padding(
+                                        end = controlCenterIconSize.width + 16.dp
+                                    )
+                                    .fillMaxHeight()
+                                    .wrapContentSize(),
+                            ) {
+                                Row {
+                                    Divider(
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                            .width(2.dp),
+                                        color = Color.White.copy(0.1f),
+                                        thickness = 2.dp
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .width(controlCenterExpandedWidth)
+                                            .rightShadow(
+                                                color = shadowColor,
+                                                offsetX = 4.dp,
+                                                blur = 10.dp,
+                                            ),
+                                    ) {
+                                        with(pagesFiltered.value[pagerState.value]) {
+                                            content(cscope)
+                                        }
                                     }
                                 }
                             }
+                            Divider(
+                                modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
+                                color = Color.White.copy(0.1f),
+                                thickness = controlCenterDividerWidth
+                            )
                         }
-                        Divider(
-                            modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
-                            color = Color.White.copy(0.1f),
-                            thickness = controlCenterDividerWidth
-                        )
                     }
                 }
             }

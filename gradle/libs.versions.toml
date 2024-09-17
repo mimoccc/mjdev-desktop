@@ -25,6 +25,9 @@ mozilla-rhino = "1.7.13"
 ini4j = "0.5.4"
 charts = "Beta-0.0.5"
 generativeai = "0.5.0-1.0.0-wasm"
+jna-platform = "5.6.0"
+qrose = "1.0.1"
+tts = "2.5.0"
 #korau = "4.0.10"
 #lanscapist = "2.3.8"
 #compose-webview = "1.9.20"
@@ -49,6 +52,9 @@ fuzzywuzzy = { module = "me.xdrop:fuzzywuzzy", version.ref = "fuzzywuzzy" }
 ffmpeg-platform = { module = "org.bytedeco:ffmpeg-platform", version.ref = "ffmpeg-platform" }
 charts = { module = "io.github.thechance101:chart", version.ref = "charts" }
 google-generativeai = { module = "dev.shreyaspatil.generativeai:generativeai-google-jvm", version.ref = "generativeai" }
+jna-platform = { module = "net.java.dev.jna:jna-platform", version.ref = "jna-platform" }
+qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
+tts = { module = "nl.marc-apps:tts", version.ref = "tts" }
 
 #coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil3" }
 #korau = { module = "com.soywiz.korlibs.korau:korau", version.ref = "korau" }

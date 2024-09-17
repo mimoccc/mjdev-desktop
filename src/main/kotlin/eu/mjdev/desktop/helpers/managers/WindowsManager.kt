@@ -71,7 +71,7 @@ class WindowsManager {
 
     fun getWindowsByPids(
         pids: List<Long>
-    ): List<IWindow> = allSystemWindows.filter { pids.contains(it.pid) }.distinctBy { it.id }
+    ): List<IWindow> = allSystemWindows.filter { pids.contains(it.pid) }
 
     fun getWindowPid(
         window: Window

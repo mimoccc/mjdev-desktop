@@ -57,9 +57,6 @@ fun MainWindow(
                         controlCenterState.hide()
                     }
                 },
-            backgroundColor = api.currentUser.theme.backgroundColor,
-            backgrounds = api.appsProvider.backgrounds + api.currentUser.config.desktopBackgrounds,
-            switchDelay = api.currentUser.theme.backgroundRotationDelay,
             onChange = { src ->
                 palette.apply {
                     update(src)
