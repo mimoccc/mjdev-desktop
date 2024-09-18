@@ -8,13 +8,15 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
-import eu.mjdev.desktop.components.video.VideoPlayerView
+import eu.mjdev.desktop.components.video.VideoView
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import java.io.File
 import androidx.compose.foundation.Image as ComposeImage
 
 @Suppress("FunctionName")
@@ -32,13 +34,26 @@ fun ImageAny(
     onLoading: () -> Unit = {},
     onFail: (error: Throwable) -> Unit = {}
 ) {
+    // todo from mime
+    val isGif = src.toString().trim().endsWith(".gif")
     val isVideo = src.toString().trim().let {
-        it.endsWith(".gif") || it.endsWith(".mp4") || it.endsWith(".mpg")
+        it.endsWith(".mp4") || it.endsWith(".mpg")
     }
     when {
-        src == null -> Box(modifier = modifier)
+        src == null -> Box(
+            modifier = modifier
+        )
 
-        isVideo -> VideoPlayerView(
+        isGif -> GifView(
+            modifier = modifier,
+            src = when (src) {
+                is File -> src.absolutePath
+                is String -> src
+                else -> src.toString()
+            }
+        )
+
+        isVideo -> VideoView(
             modifier = modifier,
             src = src,
             alignment = alignment,
@@ -58,6 +73,16 @@ fun ImageAny(
             contentScale = contentScale
         )
 
+        src is Painter -> ComposeImage(
+            modifier = modifier,
+            painter = src,
+            alignment = alignment,
+            alpha = alpha,
+            contentDescription = contentDescription,
+            colorFilter = colorFilter,
+            contentScale = contentScale
+        )
+
         else -> AsyncImage(
             modifier = modifier,
             model = src,
@@ -65,11 +90,11 @@ fun ImageAny(
             contentScale = contentScale,
             filterQuality = filterQuality,
             imageLoader = api.imageLoader ?: asyncImageLoader(),
-            onError = {
-                onFail(it.result.throwable)
-            },
             onLoading = {
                 onLoading()
+            },
+            onError = {
+                onFail(it.result.throwable)
             },
         )
     }

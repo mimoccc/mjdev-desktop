@@ -19,6 +19,7 @@ allprojects {
         maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
         maven("https://gitlab.com/api/v4/projects/38224197/packages/maven")
         maven("https://jogamp.org/deployment/maven")
+        maven("https://oss.sonatype.org/content/repositories/snapshots")
         maven("https://jitpack.io")
         google()
         gradlePluginPortal()
@@ -55,7 +56,7 @@ allprojects {
         // ffmpeg
         implementation(libs.ffmpeg.platform)
         // palette
-        implementation(libs.material.kolor)
+//        implementation(libs.material.kolor)
         // json
         implementation(libs.google.gson)
         // no log
@@ -73,6 +74,11 @@ allprojects {
         // tts
         implementation(libs.tts)
         // testing yet
+        // anim
+        implementation("org.jetbrains.compose.animation:animation:1.7.0-alpha03")
+        implementation("org.jetbrains.compose.animation:animation-graphics:1.7.0-alpha03")
+//        // images metadata
+//        implementation("com.ashampoo:kim:0.18.4")
         // connectivity
         implementation("dev.tmapps:konnection:1.4.1")
         // web

@@ -5,6 +5,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation.Horizontal
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.isSecondaryPressed
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
@@ -24,6 +26,7 @@ import eu.mjdev.desktop.components.controlcenter.ControlCenterPage.ControlCenter
 import eu.mjdev.desktop.components.sliding.SlidingMenu
 import eu.mjdev.desktop.components.sliding.VisibilityState
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Modifier.rightShadow
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
@@ -38,7 +41,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ControlCenter(
     api: DesktopProvider = LocalDesktop.current,
-    shadowColor: Color = Color.Black.copy(alpha = 0.3f), // todo theme
+    shadowColor: Color = Color.Black.alpha(0.3f), // todo theme
     pagerState: MutableState<Int> = remember { mutableStateOf(0) },
     controlCenterState: VisibilityState = rememberVisibilityState(),
     scope: CoroutineScope = rememberCoroutineScope(),
@@ -117,6 +120,13 @@ fun ControlCenter(
                                                 color = if (isSelected) Color.White else Color.Transparent,
                                                 shape = RoundedCornerShape(8.dp)
                                             )
+                                            .pointerInput(Unit) {
+                                                detectTapGestures(
+                                                    onTap = {
+                                                        pagerState.value = idx
+                                                    }
+                                                )
+                                            }
                                             .mouseClickable {
                                                 if (buttons.isSecondaryPressed) {
                                                     onContextMenuClick()

@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
-import com.materialkolor.ktx.themeColor
+import eu.mjdev.desktop.extensions.BitmapUtils.getTopMostColor
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Image.loadPicture
 import kotlinx.coroutines.CoroutineScope
@@ -26,9 +26,13 @@ class Palette(
     fun update(src: Any?) = scope.launch {
         loadPicture(src)
             .getOrNull()
-            ?.themeColor(fallback = baseColor)?.also { color ->
+            ?.getTopMostColor()
+            ?.also { color ->
                 backgroundColor = color
             }
+//            ?.themeColor(fallback = baseColor)?.also { color ->
+//                backgroundColor = color
+//            }
     }
 
     companion object {
