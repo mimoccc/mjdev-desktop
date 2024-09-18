@@ -3,7 +3,9 @@ package eu.mjdev.desktop.provider
 import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
 import dev.shreyaspatil.ai.client.generativeai.type.content
 import eu.mjdev.desktop.extensions.Custom.loadKey
+import eu.mjdev.desktop.helpers.system.Command
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import nl.marc_apps.tts.TextToSpeechFactory
@@ -14,7 +16,7 @@ class AIProvider(
     val scope: CoroutineScope,
     var pluginAI: IAIPlugin = AiPluginNull(scope),
     val pluginSTT: ISTTPlugin = STTPluginNull(scope),
-    val pluginTTS: TTSPlugin = TTSPluginMain(scope),
+    val pluginTTS: TTSPlugin = TTSPluginSwift(scope),
     val isAvailable: () -> Boolean = { pluginAI !is AiPluginNull }
 ) {
     fun ask(
@@ -54,6 +56,19 @@ class AIProvider(
         override fun talk(text: String, clearQueue: Boolean) {
             scope.launch {
                 textToSpeech.await()?.say(text, clearQueue)
+            }
+        }
+    }
+
+    class TTSPluginSwift(
+        val scope: CoroutineScope
+    ) : TTSPlugin {
+        override fun talk(text: String, clearQueue: Boolean) {
+            scope.launch(Dispatchers.IO) {
+                Command(
+                    "/opt/swift/bin/swift",
+                    "\"${text.replace("\"", " ")}\""
+                ).execute()
             }
         }
     }
