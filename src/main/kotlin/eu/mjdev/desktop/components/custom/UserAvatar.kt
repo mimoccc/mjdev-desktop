@@ -1,21 +1,23 @@
 package eu.mjdev.desktop.components.custom
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.components.image.ImageAny
+import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.extensions.Compose.noElevation
 import eu.mjdev.desktop.extensions.Compose.transparent
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
@@ -30,6 +32,8 @@ fun UserAvatar(
     avatarSize: Dp = 128.dp,
     orientation: Orientation = Orientation.Vertical,
     api: DesktopProvider = LocalDesktop.current,
+    iconTintColor: Color = Color.White,
+    textColor: Color = Color.White,
     onUserAvatarClick: () -> Unit
 ) = Box(
     modifier = Modifier
@@ -53,21 +57,33 @@ fun UserAvatar(
                 colors = ButtonDefaults.transparent(),
                 elevation = ButtonDefaults.noElevation()
             ) {
-                Image(
+                ImageAny(
                     modifier = Modifier
                         .size(avatarSize)
-                        .circleBorder(2.dp, Color.White.copy(alpha = 0.6f)),
-                    imageVector = api.currentUser.picture,
-                    colorFilter = ColorFilter.tint(Color.White),
+                        .circleBorder(2.dp, iconTintColor),
+                    src = api.currentUser.picture,
+                    colorFilter = if (api.currentUser.picture is ImageVector) ColorFilter.tint(iconTintColor) else null,
                     contentDescription = ""
                 )
             }
-            Text(
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-                text = api.currentUser.name ?: api.appsProvider.homeDir?.name ?: "-",
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TextAny(
+                    text = api.currentUser.name ?: api.appsProvider.homeDir?.name ?: "-",
+                    color = textColor,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold
+                )
+                TextAny(
+                    text = api.machineName,
+                    color = textColor,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
 
         Orientation.Horizontal -> Row(
@@ -85,21 +101,31 @@ fun UserAvatar(
                 colors = ButtonDefaults.transparent(),
                 elevation = ButtonDefaults.noElevation()
             ) {
-                Image(
+                ImageAny(
                     modifier = Modifier
                         .size(avatarSize)
-                        .circleBorder(2.dp, Color.White.copy(alpha = 0.6f)),
-                    imageVector = api.currentUser.picture,
-                    colorFilter = ColorFilter.tint(Color.White),
+                        .circleBorder(2.dp, iconTintColor),
+                    src = api.currentUser.picture,
+                    colorFilter = if (api.currentUser.picture is ImageVector) ColorFilter.tint(iconTintColor) else null,
                     contentDescription = ""
                 )
             }
-            Text(
-                modifier = Modifier.padding(start = 16.dp).fillMaxWidth().padding(top = 16.dp),
-                text = api.currentUser.name ?: api.appsProvider.homeDir?.name ?: "-",
-                color = Color.White,
-                textAlign = TextAlign.Start
-            )
+            Column(
+                modifier = Modifier.padding(start = 8.dp).fillMaxWidth().padding(top = 8.dp),
+            ) {
+                TextAny(
+                    text = api.currentUser.name ?: api.appsProvider.homeDir?.name ?: "-",
+                    color = textColor,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.Bold
+                )
+                TextAny(
+                    text = api.machineName,
+                    color = textColor,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
     }
 }

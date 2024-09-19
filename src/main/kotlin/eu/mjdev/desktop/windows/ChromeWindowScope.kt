@@ -44,8 +44,8 @@ class ChromeWindowScope(
         block()
     }
 
-    fun requestFocus() =
-        stateHelper.requestFocus()
+//    fun requestFocus() =
+//        stateHelper.requestFocus()
 
     fun setBounds(
         x: Dp = this.x,

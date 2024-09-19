@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import eu.mjdev.desktop.extensions.Compose.rememberState
 
 @Composable
 fun AutoResizeText(
@@ -35,7 +36,7 @@ fun AutoResizeText(
     style: TextStyle = LocalTextStyle.current,
 ) {
     var fontSizeValue by remember(text, fontSizeRange) { mutableStateOf(fontSizeRange.max.value) }
-    var readyToDraw by remember { mutableStateOf(false) }
+    var readyToDraw by rememberState(false)
     Text(
         text = text,
         color = color,

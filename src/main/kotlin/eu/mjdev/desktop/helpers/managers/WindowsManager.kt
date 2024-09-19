@@ -341,10 +341,6 @@ class WindowsManager {
         val desktop: Long,
         override val window: Window = Window(id)
     ) : IWindow {
-        override fun toBack() {
-            // todo
-        }
-
         override fun toFront() {
             windowTracker.activateWindow(window)
         }
@@ -369,7 +365,6 @@ class WindowsManager {
     interface IWindow {
         val window: Window
 
-        fun toBack() {}
         fun toFront() {}
         fun minimize() {}
         fun maximize() {}

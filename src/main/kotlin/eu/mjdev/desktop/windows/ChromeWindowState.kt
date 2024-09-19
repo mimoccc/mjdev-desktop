@@ -9,6 +9,8 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
+import eu.mjdev.desktop.extensions.Compose.rememberCalculated
+import eu.mjdev.desktop.extensions.Compose.rememberState
 
 class ChromeWindowState(
     position: WindowPosition = WindowPosition.Aligned(Alignment.Center),
@@ -18,8 +20,8 @@ class ChromeWindowState(
 ) : WindowState {
 
     var onFocusChange: MutableList<ChromeWindowState.(focus: Boolean) -> Unit> = mutableStateListOf()
-    var onOpened: MutableList<() -> Unit> = mutableStateListOf()
-    var onClosed: MutableList<() -> Unit> = mutableStateListOf()
+    var onOpened: MutableList<ChromeWindowState.() -> Unit> = mutableStateListOf()
+    var onClosed: MutableList<ChromeWindowState.() -> Unit> = mutableStateListOf()
 
     val focusHelper: WindowFocusHelper = WindowFocusHelper { _, focus ->
         this@ChromeWindowState.onFocusChange.forEach {
@@ -30,16 +32,19 @@ class ChromeWindowState(
     val stateHelper: WindowStateHelper = WindowStateHelper({
         setSize(size)
         this@ChromeWindowState.onOpened.forEach {
-            it.invoke()
+            it.invoke(this@ChromeWindowState)
         }
     }, {
         this@ChromeWindowState.onClosed.forEach {
-            it.invoke()
+            it.invoke(this@ChromeWindowState)
         }
     })
 
-    val window
+    var window
         get() = stateHelper.window
+        set(value) {
+            stateHelper.window = value
+        }
 
     @Suppress("CanBePrimaryConstructorProperty")
     val closeAction: WindowCloseAction = closeAction
@@ -82,17 +87,15 @@ class ChromeWindowState(
         }
 
         @Composable
-        fun rememberAnimState(visible: Boolean) = remember(visible) {
-            derivedStateOf {
-                when (visible) {
-                    true -> MutableTransitionState(false)
-                    false -> MutableTransitionState(true)
-                }
+        fun rememberAnimState(visible: Boolean) = rememberCalculated(visible) {
+            when (visible) {
+                true -> MutableTransitionState(false)
+                false -> MutableTransitionState(true)
             }
         }
 
         @Composable
-        fun rememberWnState() = remember { mutableStateOf(false) }
+        fun rememberWnState() = rememberState(false)
 
         @Composable
         fun updateWindowState(

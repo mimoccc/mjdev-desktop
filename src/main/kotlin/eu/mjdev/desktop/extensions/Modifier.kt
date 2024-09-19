@@ -128,8 +128,8 @@ object Modifier {
 
     fun Modifier.rightShadow(
         color: Color,
-        offsetX: Dp,
-        blur: Dp
+        offsetX: Dp = 0.dp,
+        blur: Dp = 8.dp,
     ) = dropShadow(
         shape = RectangleShape,
         color = color,
@@ -141,8 +141,8 @@ object Modifier {
 
     fun Modifier.leftShadow(
         color: Color,
-        offsetX: Dp,
-        blur: Dp
+        offsetX: Dp = 0.dp,
+        blur: Dp = 8.dp
     ) = dropShadow(
         shape = RectangleShape,
         color = color,
@@ -154,8 +154,8 @@ object Modifier {
 
     fun Modifier.topShadow(
         color: Color,
-        offsetY: Dp,
-        blur: Dp
+        offsetY: Dp = 0.dp,
+        blur: Dp = 8.dp
     ) = dropShadow(
         shape = RectangleShape,
         color = color,
@@ -167,8 +167,8 @@ object Modifier {
 
     fun Modifier.bottomShadow(
         color: Color,
-        offsetY: Dp,
-        blur: Dp
+        offsetY: Dp = 0.dp,
+        blur: Dp = 8.dp
     ) = dropShadow(
         shape = RectangleShape,
         color = color,

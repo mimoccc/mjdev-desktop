@@ -5,21 +5,30 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 import eu.mjdev.desktop.components.custom.DateTime
 import eu.mjdev.desktop.components.custom.PowerBlock
 import eu.mjdev.desktop.components.custom.UserAvatar
+import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Modifier.rectShadow
+import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBackgroundColor
+import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBorderColor
+import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberIconTintColor
+import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberTextColor
 
 @Suppress("FunctionName")
 fun MainSettingsPage() = ControlCenterPage(
     icon = Icons.Filled.Home,
     name = "Home"
 ) {
+    val backgroundColor by rememberBackgroundColor(api)
+    val textColor by rememberTextColor(api)
+    val borderColor by rememberBorderColor(api)
+    val iconsTintColor by rememberIconTintColor(api)
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -27,10 +36,12 @@ fun MainSettingsPage() = ControlCenterPage(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.TopCenter)
-                .rectShadow(8.dp, Color.Black.copy(alpha = 0.3f))
+                .rectShadow(8.dp, borderColor.copy(alpha = 0.3f))
         ) {
             UserAvatar(
                 backgroundColor = backgroundColor,
+                iconTintColor = iconsTintColor,
+                textColor = textColor,
                 avatarSize = 128.dp,
                 orientation = Orientation.Vertical,
                 onUserAvatarClick = {
@@ -38,11 +49,13 @@ fun MainSettingsPage() = ControlCenterPage(
                 }
             )
             Divider(
-                modifier = Modifier.fillMaxWidth().height(2.dp),
-                color = Color.Transparent,
+                modifier = Modifier.fillMaxWidth()
+                    .height(2.dp),
+                color = borderColor,
                 thickness = 2.dp
             )
             DateTime(
+                textColor = textColor,
                 backgroundColor = backgroundColor
             )
         }
@@ -81,6 +94,9 @@ fun MainSettingsPage() = ControlCenterPage(
             ) {
                 PowerBlock(
                     backgroundColor = backgroundColor,
+                    shadowColor=borderColor.alpha(0.3f),
+                    iconTintColor = iconsTintColor,
+                    textColor = textColor,
                     onPowerButtonClick = {
                         // todo : dialog
                         api.shutdown()

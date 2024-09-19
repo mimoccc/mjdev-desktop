@@ -26,13 +26,19 @@ import eu.mjdev.desktop.components.controlcenter.ControlCenterPage.ControlCenter
 import eu.mjdev.desktop.components.sliding.SlidingMenu
 import eu.mjdev.desktop.components.sliding.VisibilityState
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
-import eu.mjdev.desktop.extensions.ColorUtils.alpha
-import eu.mjdev.desktop.extensions.Modifier.rightShadow
+import eu.mjdev.desktop.extensions.Compose.rememberCalculated
+import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
+import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBackgroundColor
+import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBorderColor
+import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberIconTintColor
+import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberTextColor
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.windows.ChromeWindow
+import eu.mjdev.desktop.windows.ChromeWindowState
+import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -41,8 +47,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ControlCenter(
     api: DesktopProvider = LocalDesktop.current,
-    shadowColor: Color = Color.Black.alpha(0.3f), // todo theme
-    pagerState: MutableState<Int> = remember { mutableStateOf(0) },
+    pagerState: MutableState<Int> = rememberState(0),
     controlCenterState: VisibilityState = rememberVisibilityState(),
     scope: CoroutineScope = rememberCoroutineScope(),
     enterAnimation: EnterTransition = ControlCenterEnterAnimation,
@@ -50,29 +55,31 @@ fun ControlCenter(
     onFocusChange: (Boolean) -> Unit = {},
     onContextMenuClick: () -> Unit = {}
 ) {
-    val backgroundColor by remember { api.currentUser.theme.backgroundColorState }
+    val backgroundColor by rememberBackgroundColor(api)
     val backgroundAlpha by remember { api.currentUser.theme.controlCenterBackgroundAlphaState }
     val backgroundInvoker = remember { { backgroundColor } }
+    val textColor by rememberTextColor(api)
+    val borderColor by rememberBorderColor(api)
+    val iconsTintColor by rememberIconTintColor(api)
     val controlCenterExpandedWidth by remember { api.currentUser.theme.controlCenterExpandedWidthState }
     val controlCenterDividerWidth by remember { api.currentUser.theme.controlCenterDividerWidthState }
-    val controlCenterIconColor by remember { api.currentUser.theme.controlCenterIconColorState }
     val controlCenterIconSize by remember { api.currentUser.theme.controlCenterIconSizeState }
     val pages by remember { api.controlCenterPagesState }
-    val pagesFiltered = remember(pages) {
-        derivedStateOf {
-            pages.filter { p -> p.condition.invoke(api) }
-        }
-    }
-    ChromeWindow(
-        visible = true,
-        enterAnimation = enterAnimation,
-        exitAnimation = exitAnimation,
-        position = WindowPosition.Aligned(Alignment.TopEnd),
-        size = if (controlCenterState.isVisible) {
+    val pagesFiltered = rememberCalculated(pages) { pages.filter { p -> p.condition.invoke(api) } }
+    val position by rememberCalculated { WindowPosition.Aligned(Alignment.TopEnd) }
+    val size by rememberCalculated {
+        if (controlCenterState.isVisible) {
             DpSize(controlCenterExpandedWidth, api.containerSize.height)
         } else {
             DpSize(controlCenterDividerWidth, api.containerSize.height)
-        },
+        }
+    }
+    val windowState: ChromeWindowState = rememberChromeWindowState(position = position, size = size)
+    ChromeWindow(
+        visible = true,
+        windowState = windowState,
+        enterAnimation = enterAnimation,
+        exitAnimation = exitAnimation,
         onFocusChange = { focused ->
             controlCenterState.onFocusChange(focused)
             onFocusChange(focused)
@@ -82,11 +89,19 @@ fun ControlCenter(
             modifier = Modifier.fillMaxHeight(),
             orientation = Horizontal,
             state = controlCenterState,
+            onPointerEnter = {
+                controlCenterState.show()
+                windowState.requestFocus()
+            },
+            onPointerLeave = {
+                // controlCenterState.hide()
+            }
         ) { isVisible ->
             if (!isVisible) {
                 Divider(
-                    modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
-                    color = Color.Transparent,
+                    modifier = Modifier.fillMaxHeight()
+                        .width(controlCenterDividerWidth),
+                    color = borderColor,
                     thickness = controlCenterDividerWidth
                 )
             } else {
@@ -94,10 +109,12 @@ fun ControlCenter(
                     modifier = Modifier
                         .fillMaxHeight()
                         .wrapContentSize()
-                        .background(backgroundColor.copy(alpha = backgroundAlpha)),
+                        .background(
+                            backgroundColor.copy(alpha = backgroundAlpha)
+                        ),
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxHeight().wrapContentSize(),
+                        modifier = Modifier.fillMaxHeight(),
                     ) {
                         Box(
                             contentAlignment = Alignment.TopEnd
@@ -117,7 +134,7 @@ fun ControlCenter(
                                             .padding(vertical = 8.dp)
                                             .size(controlCenterIconSize)
                                             .background(
-                                                color = if (isSelected) Color.White else Color.Transparent,
+                                                color = if (isSelected) iconsTintColor else borderColor,
                                                 shape = RoundedCornerShape(8.dp)
                                             )
                                             .pointerInput(Unit) {
@@ -138,7 +155,7 @@ fun ControlCenter(
                                             },
                                         imageVector = page.icon,
                                         contentDescription = "",
-                                        tint = if (isSelected) backgroundColor else controlCenterIconColor
+                                        tint = if (isSelected) backgroundColor else textColor
                                     )
                                 }
                             }
@@ -147,30 +164,30 @@ fun ControlCenter(
                                     .padding(
                                         end = controlCenterIconSize.width + 16.dp
                                     )
-                                    .fillMaxHeight()
-                                    .wrapContentSize(),
+                                    .fillMaxHeight(),
                             ) {
-                                Row {
+                                Row(
+                                    Modifier.fillMaxHeight()
+                                ) {
                                     Divider(
-                                        modifier = Modifier
-                                            .fillMaxHeight()
+                                        modifier = Modifier.fillMaxHeight()
                                             .width(2.dp),
-                                        color = Color.White.copy(0.1f),
+                                        color = borderColor,
                                         thickness = 2.dp
                                     )
                                     Box(
-                                        modifier = Modifier
-                                            .width(controlCenterExpandedWidth)
-                                            .rightShadow(
-                                                color = shadowColor,
-                                                offsetX = 4.dp,
-                                                blur = 10.dp,
-                                            ),
+                                        modifier = Modifier.width(controlCenterExpandedWidth),
                                     ) {
                                         with(pagesFiltered.value[pagerState.value]) {
                                             content(ControlCenterPageScope(api, backgroundInvoker, cache))
                                         }
                                     }
+                                    Divider(
+                                        modifier = Modifier.fillMaxHeight()
+                                            .width(2.dp),
+                                        color = borderColor,
+                                        thickness = 2.dp
+                                    )
                                 }
                             }
                             Divider(

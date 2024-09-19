@@ -4,9 +4,7 @@ package eu.mjdev.desktop.extensions
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.*
 import coil3.ImageLoader
@@ -116,7 +114,19 @@ object Compose {
         .memoryCache { imageLoaderMemoryCache }
         .build()
 
-    //    Toolkit.getDefaultToolkit().addAWTEventListener({ event ->
+    @Composable
+    fun <T> rememberState(
+        value: T,
+        policy: SnapshotMutationPolicy<T> = structuralEqualityPolicy()
+    ) = remember { mutableStateOf(value, policy) }
+
+    @Composable
+    fun <T> rememberCalculated(
+        vararg key: Any?,
+        calculation: () -> T
+    ) = remember(*key) { derivedStateOf { calculation() } }
+
+//    Toolkit.getDefaultToolkit().addAWTEventListener({ event ->
 //        }, AWTEvent.MOUSE_EVENT_MASK or AWTEvent.FOCUS_EVENT_MASK
 //    )
 
@@ -125,5 +135,7 @@ object Compose {
 //            println(event)
 //        }
 //    }, AWTEvent.WINDOW_EVENT_MASK)
+
+    operator fun DpSize.plus(dp: Dp) = copy(width = width + dp, height = height + dp)
 
 }

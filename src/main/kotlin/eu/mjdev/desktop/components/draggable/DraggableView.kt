@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.extensions.Compose.rememberState
 
 @Composable
 fun DraggableView(
@@ -23,8 +24,8 @@ fun DraggableView(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     content: @Composable BoxScope.() -> Unit = {}
 ) {
-    var position by remember { mutableStateOf(Offset.Zero) }
-    var isDragging by remember { mutableStateOf(false) }
+    var position by rememberState(Offset.Zero)
+    var isDragging by rememberState(false)
     Box(
         modifier = modifier
             .graphicsLayer(

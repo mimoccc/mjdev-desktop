@@ -13,10 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
+import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.helpers.internal.Queue.Companion.mutableQueue
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Preview
 @Composable
@@ -31,11 +33,7 @@ fun BackgroundImage(
     val switchDelay by remember { api.currentUser.theme.backgroundRotationDelayState }
     val backgroundColor by remember { api.currentUser.theme.backgroundColorState }
     val userBackgrounds by remember { api.currentUser.config.desktopBackgroundsState }
-    val backgrounds by remember {
-        derivedStateOf {
-            api.appsProvider.backgrounds + userBackgrounds
-        }
-    }
+    val backgrounds by rememberCalculated { api.appsProvider.backgrounds + userBackgrounds }
     val backgroundQueue = remember { mutableQueue(backgrounds) }
     var currentBackground: Any? by remember { mutableStateOf(backgroundQueue.value) }
     Box(
@@ -48,6 +46,9 @@ fun BackgroundImage(
                         fadeOut(animationSpec = tween(durationMillis = fadeOutDuration.toInt()))
             }
         ) { value ->
+            api.scope.launch {
+                onChange(currentBackground)
+            }
             ImageAny(
                 modifier = modifier,
                 contentScale = ContentScale.Crop,
@@ -59,7 +60,6 @@ fun BackgroundImage(
             if (switchDelay > 0) {
                 delay(switchDelay)
                 currentBackground = backgroundQueue.value
-                onChange(currentBackground)
             }
         }
     }

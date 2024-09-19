@@ -14,7 +14,6 @@ import javax.imageio.ImageWriteParam
 import javax.imageio.stream.ImageOutputStream
 import kotlin.math.abs
 
-
 @Suppress("unused", "UNUSED_PARAMETER")
 class Bitmap(
     val image: BufferedImage
@@ -40,6 +39,9 @@ class Bitmap(
         HARDWARE,
         RGBA_1010102,
     }
+
+    val allPixels: List<Color>
+        get() = image.data.getPixels(0, 0, width, height, null as IntArray?).map { Color(it) }
 
     fun compress(format: CompressFormat, quality: Int, sink: Sink): Boolean {
         require(quality in 0..100) { "quality must be 0..100" }
@@ -133,19 +135,8 @@ class Bitmap(
         }
     }
 
-    fun setPixels(
-        destination: IntArray,
-        topLeft: Int,
-        downsampledWidth: Int,
-        downsampledX: Int,
-        downsampledY: Int,
-        downsampledW: Int,
-        downsampledH: Int
-    ) : Bitmap {
-
-        // todo
-        return this
-    }
+    fun cut(x: Int, y: Int, w: Int, h: Int): Bitmap =
+        Bitmap(ImegeScaler.crop(image, w, h))
 
     companion object {
         fun Bitmap.applyCanvas(block: Canvas.() -> Unit): Bitmap {

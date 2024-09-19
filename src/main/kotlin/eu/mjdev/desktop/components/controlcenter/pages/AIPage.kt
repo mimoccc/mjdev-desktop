@@ -11,11 +11,11 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
+import eu.mjdev.desktop.extensions.Compose.rememberState
 import kotlinx.coroutines.launch
 
 @Suppress("FunctionName")
@@ -25,7 +25,7 @@ fun AIPage() = ControlCenterPage(
     condition = { ai.isAvailable() }
 ) {
     val questionsList = remember { mutableStateListOf<Pair<String, String>>() }
-    val request = remember { mutableStateOf("") }
+    val request = rememberState("")
     val onDone: (String) -> Unit = { what ->
         if (what.isNotEmpty()) {
             questionsList.add(Pair(what, ""))

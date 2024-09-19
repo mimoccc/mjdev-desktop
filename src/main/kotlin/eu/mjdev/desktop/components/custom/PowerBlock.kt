@@ -28,6 +28,8 @@ import eu.mjdev.desktop.extensions.Modifier.rectShadow
 fun PowerBlock(
     backgroundColor: Color,
     shadowColor: Color = Color.Black.copy(alpha = 0.3f),
+    textColor: Color = Color.Black,
+    iconTintColor: Color = Color.White,
     bottomBoxHeight: Dp = 128.dp,
     iconHeight: Dp = 64.dp,
     onPowerButtonClick: () -> Unit = {}
@@ -62,12 +64,12 @@ fun PowerBlock(
             Image(
                 modifier = Modifier
                     .size(64.dp)
-                    .background(Color.White, CircleShape)
+                    .background(iconTintColor, CircleShape)
                     .clipCircle()
                     .padding(8.dp),
                 imageVector = Icons.Filled.SettingsPower,
                 contentDescription = "",
-                colorFilter = ColorFilter.tint(Color.Black)
+                colorFilter = ColorFilter.tint(backgroundColor)
             )
         }
     }

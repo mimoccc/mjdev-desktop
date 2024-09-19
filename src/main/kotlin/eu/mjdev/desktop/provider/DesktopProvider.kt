@@ -1,19 +1,20 @@
 package eu.mjdev.desktop.provider
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.pages.*
 import eu.mjdev.desktop.data.User
+import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.helpers.adb.AdbDiscover.Companion.adbDevicesHandler
+import eu.mjdev.desktop.helpers.internal.Palette
 import eu.mjdev.desktop.helpers.managers.ConnectivityManager
 import eu.mjdev.desktop.helpers.managers.FileSystemWatcher
 import eu.mjdev.desktop.helpers.managers.KCEFHelper
 import eu.mjdev.desktop.helpers.managers.WindowsManager
+import eu.mjdev.desktop.helpers.system.Command
 import eu.mjdev.desktop.provider.AIProvider.AiPluginGemini
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,14 +32,19 @@ class DesktopProvider(
 //    val scriptManager: ScriptEngineManager = ScriptEngineManager(),
     val kcefHelper: KCEFHelper = KCEFHelper(scope),
     val ai: AIProvider = AIProvider(scope, AiPluginGemini(scope)),
-    val windows: WindowsManager = WindowsManager()
+    val windows: WindowsManager = WindowsManager(),
 ) {
     private val __currentUser: User by lazy { User.load() }
     private val _currentUser: MutableState<User> = mutableStateOf(__currentUser)
     val currentUser
         get() = _currentUser.value
 
+    val palette: Palette = Palette(scope, currentUser.theme.backgroundColor)
+
     val controlCenterPagesState: MutableState<List<ControlCenterPage>> = mutableStateOf(CONTROL_CENTER_PAGES)
+
+    val machineName
+        get() = Command("hostname").execute()
 
 //    private val engine: ScriptEngine by lazy {
 //        scriptManager.getEngineByName("JavaScript").apply {
@@ -142,6 +148,14 @@ class DesktopProvider(
 
         val LocalDesktop = compositionLocalOf {
             DesktopProvider()
+        }
+
+        @Composable
+        fun rememberDesktopProvider(
+            scope: CoroutineScope = rememberCoroutineScope(),
+            imageLoader: ImageLoader = asyncImageLoader()
+        ) = remember {
+            DesktopProvider(scope, imageLoader)
         }
     }
 }

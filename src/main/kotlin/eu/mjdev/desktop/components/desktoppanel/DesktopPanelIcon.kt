@@ -1,16 +1,12 @@
 package eu.mjdev.desktop.components.desktoppanel
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -23,6 +19,7 @@ import eu.mjdev.desktop.components.fonticon.FontIcon
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.extensions.Compose.color
 import eu.mjdev.desktop.extensions.Compose.noElevation
+import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Modifier.clipRect
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
@@ -43,7 +40,7 @@ fun DesktopPanelIcon(
     iconSize: DpSize = DpSize(48.dp, 48.dp),
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
-    iconState: MutableState<Boolean> = remember { mutableStateOf(false) },
+    iconState: MutableState<Boolean> = rememberState(false),
     contentDescription: String? = null,
     onToolTip: (item: Any?) -> Unit,
     onClick: () -> Unit,
@@ -90,8 +87,8 @@ fun DesktopPanelIcon(
         }
         if (isStarting) {
             CircularProgressIndicator(
-                modifier = Modifier.size(iconSize),
-                color = Color.White,
+                modifier = Modifier.padding(4.dp).size(iconSize),
+                color = iconColor,
                 strokeWidth = 4.dp,
                 backgroundColor = Color.Transparent
             )

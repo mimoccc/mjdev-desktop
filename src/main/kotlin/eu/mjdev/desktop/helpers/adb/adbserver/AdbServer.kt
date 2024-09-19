@@ -78,8 +78,7 @@ object AdbServer {
                 } else {
                     parts[0]
                 }
-            }
-            .map { createDadb(adbServerHost, adbServerPort, "host:transport:${it}") }
+            }.map { createDadb(adbServerHost, adbServerPort, "host:transport:${it}") }
     }
 
     internal fun readString(inputStream: DataInputStream): String {

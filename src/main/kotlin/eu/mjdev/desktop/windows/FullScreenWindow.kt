@@ -14,15 +14,18 @@ fun FullScreenWindow(
     api: DesktopProvider = LocalDesktop.current,
     enabled: Boolean = true,
     focusable: Boolean = true,
+    onOpened: ChromeWindowState.() -> Unit = {},
     onCloseRequest: () -> Unit = {},
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
     onKeyEvent: (KeyEvent) -> Boolean = { false },
     windowState: ChromeWindowState = rememberChromeWindowState(
-        placement = WindowPlacement.Fullscreen,
+        placement = WindowPlacement.Maximized,
         size = api.containerSize,
         position = WindowPosition.Aligned(Alignment.Center)
     ),
-    onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
+    onCreate: ChromeWindowState.() -> Unit = {},
+    onFocusChange: ChromeWindowState.(Boolean) -> Unit = {
+    },
     content: @Composable ChromeWindowScope.() -> Unit = {}
 ) = ChromeWindow(
     windowState = windowState,
@@ -35,6 +38,8 @@ fun FullScreenWindow(
     onPreviewKeyEvent = onPreviewKeyEvent,
     onKeyEvent = onKeyEvent,
     onCloseRequest = onCloseRequest,
+    onCreate = onCreate,
+    onOpened = onOpened,
     onFocusChange = onFocusChange,
     content = content
 )

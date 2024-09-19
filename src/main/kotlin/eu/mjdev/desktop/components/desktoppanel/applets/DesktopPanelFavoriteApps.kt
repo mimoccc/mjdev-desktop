@@ -8,8 +8,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,6 +15,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanelIcon
 import eu.mjdev.desktop.data.App
+import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
@@ -34,7 +33,7 @@ fun DesktopPanelFavoriteApps(
     onAppClick: (app: App) -> Unit,
     onContextMenuClick: (app: App) -> Unit
 ) {
-    val apps by remember(api.appsProvider.favoriteApps.size) { mutableStateOf( api.appsProvider.favoriteApps) }
+    val apps by rememberCalculated(api.appsProvider.favoriteApps.size) { api.appsProvider.favoriteApps }
     Box(
         modifier = modifier
     ) {

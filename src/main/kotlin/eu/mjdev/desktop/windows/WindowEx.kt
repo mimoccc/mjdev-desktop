@@ -1,15 +1,17 @@
 package eu.mjdev.desktop.windows
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.window.FrameWindowScope
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.rememberWindowState
 
 @Composable
 fun WindowEx(
+    onCreate: (window: ComposeWindow) -> Unit = {},
+//    onOpen: (window: ComposeWindow) -> Unit = {},
     onCloseRequest: () -> Unit,
     state: WindowState = rememberWindowState(),
     visible: Boolean = true,
@@ -21,13 +23,15 @@ fun WindowEx(
     enabled: Boolean = true,
     focusable: Boolean = true,
     alwaysOnTop: Boolean = false,
-    alwaysOnBottom: Boolean = false,
+//    alwaysOnBottom: Boolean = false,
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
     onKeyEvent: (KeyEvent) -> Boolean = { false },
     focusHelper: WindowFocusHelper,
     stateHelper: WindowStateHelper,
     content: @Composable FrameWindowScope.() -> Unit = {}
 ) = Window(
+    onCreate = onCreate,
+//    onOpen = onOpen,
     onCloseRequest = onCloseRequest,
     state = state,
     visible = visible,
@@ -39,16 +43,12 @@ fun WindowEx(
     enabled = enabled,
     focusable = focusable,
     alwaysOnTop = alwaysOnTop,
+//    alwaysOnBottom = alwaysOnBottom,
     onPreviewKeyEvent = onPreviewKeyEvent,
     onKeyEvent = onKeyEvent,
     content = {
         content()
         with(window) {
-            if (alwaysOnBottom) {
-                toBack()
-            } else if (alwaysOnTop) {
-                toFront()
-            }
             stateHelper.register(this)
             focusHelper.register(this)
         }

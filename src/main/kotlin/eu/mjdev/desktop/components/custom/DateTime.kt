@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DateTime(
     backgroundColor: Color,
+    textColor: Color = Color.White
 ) = Box(
     modifier = Modifier
         .fillMaxWidth()
@@ -21,6 +22,8 @@ fun DateTime(
         .padding(16.dp)
 ) {
     Clock(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        timeTextColor = textColor,
+        dateTextColor = textColor
     )
 }

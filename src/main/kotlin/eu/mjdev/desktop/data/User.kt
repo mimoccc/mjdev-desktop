@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 @Suppress("MemberVisibilityCanBePrivate")
 class User(
     name: String?,
-    picture: ImageVector,
+    picture: Any?,
     config: DesktopConfig,
     theme: Theme
 ) {

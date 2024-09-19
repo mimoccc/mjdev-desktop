@@ -13,42 +13,43 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.components.text.TextAny
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @Composable
 fun DesktopPanelTooltip(
-    item: Any?,
-    api: DesktopProvider = LocalDesktop.current,
+    item: Any? = null,
+    textColor: Color = Color.White,
+    borderColor: Color = Color.White,
+    backgroundColor: Color = Color.Transparent,
     converter: (Any?) -> TooltipData = { TooltipData(description = it.toString()) }
-) = Box(
-    modifier = Modifier
-        .wrapContentSize()
-        .background(api.currentUser.theme.backgroundColor, RoundedCornerShape(8.dp))
-        .border(2.dp, Color.White.copy(0.2f), RoundedCornerShape(8.dp))
-        .padding(8.dp)
-) {
-    if (item != null) {
+) = if (item != null) {
+    Box(
+        modifier = Modifier
+            .wrapContentSize()
+            .background(backgroundColor, RoundedCornerShape(8.dp))
+            .border(2.dp, borderColor, RoundedCornerShape(8.dp))
+            .padding(8.dp)
+    ) {
+
         with(converter(item)) {
             Column {
                 if (title.isNotEmpty()) {
                     TextAny(
                         text = title,
-                        color = Color.White,
+                        color = textColor,
                         fontSize = 14.sp
                     )
                 }
                 if (description.isNotEmpty()) {
                     TextAny(
                         text = description,
-                        color = Color.White,
+                        color = textColor,
                         fontSize = 12.sp
                     )
                 }
             }
         }
     }
-}
+} else Unit
 
 data class TooltipData(
     val title: String = "",

@@ -2,6 +2,7 @@ package eu.mjdev.desktop.helpers.adb
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -15,15 +16,19 @@ class AdbDiscover(
 
     init {
         coroutineScope?.launch {
-            while (true) {
-                val newDevices = Adb.discover()
-                if (newDevices.isNotEmpty()) {
-                    newDevices.forEach { entry ->
-                        if (!devices.containsKey(entry.toString())) {
-                            devices[entry.toString()] = entry
-                            onAdded(entry)
+            while (isActive) {
+                runCatching {
+                    val newDevices = Adb.discover()
+                    if (newDevices.isNotEmpty()) {
+                        newDevices.forEach { entry ->
+                            if (!devices.containsKey(entry.toString())) {
+                                devices[entry.toString()] = entry
+                                onAdded(entry)
+                            }
                         }
                     }
+                }.onFailure { e ->
+                    println("Error : ${e.message}")
                 }
                 delay(discoverDelay)
             }

@@ -4,13 +4,12 @@ import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.aay.compose.baseComponents.model.LegendPosition
 import eu.mjdev.desktop.components.draggable.DraggableView
 import eu.mjdev.desktop.extensions.Compose.DarkDarkGray
+import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.helpers.system.MemInfo
 import eu.mjdev.desktop.helpers.system.MemInfo.Companion.toReadable
 import kotlinx.coroutines.delay
@@ -36,7 +35,7 @@ fun MemoryChart(
     modifier = modifier,
     dragEnabled = dragEnabled
 ) {
-    val memData = remember { mutableStateOf(MemInfo()) }
+    val memData = rememberState(MemInfo())
     DualDonutChart(
         modifier = modifier,
         title = mainTitle,

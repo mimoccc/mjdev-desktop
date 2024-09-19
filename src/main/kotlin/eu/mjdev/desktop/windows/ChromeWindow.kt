@@ -25,36 +25,39 @@ fun ChromeWindow(
     enabled: Boolean = true,
     focusable: Boolean = true,
     alwaysOnTop: Boolean = true,
-    alwaysOnBottom: Boolean = false,
+//    alwaysOnBottom: Boolean = false,
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+    onCreate: ChromeWindowState.() -> Unit = {},
     onCloseRequest: () -> Unit = {},
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
     onKeyEvent: (KeyEvent) -> Boolean = { false },
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
-    onOpened: () -> Unit = {},
-    onClosed: () -> Unit = {},
+    onOpened: ChromeWindowState.() -> Unit = {},
+    onClosed: ChromeWindowState.() -> Unit = {},
     content: @Composable ChromeWindowScope.() -> Unit = {}
 ) = ChromeWindow(
-    windowState,
-    visible,
-    transparent,
-    resizable,
-    enabled,
-    focusable,
-    alwaysOnTop,
-    alwaysOnBottom,
-    enterAnimation,
-    exitAnimation,
-    onCloseRequest,
-    onPreviewKeyEvent,
-    onKeyEvent,
-    onFocusChange,
-    onOpened,
-    onClosed,
-    content
+    windowState = windowState,
+    visible = visible,
+    transparent = transparent,
+    resizable = resizable,
+    enabled = enabled,
+    focusable = focusable,
+    alwaysOnTop = alwaysOnTop,
+//    alwaysOnBottom = alwaysOnBottom,
+    enterAnimation = enterAnimation,
+    exitAnimation = exitAnimation,
+    onCreate = onCreate,
+    onCloseRequest = onCloseRequest,
+    onPreviewKeyEvent = onPreviewKeyEvent,
+    onKeyEvent = onKeyEvent,
+    onFocusChange = onFocusChange,
+    onOpened = onOpened,
+    onClosed = onClosed,
+    content = content
 )
 
+@Suppress("unused")
 @Composable
 fun ChromeWindow(
     position: WindowPosition = WindowPosition.Aligned(Alignment.Center),
@@ -65,34 +68,36 @@ fun ChromeWindow(
     enabled: Boolean = true,
     focusable: Boolean = true,
     alwaysOnTop: Boolean = true,
-    alwaysOnBottom: Boolean = false,
+//    alwaysOnBottom: Boolean = false,
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+    onCreate: ChromeWindowState.() -> Unit = {},
     onCloseRequest: () -> Unit = {},
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
     onKeyEvent: (KeyEvent) -> Boolean = { false },
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
-    onOpened: () -> Unit = {},
-    onClosed: () -> Unit = {},
+    onOpened: ChromeWindowState.() -> Unit = {},
+    onClosed: ChromeWindowState.() -> Unit = {},
     content: @Composable ChromeWindowScope.() -> Unit = {}
 ) = ChromeWindow(
-    windowState,
-    visible,
-    transparent,
-    resizable,
-    enabled,
-    focusable,
-    alwaysOnTop,
-    alwaysOnBottom,
-    enterAnimation,
-    exitAnimation,
-    onCloseRequest,
-    onPreviewKeyEvent,
-    onKeyEvent,
-    onFocusChange,
-    onOpened,
-    onClosed,
-    content
+    windowState = windowState,
+    visible = visible,
+    transparent = transparent,
+    resizable = resizable,
+    enabled = enabled,
+    focusable = focusable,
+    alwaysOnTop = alwaysOnTop,
+//    alwaysOnBottom = alwaysOnBottom,
+    enterAnimation = enterAnimation,
+    exitAnimation = exitAnimation,
+    onCreate = onCreate,
+    onCloseRequest = onCloseRequest,
+    onPreviewKeyEvent = onPreviewKeyEvent,
+    onKeyEvent = onKeyEvent,
+    onFocusChange = onFocusChange,
+    onOpened = onOpened,
+    onClosed = onClosed,
+    content = content
 )
 
 @Composable
@@ -104,34 +109,46 @@ fun ChromeWindow(
     enabled: Boolean = true,
     focusable: Boolean = true,
     alwaysOnTop: Boolean = true,
-    alwaysOnBottom: Boolean = false,
+//    alwaysOnBottom: Boolean = false,
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     onCloseRequest: () -> Unit = {},
+    onCreate: ChromeWindowState.() -> Unit = {},
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
     onKeyEvent: (KeyEvent) -> Boolean = { false },
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
-    onOpened: () -> Unit = {},
-    onClosed: () -> Unit = {},
+    onOpened: ChromeWindowState.() -> Unit = {},
+    onClosed: ChromeWindowState.() -> Unit = {},
     content: @Composable ChromeWindowScope.() -> Unit = {}
 ) {
     val animState = rememberAnimState(visible)
     val wnState = rememberWnState()
     windowState.onOpened.add {
-        if (alwaysOnBottom) {
-            windowState.window?.toBack()
-        } else {
-            windowState.requestFocus()
-        }
+//        if (alwaysOnBottom) {
+            // todo
+//            val focusOwner = window?.mostRecentFocusOwner
+//            window?.toBack()
+//            focusOwner?.requestFocus()
+//        }
+//        else if (alwaysOnTop) {
+//            windowState.requestFocus()
+//        }
         windowState.updatePositionAndSize()
         if (visible) {
             animState.value.targetState = true
         }
-        onOpened()
+        onOpened(windowState)
     }
     windowState.onClosed.add(onClosed)
     windowState.onFocusChange.add(onFocusChange)
     WindowEx(
+        onCreate = { window ->
+            windowState.window = window
+            onCreate(windowState)
+        },
+//        onOpen = {
+//            onOpened(windowState)
+//        },
         onCloseRequest,
         windowState,
         wnState.value,
@@ -143,7 +160,7 @@ fun ChromeWindow(
         enabled,
         focusable,
         alwaysOnTop,
-        alwaysOnBottom,
+//        alwaysOnBottom,
         onPreviewKeyEvent,
         onKeyEvent,
         stateHelper = windowState.stateHelper,

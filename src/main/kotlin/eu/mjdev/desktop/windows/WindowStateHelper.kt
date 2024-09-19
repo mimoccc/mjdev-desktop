@@ -84,5 +84,6 @@ class WindowStateHelper(
 
     fun requestFocus() {
         window?.toFront()
+//        window?.requestFocus()
     }
 }

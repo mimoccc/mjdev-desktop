@@ -3,8 +3,7 @@ package eu.mjdev.desktop.components.charts
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -12,6 +11,7 @@ import com.aay.compose.baseComponents.model.LegendPosition
 import com.aay.compose.donutChart.DonutChart
 import com.aay.compose.donutChart.model.PieChartData
 import eu.mjdev.desktop.extensions.Compose.DarkDarkGray
+import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 
 @Composable
 fun DualDonutChart(
@@ -30,7 +30,7 @@ fun DualDonutChart(
     animation: AnimationSpec<Float> = TweenSpec(durationMillis = 3000),
     legendPosition: LegendPosition = LegendPosition.BOTTOM,
 ) {
-    val data = remember(
+    val data by rememberCalculated(
         firstValue,
         firstColor,
         firstTitle,
@@ -38,16 +38,14 @@ fun DualDonutChart(
         secondColor,
         secondTitle
     ) {
-        derivedStateOf {
-            listOf(
-                PieChartData(firstValue, firstColor, firstTitle),
-                PieChartData(secondValue, secondColor, secondTitle)
-            )
-        }
+        listOf(
+            PieChartData(firstValue, firstColor, firstTitle),
+            PieChartData(secondValue, secondColor, secondTitle)
+        )
     }
     DonutChart(
         modifier = modifier,
-        pieChartData = data.value,
+        pieChartData = data,
         centerTitle = title,
         centerTitleStyle = TextStyle(color = textColor),
         descriptionStyle = TextStyle(color = textColor),

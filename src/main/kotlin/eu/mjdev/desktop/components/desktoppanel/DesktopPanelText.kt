@@ -10,8 +10,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.extensions.Compose.color
 import eu.mjdev.desktop.extensions.Compose.noElevation
+import eu.mjdev.desktop.extensions.Compose.rememberState
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Preview
@@ -31,7 +30,7 @@ fun DesktopPanelText(
     textColor: Color = Color.White,
     backgroundHover: Color = Color.Red,
     textPadding: PaddingValues = PaddingValues(4.dp),
-    buttonState: MutableState<Boolean> = remember { mutableStateOf(false) },
+    buttonState: MutableState<Boolean> = rememberState(false),
     onToolTip: (item: Any?) -> Unit = {},
     onClick: () -> Unit,
 ) = Box(
