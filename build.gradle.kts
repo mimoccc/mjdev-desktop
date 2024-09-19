@@ -75,6 +75,9 @@ allprojects {
         implementation(libs.qrose)
         // tts
         implementation(libs.tts)
+        // dbus
+//        implementation(libs.dbus.java.core)
+//        implementation(libs.dbus.java.transport.native.unixsocket)
         // testing yet
         // anim
         implementation("org.jetbrains.compose.animation:animation:1.7.0-alpha03")
@@ -94,8 +97,8 @@ allprojects {
         // music
 //        implementation(libs.korau)
         // dbus
-//        implementation("org.freedesktop.dbus:dbus-java:1.2.0") // Replace with the desired version
-//        implementation("org.freedesktop.dbus:dbus-java-annotations:1.2.0")// Replace with the desired version
+//        implementation("org.freedesktop.dbus:dbus-java:2.7")
+//        implementation("org.freedesktop.dbus:dbus-java-annotations:2.7")
         // bar code
 //        implementation("io.github.alexzhirkevich:qrose-oned:1.0.1")
         // flow extensions
@@ -113,9 +116,6 @@ allprojects {
 
         // hid
 //        implementation('org.hid4java:hid4java')
-        // dbus
-        // implementation(libs.dbus.java.core)
-        // implementation(libs.dbus.java.transport.native.unixsocket)
         // javascript
         // implementation(libs.mozilla.rhino)
 
