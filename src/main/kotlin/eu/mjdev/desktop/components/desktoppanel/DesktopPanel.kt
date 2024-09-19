@@ -26,12 +26,12 @@ import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelLanguage
 import eu.mjdev.desktop.components.sliding.SlidingMenu
 import eu.mjdev.desktop.components.sliding.VisibilityState
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.components.tooltip.Tooltip
+import eu.mjdev.desktop.components.tooltip.TooltipData
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.ColorUtils.lighter
 import eu.mjdev.desktop.extensions.Compose.height
-import eu.mjdev.desktop.extensions.Compose.launchedEffect
-import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Modifier.topShadow
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelExitAnimation
@@ -42,7 +42,6 @@ import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberTextColor
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.windows.ChromeWindow
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalFoundationApi::class)
 @Suppress("FunctionName")
@@ -66,7 +65,6 @@ fun DesktopPanel(
             else -> TooltipData(title = item.toString())
         }
     },
-    tooltipDelay: Long = 1000L,
     onMenuIconClicked: () -> Unit = {
         // todo
     },
@@ -86,8 +84,7 @@ fun DesktopPanel(
     val textColor by rememberTextColor(api)
     val borderColor by rememberBorderColor(api)
     val iconsTintColor by rememberIconTintColor(api)
-    var tooltipData: Any? by rememberState(null)
-    val onTooltip: (item: Any?) -> Unit = { item -> tooltipData = item }
+    var tooltipState = remember{ mutableStateOf<Any?>(null) }
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
         if (visible)
             iconSize.height + iconOuterPadding.height + tooltipHeight + panelContentPadding.height
@@ -117,7 +114,7 @@ fun DesktopPanel(
                 // todo focus
             },
             onPointerLeave = {
-                if(!menuState.isVisible) {
+                if (!menuState.isVisible) {
                     panelState.hide()
                 }
             }
@@ -133,10 +130,10 @@ fun DesktopPanel(
                 TooltipArea(
                     modifier = Modifier.fillMaxWidth().wrapContentHeight(),
                     tooltip = {
-                        DesktopPanelTooltip(
+                        Tooltip(
                             textColor = textColor,
                             borderColor = borderColor,
-                            item = tooltipData,
+                            state = tooltipState,
                             converter = tooltipConverter,
                             backgroundColor = backgroundColor
                         )
@@ -191,7 +188,7 @@ fun DesktopPanel(
                                         iconSize = iconSize,
                                         iconPadding = iconPadding,
                                         iconOuterPadding = iconOuterPadding,
-                                        onTooltip = onTooltip,
+                                        onTooltip = { item -> tooltipState.value = item },
                                         onClick = { onMenuIconClicked() },
                                         onContextMenuClick = onMenuIconContextMenuClicked
                                     )
@@ -204,13 +201,13 @@ fun DesktopPanel(
                                     iconSize = iconSize,
                                     iconPadding = iconPadding,
                                     iconOuterPadding = iconOuterPadding,
-                                    onTooltip = onTooltip,
+                                    onTooltip = { item -> tooltipState.value = item },
                                     onAppClick = onAppClick,
                                     onContextMenuClick = onAppContextMenuClick
                                 )
                                 DesktopPanelLanguage(
                                     modifier = Modifier.align(Alignment.CenterEnd),
-                                    onTooltip = onTooltip,
+                                    onTooltip = { item -> tooltipState.value = item },
                                     onClick = onLanguageClick
                                 )
                             }
@@ -219,9 +216,5 @@ fun DesktopPanel(
                 }
             }
         }
-    }
-    launchedEffect(tooltipData) {
-        delay(tooltipDelay)
-        tooltipData = null
     }
 }

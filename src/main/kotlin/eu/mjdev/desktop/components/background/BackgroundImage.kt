@@ -20,6 +20,7 @@ import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@Suppress("FunctionName")
 @Preview
 @Composable
 fun BackgroundImage(
