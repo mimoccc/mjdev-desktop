@@ -28,7 +28,7 @@ import eu.mjdev.desktop.extensions.Modifier.rectShadow
 fun PowerBlock(
     backgroundColor: Color,
     shadowColor: Color = Color.Black.copy(alpha = 0.3f),
-    textColor: Color = Color.Black,
+//    textColor: Color = Color.Black,
     iconTintColor: Color = Color.White,
     bottomBoxHeight: Dp = 128.dp,
     iconHeight: Dp = 64.dp,

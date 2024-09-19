@@ -26,70 +26,47 @@ fun main() = application(
     val menuState = rememberVisibilityState()
 
     val handleMenuFocus: (Boolean) -> Unit = { focus ->
-        if (!menuState.isWindowFocus && !focus && !controlCenterState.isWindowFocus) {
+        if (!focus) {
             menuState.hide()
         }
     }
 
-    val handlePanelFocus: (Boolean) -> Unit = { //focus ->
-//        if (focus) {
-//            if (menuState.isVisible) {
-//                menuState.hide()
-//            }
-//            if (controlCenterState.isVisible) {
-//                controlCenterState.hide()
-//            }
-//        }
-//        val somethingVisible = menuState.isVisible || controlCenterState.isVisible
-//        if (!focus && !somethingVisible) {
-//            panelState.hide()
-//        }
-    }
-
-    val handleControlCenterFocus: (Boolean) -> Unit = { focus ->
-        if (!menuState.isWindowFocus && !focus && !panelState.isWindowFocus) {
-            controlCenterState.hide()
+    val handlePanelFocus: (Boolean) -> Unit = { focus ->
+        if (!focus) {
+            if (!menuState.isVisible) {
+                panelState.hide()
+            }
         }
     }
 
-//    RebuggerConfig.init(
-//        tag = "Composition",
-//        logger = { tag, message ->
-//            println("$tag >  $message")
-//        }
-//    )
+    val handleControlCenterFocus: (Boolean) -> Unit = { focus ->
+        if (!focus) {
+            controlCenterState.hide()
+        }
+    }
 
     MaterialTheme {
         CompositionLocalProvider(
             LocalDesktop provides api
         ) {
             MainWindow(
-                panelState = panelState,
-                controlCenterState = controlCenterState,
-                menuState = menuState
+                panelState = panelState, controlCenterState = controlCenterState, menuState = menuState
             ) {
 //                ComposeWebView(
 //                    modifier = Modifier.size(640.dp, 480.dp).align(Alignment.Center)
 //                )
                 MemoryChart(
-                    modifier = Modifier.size(350.dp, 300.dp)
-                        .align(Alignment.BottomEnd)
+                    modifier = Modifier.size(350.dp, 300.dp).align(Alignment.BottomEnd)
                 )
-                DesktopPanel(
-                    panelState = panelState,
+                DesktopPanel(panelState = panelState,
                     menuState = menuState,
                     onMenuIconClicked = { menuState.toggle() },
-                    onFocusChange = { focus -> handlePanelFocus(focus) }
-                )
-                AppsMenu(
-                    menuState = menuState,
+                    onFocusChange = { focus -> handlePanelFocus(focus) })
+                AppsMenu(menuState = menuState,
                     panelState = panelState,
-                    onFocusChange = { focus -> handleMenuFocus(focus) }
-                )
-                ControlCenter(
-                    controlCenterState = controlCenterState,
-                    onFocusChange = { focus -> handleControlCenterFocus(focus) }
-                )
+                    onFocusChange = { focus -> handleMenuFocus(focus) })
+                ControlCenter(controlCenterState = controlCenterState,
+                    onFocusChange = { focus -> handleControlCenterFocus(focus) })
             }
             DisposableEffect(Unit) {
                 onDispose {
