@@ -63,6 +63,9 @@ class DesktopFile(
             "1" -> true
             else -> false
         }
-    }
 
+        fun create(path: String): DesktopFile = DesktopFile(File(path).apply {
+            createNewFile()
+        })
+    }
 }

@@ -25,6 +25,7 @@ import eu.mjdev.desktop.extensions.Modifier.clipCircle
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
+@Suppress("FunctionName")
 @Preview
 @Composable
 fun UserAvatar(
@@ -72,7 +73,7 @@ fun UserAvatar(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 TextAny(
-                    text = api.currentUser.name ?: api.appsProvider.homeDir?.name ?: "-",
+                    text = api.currentUser.name ?: api.homeDir?.name ?: "-",
                     color = textColor,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold
@@ -114,7 +115,7 @@ fun UserAvatar(
                 modifier = Modifier.padding(start = 8.dp).fillMaxWidth().padding(top = 8.dp),
             ) {
                 TextAny(
-                    text = api.currentUser.name ?: api.appsProvider.homeDir?.name ?: "-",
+                    text = api.currentUser.name ?: api.homeDir?.name ?: "-",
                     color = textColor,
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Bold

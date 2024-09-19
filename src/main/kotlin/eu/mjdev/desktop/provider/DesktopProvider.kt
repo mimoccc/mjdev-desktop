@@ -32,6 +32,7 @@ class DesktopProvider(
     val windows: WindowsManager = WindowsManager(),
     val gnome: GnomeManager = GnomeManager(),
 ) {
+    val homeDir by lazy { runCatching { File(System.getProperty("user.home")) }.getOrNull() }
     private val __currentUser: User by lazy { User.load() }
     private val _currentUser: MutableState<User> = mutableStateOf(__currentUser)
     val currentUser

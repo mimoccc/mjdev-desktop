@@ -22,12 +22,10 @@ class AppsProvider(
     val scope
         get() = api.scope
 
-    val homeDir by lazy { runCatching { File(System.getProperty("user.home")) }.getOrNull() }
-
-    private val configDir by lazy { homeDir?.resolve(".config") }
-    private val iconsDir by lazy { homeDir?.resolve(".icons") }
-    private val themesDir by lazy { homeDir?.resolve(".themes") }
-    private val localDir by lazy { homeDir?.resolve(".local") }
+    private val configDir by lazy { api.homeDir?.resolve(".config") }
+    private val iconsDir by lazy { api.homeDir?.resolve(".icons") }
+    private val themesDir by lazy { api.homeDir?.resolve(".themes") }
+    private val localDir by lazy { api.homeDir?.resolve(".local") }
     private val localShareDir by lazy { localDir?.resolve("share") }
     private val allAppsDesktopFilesDir by lazy { localShareDir?.resolve("applications") }
     private val autostartDesktopFilesDir by lazy { configDir?.resolve("autoStart") }
