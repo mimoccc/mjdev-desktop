@@ -7,6 +7,7 @@ import eu.mjdev.desktop.data.DesktopFile
 import eu.mjdev.desktop.extensions.Custom.invalidate
 import eu.mjdev.desktop.extensions.Locale.toLocale
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
+import eu.mjdev.desktop.helpers.managers.GnomeManager
 import eu.mjdev.desktop.helpers.system.Command
 import eu.mjdev.desktop.helpers.system.Command.Companion.toList
 import kotlinx.coroutines.Dispatchers
@@ -144,6 +145,7 @@ class AppsProvider(
     fun startApp(app: App) {
         scope.launch(Dispatchers.IO) {
             api.gnome.setDarkColorScheme()
+            api.gnome.setGTKTheme(GnomeManager.THEME_ADWAITA_DARK)
             if (app.isRunning) {
                 // todo menu to switch
                 if (app.isWindowFocus(api)) {

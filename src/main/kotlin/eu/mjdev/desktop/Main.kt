@@ -17,7 +17,10 @@ import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.rememberDesktopProvider
 import eu.mjdev.desktop.windows.MainWindow
 
-fun main() = application(
+@Suppress("unused")
+fun main(
+    args: Array<String>
+) = application(
     exitProcessOnExit = true
 ) {
     val api = rememberDesktopProvider()

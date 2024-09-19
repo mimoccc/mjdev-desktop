@@ -18,8 +18,8 @@ allprojects {
         maven("https://androidx.dev/storage/compose-compiler/repository")
         maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
         maven("https://gitlab.com/api/v4/projects/38224197/packages/maven")
-        maven("https://jogamp.org/deployment/maven")
         maven("https://oss.sonatype.org/content/repositories/snapshots")
+        maven("https://jogamp.org/deployment/maven")
         maven("https://jitpack.io")
         google()
         gradlePluginPortal()
@@ -32,6 +32,8 @@ allprojects {
         runtimeOnly(libs.kotlinx.coroutines.swing)
         // compose desktop
         implementation(compose.desktop.currentOs)
+        // preview
+        implementation(compose.runtime)
         // material 3
         implementation(compose.material3)
         // icons

@@ -50,9 +50,11 @@ class GnomeManager {
 
     companion object {
         const val COLOR_SCHEME_PREFER_DARK = "prefer-dark"
+
         const val COLOR_SCHEME_MJDEV = "mjdev"
 
         const val THEME_YARU = "Yaru"
+        const val THEME_ADWAITA_DARK = "Adwaita-dark"
         const val THEME_MJDEV = "mjdev"
 
     }
