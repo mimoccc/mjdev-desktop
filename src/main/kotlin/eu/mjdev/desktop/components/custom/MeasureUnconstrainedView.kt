@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components
+package eu.mjdev.desktop.components.custom
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable

@@ -1,25 +1,21 @@
-package eu.mjdev.desktop.components.charts
+package eu.mjdev.desktop.components.desktop.widgets
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.aay.compose.baseComponents.model.LegendPosition
+import com.aay.compose.donutChart.model.PieChartData
+import eu.mjdev.desktop.components.charts.DonutChart
 import eu.mjdev.desktop.components.draggable.DraggableView
-import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBackgroundColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBorderColor
 import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberIconTintColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberTextColor
 import eu.mjdev.desktop.helpers.system.MemInfo
 import eu.mjdev.desktop.helpers.system.MemInfo.Companion.toReadable
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 
 @Suppress("FunctionName")
 @Composable
@@ -39,34 +35,27 @@ fun MemoryChart(
     dragEnabled = dragEnabled
 ) {
     val backgroundColor by rememberBackgroundColor(api)
-    val textColor by rememberTextColor(api)
-    val borderColor by rememberBorderColor(api)
     val iconsTintColor by rememberIconTintColor(api)
-    val memData = rememberState(MemInfo())
-    DualDonutChart(
+    DonutChart(
         modifier = modifier,
         title = mainTitle,
-        textColor = textColor,
-        outerCircularColor = borderColor,
-        innerCircularColor = borderColor,
+        textColor = iconsTintColor,
+        outerCircularColor = iconsTintColor,
+        innerCircularColor = iconsTintColor,
         ratioLineColor = ratioLineColor,
-        secondColor = backgroundColor,
-        firstColor = iconsTintColor,
-        secondValue = memData.value.free,
-        firstValue = memData.value.used,
-        secondTitle = freeTitle.plus(": ").plus(memData.value.free.toReadable()),
-        firstTitle = usedTitle.plus(": ").plus(memData.value.used.toReadable()),
+        refreshTimeout = updateTimeOut,
         animation = animation,
         legendPosition = legendPosition
-    )
-    LaunchedEffect(Unit) {
-        while (isActive) {
-            MemInfo().let { n ->
-                if (memData.value.percent != n.percent) {
-                    memData.value = n
-                }
-            }
-            delay(updateTimeOut)
+    ) {
+        MemInfo().let { mem ->
+            val secondValue = mem.free
+            val firstValue = mem.used
+            val secondTitle = freeTitle.plus(": ").plus(mem.free.toReadable())
+            val firstTitle = usedTitle.plus(": ").plus(mem.used.toReadable())
+            listOf(
+                PieChartData(firstValue, iconsTintColor, firstTitle),
+                PieChartData(secondValue, backgroundColor, secondTitle)
+            )
         }
     }
 }
