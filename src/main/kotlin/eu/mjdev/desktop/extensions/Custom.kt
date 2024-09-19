@@ -4,12 +4,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.NativePaint
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import eu.mjdev.desktop.helpers.streams.ResourceStream
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 object Custom {
 
@@ -63,5 +66,20 @@ object Custom {
     fun loadKey(key: String): String = runCatching {
         ResourceStream("keys/$key.key").string
     }.getOrNull().orEmpty()
+
+    val Process.command: String?
+        get() = info().command().getOrNull()
+
+    operator fun DpSize.plus(dp: Dp) =
+        copy(width = width + dp, height = height + dp)
+
+    operator fun DpSize.minus(dp: Dp) =
+        copy(width = width - dp, height = height - dp)
+
+//    operator fun PaddingValues.plus(dp: Dp) =
+//        copy(left = width + dp, height = height + dp)
+
+//    operator fun PaddingValues.minus(dp: Dp) =
+//        copy(width = width - dp, height = height - dp)
 
 }

@@ -43,4 +43,5 @@ object BitmapUtils {
 
     fun ImageBitmap.cut(x: Int, y: Int, w: Int, h: Int): ImageBitmap =
         toBitmap().cut(x, y, w, h).image.toComposeImageBitmap()
+
 }

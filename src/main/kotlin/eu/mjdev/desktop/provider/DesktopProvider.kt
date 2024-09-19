@@ -10,10 +10,7 @@ import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.helpers.adb.AdbDiscover.Companion.adbDevicesHandler
 import eu.mjdev.desktop.helpers.internal.Palette
-import eu.mjdev.desktop.helpers.managers.ConnectivityManager
-import eu.mjdev.desktop.helpers.managers.FileSystemWatcher
-import eu.mjdev.desktop.helpers.managers.KCEFHelper
-import eu.mjdev.desktop.helpers.managers.WindowsManager
+import eu.mjdev.desktop.helpers.managers.*
 import eu.mjdev.desktop.helpers.system.Command
 import eu.mjdev.desktop.provider.AIProvider.AiPluginGemini
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +30,7 @@ class DesktopProvider(
     val kcefHelper: KCEFHelper = KCEFHelper(scope),
     val ai: AIProvider = AIProvider(scope, AiPluginGemini(scope)),
     val windows: WindowsManager = WindowsManager(),
+    val gnome: GnomeManager = GnomeManager(),
 ) {
     private val __currentUser: User by lazy { User.load() }
     private val _currentUser: MutableState<User> = mutableStateOf(__currentUser)

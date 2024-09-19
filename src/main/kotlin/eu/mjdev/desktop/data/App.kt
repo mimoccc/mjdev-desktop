@@ -3,13 +3,10 @@ package eu.mjdev.desktop.data
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
+import eu.mjdev.desktop.extensions.Custom.command
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
-import kotlin.jvm.optionals.getOrNull
-
-val Process.command: String?
-    get() = info().command().getOrNull()
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "HasPlatformType")
 class App(

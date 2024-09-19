@@ -136,6 +136,4 @@ object Compose {
 //        }
 //    }, AWTEvent.WINDOW_EVENT_MASK)
 
-    operator fun DpSize.plus(dp: Dp) = copy(width = width + dp, height = height + dp)
-
 }

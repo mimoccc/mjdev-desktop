@@ -143,6 +143,7 @@ class AppsProvider(
 
     fun startApp(app: App) {
         scope.launch(Dispatchers.IO) {
+            api.gnome.setDarkColorScheme()
             if (app.isRunning) {
                 // todo menu to switch
                 if (app.isWindowFocus(api)) {
