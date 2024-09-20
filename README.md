@@ -5,6 +5,8 @@ New desktop environment with many functio
 nality i miss in another desktops.
 Build on compose kotlin and jvm.
 
+(Currently only linux os is supported as main target)
+
 ## functionality about to be and or implemented:
 
 - lightweight, no memory/cpu eater
