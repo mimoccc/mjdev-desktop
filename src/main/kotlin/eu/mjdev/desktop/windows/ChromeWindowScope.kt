@@ -7,12 +7,13 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.WindowPosition
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class ChromeWindowScope(
-    private val frameScope: FrameWindowScope,
+    val frameScope: FrameWindowScope,
     val windowState: ChromeWindowState,
     val animState: State<MutableTransitionState<Boolean>>,
     val windowVisibleState: MutableState<Boolean>
@@ -26,17 +27,17 @@ class ChromeWindowScope(
     val focusHelper: WindowFocusHelper
         get() = windowState.focusHelper
 
-    val x
-        get() = stateHelper.x
+    val x : Dp
+        get() = frameScope.window.x.dp
 
-    val y
-        get() = stateHelper.y
+    val y : Dp
+        get() = frameScope.window.y.dp
 
-    val width
-        get() = stateHelper.window
+    val width : Dp
+        get() = frameScope.window.width.dp
 
-    val height
-        get() = stateHelper.height
+    val height : Dp
+        get() = frameScope.window.height.dp
 
     fun apply(
         block: ChromeWindowScope.() -> Unit

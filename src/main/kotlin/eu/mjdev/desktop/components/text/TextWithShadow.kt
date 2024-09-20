@@ -9,11 +9,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+@Suppress("FunctionName")
 @Preview
 @Composable
 fun TextWithShadow(
@@ -26,6 +29,9 @@ fun TextWithShadow(
     textAlign: TextAlign? = null,
     fontSize: TextUnit = 16.sp,
     color: Color = Color.White,
+    overflow: TextOverflow = Ellipsis,
+    minLines: Int = 2,
+    maxLines: Int = 2,
     text: Any? = "test"
 ) = TextAny(
     modifier = modifier,
@@ -40,5 +46,8 @@ fun TextWithShadow(
     textAlign = textAlign,
     fontWeight = fontWeight,
     fontSize = fontSize,
-    color = color
+    color = color,
+    overflow = overflow,
+    minLines = minLines,
+    maxLines = maxLines
 )

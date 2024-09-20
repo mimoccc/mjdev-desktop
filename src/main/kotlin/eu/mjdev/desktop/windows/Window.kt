@@ -11,18 +11,30 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
+import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 import java.awt.*
 import java.awt.event.*
 import java.util.*
 import javax.swing.JFrame
 import kotlin.math.roundToInt
 
+@Suppress("FunctionName")
 @Composable
 fun Window(
 //    onOpen: (window: ComposeWindow) -> Unit = {},
     onCreate: (window: ComposeWindow) -> Unit = {},
+    onOpen: (window: ComposeWindow) -> Unit = {},
+    onClosing: (window: ComposeWindow) -> Unit = {},
+    onClosed: (window: ComposeWindow) -> Unit = {},
+    onActivated: (window: ComposeWindow) -> Unit = {},
+    onDeactivated: (window: ComposeWindow) -> Unit = {},
+    onIconified: (window: ComposeWindow) -> Unit = {},
+    onDeIconified: (window: ComposeWindow) -> Unit = {},
+    onGainFocus: (window: ComposeWindow) -> Unit = {},
+    onLostFocus: (window: ComposeWindow) -> Unit = {},
+    onStateChanged: (window: ComposeWindow) -> Unit = {},
     onCloseRequest: () -> Unit,
-    state: WindowState = rememberWindowState(),
+    state: ChromeWindowState =  rememberChromeWindowState(),
     visible: Boolean = true,
     title: String = "",
     icon: Painter? = null,
@@ -81,20 +93,20 @@ fun Window(
                 defaultCloseOperation = closeAction
                 listeners.windowListenerRef.registerWithAndSet(
                     this,
-                    object : WindowAdapter() {
-                        override fun windowOpened(e: WindowEvent?) {
-//                            onOpen(this@apply)
-                        }
-
-                        override fun windowGainedFocus(e: WindowEvent?) {
-                            super.windowGainedFocus(e)
-//                            onOpen(this@apply)
-                        }
-
-                        override fun windowClosing(e: WindowEvent) {
-                            currentOnCloseRequest()
-                        }
-                    }
+                    WindowEventsAdapter(
+                        this,
+                        currentOnCloseRequest,
+                        onOpen,
+                        onClosing,
+                        onClosed,
+                        onActivated,
+                        onDeactivated,
+                        onIconified,
+                        onDeIconified,
+                        onGainFocus,
+                        onLostFocus,
+                        onStateChanged,
+                    )
                 )
                 listeners.windowStateListenerRef.registerWithAndSet(this) {
                     currentState.placement = placement
@@ -140,8 +152,8 @@ fun Window(
 //                    set(false, window::setAlwaysOnTop)
 //                    set(false, window::setAutoRequestFocus)
 //                } else {
-                    set(currentFocusable, window::setFocusableWindowState)
-                    set(currentAlwaysOnTop, window::setAlwaysOnTop)
+                set(currentFocusable, window::setFocusableWindowState)
+                set(currentAlwaysOnTop, window::setAlwaysOnTop)
 //                }
             }
             if (state.size != appliedState.size) {
@@ -311,9 +323,9 @@ internal fun layoutDirectionFor(component: Component): LayoutDirection {
     }
 }
 
-internal val Component.density: Density get() = graphicsConfiguration.density
+val Component.density: Density get() = graphicsConfiguration.density
 
-internal fun Window.setIcon(painter: Painter?) {
+fun Window.setIcon(painter: Painter?) {
     setIconImage(
         painter?.toAwtImage(
             density,
@@ -323,14 +335,14 @@ internal fun Window.setIcon(painter: Painter?) {
     )
 }
 
-internal fun Frame.setUndecoratedSafely(value: Boolean) {
+fun Frame.setUndecoratedSafely(value: Boolean) {
     if (this.isUndecorated != value) {
         this.isUndecorated = value
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
-@Suppress("unused")
+@Suppress("unused", "FunctionName")
 @Composable
 fun Window(
     visible: Boolean = true,
@@ -371,8 +383,64 @@ fun Window(
     )
 }
 
-internal val LayoutDirection.componentOrientation: ComponentOrientation
+val LayoutDirection.componentOrientation: ComponentOrientation
     get() = when (this) {
         LayoutDirection.Ltr -> ComponentOrientation.LEFT_TO_RIGHT
         LayoutDirection.Rtl -> ComponentOrientation.RIGHT_TO_LEFT
     }
+
+class WindowEventsAdapter(
+    val window: ComposeWindow,
+    val currentOnCloseRequest: () -> Unit,
+    val onOpen: (window: ComposeWindow) -> Unit = {},
+    val onClosing: (window: ComposeWindow) -> Unit = {},
+    val onClosed: (window: ComposeWindow) -> Unit = {},
+    val onActivated: (window: ComposeWindow) -> Unit = {},
+    val onDeactivated: (window: ComposeWindow) -> Unit = {},
+    val onIconified: (window: ComposeWindow) -> Unit = {},
+    val onDeIconified: (window: ComposeWindow) -> Unit = {},
+    val onGainFocus: (window: ComposeWindow) -> Unit = {},
+    val onLostFocus: (window: ComposeWindow) -> Unit = {},
+    val onStateChanged: (window: ComposeWindow) -> Unit = {},
+) : WindowAdapter() {
+    override fun windowOpened(e: WindowEvent?) {
+        onOpen(window)
+    }
+
+    override fun windowActivated(e: WindowEvent?) {
+        onActivated(window)
+    }
+
+    override fun windowClosed(e: WindowEvent?) {
+        onClosed(window)
+    }
+
+    override fun windowDeactivated(e: WindowEvent?) {
+        onDeactivated(window)
+    }
+
+    override fun windowDeiconified(e: WindowEvent?) {
+        onDeIconified(window)
+    }
+
+    override fun windowIconified(e: WindowEvent?) {
+        onIconified(window)
+    }
+
+    override fun windowGainedFocus(e: WindowEvent?) {
+        onGainFocus(window)
+    }
+
+    override fun windowLostFocus(e: WindowEvent?) {
+        onLostFocus(window)
+    }
+
+    override fun windowStateChanged(e: WindowEvent?) {
+        onStateChanged(window)
+    }
+
+    override fun windowClosing(e: WindowEvent) {
+        onClosing(window)
+        currentOnCloseRequest()
+    }
+}

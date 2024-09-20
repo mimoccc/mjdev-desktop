@@ -119,7 +119,6 @@ class ChromeWindowState(
             visible: Boolean,
             animState: State<MutableTransitionState<Boolean>>,
             wnState: MutableState<Boolean>,
-            state: ChromeWindowState
         ) = launchedEffect(visible) {
             if (visible) {
                 wnState.value = true

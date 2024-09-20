@@ -75,6 +75,12 @@ allprojects {
         implementation(libs.qrose)
         // tts
         implementation(libs.tts)
+        // paths
+//        implementation("me.sujanpoudel.multiplatform.utils:multiplatform-paths:0.2.2")
+        // files
+//        implementation("io.github.vinceglb:filekit-core:0.8.2")
+        // files with composable utilities
+//        implementation("io.github.vinceglb:filekit-compose:0.8.2")
         // dbus
 //        implementation(libs.dbus.java.core)
 //        implementation(libs.dbus.java.transport.native.unixsocket)
@@ -202,6 +208,7 @@ compose {
                     debMaintainer = libs.versions.appMaintainer.get()
                     menuGroup = libs.versions.appMenuGroup.get()
                     vendor = libs.versions.appVendor.get()
+                    modules("jdk.security.auth")
                 }
                 targetFormats(
 //                    TargetFormat.Dmg,

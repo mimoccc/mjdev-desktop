@@ -35,13 +35,12 @@ import eu.mjdev.desktop.extensions.Compose.height
 import eu.mjdev.desktop.extensions.Modifier.topShadow
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelExitAnimation
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBackgroundColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBorderColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberIconTintColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberTextColor
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopProvider.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
+import eu.mjdev.desktop.windows.ChromeWindowState
+import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Suppress("FunctionName")
@@ -65,6 +64,7 @@ fun DesktopPanel(
             else -> TooltipData(title = item.toString())
         }
     },
+    position: WindowPosition.Aligned = WindowPosition.Aligned(Alignment.BottomCenter),
     onMenuIconClicked: () -> Unit = {
         // todo
     },
@@ -79,27 +79,26 @@ fun DesktopPanel(
     onLanguageClick: () -> Unit = {
         // todo
     },
-) {
-    val backgroundColor by rememberBackgroundColor(api)
-    val textColor by rememberTextColor(api)
-    val borderColor by rememberBorderColor(api)
-    val iconsTintColor by rememberIconTintColor(api)
-    var tooltipState = remember{ mutableStateOf<Any?>(null) }
+) = withDesktopScope {
+    var tooltipState = remember { mutableStateOf<Any?>(null) }
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
         if (visible)
             iconSize.height + iconOuterPadding.height + tooltipHeight + panelContentPadding.height
         else
             dividerWidth
     }
+    val size = remember(panelState.isVisible) {
+        DpSize(
+            api.containerSize.width,
+            panelHeight(panelState.isVisible)
+        )
+    }
+    val windowState: ChromeWindowState = rememberChromeWindowState(position = position, size = size)
     ChromeWindow(
+        windowState = windowState,
         visible = true,
         enterAnimation = enterAnimation,
         exitAnimation = exitAnimation,
-        position = WindowPosition.Aligned(Alignment.BottomCenter),
-        size = DpSize(
-            api.containerSize.width,
-            panelHeight(panelState.isVisible)
-        ),
         onFocusChange = { focused ->
             panelState.onFocusChange(focused)
             onFocusChange(focused)
@@ -111,7 +110,9 @@ fun DesktopPanel(
             state = panelState,
             onPointerEnter = {
                 panelState.show()
-                // todo focus
+                if (!menuState.isVisible) {
+                    windowState.requestFocus()
+                }
             },
             onPointerLeave = {
                 if (!menuState.isVisible) {
@@ -131,11 +132,11 @@ fun DesktopPanel(
                     modifier = Modifier.fillMaxWidth().wrapContentHeight(),
                     tooltip = {
                         Tooltip(
-                            textColor = textColor,
-                            borderColor = borderColor,
+                            textColor = textColor.value,
+                            borderColor = borderColor.value,
                             state = tooltipState,
                             converter = tooltipConverter,
-                            backgroundColor = backgroundColor
+                            backgroundColor = backgroundColor.value
                         )
                     },
                     tooltipPlacement = TooltipPlacement.CursorPoint(
@@ -156,14 +157,14 @@ fun DesktopPanel(
                                 .background(
                                     brush = Brush.verticalGradient(
                                         colors = listOf(
-                                            backgroundColor.copy(alpha = 0.3f),
-                                            backgroundColor.copy(alpha = 0.7f),
-                                            backgroundColor.copy(alpha = 0.8f),
+                                            backgroundColor.value.copy(alpha = 0.3f),
+                                            backgroundColor.value.copy(alpha = 0.7f),
+                                            backgroundColor.value.copy(alpha = 0.8f),
                                         )
                                     )
                                 )
                                 .topShadow(
-                                    color = borderColor.alpha(0.3f),
+                                    color = borderColor.value.alpha(0.3f),
                                     blur = 4.dp
                                 )
                                 .onPlaced(panelState::onPlaced),
@@ -172,7 +173,7 @@ fun DesktopPanel(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(2.dp),
-                                color = borderColor,
+                                color = borderColor.value,
                                 thickness = 2.dp
                             )
                             Box(
@@ -183,8 +184,8 @@ fun DesktopPanel(
                                 if (showMenuIcon) {
                                     DesktopMenuIcon(
                                         modifier = Modifier.align(Alignment.CenterStart),
-                                        iconColor = borderColor,
-                                        iconBackgroundColor = iconsTintColor,
+                                        iconColor = borderColor.value,
+                                        iconBackgroundColor = iconsTintColor.value,
                                         iconSize = iconSize,
                                         iconPadding = iconPadding,
                                         iconOuterPadding = iconOuterPadding,
@@ -195,9 +196,9 @@ fun DesktopPanel(
                                 }
                                 DesktopPanelFavoriteApps(
                                     modifier = Modifier.align(Alignment.Center),
-                                    iconColor = borderColor,
-                                    iconBackgroundColor = iconsTintColor,
-                                    iconColorRunning = iconsTintColor.lighter(0.3f),
+                                    iconColor = borderColor.value,
+                                    iconBackgroundColor = iconsTintColor.value,
+                                    iconColorRunning = iconsTintColor.value.lighter(0.3f),
                                     iconSize = iconSize,
                                     iconPadding = iconPadding,
                                     iconOuterPadding = iconOuterPadding,

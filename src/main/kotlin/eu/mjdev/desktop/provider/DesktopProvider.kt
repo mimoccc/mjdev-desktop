@@ -1,6 +1,7 @@
 package eu.mjdev.desktop.provider
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
@@ -10,8 +11,13 @@ import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.helpers.adb.AdbDiscover.Companion.adbDevicesHandler
 import eu.mjdev.desktop.helpers.internal.Palette
+import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBackgroundColor
+import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBorderColor
+import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberIconTintColor
+import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberTextColor
 import eu.mjdev.desktop.helpers.managers.*
 import eu.mjdev.desktop.helpers.system.Command
+import eu.mjdev.desktop.helpers.system.UserDirs
 import eu.mjdev.desktop.provider.AIProvider.AiPluginGemini
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +27,7 @@ import java.awt.Toolkit
 import java.io.File
 import kotlin.system.exitProcess
 
-@Suppress("unused", "MemberVisibilityCanBePrivate", "PrivatePropertyName", "SameParameterValue")
+@Suppress("unused", "MemberVisibilityCanBePrivate", "SameParameterValue")
 class DesktopProvider(
     val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
     val imageLoader: ImageLoader? = null,
@@ -31,12 +37,12 @@ class DesktopProvider(
     val ai: AIProvider = AIProvider(scope, AiPluginGemini(scope)),
     val windows: WindowsManager = WindowsManager(),
     val gnome: GnomeManager = GnomeManager(),
+    val currentUser: User = User.load() // todo manager
 ) {
-    val homeDir by lazy { runCatching { File(System.getProperty("user.home")) }.getOrNull() }
-    private val __currentUser: User by lazy { User.load() }
-    private val _currentUser: MutableState<User> = mutableStateOf(__currentUser)
-    val currentUser
-        get() = _currentUser.value
+    val homeDir
+        get() = File("/home/${currentUser.name}")
+
+    val userDirs  = UserDirs(this)
 
     val palette: Palette = Palette(scope, currentUser.theme.backgroundColor)
 
@@ -133,6 +139,14 @@ class DesktopProvider(
         exitProcess(0)
     }
 
+    class DesktopScope(
+        val api: DesktopProvider,
+        val backgroundColor: State<Color>,
+        val iconsTintColor: State<Color>,
+        val textColor: State<Color>,
+        val borderColor: State<Color>
+    )
+
     companion object {
         private val CONTROL_CENTER_PAGES = listOf(
             MainSettingsPage(),
@@ -155,6 +169,18 @@ class DesktopProvider(
             imageLoader: ImageLoader = asyncImageLoader()
         ) = remember {
             DesktopProvider(scope, imageLoader)
+        }
+
+        @Composable
+        fun withDesktopScope(
+            api: DesktopProvider = LocalDesktop.current,
+            backgroundColor: MutableState<Color> = rememberBackgroundColor(api),
+            iconsTintColor: State<Color> = rememberIconTintColor(api),
+            textColor: State<Color> = rememberTextColor(api),
+            borderColor: State<Color> = rememberBorderColor(api),
+            block: @Composable DesktopScope.() -> Unit
+        ) = DesktopScope(api, backgroundColor, iconsTintColor, textColor, borderColor).apply {
+            block()
         }
     }
 }

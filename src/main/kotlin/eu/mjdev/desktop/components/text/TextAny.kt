@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import eu.mjdev.desktop.extensions.Compose.textFrom
 
+@Suppress("FunctionName")
 @Preview
 @Composable
 fun TextAny(
@@ -33,6 +34,7 @@ fun TextAny(
     lineHeight: TextUnit = TextUnit.Unspecified,
     overflow: TextOverflow = TextOverflow.Clip,
     softWrap: Boolean = true,
+    minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current
@@ -40,6 +42,7 @@ fun TextAny(
     text = textFrom(text),
     modifier = modifier,
     color = color,
+    minLines = minLines,
     fontSize = fontSize,
     fontStyle = fontStyle,
     fontWeight = fontWeight,

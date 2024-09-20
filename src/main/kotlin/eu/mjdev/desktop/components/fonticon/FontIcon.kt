@@ -11,11 +11,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.components.icon.ShapedIcon
 import eu.mjdev.desktop.components.text.AutoResizeText
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
+@Suppress("FunctionName")
 @Composable
 fun FontIcon(
     iconId: Int,

@@ -14,6 +14,7 @@ import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberWnState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.updateAnimState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.updateWindowState
 
+@Suppress("FunctionName", "unused")
 @Composable
 fun ChromeWindow(
     size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecified),
@@ -57,7 +58,7 @@ fun ChromeWindow(
     content = content
 )
 
-@Suppress("unused")
+@Suppress("unused", "FunctionName")
 @Composable
 fun ChromeWindow(
     position: WindowPosition = WindowPosition.Aligned(Alignment.Center),
@@ -100,6 +101,7 @@ fun ChromeWindow(
     content = content
 )
 
+@Suppress("FunctionName")
 @Composable
 fun ChromeWindow(
     windowState: ChromeWindowState = rememberChromeWindowState(),
@@ -181,6 +183,6 @@ fun ChromeWindow(
             }
         }
     )
-    updateAnimState(visible, animState, wnState, windowState)
+    updateAnimState(visible, animState, wnState)
     updateWindowState(visible, animState, wnState, windowState)
 }

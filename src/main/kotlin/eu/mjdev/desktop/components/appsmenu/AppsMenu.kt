@@ -31,16 +31,14 @@ import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Modifier.dropShadow
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBackgroundColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBorderColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberIconTintColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberTextColor
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopProvider.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.windows.ChromeWindowState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
+@Suppress("FunctionName")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AppsMenu(
@@ -62,7 +60,7 @@ fun AppsMenu(
     onUserAvatarClick: () -> Unit = {
         // todo
     }
-) {
+) = withDesktopScope {
     val appMenuMinWidth by remember { api.currentUser.theme.appMenuMinWidthState }
     val appMenuMinHeight by remember { api.currentUser.theme.appMenuMinHeightState }
     val menuPadding by remember { api.currentUser.theme.appMenuOuterPaddingState }
@@ -71,10 +69,6 @@ fun AppsMenu(
     val onCategoryClick: (Category) -> Unit = { category ->
         items = api.appsProvider.categoriesAndApps[category.name]?.sortedBy { it.name } ?: emptyList()
     }
-    val backgroundColor by rememberBackgroundColor(api)
-    val textColor by rememberTextColor(api)
-    val borderColor by rememberBorderColor(api)
-    val iconsTintColor by rememberIconTintColor(api)
     val position by rememberCalculated {
         WindowPosition.Absolute(
             panelState.bounds.x,
@@ -101,21 +95,23 @@ fun AppsMenu(
                 )
                 .dropShadow(
                     RoundedCornerShape(24.dp),
-                    borderColor.alpha(0.5f),
+                    borderColor.value.alpha(0.5f),
                     0.dp,
                     0.dp,
                     4.dp,
                     0.dp
                 )
                 .onPlaced(menuState::onPlaced)
-                .onPointerEvent(PointerEventType.Enter) { windowState.requestFocus() }
+                .onPointerEvent(PointerEventType.Enter) {
+                    windowState.requestFocus()
+                }
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(menuPadding)
-                    .background(backgroundColor.copy(alpha = 0.7f), RoundedCornerShape(24.dp))
-                    .border(2.dp, borderColor, RoundedCornerShape(24.dp))
+                    .background(backgroundColor.value.copy(alpha = 0.7f), RoundedCornerShape(24.dp))
+                    .border(2.dp, borderColor.value, RoundedCornerShape(24.dp))
                     .clip(RoundedCornerShape(24.dp))
             ) {
                 Column(
@@ -123,9 +119,9 @@ fun AppsMenu(
                 ) {
                     UserAvatar(
                         avatarSize = 64.dp,
-                        backgroundColor = backgroundColor,
-                        iconTintColor = iconsTintColor,
-                        textColor = textColor,
+                        backgroundColor = backgroundColor.value,
+                        iconTintColor = iconsTintColor.value,
+                        textColor = textColor.value,
                         orientation = Orientation.Horizontal,
                         onUserAvatarClick = onUserAvatarClick
                     )
@@ -137,7 +133,7 @@ fun AppsMenu(
                                 start = 2.dp,
                                 end = 2.dp
                             ),
-                        color = borderColor,
+                        color = borderColor.value,
                         thickness = 2.dp
                     )
                     LazyColumn(
@@ -151,9 +147,9 @@ fun AppsMenu(
                                 items(items) { item ->
                                     AppsMenuCategory(
                                         category = item as Category,
-                                        backgroundColor = backgroundColor,
-                                        iconTint = textColor,
-                                        textColor = textColor,
+                                        backgroundColor = backgroundColor.value,
+                                        iconTint = textColor.value,
+                                        textColor = textColor.value,
                                         onClick = { onCategoryClick(item) },
                                         onContextMenuClick = { onCategoryContextMenuClick(item) }
                                     )
@@ -164,9 +160,9 @@ fun AppsMenu(
                                 items(items) { item ->
                                     AppsMenuApp(
                                         app = item as App,
-                                        backgroundColor = backgroundColor,
-                                        iconTint = textColor,
-                                        textColor = textColor,
+                                        backgroundColor = backgroundColor.value,
+                                        iconTint = textColor.value,
+                                        textColor = textColor.value,
                                         onClick = {
                                             onAppClick(item)
                                         },
@@ -193,16 +189,16 @@ fun AppsMenu(
                                 start = 2.dp,
                                 end = 2.dp
                             ),
-                        color = borderColor,
+                        color = borderColor.value,
                         thickness = 2.dp
                     )
                     AppsBottomBar(
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
-                            .background(backgroundColor),
-                        iconColor = borderColor,
-                        iconBackgroundColor = iconsTintColor,
+                            .background(backgroundColor.value),
+                        iconColor = borderColor.value,
+                        iconBackgroundColor = iconsTintColor.value,
                         backButtonVisible = items.first() is App,
                         onBackClick = {
                             items = api.appsProvider.appCategories

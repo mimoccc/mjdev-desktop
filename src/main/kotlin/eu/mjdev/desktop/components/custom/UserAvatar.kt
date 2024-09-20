@@ -73,7 +73,7 @@ fun UserAvatar(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 TextAny(
-                    text = api.currentUser.name ?: api.homeDir?.name ?: "-",
+                    text = api.currentUser.name ?: api.homeDir.name ?: "-",
                     color = textColor,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold
@@ -115,7 +115,7 @@ fun UserAvatar(
                 modifier = Modifier.padding(start = 8.dp).fillMaxWidth().padding(top = 8.dp),
             ) {
                 TextAny(
-                    text = api.currentUser.name ?: api.homeDir?.name ?: "-",
+                    text = api.currentUser.name ?: api.homeDir.name ?: "-",
                     color = textColor,
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Bold

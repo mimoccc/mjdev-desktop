@@ -7,6 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asComposeImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQuality
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -16,6 +18,7 @@ import eu.mjdev.desktop.components.video.VideoView
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import org.jetbrains.skia.Bitmap
 import java.io.File
 import androidx.compose.foundation.Image as ComposeImage
 
@@ -42,6 +45,26 @@ fun ImageAny(
     when {
         src == null -> Box(
             modifier = modifier
+        )
+
+        src is Bitmap -> ComposeImage(
+            modifier = modifier,
+            bitmap = src.asComposeImageBitmap(),
+            alignment = alignment,
+            alpha = alpha,
+            contentDescription = contentDescription,
+            colorFilter = colorFilter,
+            contentScale = contentScale
+        )
+
+        src is ImageBitmap -> ComposeImage(
+            modifier = modifier,
+            bitmap = src,
+            alignment = alignment,
+            alpha = alpha,
+            contentDescription = contentDescription,
+            colorFilter = colorFilter,
+            contentScale = contentScale
         )
 
         isGif -> GifView(

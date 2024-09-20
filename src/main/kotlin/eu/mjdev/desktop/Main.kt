@@ -15,8 +15,8 @@ import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.rememberDesktopProvider
 import eu.mjdev.desktop.windows.MainWindow
 
-@Suppress("unused")
 fun main(
+    @Suppress("unused")
     args: Array<String>
 ) = application(
     exitProcessOnExit = true
@@ -57,7 +57,7 @@ fun main(
                 DesktopPanel(
                     panelState = panelState,
                     menuState = menuState,
-                    onMenuIconClicked = { menuState.toggle() },
+                    onMenuIconClicked = { if (!menuState.isVisible) menuState.show() },
                     onFocusChange = { focus -> handlePanelFocus(focus) })
                 AppsMenu(
                     menuState = menuState,

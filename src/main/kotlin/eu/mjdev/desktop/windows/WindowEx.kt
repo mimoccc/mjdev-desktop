@@ -5,15 +5,14 @@ import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.window.FrameWindowScope
-import androidx.compose.ui.window.WindowState
-import androidx.compose.ui.window.rememberWindowState
+import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
+@Suppress("FunctionName")
 @Composable
 fun WindowEx(
     onCreate: (window: ComposeWindow) -> Unit = {},
-//    onOpen: (window: ComposeWindow) -> Unit = {},
     onCloseRequest: () -> Unit,
-    state: WindowState = rememberWindowState(),
+    state: ChromeWindowState =  rememberChromeWindowState(),
     visible: Boolean = true,
     title: String = "Untitled",
     icon: Painter? = null,
@@ -31,7 +30,6 @@ fun WindowEx(
     content: @Composable FrameWindowScope.() -> Unit = {}
 ) = Window(
     onCreate = onCreate,
-//    onOpen = onOpen,
     onCloseRequest = onCloseRequest,
     state = state,
     visible = visible,

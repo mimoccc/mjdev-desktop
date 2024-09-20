@@ -3,7 +3,7 @@ package eu.mjdev.desktop.data
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.vector.ImageVector
+import eu.mjdev.desktop.helpers.system.Command
 
 @Suppress("MemberVisibilityCanBePrivate")
 class User(
@@ -25,7 +25,7 @@ class User(
     companion object {
         // todo
         fun load() = User(
-            name = null,
+            name = Command("whoami").execute(),
             picture = Icons.Filled.AccountCircle,
             config = DesktopConfig.Default,
             theme = Theme.Default

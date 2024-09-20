@@ -1,6 +1,5 @@
 package eu.mjdev.desktop.helpers.adb
 
-import eu.mjdev.desktop.helpers.adb.*
 import eu.mjdev.desktop.helpers.adb.adbserver.AdbServer
 import eu.mjdev.desktop.helpers.adb.forwarding.TcpForwardDescriptor
 import eu.mjdev.desktop.helpers.adb.forwarding.TcpForwarder
@@ -108,10 +107,8 @@ interface Adb : AutoCloseable {
                 val pattern = """\[(\w+)]""".toRegex()
                 val sessionId =
                     pattern.find(response)?.groups?.get(1)?.value ?: throw IOException("failed to create session")
-
                 var error: String? = null
                 apks.forEach { apk ->
-                    // install write every apk file to stream
                     execCmd(
                         "package",
                         "install-write",
@@ -124,7 +121,6 @@ interface Adb : AutoCloseable {
                     ).use { writeStream ->
                         writeStream.sink.writeAll(apk.source())
                         writeStream.sink.flush()
-
                         val writeResponse = writeStream.source.readString(Charsets.UTF_8)
                         if (!writeResponse.startsWith("Success")) {
                             error = writeResponse
@@ -132,8 +128,6 @@ interface Adb : AutoCloseable {
                         }
                     }
                 }
-
-                // commit the session
                 val finalCommand = if (error == null) "install-commit" else "install-abandon"
                 execCmd("package", finalCommand, sessionId, *options).use { commitStream ->
                     val finalResponse = commitStream.source.readString(Charsets.UTF_8)
@@ -141,49 +135,37 @@ interface Adb : AutoCloseable {
                         throw IOException("failed to finalize session: $commitStream")
                     }
                 }
-
                 if (error != null) {
                     throw IOException("Install failed: $error")
                 }
             }
         } else {
             val totalLength = apks.map { it.length() }.reduce { acc, l -> acc + l }
-            // step1: create session
             val response = shell("pm install-create -S $totalLength ${options.joinToString(" ")}")
             if (!response.allOutput.startsWith("Success")) {
                 throw IOException("pm create session failed: $response")
             }
-
             val pattern = """\[(\w+)]""".toRegex()
             val sessionId =
                 pattern.find(response.allOutput)?.groups?.get(1)?.value ?: throw IOException("failed to create session")
             var error: String? = null
-
             val fileNames = apks.map { it.name }
             val remotePaths = fileNames.map { "/data/local/tmp/$it" }
-
-            // step2: write apk to the session
             apks.zip(remotePaths).forEachIndexed { index, pair ->
                 val apk = pair.first
                 val remotePath = pair.second
-
                 try {
-                    // we should push the apk files to device, when push failed, it would stop the installation
                     push(apk, remotePath)
                 } catch (t: IOException) {
                     error = t.message
                     return@forEachIndexed
                 }
-
-                // pm install-write -S APK_SIZE SESSION_ID INDEX PATH
                 val writeResponse = shell("pm install-write -S ${apk.length()} $sessionId $index $remotePath")
                 if (!writeResponse.allOutput.startsWith("Success")) {
                     error = writeResponse.allOutput
                     return@forEachIndexed
                 }
             }
-
-            // step3: commit or abandon the session
             val finalCommand = if (error == null) "pm install-commit $sessionId" else "pm install-abandon $sessionId"
             val finalResponse = shell(finalCommand)
             if (!finalResponse.allOutput.startsWith("Success")) {
@@ -239,7 +221,6 @@ interface Adb : AutoCloseable {
     fun tcpForward(targetPort: Int, hostPort: Int): TcpForwardDescriptor {
         val forwarder = TcpForwarder(this, targetPort, hostPort)
         val localPort = forwarder.start()
-
         return TcpForwardDescriptor(forwarder, localPort)
     }
 
@@ -247,7 +228,6 @@ interface Adb : AutoCloseable {
     fun tcpForward(targetPort: Int): TcpForwardDescriptor {
         val forwarder = TcpForwarder(this, targetPort)
         val localPort = forwarder.start()
-
         return TcpForwardDescriptor(forwarder, localPort)
     }
 
@@ -279,7 +259,6 @@ interface Adb : AutoCloseable {
         fun list(host: String = "localhost", keyPair: AdbKeyPair? = AdbKeyPair.readDefault()): List<Adb> {
             val dadbs = AdbServer.listDadbs(adbServerHost = host)
             if (dadbs.isNotEmpty()) return dadbs
-
             return (MIN_EMULATOR_PORT..MAX_EMULATOR_PORT).mapNotNull { port ->
                 val dadb = create(host, port, keyPair)
                 val response = try {

@@ -22,7 +22,7 @@ import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
-@Suppress("DEPRECATION")
+@Suppress("DEPRECATION", "FunctionName")
 @OptIn(ExperimentalFoundationApi::class)
 @Preview
 @Composable
