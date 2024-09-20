@@ -57,6 +57,7 @@ fun DesktopPanel(
     showMenuIcon: Boolean = true,
     panelState: VisibilityState = rememberVisibilityState(),
     menuState: VisibilityState = rememberVisibilityState(),
+    blurAmount: Dp = 8.dp,
     enterAnimation: EnterTransition = DesktopPanelEnterAnimation,
     exitAnimation: ExitTransition = DesktopPanelExitAnimation,
     tooltipHeight: Dp = 64.dp,
@@ -101,6 +102,7 @@ fun DesktopPanel(
         windowState = windowState,
         visible = true,
         alwaysOnTop = panelState.enabled,
+        blurAmount = blurAmount.value,
         enterAnimation = enterAnimation,
         exitAnimation = exitAnimation,
         onFocusChange = onFocusChange

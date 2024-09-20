@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.custom.UserAvatar
@@ -48,6 +49,7 @@ import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindow
 fun AppsMenu(
     panelState: VisibilityState = rememberVisibilityState(),
     menuState: VisibilityState = rememberVisibilityState(),
+    blurAmount: Dp = 8.dp,
     enterAnimation: EnterTransition = AppsMenuEnterAnimation,
     exitAnimation: ExitTransition = AppsMenuExitAnimation,
     searchTextState: MutableState<String> = rememberState(""),

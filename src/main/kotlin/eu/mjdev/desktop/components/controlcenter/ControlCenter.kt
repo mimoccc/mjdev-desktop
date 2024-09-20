@@ -47,6 +47,7 @@ fun ControlCenter(
     pagerState: MutableState<Int> = rememberState(0),
     controlCenterState: VisibilityState = rememberVisibilityState(),
     scope: CoroutineScope = rememberCoroutineScope(),
+    blurAmount: Dp = 8.dp,
     enterAnimation: EnterTransition = ControlCenterEnterAnimation,
     exitAnimation: ExitTransition = ControlCenterExitAnimation,
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
@@ -79,6 +80,7 @@ fun ControlCenter(
     }
     ChromeWindow(
         visible = true,
+        blurAmount = blurAmount.value,
         windowState = windowState,
         enterAnimation = enterAnimation,
         exitAnimation = exitAnimation,

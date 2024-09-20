@@ -3,14 +3,17 @@ package eu.mjdev.desktop.windows
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberState
+import java.awt.Point
 
 class ChromeWindowState(
     position: WindowPosition = WindowPosition.Aligned(Alignment.Center),
@@ -19,59 +22,85 @@ class ChromeWindowState(
     closeAction: WindowCloseAction,
 ) : WindowState {
 
+    var window: ComposeWindow? = null
+        get() = field
+        set(value) {
+            field = value
+            updatePositionAndSize()
+        }
+
     var onFocusChange: MutableList<ChromeWindowState.(focus: Boolean) -> Unit> = mutableStateListOf()
     var onOpened: MutableList<ChromeWindowState.() -> Unit> = mutableStateListOf()
     var onClosed: MutableList<ChromeWindowState.() -> Unit> = mutableStateListOf()
 
-    val focusHelper: WindowFocusHelper = WindowFocusHelper { _, focus ->
-        this@ChromeWindowState.onFocusChange.forEach {
-            it.invoke(this@ChromeWindowState, focus)
-        }
-    }
+    val x
+        get() = window?.x?.dp ?: 0.dp
 
-    val stateHelper: WindowStateHelper = WindowStateHelper({
-        setSize(size)
-        this@ChromeWindowState.onOpened.forEach {
-            it.invoke(this@ChromeWindowState)
-        }
-    }, {
-        this@ChromeWindowState.onClosed.forEach {
-            it.invoke(this@ChromeWindowState)
-        }
-    })
+    val y
+        get() = window?.y?.dp ?: 0.dp
 
-    var window
-        get() = stateHelper.window
-        set(value) {
-            stateHelper.window = value
-        }
+    val width
+        get() = window?.width?.dp ?: 0.dp
+
+    val height
+        get() = window?.height?.dp ?: 0.dp
 
     @Suppress("CanBePrimaryConstructorProperty")
     val closeAction: WindowCloseAction = closeAction
 
-    override var position: WindowPosition = position
+    override var position: WindowPosition
         set(value) {
-            field = value
-            stateHelper.setPosition(position)
+            window?.setPositionSafely(
+                value,
+                placement,
+                platformDefaultPosition = {
+                    Point(x.value.toInt(), y.value.toInt())
+//                   WindowLocationTracker.getCascadeLocationFor(window)
+                }
+            )
+        }
+        get() = window?.let { WindowPosition.Absolute(it.x.dp, it.y.dp) } ?: WindowPosition(x,y)
+
+    override var size: DpSize
+        get() = window?.let { DpSize(it.size.width.dp, it.size.height.dp) } ?: DpSize(width, height)
+        set(value) {
+            window?.setSizeSafely(value, placement)
         }
 
-    override var size: DpSize = size
+    override var placement: WindowPlacement
+        get() = window?.placement ?: WindowPlacement.Floating
         set(value) {
-            field = value
-            stateHelper.setSize(value)
+            if (window != null) {
+                window?.placement = value
+            }
         }
 
-    @Suppress("CanBePrimaryConstructorProperty")
-    override var placement: WindowPlacement = placement
-    override var isMinimized: Boolean = false
+    override var isMinimized: Boolean
+        get() = window?.isMinimized ?: false
+        set(value) {
+            window?.isMinimized = value
+        }
+
+//    init {
+//        this.placement = placement
+//        this.size = size
+//        this.position = position
+//    }
 
     fun requestFocus() {
-        stateHelper.requestFocus()
+        window?.toFront()
     }
 
     fun updatePositionAndSize() {
-        stateHelper.setSize(size)
-        stateHelper.setPosition(position)
+        window?.placement = placement
+        window?.setSize(size.width.value.toInt(), size.height.value.toInt())
+        window?.setPositionSafely(
+            position,
+            placement,
+            platformDefaultPosition = {
+                Point(x.value.toInt(), y.value.toInt())
+            }
+        )
     }
 
     companion object {

@@ -9,7 +9,6 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.FrameWindowScope
-import androidx.compose.ui.window.WindowPosition
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class ChromeWindowScope(
@@ -19,7 +18,7 @@ class ChromeWindowScope(
     val windowVisibleState: MutableState<Boolean>
 ) {
     val window
-        get() = frameScope.window
+        get() = windowState.window
 
     val stateHelper: WindowStateHelper
         get() = windowState.stateHelper
@@ -45,24 +44,9 @@ class ChromeWindowScope(
         block()
     }
 
-//    fun requestFocus() =
-//        stateHelper.requestFocus()
-
-    fun setBounds(
-        x: Dp = this.x,
-        y: Dp = this.y,
-        width: Dp = stateHelper.width,
-        height: Dp = stateHelper.height
-    ) = stateHelper.setBounds(x, y, width, height)
-
-    fun setOffset(offset: DpOffset) =
-        stateHelper.setBounds(x = offset.x, y = offset.y)
-
-    fun setSize(size: DpSize) =
-        stateHelper.setBounds(width = size.width, height = size.height)
-
-    fun setPosition(position: WindowPosition) =
-        stateHelper.setPosition(position)
+    fun requestFocus() = {
+        windowState.requestFocus()
+    }
 
     companion object {
         @Composable
@@ -71,7 +55,7 @@ class ChromeWindowScope(
             animState: State<MutableTransitionState<Boolean>>,
             windowVisibleState: MutableState<Boolean>,
             block: @Composable ChromeWindowScope.() -> Unit
-        ) = with(ChromeWindowScope(this, windowState, animState, windowVisibleState)) {
+        ) = with(ChromeWindowScope(windowState, animState, windowVisibleState)) {
             block()
         }
     }

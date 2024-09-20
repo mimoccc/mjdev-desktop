@@ -47,6 +47,7 @@ fun Window(
     focusable: Boolean = true,
     alwaysOnTop: Boolean = false,
     alwaysOnBottom: Boolean = false,
+    blurAmount: Float = 0f,
     closeAction: Int = JFrame.DO_NOTHING_ON_CLOSE,
     blurEnabled: Boolean = true,
     focusHelper: WindowFocusHelper,
@@ -96,6 +97,7 @@ fun Window(
             ComposeWindow(
                 graphicsConfiguration = WindowLocationTracker.lastActiveGraphicsConfiguration
             ).apply {
+                state.window = this
                 defaultCloseOperation = closeAction
                 listeners.windowListenerRef.registerWithAndSet(
                     this,
@@ -325,7 +327,7 @@ internal val ComponentOrientation.layoutDirection: LayoutDirection
         else -> LayoutDirection.Ltr
     }
 
-internal fun layoutDirectionFor(component: Component): LayoutDirection {
+fun layoutDirectionFor(component: Component): LayoutDirection {
     val orientation = component.componentOrientation
     return if (orientation != ComponentOrientation.UNKNOWN) {
         orientation.layoutDirection

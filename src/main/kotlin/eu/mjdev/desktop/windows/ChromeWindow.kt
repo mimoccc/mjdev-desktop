@@ -30,6 +30,7 @@ fun ChromeWindow(
     focusable: Boolean = true,
     alwaysOnTop: Boolean = true,
     alwaysOnBottom: Boolean = false,
+    blurAmount: Float = 0f,
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     onCreate: ChromeWindowState.() -> Unit = {},
@@ -49,6 +50,7 @@ fun ChromeWindow(
     focusable = focusable,
     alwaysOnTop = alwaysOnTop,
     alwaysOnBottom = alwaysOnBottom,
+    blurAmount = blurAmount,
     enterAnimation = enterAnimation,
     exitAnimation = exitAnimation,
     onCreate = onCreate,
@@ -74,6 +76,7 @@ fun ChromeWindow(
     focusable: Boolean = true,
     alwaysOnTop: Boolean = true,
     alwaysOnBottom: Boolean = false,
+    blurAmount: Float = 0f,
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     onCreate: ChromeWindowState.() -> Unit = {},
@@ -93,6 +96,7 @@ fun ChromeWindow(
     focusable = focusable,
     alwaysOnTop = alwaysOnTop,
     alwaysOnBottom = alwaysOnBottom,
+    blurAmount = blurAmount,
     enterAnimation = enterAnimation,
     exitAnimation = exitAnimation,
     onCreate = onCreate,
@@ -117,6 +121,7 @@ fun ChromeWindow(
     focusable: Boolean = true,
     alwaysOnTop: Boolean = true,
     alwaysOnBottom: Boolean = false,
+    blurAmount: Float = 0f,
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     onCloseRequest: () -> Unit = {},
@@ -135,7 +140,7 @@ fun ChromeWindow(
         val wnState = rememberWnState()
         windowState.onOpened.add {
 //        if (alwaysOnBottom) {
-            // todo
+        // todo
 //            val focusOwner = window?.mostRecentFocusOwner
 //            window?.toBack()
 //            focusOwner?.requestFocus()
