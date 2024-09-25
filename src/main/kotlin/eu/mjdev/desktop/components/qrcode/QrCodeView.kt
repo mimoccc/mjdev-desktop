@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.qrcode
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,7 +15,8 @@ import io.github.alexzhirkevich.qrose.options.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 
 // todo : params
-@Suppress("unused")
+@Suppress("unused", "FunctionName")
+@Preview
 @Composable
 fun QrCodeView(
     modifier: Modifier = Modifier,

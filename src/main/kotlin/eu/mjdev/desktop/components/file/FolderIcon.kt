@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.file
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import eu.mjdev.desktop.extensions.Modifier.circleBorder
 
 @OptIn(ExperimentalFoundationApi::class)
 @Suppress("FunctionName")
+@Preview
 @Composable
 fun FolderIcon(
     path: File,
@@ -65,13 +67,13 @@ fun FolderIcon(
         ) {
             Box(
                 modifier = Modifier.size(computedSize)
-                    .circleBorder(2.dp, textColor.value)
+                    .circleBorder(2.dp, textColor)
             ) {
                 FontIcon(
                     iconId = iconId,
                     iconSize = iconSize,
-                    iconColor = textColor.value,
-                    iconBackgroundColor = iconsTintColor.value.alpha(0.4f),
+                    iconColor = textColor,
+                    iconBackgroundColor = iconsTintColor.alpha(0.4f),
                     outerPadding = PaddingValues(8.dp),
                     innerPadding = PaddingValues(8.dp),
                     onClick = onClick,
@@ -82,7 +84,7 @@ fun FolderIcon(
                 modifier = Modifier.width(computedSize.width)
                     .padding(start = 4.dp),
                 text = customName ?: path.name ?: "",
-                color = textColor.value,
+                color = textColor,
                 fontWeight = FontWeight.Bold,
                 overflow = Ellipsis,
                 minLines = 2,

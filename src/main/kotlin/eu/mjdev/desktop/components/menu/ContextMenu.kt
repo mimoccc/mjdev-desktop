@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.menu
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CursorDropdownMenu
@@ -12,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 
 // todo
+@Suppress("unused", "FunctionName")
+@Preview
 @Composable
 fun ContextMenu(
     backgroundColor: Color = Color.SuperDarkGray,

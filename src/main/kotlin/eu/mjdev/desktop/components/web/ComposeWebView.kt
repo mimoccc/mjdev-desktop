@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.web
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.LinearProgressIndicator
@@ -24,7 +25,8 @@ import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 // todo improve
-@Suppress("LocalVariableName")
+@Suppress("LocalVariableName", "FunctionName", "unused")
+@Preview
 @Composable
 fun ComposeWebView(
     modifier: Modifier = Modifier,

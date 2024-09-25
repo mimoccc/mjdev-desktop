@@ -2,6 +2,7 @@ package eu.mjdev.desktop.components.desktop.widgets
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.TweenSpec
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @Suppress("FunctionName")
+@Preview
 @Composable
 fun MemoryChart(
     modifier: Modifier = Modifier,

@@ -211,13 +211,13 @@ compose {
                     modules("jdk.security.auth")
                 }
                 targetFormats(
-//                    TargetFormat.Dmg,
-//                    TargetFormat.Msi,
+                    TargetFormat.Dmg,
+                    TargetFormat.Msi,
                     TargetFormat.Deb,
-//                    TargetFormat.Exe,
-//                    TargetFormat.AppImage,
-//                    TargetFormat.Pkg,
-//                    TargetFormat.Rpm
+                    TargetFormat.Exe,
+                    TargetFormat.AppImage,
+                    TargetFormat.Pkg,
+                    TargetFormat.Rpm
                 )
 //                buildTypes.release.proguard {
 //                    configurationFiles.from("compose-desktop.pro")

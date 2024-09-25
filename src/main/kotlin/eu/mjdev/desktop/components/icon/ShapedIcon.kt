@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.icon
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -21,6 +22,7 @@ import eu.mjdev.desktop.extensions.Compose.size
 
 @Suppress("DEPRECATION")
 @OptIn(ExperimentalFoundationApi::class)
+@Preview
 @Composable
 fun ShapedIcon(
     modifier: Modifier = Modifier,

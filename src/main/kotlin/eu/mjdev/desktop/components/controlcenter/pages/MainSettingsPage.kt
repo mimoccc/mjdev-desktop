@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.controlcenter.pages
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
@@ -39,9 +40,7 @@ fun MainSettingsPage() = ControlCenterPage(
                 .rectShadow(8.dp, borderColor.copy(alpha = 0.3f))
         ) {
             UserAvatar(
-                backgroundColor = backgroundColor,
-                iconTintColor = iconsTintColor,
-                textColor = textColor,
+                modifier = Modifier.background(backgroundColor),
                 avatarSize = 128.dp,
                 orientation = Orientation.Vertical,
                 onUserAvatarClick = {

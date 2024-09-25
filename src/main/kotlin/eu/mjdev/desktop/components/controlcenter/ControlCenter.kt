@@ -2,6 +2,7 @@ package eu.mjdev.desktop.components.controlcenter
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation.Horizontal
@@ -30,12 +31,9 @@ import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBackgroundColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBorderColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberIconTintColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberTextColor
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopProvider.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.windows.ChromeWindowState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
@@ -44,6 +42,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Suppress("FunctionName", "DEPRECATION")
+@Preview
 @Composable
 fun ControlCenter(
     api: DesktopProvider = LocalDesktop.current,
@@ -54,13 +53,9 @@ fun ControlCenter(
     exitAnimation: ExitTransition = ControlCenterExitAnimation,
     onFocusChange: (Boolean) -> Unit = {},
     onContextMenuClick: () -> Unit = {}
-) {
-    val backgroundColor by rememberBackgroundColor(api)
+) = withDesktopScope {
     val backgroundAlpha by remember { api.currentUser.theme.controlCenterBackgroundAlphaState }
     val backgroundInvoker = remember { { backgroundColor } }
-    val textColor by rememberTextColor(api)
-    val borderColor by rememberBorderColor(api)
-    val iconsTintColor by rememberIconTintColor(api)
     val controlCenterExpandedWidth by remember { api.currentUser.theme.controlCenterExpandedWidthState }
     val controlCenterDividerWidth by remember { api.currentUser.theme.controlCenterDividerWidthState }
     val controlCenterIconSize by remember { api.currentUser.theme.controlCenterIconSizeState }

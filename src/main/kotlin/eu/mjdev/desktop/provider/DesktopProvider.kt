@@ -11,12 +11,9 @@ import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.helpers.adb.AdbDiscover.Companion.adbDevicesHandler
 import eu.mjdev.desktop.helpers.internal.Palette
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBackgroundColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBorderColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberIconTintColor
-import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberTextColor
 import eu.mjdev.desktop.helpers.managers.*
 import eu.mjdev.desktop.helpers.system.Command
+import eu.mjdev.desktop.helpers.system.OsRelease
 import eu.mjdev.desktop.helpers.system.UserDirs
 import eu.mjdev.desktop.provider.AIProvider.AiPluginGemini
 import kotlinx.coroutines.CoroutineScope
@@ -42,7 +39,9 @@ class DesktopProvider(
     val homeDir
         get() = File("/home/${currentUser.name}")
 
-    val userDirs  = UserDirs(this)
+    val userDirs = UserDirs(this)
+
+    val osDetails = OsRelease(this)
 
     val palette: Palette = Palette(scope, currentUser.theme.backgroundColor)
 
@@ -139,13 +138,27 @@ class DesktopProvider(
         exitProcess(0)
     }
 
+    // theme support
     class DesktopScope(
-        val api: DesktopProvider,
-        val backgroundColor: State<Color>,
-        val iconsTintColor: State<Color>,
-        val textColor: State<Color>,
-        val borderColor: State<Color>
-    )
+        val api: DesktopProvider
+    ) {
+        val scope
+            get() = api.scope
+        val backgroundColorState
+            get() = api.palette.backgroundColorState
+        val backgroundColor
+            get() = api.palette.backgroundColor
+        val iconsTintColorState
+            get() = api.palette.iconsTintColor
+        val iconsTintColor
+            get() = api.palette.iconsTintColor
+        val textColorState
+            get() = api.palette.textColorState
+        val textColor
+            get() = textColorState.value
+        val borderColor
+            get() = api.palette.borderColor
+    }
 
     companion object {
         private val CONTROL_CENTER_PAGES = listOf(
@@ -174,12 +187,8 @@ class DesktopProvider(
         @Composable
         fun withDesktopScope(
             api: DesktopProvider = LocalDesktop.current,
-            backgroundColor: MutableState<Color> = rememberBackgroundColor(api),
-            iconsTintColor: State<Color> = rememberIconTintColor(api),
-            textColor: State<Color> = rememberTextColor(api),
-            borderColor: State<Color> = rememberBorderColor(api),
             block: @Composable DesktopScope.() -> Unit
-        ) = DesktopScope(api, backgroundColor, iconsTintColor, textColor, borderColor).apply {
+        ) = DesktopScope(api).apply {
             block()
         }
     }

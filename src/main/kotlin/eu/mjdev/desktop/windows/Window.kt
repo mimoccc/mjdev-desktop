@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.windows
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -19,6 +20,7 @@ import javax.swing.JFrame
 import kotlin.math.roundToInt
 
 @Suppress("FunctionName")
+@Preview
 @Composable
 fun Window(
 //    onOpen: (window: ComposeWindow) -> Unit = {},

@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.image
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.*
@@ -12,6 +13,8 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
+@Suppress("FunctionName")
+@Preview
 @Composable
 fun GifView(
     modifier: Modifier = Modifier,

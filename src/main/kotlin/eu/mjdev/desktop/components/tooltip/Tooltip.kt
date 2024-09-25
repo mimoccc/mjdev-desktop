@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.tooltip
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import kotlinx.coroutines.delay
 
 @Suppress("FunctionName")
+@Preview
 @Composable
 fun Tooltip(
     textColor: Color = Color.White,

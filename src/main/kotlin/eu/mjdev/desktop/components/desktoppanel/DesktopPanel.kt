@@ -2,6 +2,7 @@ package eu.mjdev.desktop.components.desktoppanel
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.TooltipPlacement
@@ -44,6 +45,7 @@ import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindow
 
 @OptIn(ExperimentalFoundationApi::class)
 @Suppress("FunctionName")
+@Preview
 @Composable
 fun DesktopPanel(
     api: DesktopProvider = LocalDesktop.current,
@@ -132,11 +134,11 @@ fun DesktopPanel(
                     modifier = Modifier.fillMaxWidth().wrapContentHeight(),
                     tooltip = {
                         Tooltip(
-                            textColor = textColor.value,
-                            borderColor = borderColor.value,
+                            textColor = textColor,
+                            borderColor = borderColor,
                             state = tooltipState,
                             converter = tooltipConverter,
-                            backgroundColor = backgroundColor.value
+                            backgroundColor = backgroundColor
                         )
                     },
                     tooltipPlacement = TooltipPlacement.CursorPoint(
@@ -157,14 +159,14 @@ fun DesktopPanel(
                                 .background(
                                     brush = Brush.verticalGradient(
                                         colors = listOf(
-                                            backgroundColor.value.copy(alpha = 0.3f),
-                                            backgroundColor.value.copy(alpha = 0.7f),
-                                            backgroundColor.value.copy(alpha = 0.8f),
+                                            backgroundColor.copy(alpha = 0.3f),
+                                            backgroundColor.copy(alpha = 0.7f),
+                                            backgroundColor.copy(alpha = 0.8f),
                                         )
                                     )
                                 )
                                 .topShadow(
-                                    color = borderColor.value.alpha(0.3f),
+                                    color = borderColor.alpha(0.3f),
                                     blur = 4.dp
                                 )
                                 .onPlaced(panelState::onPlaced),
@@ -173,7 +175,7 @@ fun DesktopPanel(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(2.dp),
-                                color = borderColor.value,
+                                color = borderColor,
                                 thickness = 2.dp
                             )
                             Box(
@@ -184,8 +186,8 @@ fun DesktopPanel(
                                 if (showMenuIcon) {
                                     DesktopMenuIcon(
                                         modifier = Modifier.align(Alignment.CenterStart),
-                                        iconColor = borderColor.value,
-                                        iconBackgroundColor = iconsTintColor.value,
+                                        iconColor = borderColor,
+                                        iconBackgroundColor = iconsTintColor,
                                         iconSize = iconSize,
                                         iconPadding = iconPadding,
                                         iconOuterPadding = iconOuterPadding,
@@ -196,9 +198,9 @@ fun DesktopPanel(
                                 }
                                 DesktopPanelFavoriteApps(
                                     modifier = Modifier.align(Alignment.Center),
-                                    iconColor = borderColor.value,
-                                    iconBackgroundColor = iconsTintColor.value,
-                                    iconColorRunning = iconsTintColor.value.lighter(0.3f),
+                                    iconColor = borderColor,
+                                    iconBackgroundColor = iconsTintColor,
+                                    iconColorRunning = iconsTintColor.lighter(0.3f),
                                     iconSize = iconSize,
                                     iconPadding = iconPadding,
                                     iconOuterPadding = iconOuterPadding,

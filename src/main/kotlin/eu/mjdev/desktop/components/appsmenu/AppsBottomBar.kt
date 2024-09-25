@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.appsmenu
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,8 @@ import eu.mjdev.desktop.components.icon.ShapedIcon
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
+@Suppress("FunctionName")
+@Preview
 @Composable
 fun AppsBottomBar(
     api: DesktopProvider = LocalDesktop.current,

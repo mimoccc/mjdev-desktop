@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.draggable
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -20,6 +21,7 @@ import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Modifier.conditional
 
 @Suppress("FunctionName")
+@Preview
 @Composable
 fun DraggableView(
     modifier: Modifier = Modifier,

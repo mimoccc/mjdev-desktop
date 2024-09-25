@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.desktoppanel.applets
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
@@ -10,6 +11,8 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanelIcon
 
+@Suppress("FunctionName")
+@Preview
 @Composable
 fun DesktopMenuIcon(
     modifier: Modifier = Modifier,

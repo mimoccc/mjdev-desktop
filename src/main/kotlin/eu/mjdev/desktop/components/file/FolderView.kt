@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.file
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import java.io.File
 // X11GraphicsEnvironment
 @Suppress("FunctionName")
 @OptIn(ExperimentalLayoutApi::class)
+@Preview
 @Composable
 fun FolderView(
     modifier: Modifier = Modifier,

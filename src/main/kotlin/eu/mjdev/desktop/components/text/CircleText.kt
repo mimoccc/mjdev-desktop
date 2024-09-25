@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.extensions.Modifier.clipCircle
 
+@Suppress("unused", "FunctionName")
 @Preview
 @Composable
 fun CircleText(

@@ -2,6 +2,7 @@
 
 package eu.mjdev.desktop.components.fonticon
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
@@ -16,6 +17,7 @@ import eu.mjdev.desktop.components.text.AutoResizeText
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @Suppress("FunctionName")
+@Preview
 @Composable
 fun FontIcon(
     iconId: Int,

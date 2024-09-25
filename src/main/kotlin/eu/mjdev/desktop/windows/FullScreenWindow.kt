@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.windows
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.key.KeyEvent
@@ -9,6 +10,8 @@ import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
+@Suppress("FunctionName")
+@Preview
 @Composable
 fun FullScreenWindow(
     api: DesktopProvider = LocalDesktop.current,

@@ -2,6 +2,7 @@ package eu.mjdev.desktop.components.charts
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.TweenSpec
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 @Suppress("FunctionName")
+@Preview
 @Composable
 fun DonutChart(
     modifier: Modifier = Modifier,

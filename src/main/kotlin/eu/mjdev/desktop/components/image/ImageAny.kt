@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.image
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +24,7 @@ import java.io.File
 import androidx.compose.foundation.Image as ComposeImage
 
 @Suppress("FunctionName")
+@Preview
 @Composable
 fun ImageAny(
     src: Any?,

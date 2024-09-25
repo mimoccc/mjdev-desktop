@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.text
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -15,6 +16,8 @@ import androidx.compose.ui.unit.sp
 import kotlin.math.min
 
 // todo may be need refactor
+@Suppress("FunctionName")
+@Preview
 @Composable
 fun AutoResizeText(
     text: String,

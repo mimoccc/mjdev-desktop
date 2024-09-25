@@ -20,14 +20,14 @@ class Palette(
     val borderFactor: Float = 0.1f,
     val textFactor: Float = 0.6f,
 ) {
-    val backgroundColorState = mutableStateOf(baseColor)
+    val backgroundColorState: MutableState<Color> = mutableStateOf(baseColor)
     var backgroundColor
         get() = backgroundColorState.value
         set(value) {
             backgroundColorState.value = value
         }
 
-    val textColorState = mutableStateOf(if (isLight) Color.Black else Color.White)
+    val textColorState: MutableState<Color> = mutableStateOf(if (isLight) Color.Black else Color.White)
     var textColor
         get() = textColorState.value
         set(value) {

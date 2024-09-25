@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.desktoppanel.applets
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,6 +20,8 @@ import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
+@Suppress("FunctionName")
+@Preview
 @Composable
 fun DesktopPanelFavoriteApps(
     modifier: Modifier = Modifier,

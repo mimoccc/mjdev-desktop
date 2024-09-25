@@ -1,6 +1,7 @@
 package eu.mjdev.desktop.windows
 
 import androidx.compose.animation.*
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.key.KeyEvent
@@ -15,6 +16,7 @@ import eu.mjdev.desktop.windows.ChromeWindowState.Companion.updateAnimState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.updateWindowState
 
 @Suppress("FunctionName", "unused")
+@Preview
 @Composable
 fun ChromeWindow(
     size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecified),
@@ -59,6 +61,7 @@ fun ChromeWindow(
 )
 
 @Suppress("unused", "FunctionName")
+@Preview
 @Composable
 fun ChromeWindow(
     position: WindowPosition = WindowPosition.Aligned(Alignment.Center),
@@ -102,6 +105,7 @@ fun ChromeWindow(
 )
 
 @Suppress("FunctionName")
+@Preview
 @Composable
 fun ChromeWindow(
     windowState: ChromeWindowState = rememberChromeWindowState(),
