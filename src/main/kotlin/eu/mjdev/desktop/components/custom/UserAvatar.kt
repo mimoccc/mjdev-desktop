@@ -1,7 +1,6 @@
 package eu.mjdev.desktop.components.custom
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
@@ -9,7 +8,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -22,111 +20,78 @@ import eu.mjdev.desktop.extensions.Compose.noElevation
 import eu.mjdev.desktop.extensions.Compose.transparent
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
 import eu.mjdev.desktop.extensions.Modifier.clipCircle
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopProvider.Companion.withDesktopScope
 
 @Suppress("FunctionName")
 @Preview
 @Composable
 fun UserAvatar(
-    backgroundColor: Color,
+    modifier: Modifier = Modifier,
     avatarSize: Dp = 128.dp,
     orientation: Orientation = Orientation.Vertical,
-    api: DesktopProvider = LocalDesktop.current,
-    iconTintColor: Color = Color.White,
-    textColor: Color = Color.White,
     onUserAvatarClick: () -> Unit
-) = Box(
-    modifier = Modifier
-        .fillMaxWidth()
-        .background(backgroundColor)
-        .padding(16.dp)
-) {
-    when (orientation) {
-        Orientation.Vertical -> Column(
+) = withDesktopScope {
+    val content: @Composable (orientation: Orientation) -> Unit = {
+        Button(
             modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Center),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .size(avatarSize)
+                .clipCircle(),
+            contentPadding = PaddingValues(0.dp),
+            onClick = onUserAvatarClick,
+            colors = ButtonDefaults.transparent(),
+            elevation = ButtonDefaults.noElevation()
         ) {
-            Button(
+            ImageAny(
                 modifier = Modifier
                     .size(avatarSize)
-                    .clipCircle(),
-                contentPadding = PaddingValues(0.dp),
-                onClick = onUserAvatarClick,
-                colors = ButtonDefaults.transparent(),
-                elevation = ButtonDefaults.noElevation()
-            ) {
-                ImageAny(
-                    modifier = Modifier
-                        .size(avatarSize)
-                        .circleBorder(2.dp, iconTintColor),
-                    src = api.currentUser.picture,
-                    colorFilter = if (api.currentUser.picture is ImageVector) ColorFilter.tint(iconTintColor) else null,
-                    contentDescription = ""
-                )
-            }
-            Column(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                TextAny(
-                    text = api.currentUser.name ?: api.homeDir.name ?: "-",
-                    color = textColor,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
-                )
-                TextAny(
-                    text = api.machineName,
-                    color = textColor,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Medium
-                )
-            }
+                    .circleBorder(2.dp, iconsTintColor),
+                src = api.currentUser.picture,
+                colorFilter = if (api.currentUser.picture is ImageVector) ColorFilter.tint(iconsTintColor)
+                else null,
+                contentDescription = ""
+            )
         }
-
-        Orientation.Horizontal -> Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.TopCenter),
-            horizontalArrangement = Arrangement.Start,
+        Column(
+            modifier = Modifier.padding(start = 8.dp).fillMaxWidth().padding(top = 8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = if (orientation == Orientation.Vertical) Alignment.CenterHorizontally
+            else Alignment.Start
         ) {
-            Button(
+            TextAny(
+                text = api.currentUser.name ?: api.homeDir.name ?: "-",
+                color = textColor,
+                textAlign = TextAlign.Start,
+                fontWeight = FontWeight.Bold
+            )
+            TextAny(
+                text = api.machineName,
+                color = textColor,
+                textAlign = TextAlign.Start,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+    Box(
+        modifier = modifier
+            .wrapContentWidth()
+            .padding(16.dp)
+    ) {
+        when (orientation) {
+            Orientation.Vertical -> Column(
                 modifier = Modifier
-                    .size(avatarSize)
-                    .clipCircle(),
-                contentPadding = PaddingValues(0.dp),
-                onClick = {},
-                colors = ButtonDefaults.transparent(),
-                elevation = ButtonDefaults.noElevation()
-            ) {
-                ImageAny(
-                    modifier = Modifier
-                        .size(avatarSize)
-                        .circleBorder(2.dp, iconTintColor),
-                    src = api.currentUser.picture,
-                    colorFilter = if (api.currentUser.picture is ImageVector) ColorFilter.tint(iconTintColor) else null,
-                    contentDescription = ""
-                )
-            }
-            Column(
-                modifier = Modifier.padding(start = 8.dp).fillMaxWidth().padding(top = 8.dp),
-            ) {
-                TextAny(
-                    text = api.currentUser.name ?: api.homeDir.name ?: "-",
-                    color = textColor,
-                    textAlign = TextAlign.Start,
-                    fontWeight = FontWeight.Bold
-                )
-                TextAny(
-                    text = api.machineName,
-                    color = textColor,
-                    textAlign = TextAlign.Start,
-                    fontWeight = FontWeight.Medium
-                )
-            }
+                    .fillMaxWidth()
+                    .align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                content = { content(orientation) }
+            )
+
+            Orientation.Horizontal -> Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter),
+                horizontalArrangement = Arrangement.Start,
+                content = { content(orientation) }
+            )
         }
     }
 }
