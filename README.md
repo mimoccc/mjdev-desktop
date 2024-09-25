@@ -9,20 +9,20 @@ Build on compose kotlin and jvm.
 
 ## functionality about to be and or implemented:
 
-- lightweight, no memory/cpu eater
-- animated/gif/video wallpapers
-- all what can be animated -> animated
-- auto-hide all things when user is working, avail whole screen-space
+- lightweight, no memory/cpu eater, as much as possible
+- animated/gif/video/any image wallpapers (from default dir, extendable)
+- all what can be animated -> animated (just woow effect, not realy everything)
+- auto-hide all things when user is working, avail whole screen-space (as much as possible)
 - dynamic background (user can turn on/off)
-- adaptive dynamic color of whole system when ( background change and user does not override )
-- adaptive dynamic system (gtk/gnome) theme generation
-- control panel with all system settings on left (modal window)
+- adaptive dynamic color of whole system when ( background change and user does not override colors)
+- adaptive dynamic system (gtk/gnome) theme auto-generation
+- control panel with all system settings on left (modal window), include custom pages
 - configurable desktop panels
-- state icons customizable
-- configurable left menu (full screen included)
-- custom desktop widgets
-- api for developers to avail them to create widgets & etc
-- material design icons
+- state icons customizable (status tray)
+- configurable left menu (full screen will be included)
+- custom desktop widgets, animated
+- api for developers to avail them to create widgets & etc, remote views
+- material design icons, overridable with one file, iconic font file - ttf
 - custom control panel pages
 - ai page in control panel & ai integrated to os
 - scriptable extensions
@@ -30,6 +30,12 @@ Build on compose kotlin and jvm.
 - multiplatform support (android, linux, windows)
 - support for themes & customization
 - one click solution for non-technical users
+- autoconnect and show android device on desktop
+- stt / tts a.i.
+- iot support
+- connect to another desktop to share files (p2p)
+- no files on desktop (only links, user invisible action. all will be placed in home folder, as it should be)
+- ai typing helper like copilot from desktop documents (secure, offline)
 
 # screenshots
 
