@@ -21,7 +21,6 @@ class UserDirs(
         }.forEach {
             put(it.first, File(it.second ?: ""))
         }
-        println(this)
     }
 
     val desktopDirectory
