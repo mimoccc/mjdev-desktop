@@ -1,5 +1,7 @@
 package eu.mjdev.desktop.helpers.adb.helpers
 
+import eu.mjdev.desktop.helpers.adb.helpers.AdbShellStream.Companion.ID_EXIT
+import eu.mjdev.desktop.helpers.adb.helpers.AdbSyncStream.Companion.SYNC_IDS
 import okio.Buffer
 import okio.BufferedSource
 import java.nio.charset.StandardCharsets
@@ -14,15 +16,15 @@ internal class AdbMessage(
     val magic: Int,
     val payload: ByteArray
 ) {
-
-    override fun toString() = "${commandStr()}[${argStr(arg0)}, ${argStr(arg1)}] ${payloadStr()}"
+    override fun toString() =
+        "${commandStr()}[${argStr(arg0)}, ${argStr(arg1)}] ${payloadStr()}"
 
     private fun payloadStr(): String {
         if (payloadLength == 0) return ""
         return when (command) {
-            Constants.CMD_AUTH -> if (arg0 == Constants.AUTH_TYPE_RSA_PUBLIC) String(payload) else "auth[${payloadLength}]"
-            Constants.CMD_WRTE -> writePayloadStr()
-            Constants.CMD_OPEN -> String(payload, 0, payloadLength - 1)
+            AdbConstants.CMD_AUTH -> if (arg0 == AdbConstants.AUTH_TYPE_RSA_PUBLIC) String(payload) else "auth[${payloadLength}]"
+            AdbConstants.CMD_WRTE -> writePayloadStr()
+            AdbConstants.CMD_OPEN -> String(payload, 0, payloadLength - 1)
             else -> "payload[$payloadLength]"
         }
     }
@@ -61,12 +63,12 @@ internal class AdbMessage(
     private fun argStr(arg: Int) = String.format("%X", arg)
 
     private fun commandStr() = when (command) {
-        Constants.CMD_AUTH -> "AUTH"
-        Constants.CMD_CNXN -> "CNXN"
-        Constants.CMD_OPEN -> "OPEN"
-        Constants.CMD_OKAY -> "OKAY"
-        Constants.CMD_CLSE -> "CLSE"
-        Constants.CMD_WRTE -> "WRTE"
+        AdbConstants.CMD_AUTH -> "AUTH"
+        AdbConstants.CMD_CNXN -> "CNXN"
+        AdbConstants.CMD_OPEN -> "OPEN"
+        AdbConstants.CMD_OKAY -> "OKAY"
+        AdbConstants.CMD_CLSE -> "CLSE"
+        AdbConstants.CMD_WRTE -> "WRTE"
         else -> "????"
     }
 }

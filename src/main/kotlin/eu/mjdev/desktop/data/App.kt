@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.extensions.Custom.command
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
+import eu.mjdev.desktop.helpers.system.Command
+import eu.mjdev.desktop.helpers.system.Environment
 import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 
@@ -44,7 +46,7 @@ class App(
 
     var process: Process? = null
     val isRunning: Boolean
-        get() = (process?.isAlive ?: false) || process?.children()?.anyMatch { it.isAlive } == true
+        get() = (process?.isAlive == true) || process?.children()?.anyMatch { it.isAlive } == true
 
     var isStarted: Boolean = false
 
@@ -75,7 +77,8 @@ class App(
     fun start() = runCatching {
         triggerStart()
         println("Starting app: $name [$cmd]")
-        ProcessBuilder("/bin/bash", "-c", cmd).start().also {
+        val env = Environment()
+        Command("/bin/bash", "-c", cmd).executeWithEnv(env).also {
             process = it
         }.apply {
             onExit().thenRun {

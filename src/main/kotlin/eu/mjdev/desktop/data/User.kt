@@ -1,34 +1,71 @@
 package eu.mjdev.desktop.data
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.runtime.mutableStateOf
 import eu.mjdev.desktop.helpers.system.Command
+import eu.mjdev.desktop.helpers.system.UserDirs
+import java.io.File
 
-@Suppress("MemberVisibilityCanBePrivate")
+// todo
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 class User(
-    name: String?,
-    picture: Any?,
-    config: DesktopConfig,
-    theme: Theme
+    val data: String,
+    val dataItems: List<String> = data.split(":"),
+    val config: DesktopConfig = DesktopConfig.Default, // todo load
+    val theme: Theme = Theme.Default // todo load
 ) {
-    val nameState = mutableStateOf(name)
-    val pictureState = mutableStateOf(picture)
-    val configState = mutableStateOf(config)
-    val themeState = mutableStateOf(theme)
+    val userName: String
+        get() = dataItems[0]
+    val password: String
+        get() = dataItems[1]
+    val uid: String
+        get() = dataItems[2]
+    val gid: String
+        get() = dataItems[3]
+    val description: String
+        get() = dataItems[4]
+    val home: String
+        get() = dataItems[5]
+    val shell: String
+        get() = dataItems[6]
+    val picture: Any?
+        get() = loadPicture(dataItems[5], ".face")
 
-    val name get() = nameState.value
-    val picture get() = pictureState.value
-    val config get() = configState.value
-    val theme get() = themeState.value
+    val homeDir
+        get() = File(home)
+
+    val isLoggedIn
+        get() = isLoggedIn(userName)
+
+    val userDirs
+        get() = UserDirs(homeDir)
+
+    override fun toString(): String {
+        return userName
+    }
+
+    fun login(
+        string: String
+    ): Boolean {
+        // todo
+        return true
+    }
 
     companion object {
-        // todo
-        fun load() = User(
-            name = Command("whoami").execute(),
-            picture = Icons.Filled.AccountCircle,
-            config = DesktopConfig.Default,
-            theme = Theme.Default
-        )
+        val Nobody = User(":x:-1:-1:::")
+
+        fun isLoggedIn(un: String): Boolean =
+            Command("whoami").execute()?.trim()?.contentEquals(un) == true
+
+        fun loadPicture(home: String, pic: String): File = loadPicture(File(home), pic)
+
+        fun loadPicture(homeDir: File, picName: String): File = File(homeDir, picName)
+
+        val allUsers: List<User>
+            get() = File("/etc/passwd")
+                .readLines()
+                .filter { t ->
+                    t.contains("/home")
+                }.map {
+                    User(it)
+                }
     }
 }

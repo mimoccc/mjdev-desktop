@@ -5,14 +5,14 @@ import java.io.IOException
 import java.net.Socket
 import java.util.*
 
-internal object AdbBinary {
+object AdbBinary {
     private val ADB_BINARY: File? by lazy { find() }
 
     fun tryStartServer(adbServerHost: String, adbServerPort: Int): Boolean {
         return try {
             ensureServerRunning(adbServerHost, adbServerPort)
             true
-        } catch (ignore: Exception) {
+        } catch (_: Exception) {
             false
         }
     }
@@ -47,7 +47,7 @@ internal object AdbBinary {
         return try {
             Socket(adbServerHost, adbServerPort).close()
             true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }

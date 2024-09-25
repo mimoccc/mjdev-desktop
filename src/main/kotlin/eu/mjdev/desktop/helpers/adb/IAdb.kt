@@ -9,9 +9,15 @@ import java.io.File
 import java.nio.file.Files
 
 @Suppress("unused")
-interface Adb : AutoCloseable {
+interface IAdb : AutoCloseable {
+
+    val host: String
+    val port: Int
+    val deviceQuery: String
+    val name: String
+
     @Throws(IOException::class)
-    fun open(destination: String): AdbStream
+    fun open(destination: String): IAdbStream
 
     fun supportsFeature(feature: String): Boolean
 
@@ -96,7 +102,6 @@ interface Adb : AutoCloseable {
 
     @Throws(IOException::class)
     fun installMultiple(apks: List<File>, vararg options: String) {
-        // http://aospxref.com/android-12.0.0_r3/xref/packages/modules/adb/client/adb_install.cpp#538
         if (supportsFeature("cmd")) {
             val totalLength = apks.map { it.length() }.reduce { acc, l -> acc + l }
             execCmd("package", "install-create", "-S", totalLength.toString(), *options).use { createStream ->
@@ -186,14 +191,14 @@ interface Adb : AutoCloseable {
     }
 
     @Throws(IOException::class)
-    fun execCmd(vararg command: String): AdbStream {
+    fun execCmd(vararg command: String): IAdbStream {
         if (!supportsFeature("cmd")) throw UnsupportedOperationException("cmd is not supported on this version of Android")
         val destination = (listOf("exec:cmd") + command).joinToString(" ")
         return open(destination)
     }
 
     @Throws(IOException::class)
-    fun abbExec(vararg command: String): AdbStream {
+    fun abbExec(vararg command: String): IAdbStream {
         if (!supportsFeature("abb_exec")) throw UnsupportedOperationException("abb_exec is not supported on this version of Android")
         val destination = "abb_exec:${command.joinToString("\u0000")}"
         return open(destination)
@@ -243,21 +248,21 @@ interface Adb : AutoCloseable {
             keyPair: AdbKeyPair? = AdbKeyPair.readDefault(),
             connectTimeout: Int = 0,
             socketTimeout: Int = 0
-        ): Adb = AdbImpl(host, port, keyPair, connectTimeout, socketTimeout)
+        ): IAdb = AdbImpl(host, port, keyPair, connectTimeout, socketTimeout)
 
         @JvmStatic
         @JvmOverloads
         fun discover(
             host: String = "localhost",
             keyPair: AdbKeyPair? = AdbKeyPair.readDefault()
-        ): List<Adb> {
+        ): List<IAdb> {
             return list(host, keyPair)
         }
 
         @JvmStatic
         @JvmOverloads
-        fun list(host: String = "localhost", keyPair: AdbKeyPair? = AdbKeyPair.readDefault()): List<Adb> {
-            val dadbs = AdbServer.listDadbs(adbServerHost = host)
+        fun list(host: String = "localhost", keyPair: AdbKeyPair? = AdbKeyPair.readDefault()): List<IAdb> {
+            val dadbs = AdbServer.listAdbs(adbServerHost = host)
             if (dadbs.isNotEmpty()) return dadbs
             return (MIN_EMULATOR_PORT..MAX_EMULATOR_PORT).mapNotNull { port ->
                 val dadb = create(host, port, keyPair)
@@ -274,7 +279,7 @@ interface Adb : AutoCloseable {
             }
         }
 
-        private fun waitRootOrClose(dadb: Adb, root: Boolean) {
+        private fun waitRootOrClose(dadb: IAdb, root: Boolean) {
             while (true) {
                 try {
                     val response = dadb.shell("getprop service.adb.root")
@@ -286,7 +291,7 @@ interface Adb : AutoCloseable {
             }
         }
 
-        private fun restartAdb(dadb: Adb, destination: String): String {
+        private fun restartAdb(dadb: IAdb, destination: String): String {
             dadb.open(destination).use { stream ->
                 return stream.source.readUntil('\n'.code.toByte()).readString(Charsets.UTF_8)
             }

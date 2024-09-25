@@ -1,19 +1,17 @@
 package eu.mjdev.desktop.helpers.system
 
-import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 
 @Suppress("unused")
 class UserDirs(
-    api: DesktopProvider,
-    homeDir: File = api.homeDir,
-    configFile: File = File(api.homeDir, "/.config/user-dirs.dirs"),
-    configFileContent: List<String> = configFile.readLines().filter {
+    homeDir: File,
+    configFile: File = File(homeDir, "/.config/user-dirs.dirs"),
+    configFileContent: List<String> = runCatching {  configFile.readLines().filter {
         (!it.startsWith("#")) && (!it.trim().isEmpty())
     }.map {
         it.replace("\$HOME", homeDir.absolutePath)
             .replace("\"", "")
-    }
+    } }.getOrElse { emptyList() }
 ) : HashMap<String, File>() {
     init {
         configFileContent.map {

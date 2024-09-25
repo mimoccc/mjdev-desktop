@@ -58,7 +58,7 @@ fun UserAvatar(
             else Alignment.Start
         ) {
             TextAny(
-                text = api.currentUser.name ?: api.homeDir.name ?: "-",
+                text = api.currentUser.userName,
                 color = textColor,
                 textAlign = TextAlign.Start,
                 fontWeight = FontWeight.Bold

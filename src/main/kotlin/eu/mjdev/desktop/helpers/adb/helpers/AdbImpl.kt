@@ -1,18 +1,18 @@
 package eu.mjdev.desktop.helpers.adb.helpers
 
-import eu.mjdev.desktop.helpers.adb.Adb
+import eu.mjdev.desktop.helpers.adb.IAdb
 import org.jetbrains.annotations.TestOnly
 import java.net.InetSocketAddress
 import java.net.Socket
 
 @Suppress("unused")
-internal class AdbImpl @Throws(IllegalArgumentException::class) constructor(
-    private val host: String,
-    private val port: Int,
+class AdbImpl @Throws(IllegalArgumentException::class) constructor(
+    override val host: String,
+    override val port: Int,
     private val keyPair: AdbKeyPair? = null,
     private val connectTimeout: Int = 0,
-    private val socketTimeout: Int = 0
-) : Adb {
+    private val socketTimeout: Int = 0,
+) : IAdb {
     init {
         if (port < 0) {
             throw IllegalArgumentException("port must be >= 0")
@@ -26,6 +26,12 @@ internal class AdbImpl @Throws(IllegalArgumentException::class) constructor(
     }
 
     private var connection: Pair<AdbConnection, Socket>? = null
+
+    override val deviceQuery: String
+        get() = ""
+
+    override val name: String
+        get() = ""
 
     override fun open(destination: String) = connection().open(destination)
 

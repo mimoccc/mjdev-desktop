@@ -3,7 +3,9 @@ package eu.mjdev.desktop.helpers.adb.helpers
 import okio.Source
 import okio.buffer
 
-internal class AdbReader(source: Source) : AutoCloseable {
+internal class AdbReader(
+    source: Source
+) : AutoCloseable {
     private val bufferedSource = source.buffer()
 
     fun readMessage(): AdbMessage {

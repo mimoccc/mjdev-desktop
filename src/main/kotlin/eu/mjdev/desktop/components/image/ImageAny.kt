@@ -17,8 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import eu.mjdev.desktop.components.video.VideoView
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopProvider.Companion.withDesktopScope
 import org.jetbrains.skia.Bitmap
 import java.io.File
 import androidx.compose.foundation.Image as ComposeImage
@@ -28,7 +27,6 @@ import androidx.compose.foundation.Image as ComposeImage
 @Composable
 fun ImageAny(
     src: Any?,
-    api: DesktopProvider = LocalDesktop.current,
     contentDescription: String? = "",
     modifier: Modifier = Modifier,
     alignment: Alignment = Alignment.Center,
@@ -38,7 +36,7 @@ fun ImageAny(
     filterQuality: FilterQuality = DefaultFilterQuality,
     onLoading: () -> Unit = {},
     onFail: (error: Throwable) -> Unit = {}
-) {
+) = withDesktopScope {
     // todo from mime
     val isGif = src.toString().trim().endsWith(".gif")
     val isVideo = src.toString().trim().let {

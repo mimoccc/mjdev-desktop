@@ -1,11 +1,9 @@
 package eu.mjdev.desktop.helpers.system
 
-import eu.mjdev.desktop.helpers.system.UserDirs.Companion.XDG_DESKTOP_DIR
-import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 
+@Suppress("unused")
 class OsRelease(
-    api: DesktopProvider,
     configFile: File = File("/etc/os-release"),
     configFileContent: List<String> = configFile.readLines().filter {
         (!it.startsWith("#")) && (!it.trim().isEmpty())

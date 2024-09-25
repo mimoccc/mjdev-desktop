@@ -10,6 +10,7 @@ import eu.mjdev.desktop.components.appsmenu.AppsMenu
 import eu.mjdev.desktop.components.controlcenter.ControlCenter
 import eu.mjdev.desktop.components.desktop.Desktop
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanel
+import eu.mjdev.desktop.components.greeter.Greeter
 import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.rememberDesktopProvider
@@ -43,9 +44,7 @@ fun main(
         }
     }
     MaterialTheme {
-        CompositionLocalProvider(
-            LocalDesktop provides api
-        ) {
+        CompositionLocalProvider(LocalDesktop provides api) {
             MainWindow(
                 panelState = panelState,
                 controlCenterState = controlCenterState,
@@ -58,14 +57,19 @@ fun main(
                     panelState = panelState,
                     menuState = menuState,
                     onMenuIconClicked = { if (!menuState.isVisible) menuState.show() },
-                    onFocusChange = { focus -> handlePanelFocus(focus) })
+                    onFocusChange = { focus -> handlePanelFocus(focus) }
+                )
                 AppsMenu(
                     menuState = menuState,
                     panelState = panelState,
-                    onFocusChange = { focus -> handleMenuFocus(focus) })
+                    onFocusChange = { focus -> handleMenuFocus(focus) }
+                )
                 ControlCenter(
                     controlCenterState = controlCenterState,
-                    onFocusChange = { focus -> handleControlCenterFocus(focus) })
+                    onFocusChange = { focus -> handleControlCenterFocus(focus) }
+                )
+                Greeter()
+//                InfoWindow()
             }
             DisposableEffect(Unit) {
                 onDispose {

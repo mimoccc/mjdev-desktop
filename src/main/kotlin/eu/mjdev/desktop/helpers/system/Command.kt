@@ -21,7 +21,7 @@ class Command(
 
     fun execute(): String? = runCatching {
         StringJoiner(System.lineSeparator()).let { sj ->
-            val p = ProcessBuilder(_cmd).start()
+            val p = Runtime.getRuntime().exec(_cmd.toTypedArray())
             BufferedReader(InputStreamReader(p.inputStream))
                 .lines()
                 .iterator()
@@ -36,6 +36,13 @@ class Command(
     }.onFailure { e ->
         error = e
     }.getOrNull()
+
+    fun executeWithEnv(
+        env: Environment
+    ): Process = Runtime.getRuntime().exec(
+        _cmd.toTypedArray(),
+        env.toTypedArray()
+    )
 
     companion object {
         inline fun <reified T> String.to(): T? = runCatching {

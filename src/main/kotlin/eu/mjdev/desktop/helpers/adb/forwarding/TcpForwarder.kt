@@ -1,6 +1,6 @@
 package eu.mjdev.desktop.helpers.adb.forwarding
 
-import eu.mjdev.desktop.helpers.adb.Adb
+import eu.mjdev.desktop.helpers.adb.IAdb
 import eu.mjdev.desktop.helpers.adb.helpers.log
 import okio.*
 import java.io.IOException
@@ -13,19 +13,12 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import kotlin.concurrent.thread
 
-data class TcpForwardDescriptor(private val resource: AutoCloseable, val localPort: Int) : AutoCloseable {
-    override fun close() {
-        resource.close()
-    }
-}
-
 @Suppress("SameParameterValue")
 internal class TcpForwarder(
-    private val dadb: Adb,
+    private val adb: IAdb,
     private val targetPort: Int,
     private val hostPort: Int? = null,
 ) : AutoCloseable {
-
     private var state: State = State.STOPPED
     private var serverThread: Thread? = null
     private var server: ServerSocket? = null
@@ -33,14 +26,12 @@ internal class TcpForwarder(
 
     fun start(): Int {
         check(state == State.STOPPED) { "Forwarder is already started at port $hostPort" }
-
         moveToState(State.STARTING)
-
         clientExecutor = Executors.newCachedThreadPool()
         serverThread = thread {
             try {
                 handleForwarding()
-            } catch (ignored: SocketException) {
+            } catch (_: SocketException) {
                 // Do nothing
             } catch (e: IOException) {
                 log { "could not start TCP port forwarding: ${e.message}" }
@@ -48,33 +39,26 @@ internal class TcpForwarder(
                 moveToState(State.STOPPED)
             }
         }
-
         waitFor(10, 5000) {
             state == State.STARTED
         }
-
         return server!!.localPort
     }
 
     private fun handleForwarding() {
         val serverRef = ServerSocket(hostPort ?: 0)
         server = serverRef
-
         moveToState(State.STARTED)
-
         while (!Thread.interrupted()) {
             val client = serverRef.accept()
-
             clientExecutor?.execute {
-                val adbStream = dadb.open("tcp:$targetPort")
-
+                val adbStream = adb.open("tcp:$targetPort")
                 val readerThread = thread {
                     forward(
                         client.getInputStream().source(),
                         adbStream.sink
                     )
                 }
-
                 try {
                     forward(
                         adbStream.source,
@@ -83,7 +67,6 @@ internal class TcpForwarder(
                 } finally {
                     adbStream.close()
                     client.close()
-
                     readerThread.interrupt()
                 }
             }
@@ -94,15 +77,10 @@ internal class TcpForwarder(
         if (state == State.STOPPED || state == State.STOPPING) {
             return
         }
-
-        // Make sure that we are not stopping the server while it is in a transient state
-        // to avoid surprises
         waitFor(10, 5000) {
             state == State.STARTED
         }
-
         moveToState(State.STOPPING)
-
         server?.close()
         server = null
         serverThread?.interrupt()
@@ -110,7 +88,6 @@ internal class TcpForwarder(
         clientExecutor?.shutdown()
         clientExecutor?.awaitTermination(5, TimeUnit.SECONDS)
         clientExecutor = null
-
         waitFor(10, 5000) {
             state == State.STOPPED
         }
@@ -125,13 +102,13 @@ internal class TcpForwarder(
                     } else {
                         return
                     }
-                } catch (ignored: IOException) {
+                } catch (_: IOException) {
                     // Do nothing
                 }
             }
-        } catch (ignored: InterruptedException) {
+        } catch (_: InterruptedException) {
             // Do nothing
-        } catch (ignored: InterruptedIOException) {
+        } catch (_: InterruptedIOException) {
             // do nothing
         }
     }
@@ -168,5 +145,4 @@ internal class TcpForwarder(
             lastCheck = System.currentTimeMillis()
         }
     }
-
 }

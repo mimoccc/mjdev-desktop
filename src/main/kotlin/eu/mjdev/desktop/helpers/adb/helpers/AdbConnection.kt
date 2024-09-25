@@ -10,26 +10,24 @@ import java.io.IOException
 import java.net.Socket
 import java.util.*
 
-@Suppress("unused")
-internal class AdbConnection internal constructor(
+internal class AdbConnection(
     adbReader: AdbReader,
     private val adbWriter: AdbWriter,
     private val closeable: Closeable?,
     private val supportedFeatures: Set<String>,
-    private val version: Int,
+    @Suppress("unused") private val version: Int,
     private val maxPayloadSize: Int
 ) : AutoCloseable {
-
     private val random = Random()
     private val messageQueue = AdbMessageQueue(adbReader)
 
     @Throws(IOException::class)
-    fun open(destination: String): AdbStream {
+    fun open(destination: String): IAdbStream {
         val localId = newId()
         messageQueue.startListening(localId)
         try {
             adbWriter.writeOpen(localId, destination)
-            val message = messageQueue.take(localId, Constants.CMD_OKAY)
+            val message = messageQueue.take(localId, AdbConstants.CMD_OKAY)
             val remoteId = message.arg0
             return AdbStreamImpl(messageQueue, adbWriter, maxPayloadSize, localId, remoteId)
         } catch (e: Throwable) {
@@ -46,6 +44,7 @@ internal class AdbConnection internal constructor(
         return random.nextInt()
     }
 
+    @Suppress("unused")
     @TestOnly
     internal fun ensureEmpty() {
         messageQueue.ensureEmpty()
@@ -56,19 +55,18 @@ internal class AdbConnection internal constructor(
             messageQueue.close()
             adbWriter.close()
             closeable?.close()
-        } catch (ignore: Throwable) {
+        } catch (_: Throwable) {
         }
     }
 
     companion object {
-
         fun connect(socket: Socket, keyPair: AdbKeyPair? = null): AdbConnection {
             val source = socket.source()
             val sink = socket.sink()
             return connect(source, sink, keyPair, socket)
         }
 
-        private fun connect(
+        fun connect(
             source: Source,
             sink: Sink,
             keyPair: AdbKeyPair? = null,
@@ -86,40 +84,32 @@ internal class AdbConnection internal constructor(
             }
         }
 
-        private fun connect(
+        fun connect(
             adbReader: AdbReader,
             adbWriter: AdbWriter,
             keyPair: AdbKeyPair?,
             closeable: Closeable?
         ): AdbConnection {
             adbWriter.writeConnect()
-
             var message = adbReader.readMessage()
-
-            if (message.command == Constants.CMD_AUTH) {
+            if (message.command == AdbConstants.CMD_AUTH) {
                 checkNotNull(keyPair) { "Authentication required but no KeyPair provided" }
-                check(message.arg0 == Constants.AUTH_TYPE_TOKEN) { "Unsupported auth type: $message" }
-
+                check(message.arg0 == AdbConstants.AUTH_TYPE_TOKEN) { "Unsupported auth type: $message" }
                 val signature = keyPair.signPayload(message)
-                adbWriter.writeAuth(Constants.AUTH_TYPE_SIGNATURE, signature)
-
+                adbWriter.writeAuth(AdbConstants.AUTH_TYPE_SIGNATURE, signature)
                 message = adbReader.readMessage()
-                if (message.command == Constants.CMD_AUTH) {
-                    adbWriter.writeAuth(Constants.AUTH_TYPE_RSA_PUBLIC, keyPair.publicKeyBytes)
+                if (message.command == AdbConstants.CMD_AUTH) {
+                    adbWriter.writeAuth(AdbConstants.AUTH_TYPE_RSA_PUBLIC, keyPair.publicKeyBytes)
                     message = adbReader.readMessage()
                 }
             }
-
-            if (message.command != Constants.CMD_CNXN) throw IOException("Connection failed: $message")
-
+            if (message.command != AdbConstants.CMD_CNXN) throw IOException("Connection failed: $message")
             val connectionString = parseConnectionString(String(message.payload))
             val version = message.arg0
             val maxPayloadSize = message.arg1
-
             return AdbConnection(adbReader, adbWriter, closeable, connectionString.features, version, maxPayloadSize)
         }
 
-        // ie: "device::ro.product.name=sdk_gphone_x86;ro.product.model=Android SDK built for x86;ro.product.device=generic_x86;features=fixed_push_symlink_timestamp,apex,fixed_push_mkdir,stat_v2,abb_exec,cmd,abb,shell_v2"
         private fun parseConnectionString(connectionString: String): ConnectionString {
             val keyValues = connectionString.substringAfter("device::")
                 .split(";")
@@ -132,5 +122,3 @@ internal class AdbConnection internal constructor(
         }
     }
 }
-
-private data class ConnectionString(val features: Set<String>)

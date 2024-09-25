@@ -1,6 +1,6 @@
 package eu.mjdev.desktop.helpers.adb.helpers
 
-internal object Constants {
+object AdbConstants {
     const val AUTH_TYPE_TOKEN = 1
     const val AUTH_TYPE_SIGNATURE = 2
     const val AUTH_TYPE_RSA_PUBLIC = 3

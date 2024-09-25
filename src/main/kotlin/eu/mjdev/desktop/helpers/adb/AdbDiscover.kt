@@ -9,23 +9,25 @@ import kotlinx.coroutines.launch
 class AdbDiscover(
     coroutineScope: CoroutineScope? = null,
     discoverDelay: Long = 1000L,
-    onAdded: suspend (Adb) -> Unit,
-//    onRemoved: suspend (Dadb) -> Unit,
+    onAdded: suspend (IAdb) -> Unit,
+    onRemoved: suspend (IAdb) -> Unit,
 ) {
-    val devices = mutableMapOf<String, Adb>()
+    val devices = mutableListOf<IAdb>()
 
     init {
         coroutineScope?.launch {
             while (isActive) {
                 runCatching {
-                    val newDevices = Adb.discover()
-                    if (newDevices.isNotEmpty()) {
-                        newDevices.forEach { entry ->
-                            if (!devices.containsKey(entry.toString())) {
-                                devices[entry.toString()] = entry
-                                onAdded(entry)
-                            }
-                        }
+                    val newDevices: List<IAdb> = IAdb.discover().toList()
+                    val removed = devices.filter { d -> !newDevices.contains(d) }
+                    val added = newDevices.filter { d -> !devices.contains(d) }
+                    removed.forEach { d ->
+                        devices.remove(d)
+                        onRemoved(d)
+                    }
+                    added.forEach { d ->
+                        devices.add(d)
+                        onAdded(d)
                     }
                 }.onFailure { e ->
                     println("Error : ${e.message}")
@@ -38,12 +40,12 @@ class AdbDiscover(
     companion object {
         fun adbDevicesHandler(
             coroutineScope: CoroutineScope? = null,
-//            onRemoved: suspend (Dadb) -> Unit = {},
-            onAdded: suspend (Adb) -> Unit = {},
+            onRemoved: suspend (IAdb) -> Unit = {},
+            onAdded: suspend (IAdb) -> Unit = {},
         ) = AdbDiscover(
             coroutineScope = coroutineScope,
             onAdded = onAdded,
-//            onRemoved = onRemoved
+            onRemoved = onRemoved
         )
     }
 }

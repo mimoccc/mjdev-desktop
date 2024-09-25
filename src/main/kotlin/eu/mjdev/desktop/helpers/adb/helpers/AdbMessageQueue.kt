@@ -1,6 +1,8 @@
 package eu.mjdev.desktop.helpers.adb.helpers
 
-internal class AdbMessageQueue(private val adbReader: AdbReader) : AutoCloseable, MessageQueue<AdbMessage>() {
+internal class AdbMessageQueue(
+    private val adbReader: AdbReader
+) : AutoCloseable, MessageQueue<AdbMessage>() {
     override fun readMessage() = adbReader.readMessage()
 
     override fun getLocalId(message: AdbMessage) = message.arg1
@@ -9,5 +11,5 @@ internal class AdbMessageQueue(private val adbReader: AdbReader) : AutoCloseable
 
     override fun close() = adbReader.close()
 
-    override fun isCloseCommand(message: AdbMessage) = message.command == Constants.CMD_CLSE
+    override fun isCloseCommand(message: AdbMessage) = message.command == AdbConstants.CMD_CLSE
 }

@@ -29,7 +29,7 @@ fun Desktop(
                 .align(Alignment.BottomEnd)
         )
         FolderView(
-            path = api.userDirs.desktopDirectory,
+            path = api.currentUser.userDirs.desktopDirectory,
             showHomeFolder = true,
             orientation = Orientation.Vertical,
             modifier = Modifier.size(constraints.maxWidth.dp, constraints.maxHeight.dp)

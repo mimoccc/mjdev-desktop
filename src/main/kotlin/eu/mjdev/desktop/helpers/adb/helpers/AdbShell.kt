@@ -1,19 +1,10 @@
-@file:JvmName("AdbShell")
-@file:Suppress("unused")
-
 package eu.mjdev.desktop.helpers.adb.helpers
 
 import eu.mjdev.desktop.helpers.adb.helpers.AdbShellPacket.*
 import java.io.IOException
 
-const val ID_STDIN = 0
-const val ID_STDOUT = 1
-const val ID_STDERR = 2
-const val ID_EXIT = 3
-const val ID_CLOSE_STDIN = 3
-
 class AdbShellStream(
-    private val stream: AdbStream
+    private val stream: IAdbStream
 ) : AutoCloseable {
     @Throws(IOException::class)
     fun readAll(): AdbShellResponse {
@@ -83,35 +74,14 @@ class AdbShellStream(
         check(id != ID_EXIT || length == 1) { "Shell exit packet does not have payload length == 1: $length" }
         return length
     }
-}
 
-sealed class AdbShellPacket(
-    open val payload: ByteArray
-) {
-    abstract val id: Int
+    companion object {
+        const val ID_STDIN = 0
+        const val ID_STDOUT = 1
+        const val ID_STDERR = 2
+        const val ID_EXIT = 3
 
-    class StdOut(override val payload: ByteArray) : AdbShellPacket(payload) {
-        override val id: Int = ID_STDOUT
-        override fun toString() = "STDOUT: ${String(payload)}"
+        @Suppress("unused")
+        const val ID_CLOSE_STDIN = 3
     }
-
-    class StdError(override val payload: ByteArray) : AdbShellPacket(payload) {
-        override val id: Int = ID_STDERR
-        override fun toString() = "STDERR: ${String(payload)}"
-    }
-
-    class Exit(override val payload: ByteArray) : AdbShellPacket(payload) {
-        override val id: Int = ID_EXIT
-        override fun toString() = "EXIT: ${payload[0]}"
-    }
-}
-
-class AdbShellResponse(
-    val output: String,
-    val errorOutput: String,
-    val exitCode: Int
-) {
-    val allOutput: String by lazy { "$output$errorOutput" }
-
-    override fun toString() = "Shell response ($exitCode):\n$allOutput"
 }

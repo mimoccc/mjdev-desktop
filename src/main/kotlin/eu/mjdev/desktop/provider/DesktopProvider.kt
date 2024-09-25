@@ -1,7 +1,6 @@
 package eu.mjdev.desktop.provider
 
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
@@ -14,7 +13,6 @@ import eu.mjdev.desktop.helpers.internal.Palette
 import eu.mjdev.desktop.helpers.managers.*
 import eu.mjdev.desktop.helpers.system.Command
 import eu.mjdev.desktop.helpers.system.OsRelease
-import eu.mjdev.desktop.helpers.system.UserDirs
 import eu.mjdev.desktop.provider.AIProvider.AiPluginGemini
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,21 +32,21 @@ class DesktopProvider(
     val ai: AIProvider = AIProvider(scope, AiPluginGemini(scope)),
     val windows: WindowsManager = WindowsManager(),
     val gnome: GnomeManager = GnomeManager(),
-    val currentUser: User = User.load() // todo manager
+    val allUsers: List<User> = User.allUsers,
 ) {
-    val homeDir
-        get() = File("/home/${currentUser.name}")
-
-    val userDirs = UserDirs(this)
-
-    val osDetails = OsRelease(this)
-
+    val osDetails = OsRelease()
     val palette: Palette = Palette(scope, currentUser.theme.backgroundColor)
-
     val controlCenterPagesState: MutableState<List<ControlCenterPage>> = mutableStateOf(CONTROL_CENTER_PAGES)
 
-    val machineName
-        get() = Command("hostname").execute()
+    // todo state
+    val currentUser: User
+        get() = allUsers.filter { u -> u.isLoggedIn == true }.firstOrNull() ?: User.Nobody
+
+    val homeDir : File
+        get() = currentUser.homeDir
+
+    val machineName : String
+        get() = Command("hostname").execute()?.trim().orEmpty()
 
 //    private val engine: ScriptEngine by lazy {
 //        scriptManager.getEngineByName("JavaScript").apply {
@@ -57,11 +55,16 @@ class DesktopProvider(
 //    }
 
     val adbHandler = adbDevicesHandler(
-        coroutineScope = scope
-    ) { device ->
-        println("Device discovered : $device")
-        // when device connected
-    }
+        coroutineScope = scope,
+        onAdded = { device ->
+            println("Device discovered : $device")
+            // when device connected
+        },
+        onRemoved = { device ->
+            println("Device removed : $device")
+            // when device removed
+        }
+    )
 
     val containerSize: DpSize by lazy {
         Toolkit.getDefaultToolkit().screenSize.let {
@@ -88,6 +91,8 @@ class DesktopProvider(
     init {
         currentUser.theme.controlCenterExpandedWidth = containerSize.width.div(4)
         mounts.init()
+
+        println(allUsers)
     }
 
     fun dispose() {
@@ -144,6 +149,10 @@ class DesktopProvider(
     ) {
         val scope
             get() = api.scope
+
+        val currentUser
+            get() = api.currentUser
+
         val backgroundColorState
             get() = api.palette.backgroundColorState
         val backgroundColor

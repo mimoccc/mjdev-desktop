@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.locks.ReentrantLock
 
-internal abstract class MessageQueue<V> {
+abstract class MessageQueue<V> {
     private val readLock = ReentrantLock()
     private val queueLock = ReentrantLock()
     private val queueCond = queueLock.newCondition()
@@ -39,6 +39,7 @@ internal abstract class MessageQueue<V> {
 
     @TestOnly
     fun ensureEmpty() {
+        @Suppress("UsePropertyAccessSyntax")
         check(queues.isEmpty()) { "Queues is not empty: ${queues.keys.map { String.format("%X", it) }}" }
         check(openStreams.isEmpty())
     }
@@ -63,17 +64,13 @@ internal abstract class MessageQueue<V> {
     private fun read() {
         val message = readMessage()
         val localId = getLocalId(message)
-
         if (isCloseCommand(message)) {
             openStreams.remove(localId)
             return
         }
-
         val streamQueues = queues[localId] ?: return
-
         val command = getCommand(message)
         val commandQueue = streamQueues.computeIfAbsent(command) { ConcurrentLinkedQueue() }
-
         commandQueue.add(message)
     }
 }

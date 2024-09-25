@@ -23,7 +23,6 @@ class AdbKeyPair(
     }
 
     companion object {
-
         private const val KEY_LENGTH_BITS = 2048
         private const val KEY_LENGTH_BYTES = KEY_LENGTH_BITS / 8
         private const val KEY_LENGTH_WORDS = KEY_LENGTH_BYTES / 4
@@ -55,11 +54,9 @@ class AdbKeyPair(
         fun readDefault(): AdbKeyPair {
             val privateKeyFile = File(System.getenv("HOME"), ".android/adbkey")
             val publicKeyFile = File(System.getenv("HOME"), ".android/adbkey.pub")
-
             if (!privateKeyFile.exists()) {
                 generate(privateKeyFile, publicKeyFile)
             }
-
             return read(privateKeyFile, publicKeyFile)
         }
 
@@ -72,7 +69,6 @@ class AdbKeyPair(
             } else {
                 ByteArray(0)
             }
-
             return AdbKeyPair(privateKey, publicKeyBytes)
         }
 
@@ -82,17 +78,14 @@ class AdbKeyPair(
                 it.initialize(KEY_LENGTH_BITS)
                 it.genKeyPair()
             }
-
             privateKeyFile.absoluteFile.parentFile?.mkdirs()
             publicKeyFile.absoluteFile.parentFile?.mkdirs()
-
             privateKeyFile.writer().use { out ->
                 val base64 = Base64.getMimeEncoder(64, "\n".toByteArray())
                 out.write("-----BEGIN PRIVATE KEY-----\n")
                 out.write(base64.encodeToString(keyPair.private.encoded))
                 out.write("\n-----END PRIVATE KEY-----")
             }
-
             publicKeyFile.writer().use { out ->
                 val base64 = Base64.getEncoder()
                 val bytes = convertRsaPublicKeyToAdbFormat(keyPair.public as RSAPublicKey)
@@ -108,22 +101,8 @@ class AdbKeyPair(
             return publicKeyBytes
         }
 
-        // https://github.com/cgutman/AdbLib/blob/d6937951eb98557c76ee2081e383d50886ce109a/src/com/cgutman/adblib/AdbCrypto.java#L83-L137
         @Suppress("JoinDeclarationAndAssignment")
         private fun convertRsaPublicKeyToAdbFormat(pubkey: RSAPublicKey): ByteArray {
-            /*
-             * ADB literally just saves the RSAPublicKey struct to a file.
-             *
-             * typedef struct RSAPublicKey {
-             * int len; // Length of n[] in number of uint32_t
-             * uint32_t n0inv;  // -1 / n[0] mod 2^32
-             * uint32_t n[RSANUMWORDS]; // modulus as little endian array
-             * uint32_t rr[RSANUMWORDS]; // R^2 as little endian array
-             * int exponent; // 3 or 65537
-             * } RSAPublicKey;
-             */
-
-            /* ------ This part is a Java-ified version of RSA_to_RSAPublicKey from adb_host_auth.c ------ */
             val r32: BigInteger
             val r: BigInteger
             var rr: BigInteger
@@ -149,8 +128,6 @@ class AdbKeyPair(
                 rem = res[1]
                 myN[i] = rem.toInt()
             }
-
-            /* ------------------------------------------------------------------------------------------- */
             val bbuf: ByteBuffer = ByteBuffer.allocate(524).order(ByteOrder.LITTLE_ENDIAN)
             bbuf.putInt(KEY_LENGTH_WORDS)
             bbuf.putInt(n0inv.negate().toInt())

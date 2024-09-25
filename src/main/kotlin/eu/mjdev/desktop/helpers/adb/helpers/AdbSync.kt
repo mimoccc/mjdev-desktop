@@ -6,22 +6,8 @@ import okio.Source
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 
-internal const val LIST = "LIST"
-internal const val RECV = "RECV"
-internal const val SEND = "SEND"
-internal const val STAT = "STAT"
-internal const val DATA = "DATA"
-internal const val DONE = "DONE"
-internal const val OKAY = "OKAY"
-internal const val QUIT = "QUIT"
-internal const val FAIL = "FAIL"
-
-internal val SYNC_IDS = setOf(LIST, RECV, SEND, STAT, DATA, DONE, OKAY, QUIT, FAIL)
-
-private class Packet(val id: String, val arg: Int)
-
 class AdbSyncStream(
-    private val stream: AdbStream
+    private val stream: IAdbStream
 ) : AutoCloseable {
     private val buffer = Buffer()
 
@@ -29,14 +15,11 @@ class AdbSyncStream(
     fun send(source: Source, remotePath: String, mode: Int, lastModifiedMs: Long) {
         val remote = "$remotePath,$mode"
         writePacket(SEND, remote.length)
-
         stream.sink.apply {
             writeString(remote, StandardCharsets.UTF_8)
             flush()
         }
-
         buffer.clear()
-
         while (true) {
             val read = source.read(buffer, 64_000)
             if (read == -1L) break
@@ -44,11 +27,8 @@ class AdbSyncStream(
             val sent = stream.sink.writeAll(buffer)
             check(read == sent)
         }
-
         writePacket(DONE, (lastModifiedMs / 1000).toInt())
-
         stream.sink.flush()
-
         val packet = readPacket()
         if (packet.id != OKAY) throw IOException("Unexpected sync packet id: ${packet.id}")
     }
@@ -60,9 +40,7 @@ class AdbSyncStream(
             writeString(remotePath, StandardCharsets.UTF_8)
             flush()
         }
-
         buffer.clear()
-
         while (true) {
             val packet = readPacket()
             if (packet.id == DONE) break
@@ -75,7 +53,6 @@ class AdbSyncStream(
             stream.source.readFully(buffer, chunkSize.toLong())
             buffer.readAll(sink)
         }
-
         sink.flush()
     }
 
@@ -96,5 +73,19 @@ class AdbSyncStream(
     override fun close() {
         writePacket(QUIT, 0)
         stream.close()
+    }
+
+    companion object {
+        internal const val LIST = "LIST"
+        internal const val RECV = "RECV"
+        internal const val SEND = "SEND"
+        internal const val STAT = "STAT"
+        internal const val DATA = "DATA"
+        internal const val DONE = "DONE"
+        internal const val OKAY = "OKAY"
+        internal const val QUIT = "QUIT"
+        internal const val FAIL = "FAIL"
+
+        val SYNC_IDS = setOf(LIST, RECV, SEND, STAT, DATA, DONE, OKAY, QUIT, FAIL)
     }
 }
