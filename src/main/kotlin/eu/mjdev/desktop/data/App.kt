@@ -78,7 +78,11 @@ class App(
         triggerStart()
         println("Starting app: $name [$cmd]")
         val env = Environment()
-        Command("/bin/bash", "-c", cmd).executeWithEnv(env).also {
+        Command(
+            "/bin/sh",
+            "-c",
+            "\"DBUS_SESSION_BUS_ADDRESS='unix:path=\$XDG_RUNTIME_DIR/bus' &&  $cmd \""
+        ).executeWithEnv(env).also {
             process = it
         }.apply {
             onExit().thenRun {

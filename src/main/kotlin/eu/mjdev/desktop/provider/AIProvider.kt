@@ -3,7 +3,7 @@ package eu.mjdev.desktop.provider
 import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
 import dev.shreyaspatil.ai.client.generativeai.type.content
 import eu.mjdev.desktop.extensions.Custom.loadKey
-import eu.mjdev.desktop.helpers.system.Command
+import eu.mjdev.desktop.helpers.system.Shell
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -16,7 +16,7 @@ class AIProvider(
     val scope: CoroutineScope,
     var pluginAI: IAIPlugin = AiPluginNull(scope),
     val pluginSTT: ISTTPlugin = STTPluginNull(scope),
-    val pluginTTS: TTSPlugin = TTSPluginSwift(scope),
+    val pluginTTS: TTSPlugin = TTSPluginMain(scope),
     val isAvailable: () -> Boolean = { pluginAI !is AiPluginNull }
 ) {
     fun ask(
@@ -65,10 +65,10 @@ class AIProvider(
     ) : TTSPlugin {
         override fun talk(text: String, clearQueue: Boolean) {
             scope.launch(Dispatchers.IO) {
-                Command(
+                Shell.executeAndRead(
                     "/opt/swift/bin/swift",
                     "\"${text.replace("\"", " ")}\""
-                ).execute()
+                )
             }
         }
     }
@@ -80,24 +80,29 @@ class AIProvider(
     class AiPluginGemini(
         val scope: CoroutineScope
     ) : IAIPlugin {
-        private val generativeModel: GenerativeModel by lazy {
-            GenerativeModel(
-                modelName = "gemini-1.5-pro-latest",
-                apiKey = loadKey("gemini")
-            )
+        private val key = loadKey("gemini")
+        private val generativeModel: GenerativeModel? by lazy {
+            if (key.isNotEmpty()) {
+                GenerativeModel(
+                    modelName = "gemini-1.5-pro-latest",
+                    apiKey = key
+                )
+            } else null
         }
 
         override suspend fun ask(question: String): String = scope.async {
             var error: Throwable? = null
             runCatching {
-                generativeModel.generateContent(content {
-                    text(question)
-                }).text
+                if (key.isEmpty()) {
+                    throw(Exception("Error: No gemini api key provided, pleas read manual and provide Your api key."))
+                } else {
+                    generativeModel?.generateContent(content {
+                        text(question)
+                    })?.text
+                }
             }.onFailure { e ->
                 error = e
-            }.getOrElse {
-                error?.message ?: ""
-            } ?: ""
+            }.getOrNull() ?: error?.message ?: ""
         }.await()
     }
 }
