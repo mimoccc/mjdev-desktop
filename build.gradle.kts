@@ -41,6 +41,7 @@ allprojects {
         // foundation
         implementation(compose.foundation)
         // preview
+        implementation(compose.uiTooling)
         implementation(compose.preview)
         // resources
         implementation(compose.components.resources)
@@ -98,6 +99,9 @@ allprojects {
         implementation("com.github.skydoves:flexible-bottomsheet-material3:0.1.5")
         // fs watcher
         implementation("io.github.irgaly.kfswatch:kfswatch:1.3.0")
+        // java gnome
+        implementation("com.github.bailuk:java-gtk:0.5.0")
+
         // compose debugger
 //        implementation("io.github.theapache64:rebugger:1.0.0-rc03")
         // music

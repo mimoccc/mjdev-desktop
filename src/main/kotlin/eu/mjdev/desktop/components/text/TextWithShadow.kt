@@ -17,18 +17,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun TextWithShadow(
     modifier: Modifier = Modifier,
     shadowSize: Dp = 4.dp,
-    shadowColor: Color = Color.Black.copy(alpha = 0.3f),
+    shadowColor: Color = Color.Black.copy(alpha = 0.5f),
     offsetX: Dp = 0.dp,
     offsetY: Dp = 0.dp,
     fontWeight: FontWeight = FontWeight.Normal,
     textAlign: TextAlign? = null,
     fontSize: TextUnit = 16.sp,
-    color: Color = Color.White,
+    color: Color = Color.Red,
     overflow: TextOverflow = Ellipsis,
     minLines: Int = 2,
     maxLines: Int = 2,
@@ -51,3 +50,7 @@ fun TextWithShadow(
     minLines = minLines,
     maxLines = maxLines
 )
+
+@Preview
+@Composable
+fun TextWithShadowPreview() = TextWithShadow()

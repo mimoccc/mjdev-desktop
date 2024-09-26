@@ -26,13 +26,13 @@ import eu.mjdev.desktop.extensions.Compose.rememberState
 @Composable
 fun DesktopPanelText(
     modifier: Modifier = Modifier,
-    text: String = "button",
+    text: String = "text",
     textColor: Color = Color.White,
     backgroundHover: Color = Color.Red,
     textPadding: PaddingValues = PaddingValues(4.dp),
     buttonState: MutableState<Boolean> = rememberState(false),
     onToolTip: (item: Any?) -> Unit = {},
-    onClick: () -> Unit,
+    onClick: () -> Unit = {},
 ) = Box(
     modifier = modifier
         .wrapContentSize()
@@ -58,4 +58,8 @@ fun DesktopPanelText(
         )
     }
 }
+
+@Preview
+@Composable
+fun DesktopPanelTextPreview() = DesktopPanelText()
 

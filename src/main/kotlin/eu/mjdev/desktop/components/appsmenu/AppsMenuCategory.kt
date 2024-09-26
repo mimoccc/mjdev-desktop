@@ -24,7 +24,6 @@ import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @Suppress("DEPRECATION")
 @OptIn(ExperimentalFoundationApi::class)
-@Preview
 @Composable
 fun AppsMenuCategory(
     modifier: Modifier = Modifier,
@@ -65,3 +64,7 @@ fun AppsMenuCategory(
         fontWeight = FontWeight.Bold
     )
 }
+
+@Preview
+@Composable
+fun AppsMenuCategoryPreview() = AppsMenuCategory()

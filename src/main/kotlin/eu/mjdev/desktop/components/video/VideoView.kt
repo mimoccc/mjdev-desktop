@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import eu.mjdev.desktop.components.video.base.VideoPlayerFFMpeg
 import java.io.File
 
 @Suppress("UNUSED_PARAMETER", "FunctionName")
@@ -15,7 +16,7 @@ import java.io.File
 @Composable
 fun VideoView(
     modifier: Modifier = Modifier,
-    src: Any?,
+    src: Any? = null,
     alignment: Alignment = Alignment.Center,
     alpha: Float = 1f,
     contentDescription: String? = "",
@@ -35,3 +36,7 @@ fun VideoView(
         }
     )
 }
+
+@Preview
+@Composable
+fun VideoViewPreview() = VideoView()

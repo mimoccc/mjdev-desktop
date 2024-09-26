@@ -10,16 +10,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.components.menu.base.ContextMenuState
+import eu.mjdev.desktop.components.menu.base.ContextMenuState.Companion.rememberContextMenuState
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 
 // todo
 @Suppress("unused", "FunctionName")
-@Preview
 @Composable
 fun ContextMenu(
     backgroundColor: Color = Color.SuperDarkGray,
     textColor: Color = Color.White,
-    contextMenuState: ContextMenuState,
+    contextMenuState: ContextMenuState = rememberContextMenuState(),
 //    onShow: () -> Unit = {},
 //    onHide: () -> Unit = {},
     onMenuItemClick: (item: String) -> Unit = {}
@@ -57,25 +58,6 @@ fun ContextMenu(
     }
 }
 
-class ContextMenuState(
-    val menuExpanded: MutableState<Boolean> = mutableStateOf(false),
-    val menuRenderCount: MutableState<Int> = mutableStateOf(0),
-    val items: List<String> = listOf()
-) {
-    fun show() {
-        menuExpanded.value = true
-    }
-
-    fun hide() {
-        menuExpanded.value = false
-    }
-
-    companion object {
-        @Composable
-        fun rememberContextMenuState(vararg items: String) = remember {
-            ContextMenuState(
-                items = items.asList()
-            )
-        }
-    }
-}
+@Preview
+@Composable
+fun ContextMenuPreview() = ContextMenu()

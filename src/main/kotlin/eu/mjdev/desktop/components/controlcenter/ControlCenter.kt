@@ -23,17 +23,16 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
-import eu.mjdev.desktop.components.controlcenter.ControlCenterPage.ControlCenterPageScope
 import eu.mjdev.desktop.components.sliding.SlidingMenu
-import eu.mjdev.desktop.components.sliding.VisibilityState
-import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.components.sliding.base.VisibilityState
+import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.withDesktopScope
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.windows.ChromeWindowState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
@@ -42,7 +41,6 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Suppress("FunctionName", "DEPRECATION")
-@Preview
 @Composable
 fun ControlCenter(
     api: DesktopProvider = LocalDesktop.current,
@@ -55,7 +53,6 @@ fun ControlCenter(
     onContextMenuClick: () -> Unit = {}
 ) = withDesktopScope {
     val backgroundAlpha by remember { api.currentUser.theme.controlCenterBackgroundAlphaState }
-    val backgroundInvoker = remember { { backgroundColor } }
     val controlCenterExpandedWidth by remember { api.currentUser.theme.controlCenterExpandedWidthState }
     val controlCenterDividerWidth by remember { api.currentUser.theme.controlCenterDividerWidthState }
     val controlCenterIconSize by remember { api.currentUser.theme.controlCenterIconSizeState }
@@ -173,9 +170,7 @@ fun ControlCenter(
                                     Box(
                                         modifier = Modifier.width(controlCenterExpandedWidth),
                                     ) {
-                                        with(pagesFiltered.value[pagerState.value]) {
-                                            content(ControlCenterPageScope(api, backgroundInvoker, cache))
-                                        }
+                                        pagesFiltered.value[pagerState.value].render()
                                     }
                                     Divider(
                                         modifier = Modifier.fillMaxHeight()
@@ -197,3 +192,7 @@ fun ControlCenter(
         }
     }
 }
+
+@Preview
+@Composable
+fun ControlCenterPreview() = ControlCenter()

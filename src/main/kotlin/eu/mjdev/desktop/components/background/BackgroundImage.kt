@@ -15,24 +15,20 @@ import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.helpers.internal.Queue.Companion.mutableQueue
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun BackgroundImage(
     modifier: Modifier = Modifier,
-    api: DesktopProvider = LocalDesktop.current,
     fadeInDuration: Long = 3000L,
     fadeOutDuration: Long = 5000L,
     onError: (Throwable) -> Unit = { e -> e.printStackTrace() },
     onChange: (bck: Any?) -> Unit = {}
-) {
+) = withDesktopScope {
     val switchDelay by remember { api.currentUser.theme.backgroundRotationDelayState }
-    val backgroundColor by remember { api.currentUser.theme.backgroundColorState }
     val userBackgrounds by remember { api.currentUser.config.desktopBackgroundsState }
     val backgrounds by rememberCalculated { api.appsProvider.backgrounds + userBackgrounds }
     val backgroundQueue = remember { mutableQueue(backgrounds) }
@@ -65,3 +61,7 @@ fun BackgroundImage(
         }
     }
 }
+
+@Preview
+@Composable
+fun BackgroundImagePreview() = BackgroundImage()

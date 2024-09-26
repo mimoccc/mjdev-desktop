@@ -1,10 +1,12 @@
 package eu.mjdev.desktop.data
 
-import eu.mjdev.desktop.helpers.system.Command
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SupervisedUserCircle
+import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.helpers.system.UserDirs
+import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 
-// todo
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class User(
     val data: String,
@@ -26,8 +28,8 @@ class User(
         get() = dataItems[5]
     val shell: String
         get() = dataItems[6]
-    val picture: Any?
-        get() = loadPicture(dataItems[5], ".face")
+    val picture: Any
+        get() = loadPicture(dataItems[5], ".face") ?: Icons.Filled.SupervisedUserCircle
 
     val homeDir
         get() = File(home)
@@ -43,21 +45,21 @@ class User(
     }
 
     fun login(
-        string: String
-    ): Boolean {
-        // todo
-        return true
-    }
+        api:DesktopProvider,
+        password: String
+    ): Boolean = api.login(userName, password)
 
     companion object {
         val Nobody = User(":x:-1:-1:::")
 
         fun isLoggedIn(un: String): Boolean =
-            Command("whoami").execute()?.trim()?.contentEquals(un) == true
+            Shell.executeAndRead("whoami").trim().contentEquals(un)
 
-        fun loadPicture(home: String, pic: String): File = loadPicture(File(home), pic)
+        fun loadPicture(home: String, pic: String): File? = loadPicture(File(home), pic)
 
-        fun loadPicture(homeDir: File, picName: String): File = File(homeDir, picName)
+        fun loadPicture(homeDir: File, picName: String): File? = File(homeDir, picName).let {
+            if(it.exists()) it else null
+        }
 
         val allUsers: List<User>
             get() = File("/etc/passwd")

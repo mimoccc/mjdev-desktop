@@ -17,15 +17,12 @@ import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanelIcon
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun DesktopPanelFavoriteApps(
     modifier: Modifier = Modifier,
-    api: DesktopProvider = LocalDesktop.current,
     iconColor: Color = Color.Black,
     iconBackgroundColor: Color = Color.White,
     iconColorRunning: Color = Color.White,
@@ -33,9 +30,9 @@ fun DesktopPanelFavoriteApps(
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     onTooltip: (item: Any?) -> Unit = {},
-    onAppClick: (app: App) -> Unit,
-    onContextMenuClick: (app: App) -> Unit
-) {
+    onAppClick: (app: App) -> Unit = {},
+    onContextMenuClick: (app: App) -> Unit = {}
+) = withDesktopScope {
     val apps by rememberCalculated(api.appsProvider.favoriteApps.size) { api.appsProvider.favoriteApps }
     Box(
         modifier = modifier
@@ -48,8 +45,8 @@ fun DesktopPanelFavoriteApps(
             items(apps) { app ->
                 DesktopPanelIcon(
                     app = app,
-                    isRunning = app.isRunning || app.hasWindow(api),
-                    isStarting = app.isStarted,
+                    isStarting = app.isStarting,
+                    isRunning = app.isRunning,
                     iconColor = iconColor,
                     iconBackgroundColor = iconBackgroundColor,
                     iconColorRunning = iconColorRunning,
@@ -65,3 +62,7 @@ fun DesktopPanelFavoriteApps(
         }
     }
 }
+
+@Preview
+@Composable
+fun DesktopPanelFavoriteAppsPreview() = DesktopPanelFavoriteApps()

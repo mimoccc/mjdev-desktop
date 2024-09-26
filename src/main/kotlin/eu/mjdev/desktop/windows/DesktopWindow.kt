@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import eu.mjdev.desktop.components.background.BackgroundImage
-import eu.mjdev.desktop.components.sliding.VisibilityState
+import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
@@ -18,7 +18,7 @@ import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 @Suppress("FunctionName", "DEPRECATION")
 @Preview
 @Composable
-fun MainWindow(
+fun DesktopWindow(
     controlCenterState: VisibilityState,
     panelState: VisibilityState,
     menuState: VisibilityState,

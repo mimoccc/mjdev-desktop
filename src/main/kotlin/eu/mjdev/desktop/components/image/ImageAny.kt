@@ -2,6 +2,8 @@ package eu.mjdev.desktop.components.image
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SupervisedUserCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,16 +19,15 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import eu.mjdev.desktop.components.video.VideoView
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.withDesktopScope
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import org.jetbrains.skia.Bitmap
 import java.io.File
 import androidx.compose.foundation.Image as ComposeImage
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun ImageAny(
-    src: Any?,
+    src: Any? = Icons.Filled.SupervisedUserCircle,
     contentDescription: String? = "",
     modifier: Modifier = Modifier,
     alignment: Alignment = Alignment.Center,
@@ -122,3 +123,7 @@ fun ImageAny(
         )
     }
 }
+
+@Preview
+@Composable
+fun ImageAnyPreview() = ImageAny()

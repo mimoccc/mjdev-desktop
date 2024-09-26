@@ -15,11 +15,9 @@ import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberBackgroundCol
 import eu.mjdev.desktop.helpers.internal.Palette.Companion.rememberIconTintColor
 import eu.mjdev.desktop.helpers.system.MemInfo
 import eu.mjdev.desktop.helpers.system.MemInfo.Companion.toReadable
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun MemoryChart(
     modifier: Modifier = Modifier,
@@ -31,33 +29,38 @@ fun MemoryChart(
     legendPosition: LegendPosition = LegendPosition.BOTTOM,
     updateTimeOut: Long = 10000,
     dragEnabled: Boolean = true,
-    api: DesktopProvider = LocalDesktop.current,
-) = DraggableView(
-    modifier = modifier,
-    dragEnabled = dragEnabled
-) {
-    val backgroundColor by rememberBackgroundColor(api)
-    val iconsTintColor by rememberIconTintColor(api)
-    DonutChart(
+) = withDesktopScope {
+    DraggableView(
         modifier = modifier,
-        title = mainTitle,
-        textColor = iconsTintColor,
-        outerCircularColor = iconsTintColor,
-        innerCircularColor = iconsTintColor,
-        ratioLineColor = ratioLineColor,
-        refreshTimeout = updateTimeOut,
-        animation = animation,
-        legendPosition = legendPosition
+        dragEnabled = dragEnabled
     ) {
-        MemInfo().let { mem ->
-            val secondValue = mem.free
-            val firstValue = mem.used
-            val secondTitle = freeTitle.plus(": ").plus(mem.free.toReadable())
-            val firstTitle = usedTitle.plus(": ").plus(mem.used.toReadable())
-            listOf(
-                PieChartData(firstValue, iconsTintColor, firstTitle),
-                PieChartData(secondValue, backgroundColor, secondTitle)
-            )
+        val backgroundColor by rememberBackgroundColor(api)
+        val iconsTintColor by rememberIconTintColor(api)
+        DonutChart(
+            modifier = modifier,
+            title = mainTitle,
+            textColor = iconsTintColor,
+            outerCircularColor = iconsTintColor,
+            innerCircularColor = iconsTintColor,
+            ratioLineColor = ratioLineColor,
+            refreshTimeout = updateTimeOut,
+            animation = animation,
+            legendPosition = legendPosition
+        ) {
+            MemInfo().let { mem ->
+                val secondValue = mem.free
+                val firstValue = mem.used
+                val secondTitle = freeTitle.plus(": ").plus(mem.free.toReadable())
+                val firstTitle = usedTitle.plus(": ").plus(mem.used.toReadable())
+                listOf(
+                    PieChartData(firstValue, iconsTintColor, firstTitle),
+                    PieChartData(secondValue, backgroundColor, secondTitle)
+                )
+            }
         }
     }
 }
+
+@Preview
+@Composable
+fun MemoryChartPreview() = MemoryChart()

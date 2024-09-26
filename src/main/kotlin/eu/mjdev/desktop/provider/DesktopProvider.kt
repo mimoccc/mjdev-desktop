@@ -1,59 +1,76 @@
 package eu.mjdev.desktop.provider
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toAwtImage
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
-import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
+import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.pages.*
 import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.helpers.adb.AdbDiscover.Companion.adbDevicesHandler
+import eu.mjdev.desktop.helpers.bitmap.Bitmap
 import eu.mjdev.desktop.helpers.internal.Palette
 import eu.mjdev.desktop.helpers.managers.*
-import eu.mjdev.desktop.helpers.system.Command
+import eu.mjdev.desktop.helpers.system.DBus
 import eu.mjdev.desktop.helpers.system.OsRelease
+import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.AIProvider.AiPluginGemini
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import java.awt.GraphicsDevice
-import java.awt.GraphicsEnvironment
-import java.awt.Toolkit
+import java.awt.*
 import java.io.File
+import java.io.FileReader
+import java.net.URI
+import javax.script.ScriptEngine
+import javax.script.ScriptEngineManager
 import kotlin.system.exitProcess
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "SameParameterValue")
 class DesktopProvider(
     val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
     val imageLoader: ImageLoader? = null,
-    val connection: ConnectivityManager = ConnectivityManager(),
-//    val scriptManager: ScriptEngineManager = ScriptEngineManager(),
-    val kcefHelper: KCEFHelper = KCEFHelper(scope),
-    val ai: AIProvider = AIProvider(scope, AiPluginGemini(scope)),
-    val windows: WindowsManager = WindowsManager(),
-    val gnome: GnomeManager = GnomeManager(),
-    val allUsers: List<User> = User.allUsers,
-) {
-    val osDetails = OsRelease()
-    val palette: Palette = Palette(scope, currentUser.theme.backgroundColor)
-    val controlCenterPagesState: MutableState<List<ControlCenterPage>> = mutableStateOf(CONTROL_CENTER_PAGES)
+    val isDebug: Boolean = true
+) : AutoCloseable {
+    val scriptManager: ScriptEngineManager by lazy { ScriptEngineManager() }
+    val scriptEngine: ScriptEngine by lazy {
+        scriptManager.getEngineByName("JavaScript").apply {
+            // todo
+        }
+    }
+    val osDetails by lazy { OsRelease() }
+    val toolkit: Toolkit by lazy { Toolkit.getDefaultToolkit() }
+    val kcefHelper: KCEFHelper by lazy { KCEFHelper(scope) }
+    val gnome: GnomeManager by lazy { GnomeManager() }
+    val connection: ConnectivityManager by lazy { ConnectivityManager() }
+    val windows: WindowsManager by lazy { WindowsManager() }
+    val dbus: DBus by lazy { DBus() }
+    val ai: AIProvider by lazy {
+        // todo user can configure
+        AIProvider(scope, AiPluginGemini(scope))
+    }
+    val appsProvider by lazy { AppsProvider(this) }
+    val mounts by lazy {
+        FileSystemWatcher(scope) {
+            println("Mounted: ${this.targetDirectory}")
+        }
+    }
+    val palette: Palette by lazy { Palette(scope, currentUser.theme.backgroundColor) }
+    val homeDir: File
+        get() = currentUser.homeDir
+    val allUsers: List<User>
+        get() = User.allUsers
+    val machineName: String
+        get() = Shell.executeAndRead("hostname").trim()
 
     // todo state
     val currentUser: User
-        get() = allUsers.filter { u -> u.isLoggedIn == true }.firstOrNull() ?: User.Nobody
-
-    val homeDir : File
-        get() = currentUser.homeDir
-
-    val machineName : String
-        get() = Command("hostname").execute()?.trim().orEmpty()
-
-//    private val engine: ScriptEngine by lazy {
-//        scriptManager.getEngineByName("JavaScript").apply {
-//            // todo
-//        }
-//    }
-
+        get() = allUsers.firstOrNull { u -> u.isLoggedIn } ?: User.Nobody
+    val controlCenterPagesState: MutableState<List<ControlCenterPage>> = mutableStateOf(CONTROL_CENTER_PAGES)
+    var lastTheme: String = ""
     val adbHandler = adbDevicesHandler(
         coroutineScope = scope,
         onAdded = { device ->
@@ -65,18 +82,25 @@ class DesktopProvider(
             // when device removed
         }
     )
-
-    val containerSize: DpSize by lazy {
-        Toolkit.getDefaultToolkit().screenSize.let {
-            DpSize(
-                it.width.dp,
-                it.height.dp
-            )
-        }
+    val containerSize: DpSize
+        get() = runCatching {
+            toolkit.screenSize.let { screen -> DpSize(screen.width.dp, screen.height.dp) }
+        }.getOrNull() ?: DpSize.Zero
+    val isAlwaysOnTopSupported
+        get() = runCatching {
+            toolkit.isAlwaysOnTopSupported
+        }.getOrNull() ?: false
+//    val cursorSize
+//        get() = toolkit.getBestCursorSize(32, 32).let {
+//            DpSize(it.width.dp, it.height.dp)
+//        }
+    val desktopUtils: Desktop? by lazy {
+        if (Desktop.isDesktopSupported()) {
+            Desktop.getDesktop()
+        } else null
     }
-    val controlCenterPages get() = controlCenterPagesState.value
-    val appsProvider = AppsProvider(this)
-
+    val controlCenterPages
+        get() = controlCenterPagesState.value
     val graphicsEnvironment: GraphicsEnvironment
         get() = GraphicsEnvironment.getLocalGraphicsEnvironment()
     val graphicsDevice: GraphicsDevice
@@ -84,48 +108,106 @@ class DesktopProvider(
     val isTransparencySupported
         get() = graphicsDevice.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.TRANSLUCENT)
 
-    val mounts = FileSystemWatcher(scope) {
-        println("Mounted: ${this.targetDirectory}")
-    }
-
     init {
-        currentUser.theme.controlCenterExpandedWidth = containerSize.width.div(4)
-        mounts.init()
-
-        println(allUsers)
+        runCatching {
+            currentUser.theme.controlCenterExpandedWidth = containerSize.width.div(4)
+        }
+        runCatching {
+            mounts.init()
+        }
+        runCatching {
+            dbus.updateEnvironment()
+        }
+        runCatching {
+            lastTheme = gnome.getGTKTheme()
+        }
+        runCatching {
+            gnome.setGTKTheme(GnomeManager.THEME_MJDEV)
+        }
     }
 
-    fun dispose() {
-        kcefHelper.dispose()
-        mounts.dispose()
-        windows.dispose()
+    override fun close() {
+        runCatching {
+            gnome.setGTKTheme(lastTheme)
+        }
+        runCatching {
+            mounts.dispose()
+        }
+        runCatching {
+            kcefHelper.dispose()
+        }
+        runCatching {
+            windows.dispose()
+        }
     }
 
-//    fun runScript(script: String): Any =
-//        engine.eval(script)
-
-//    fun runScript(file: File): Any =
-//        engine.eval(FileReader(file))
-
-    fun executeCmd(cmd: String) {
-        ProcessBuilder().apply {
-            command(cmd)
-        }.start()
+    fun openMail(emailAddress: String) = runCatching {
+        desktopUtils?.mail(URI.create("mailto:$emailAddress"))
     }
 
-    fun executeCmd(cmd: String, directory: File) {
-        ProcessBuilder().apply {
-            directory(directory)
-            command(cmd)
-        }.start()
+    fun openBrowser(url: String) = runCatching {
+        desktopUtils?.browse(URI.create(url))
     }
+
+    fun openDirectoryForFile(path: String) = runCatching {
+        desktopUtils?.browseFileDirectory(File(path))
+    }
+
+    fun moveToTrash(file: File) = runCatching {
+        desktopUtils?.moveToTrash(file)
+    }
+
+    fun moveToTrash(filePath: String) = runCatching {
+        moveToTrash(File(filePath))
+    }
+
+    fun openFileInAssociated(file: File) = runCatching {
+        desktopUtils?.open(file)
+    }
+
+    fun openFileInAssociated(filePath: String) = runCatching {
+        openFileInAssociated(File(filePath))
+    }
+
+    fun runScript(script: String): Any = runCatching {
+        scriptEngine.eval(script)
+    }
+
+    fun runScript(file: File): Any = runCatching {
+        scriptEngine.eval(FileReader(file))
+    }
+
+    fun beep() = runCatching {
+        toolkit.beep()
+    }
+
+    fun sync() = runCatching {
+        toolkit.sync()
+    }
+
+    fun createCustomCursor(cursor: Image, hotSpot: Point, name: String): Cursor? = runCatching {
+        toolkit.createCustomCursor(cursor, hotSpot, name)
+    }.getOrNull()
+
+    fun createCustomCursor(cursor: Bitmap, hotSpot: Point, name: String): Cursor? = runCatching {
+        toolkit.createCustomCursor(cursor.image, hotSpot, name)
+    }.getOrNull()
+
+    fun createCustomCursor(cursor: ImageBitmap, hotSpot: Point, name: String): Cursor? = runCatching {
+        toolkit.createCustomCursor(cursor.toAwtImage(), hotSpot, name)
+    }.getOrNull()
+
+    // todo
+//    fun createCustomCursor(cursor: ImageVector, hotSpot: Point, name: String) =
+//        toolkit.createCustomCursor(cursor, hotSpot, name)
 
     @Suppress("UNUSED_PARAMETER")
     fun login(
         user: String,
         password: String
-    ) {
+    ): Boolean {
         // todo
+        return true
     }
 
     fun logOut() {
@@ -143,32 +225,6 @@ class DesktopProvider(
         exitProcess(0)
     }
 
-    // theme support
-    class DesktopScope(
-        val api: DesktopProvider
-    ) {
-        val scope
-            get() = api.scope
-
-        val currentUser
-            get() = api.currentUser
-
-        val backgroundColorState
-            get() = api.palette.backgroundColorState
-        val backgroundColor
-            get() = api.palette.backgroundColor
-        val iconsTintColorState
-            get() = api.palette.iconsTintColor
-        val iconsTintColor
-            get() = api.palette.iconsTintColor
-        val textColorState
-            get() = api.palette.textColorState
-        val textColor
-            get() = textColorState.value
-        val borderColor
-            get() = api.palette.borderColor
-    }
-
     companion object {
         private val CONTROL_CENTER_PAGES = listOf(
             MainSettingsPage(),
@@ -181,24 +237,23 @@ class DesktopProvider(
             DevicesPage()
         )
 
-        val LocalDesktop = compositionLocalOf {
+        val LocalDesktop = staticCompositionLocalOf {
+            println("default empty desktop provider created")
             DesktopProvider()
         }
 
         @Composable
         fun rememberDesktopProvider(
             scope: CoroutineScope = rememberCoroutineScope(),
-            imageLoader: ImageLoader = asyncImageLoader()
+            imageLoader: ImageLoader = asyncImageLoader(),
+            isDebug: Boolean = LocalInspectionMode.current,
         ) = remember {
-            DesktopProvider(scope, imageLoader)
-        }
-
-        @Composable
-        fun withDesktopScope(
-            api: DesktopProvider = LocalDesktop.current,
-            block: @Composable DesktopScope.() -> Unit
-        ) = DesktopScope(api).apply {
-            block()
+            println("default initialized desktop provider created")
+            DesktopProvider(
+                scope,
+                imageLoader,
+                isDebug
+            )
         }
     }
 }

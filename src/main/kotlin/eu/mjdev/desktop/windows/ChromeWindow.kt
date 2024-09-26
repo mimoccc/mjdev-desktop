@@ -8,6 +8,7 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.window.WindowPosition
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindowScope.Companion.withChromeWindowScope
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberAnimState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
@@ -38,7 +39,7 @@ fun ChromeWindow(
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     onOpened: ChromeWindowState.() -> Unit = {},
     onClosed: ChromeWindowState.() -> Unit = {},
-    content: @Composable ChromeWindowScope.() -> Unit = {}
+    content: @Composable () -> Unit = {}
 ) = ChromeWindow(
     windowState = windowState,
     visible = visible,
@@ -82,7 +83,7 @@ fun ChromeWindow(
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     onOpened: ChromeWindowState.() -> Unit = {},
     onClosed: ChromeWindowState.() -> Unit = {},
-    content: @Composable ChromeWindowScope.() -> Unit = {}
+    content: @Composable () -> Unit = {}
 ) = ChromeWindow(
     windowState = windowState,
     visible = visible,
@@ -125,11 +126,14 @@ fun ChromeWindow(
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     onOpened: ChromeWindowState.() -> Unit = {},
     onClosed: ChromeWindowState.() -> Unit = {},
-    content: @Composable ChromeWindowScope.() -> Unit = {}
-) {
-    val animState = rememberAnimState(visible)
-    val wnState = rememberWnState()
-    windowState.onOpened.add {
+    content: @Composable () -> Unit = {}
+) = withDesktopScope {
+    if (isDebug) {
+        content()
+    } else {
+        val animState = rememberAnimState(visible)
+        val wnState = rememberWnState()
+        windowState.onOpened.add {
 //        if (alwaysOnBottom) {
             // todo
 //            val focusOwner = window?.mostRecentFocusOwner
@@ -139,54 +143,55 @@ fun ChromeWindow(
 //        else if (alwaysOnTop) {
 //            windowState.requestFocus()
 //        }
-        windowState.updatePositionAndSize()
-        if (visible) {
-            animState.value.targetState = true
+            windowState.updatePositionAndSize()
+            if (visible) {
+                animState.value.targetState = true
+            }
+            onOpened(windowState)
         }
-        onOpened(windowState)
-    }
-    windowState.onClosed.add(onClosed)
-    windowState.onFocusChange.add(onFocusChange)
-    WindowEx(
-        onCreate = { window ->
-            windowState.window = window
-            onCreate(windowState)
-        },
+        windowState.onClosed.add(onClosed)
+        windowState.onFocusChange.add(onFocusChange)
+        WindowEx(
+            onCreate = { window ->
+                windowState.window = window
+                onCreate(windowState)
+            },
 //        onOpen = {
 //            onOpened(windowState)
 //        },
-        onCloseRequest,
-        windowState,
-        wnState.value,
-        "",
-        null,
-        true,
-        transparent,
-        resizable,
-        enabled,
-        focusable,
-        alwaysOnTop,
+            onCloseRequest,
+            windowState,
+            wnState.value,
+            "",
+            null,
+            true,
+            transparent,
+            resizable,
+            enabled,
+            focusable,
+            alwaysOnTop,
 //        alwaysOnBottom,
-        onPreviewKeyEvent,
-        onKeyEvent,
-        stateHelper = windowState.stateHelper,
-        focusHelper = windowState.focusHelper,
-        content = {
-            withChromeWindowScope(
-                windowState,
-                animState,
-                wnState
-            ) {
-                AnimatedVisibility(
-                    animState.value,
-                    enter = enterAnimation,
-                    exit = exitAnimation
+            onPreviewKeyEvent,
+            onKeyEvent,
+            stateHelper = windowState.stateHelper,
+            focusHelper = windowState.focusHelper,
+            content = {
+                withChromeWindowScope(
+                    windowState,
+                    animState,
+                    wnState
                 ) {
-                    content()
+                    AnimatedVisibility(
+                        animState.value,
+                        enter = enterAnimation,
+                        exit = exitAnimation
+                    ) {
+                        content()
+                    }
                 }
             }
-        }
-    )
-    updateAnimState(visible, animState, wnState)
-    updateWindowState(visible, animState, wnState, windowState)
+        )
+        updateAnimState(visible, animState, wnState)
+        updateWindowState(visible, animState, wnState, windowState)
+    }
 }

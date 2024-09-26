@@ -3,7 +3,6 @@ package eu.mjdev.desktop.components.desktop
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -12,9 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.desktop.widgets.MemoryChart
 import eu.mjdev.desktop.components.file.FolderView
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.withDesktopScope
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
-@OptIn(ExperimentalLayoutApi::class)
 @Suppress("FunctionName")
 @Preview
 @Composable
@@ -40,3 +38,7 @@ fun Desktop(
 //        )
     }
 }
+
+@Preview
+@Composable
+fun DesktopPreview() = Desktop()

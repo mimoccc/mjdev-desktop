@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.TextUnit
 import eu.mjdev.desktop.extensions.Compose.textFrom
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun TextAny(
     text: Any? = "test",
@@ -57,3 +56,7 @@ fun TextAny(
     onTextLayout = onTextLayout,
     style = style
 )
+
+@Preview
+@Composable
+fun TextAnyPreview() = TextAny()

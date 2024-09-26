@@ -22,8 +22,8 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.custom.UserAvatar
-import eu.mjdev.desktop.components.sliding.VisibilityState
-import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.components.sliding.base.VisibilityState
+import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
@@ -33,24 +33,21 @@ import eu.mjdev.desktop.extensions.Modifier.dropShadow
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
 import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.withDesktopScope
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.windows.ChromeWindowState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
-@Suppress("FunctionName")
 @OptIn(ExperimentalComposeUiApi::class)
-@Preview
+@Suppress("FunctionName", "LocalVariableName")
 @Composable
 fun AppsMenu(
-    api: DesktopProvider = LocalDesktop.current,
     panelState: VisibilityState = rememberVisibilityState(),
     menuState: VisibilityState = rememberVisibilityState(),
     enterAnimation: EnterTransition = AppsMenuEnterAnimation,
     exitAnimation: ExitTransition = AppsMenuExitAnimation,
     onFocusChange: (Boolean) -> Unit = {},
-    onAppClick: (App) -> Unit = { app ->
+    onAppClick: (App, DesktopProvider) -> Unit = { app, api ->
         api.appsProvider.startApp(app)
     },
     onAppContextMenuClick: (App) -> Unit = {
@@ -78,16 +75,24 @@ fun AppsMenu(
         )
     }
     val windowState: ChromeWindowState = rememberChromeWindowState(position = position)
-    ChromeWindow(
-        visible = menuState.isVisible,
-        enterAnimation = enterAnimation,
-        exitAnimation = exitAnimation,
-        windowState = windowState,
-        onFocusChange = { focused ->
-            menuState.onFocusChange(focused)
-            onFocusChange(focused)
+    val Container: @Composable (content: @Composable () -> Unit) -> Unit = { content ->
+        if (isDebug) {
+            content()
+        } else {
+            ChromeWindow(
+                visible = menuState.isVisible,
+                enterAnimation = enterAnimation,
+                exitAnimation = exitAnimation,
+                windowState = windowState,
+                onFocusChange = { focused ->
+                    menuState.onFocusChange(focused)
+                    onFocusChange(focused)
+                },
+                content = { content() }
+            )
         }
-    ) {
+    }
+    Container {
         Box(
             modifier = Modifier
                 .width(appMenuMinWidth)
@@ -164,7 +169,7 @@ fun AppsMenu(
                                         iconTint = textColor,
                                         textColor = textColor,
                                         onClick = {
-                                            onAppClick(item)
+                                            onAppClick(item, api)
                                         },
                                         onContextMenuClick = {
                                             onAppContextMenuClick(item)
@@ -217,3 +222,7 @@ fun AppsMenu(
         }
     }
 }
+
+@Preview
+@Composable
+fun AppsMenuPreview() = AppsMenu()

@@ -16,7 +16,6 @@ import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 
 // todo : params
 @Suppress("unused", "FunctionName")
-@Preview
 @Composable
 fun QrCodeView(
     modifier: Modifier = Modifier,
@@ -56,3 +55,7 @@ fun QrCodeView(
         )
     }
 }
+
+@Preview
+@Composable
+fun QrCodeViewPreview() = QrCodeView()

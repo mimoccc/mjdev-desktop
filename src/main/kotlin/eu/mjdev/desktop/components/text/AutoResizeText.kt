@@ -17,10 +17,9 @@ import kotlin.math.min
 
 // todo may be need refactor
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun AutoResizeText(
-    text: String,
+    text: String = "A",
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
     fontStyle: FontStyle? = null,
@@ -39,3 +38,7 @@ fun AutoResizeText(
         overflow = TextOverflow.Clip,
     )
 }
+
+@Preview
+@Composable
+fun AutoResizeTextPreview() = AutoResizeText()

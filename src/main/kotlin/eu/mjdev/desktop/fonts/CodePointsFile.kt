@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components.fonticon
+package eu.mjdev.desktop.fonts
 
 import eu.mjdev.desktop.helpers.streams.ResourceStream
 

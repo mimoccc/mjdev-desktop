@@ -17,11 +17,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.components.text.TextAny
+import eu.mjdev.desktop.data.TooltipData
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import kotlinx.coroutines.delay
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun Tooltip(
     textColor: Color = Color.White,
@@ -63,7 +63,6 @@ fun Tooltip(
     }
 } else Unit
 
-data class TooltipData(
-    val title: String = "",
-    val description: String = ""
-)
+@Preview
+@Composable
+fun TooltipPreview() = Tooltip()

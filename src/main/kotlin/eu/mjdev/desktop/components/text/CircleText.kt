@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.extensions.Modifier.clipCircle
 
 @Suppress("unused", "FunctionName")
-@Preview
 @Composable
 fun CircleText(
     modifier: Modifier = Modifier,
@@ -57,3 +56,7 @@ fun CircleText(
         fontSize = textSize
     )
 }
+
+@Preview
+@Composable
+fun CircleTextPreview() = CircleText()

@@ -3,10 +3,8 @@ package eu.mjdev.desktop.data
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
-import eu.mjdev.desktop.extensions.Custom.command
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
-import eu.mjdev.desktop.helpers.system.Command
-import eu.mjdev.desktop.helpers.system.Environment
+import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 
@@ -16,6 +14,8 @@ class App(
     val desktopFile: DesktopFile = DesktopFile(file),
     val isFavorite: Boolean = false
 ) {
+    val fileName
+        get() = desktopFile.fileName
     val type
         get() = desktopFile.type
     val version
@@ -44,11 +44,21 @@ class App(
     val onStartingHandler: MutableState<() -> Unit> = mutableStateOf({})
     val onStartedHandler: MutableState<() -> Unit> = mutableStateOf({})
 
-    var process: Process? = null
-    val isRunning: Boolean
-        get() = (process?.isAlive == true) || process?.children()?.anyMatch { it.isAlive } == true
+    var process: Shell? = null
 
-    var isStarted: Boolean = false
+    var isStartingState = mutableStateOf(false)
+    var isStarting: Boolean
+        get() = isStartingState.value
+        set(value) {
+            isStartingState.value = value
+        }
+
+    val isRunningState = mutableStateOf(false)
+    var isRunning: Boolean
+        get() = isStartingState.value
+        set(value) {
+            isStartingState.value = value
+        }
 
     // todo :  replace all params with what needed
     val cmd
@@ -58,56 +68,47 @@ class App(
         get() = process?.command
 
     val pids: List<Long>
-        get() = getProcessPids(process?.toHandle())
+        get() = process?.pids ?: emptyList()
 
-    val runningProcesses
-        get() = ProcessHandle.allProcesses()
-
-    fun getProcessPids(p: ProcessHandle?): List<Long> {
-        val pids = mutableListOf<Long>()
-        if (p != null) {
-            pids.add(p.pid())
-            p.children().forEach { pch ->
-                pids.addAll(getProcessPids(pch))
-            }
-        }
-        return pids
-    }
-
-    fun start() = runCatching {
+    fun start(
+        api: DesktopProvider
+    ) = runCatching {
+        println("Starting app: $name [$fileName]")
         triggerStart()
-        println("Starting app: $name [$cmd]")
-        val env = Environment()
-        Command(
-            "/bin/sh",
-            "-c",
-            "\"DBUS_SESSION_BUS_ADDRESS='unix:path=\$XDG_RUNTIME_DIR/bus' &&  $cmd \""
-        ).executeWithEnv(env).also {
-            process = it
-        }.apply {
-            onExit().thenRun {
-                triggerStop()
+        process = Shell(api)
+            .writeCommand("export DBUS_SESSION_BUS_ADDRESS=\"unix:path=\$XDG_RUNTIME_DIR/bus\"")
+            .writeCommand("gtk-launch", fileName)
+            .apply {
+                triggerStarted()
+                println("app started")
+                println("system windows : ${api.windows.allSystemWindows}")
             }
-        }
-        triggerStarted()
+            .onExit {
+                triggerStop()
+                println("app stopped")
+                println("system windows : ${api.windows.allSystemWindows}")
+            }
     }.onFailure { error ->
         triggerStop(error)
     }
 
     fun triggerStart() {
-        isStarted = true
+        isRunning = false
+        isStarting = true
         onStartingHandler.value.invoke()
     }
 
     fun triggerStarted() {
-        isStarted = true
+        isStarting = false
+        isRunning = true
         onStartedHandler.value.invoke()
     }
 
     fun triggerStop() = triggerStop(null)
 
     fun triggerStop(result: Throwable?) {
-        isStarted = false
+        isStarting = false
+        isRunning = false
         onStopHandler.value.invoke(result ?: EmptyException)
     }
 
@@ -126,53 +127,8 @@ class App(
         return this
     }
 
-    fun isWindowFocus(api: DesktopProvider): Boolean =
-        api.windows.isWindowActive(pids)
-
-    fun hasWindow(api: DesktopProvider) =
-        api.windows.getWindowsByPids(pids).isNotEmpty()
-
-    fun requestWindowFocus(api: DesktopProvider) {
-        val windows = api.windows.getWindowsByPids(pids)
-        if (windows.isNotEmpty()) {
-            println("Got windows:${windows.size}")
-            println("$windows")
-            windows.forEach { w -> w.toFront() }
-        } else {
-            println("No window for process PID: [${pids.joinToString { p -> "$p," }}]")
-            closeWindow(api)
-        }
-    }
-
-    fun minimizeWindow(api: DesktopProvider) {
-        val windows = api.windows.getWindowsByPids(pids)
-        if (windows.isNotEmpty()) {
-            windows.forEach { w -> w.minimize() }
-        } else {
-            closeWindow(api)
-        }
-    }
-
-    fun maximizeWindow(api: DesktopProvider) {
-        val windows = api.windows.getWindowsByPids(pids)
-        if (windows.isNotEmpty()) {
-            windows.forEach { w -> w.maximize() }
-        } else {
-            closeWindow(api)
-        }
-    }
-
-    fun closeWindow(api: DesktopProvider) {
-        val windows = api.windows.getWindowsByPids(pids)
-        if (windows.isNotEmpty()) {
-            windows.forEach { w -> w.close() }
-        } else {
-            exit()
-        }
-    }
-
     fun exit() {
-        process?.destroy()
+        process?.close()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -192,6 +148,18 @@ class App(
         result = 31 * result + isRunning.hashCode()
         return result
     }
+
+//    fun hasWindow(api: DesktopProvider): Boolean =
+//        process?.hasWindow(api) ?: false
+
+//    fun isWindowFocus(api: DesktopProvider): Boolean =
+//        process?.isWindowFocus(api) ?: false
+
+//    fun minimizeWindow(api: DesktopProvider) =
+//        process?.minimizeWindow(api) ?: false
+
+//    fun requestWindowFocus(api: DesktopProvider) =
+//        process?.requestWindowFocus(api) ?: false
 
     companion object {
         val Empty: App = App()

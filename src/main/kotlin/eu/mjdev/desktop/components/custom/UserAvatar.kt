@@ -20,16 +20,15 @@ import eu.mjdev.desktop.extensions.Compose.noElevation
 import eu.mjdev.desktop.extensions.Compose.transparent
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
 import eu.mjdev.desktop.extensions.Modifier.clipCircle
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.withDesktopScope
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun UserAvatar(
     modifier: Modifier = Modifier,
     avatarSize: Dp = 128.dp,
     orientation: Orientation = Orientation.Vertical,
-    onUserAvatarClick: () -> Unit
+    onUserAvatarClick: () -> Unit = {}
 ) = withDesktopScope {
     val content: @Composable (orientation: Orientation) -> Unit = {
         Button(
@@ -95,3 +94,7 @@ fun UserAvatar(
         }
     }
 }
+
+@Preview
+@Composable
+fun UserAvatarPreview() = UserAvatar()

@@ -13,6 +13,9 @@ class DesktopFile(
     private val props
         get() = content?.get("Desktop Entry")
 
+    val fileName: String
+        get() = file.name
+
     val type
         get() = props?.get(Prop_Type) ?: ""
 
@@ -42,6 +45,9 @@ class DesktopFile(
 
     val runInTerminal
         get() = (props?.get(Prop_Terminal) ?: "false").asBoolean()
+
+    val absolutePath: String
+        get() = file.absolutePath
 
     companion object {
         const val Prop_Type = "Type" // string "Application"

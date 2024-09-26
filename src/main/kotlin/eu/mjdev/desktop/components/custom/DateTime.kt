@@ -10,11 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-@Preview
 @Composable
 fun DateTime(
-    backgroundColor: Color,
-    textColor: Color = Color.White
+    backgroundColor: Color=Color.Transparent,
+    textColor: Color = Color.Black
 ) = Box(
     modifier = Modifier
         .fillMaxWidth()
@@ -27,3 +26,7 @@ fun DateTime(
         dateTextColor = textColor
     )
 }
+
+@Preview
+@Composable
+fun DateTimePreview() = DateTime()

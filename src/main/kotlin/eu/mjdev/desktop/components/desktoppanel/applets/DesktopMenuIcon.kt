@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanelIcon
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun DesktopMenuIcon(
     modifier: Modifier = Modifier,
@@ -21,9 +20,9 @@ fun DesktopMenuIcon(
     iconSize: DpSize = DpSize(56.dp, 56.dp),
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
-    onTooltip: (item: Any?) -> Unit,
-    onClick: () -> Unit,
-    onContextMenuClick: () -> Unit
+    onTooltip: (item: Any?) -> Unit = {},
+    onClick: () -> Unit = {},
+    onContextMenuClick: () -> Unit = {}
 ) = Row(
     modifier = modifier
 ) {
@@ -48,3 +47,7 @@ fun DesktopMenuIcon(
             .background(Color.White.copy(alpha = 0.4f))
     )
 }
+
+@Preview
+@Composable
+fun DesktopMenuIconPreview() = DesktopMenuIcon()

@@ -19,12 +19,10 @@ import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.fonticon.FontIcon
 import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.data.App
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("DEPRECATION", "FunctionName")
 @OptIn(ExperimentalFoundationApi::class)
-@Preview
 @Composable
 fun AppsMenuApp(
     modifier: Modifier = Modifier,
@@ -34,35 +32,41 @@ fun AppsMenuApp(
     iconTint: Color = Color.Black,
     textColor: Color = Color.White,
     backgroundColor: Color = Color.White,
-    api: DesktopProvider = LocalDesktop.current,
-    onClick: () -> Unit,
-    onContextMenuClick: () -> Unit
-) = Row(
-    modifier = modifier.mouseClickable {
-        if (buttons.isSecondaryPressed) {
-            onContextMenuClick()
-        } else {
-            onClick()
-        }
-    },
-    verticalAlignment = Alignment.CenterVertically,
-) {
-    val appIconName = remember(app, icon) { app?.name ?: icon }
-    val materialIcon = remember(appIconName) { api.currentUser.theme.iconSet.iconForName(appIconName) ?: "?".toInt() }
-    FontIcon(
-        iconId = materialIcon,
-        iconSize = iconSize,
-        iconColor = iconTint,
-        iconBackgroundColor = backgroundColor,
-        outerPadding = PaddingValues(2.dp),
-        innerPadding = PaddingValues(0.dp),
-        onClick = onClick,
-        onRightClick = onContextMenuClick
-    )
-    TextAny(
-        modifier = Modifier.padding(start = 4.dp).fillMaxWidth(),
-        text = app?.name ?: "",
-        color = textColor,
-        fontWeight = FontWeight.Bold
-    )
+    onClick: () -> Unit = {},
+    onContextMenuClick: () -> Unit = {}
+) = withDesktopScope {
+    Row(
+        modifier = modifier.mouseClickable {
+            if (buttons.isSecondaryPressed) {
+                onContextMenuClick()
+            } else {
+                onClick()
+            }
+        },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val appIconName = remember(app, icon) { app?.name ?: icon }
+        val materialIcon =
+            remember(appIconName) { api.currentUser.theme.iconSet.iconForName(appIconName) ?: "?".toInt() }
+        FontIcon(
+            iconId = materialIcon,
+            iconSize = iconSize,
+            iconColor = iconTint,
+            iconBackgroundColor = backgroundColor,
+            outerPadding = PaddingValues(2.dp),
+            innerPadding = PaddingValues(0.dp),
+            onClick = onClick,
+            onRightClick = onContextMenuClick
+        )
+        TextAny(
+            modifier = Modifier.padding(start = 4.dp).fillMaxWidth(),
+            text = app?.name ?: "",
+            color = textColor,
+            fontWeight = FontWeight.Bold
+        )
+    }
 }
+
+@Preview
+@Composable
+fun AppsMenuAppPreview() = AppsMenuApp()

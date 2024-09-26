@@ -21,12 +21,10 @@ import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.WebViewState
 import eu.mjdev.desktop.components.draggable.DraggableView
 import eu.mjdev.desktop.extensions.Compose.DarkBlue
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 // todo improve
 @Suppress("LocalVariableName", "FunctionName", "unused")
-@Preview
 @Composable
 fun ComposeWebView(
     modifier: Modifier = Modifier,
@@ -38,63 +36,68 @@ fun ComposeWebView(
     loadingLineColor: Color = Color.DarkBlue,
     jsBridge: IJsMessageHandler? = null,
     disablePopupWindows: Boolean = true,
-    api: DesktopProvider = LocalDesktop.current
-) = DraggableView(
-    modifier = modifier,
-    contentPadding = contentPadding,
-    dragEnabled = dragEnabled,
-    backgroundColor = backgroundColor,
-    dragBackgroundColor = dragBackgroundColor
-) {
-    val webViewState = remember(url) {
-        if (url.startsWith("http")) WebViewState(WebContent.Url(url))
-        else WebViewState(WebContent.Url("file://$url"))
-    }
-    val loadingState = remember(webViewState) { webViewState.loadingState }
-    val _jsBridge: WebViewJsBridge = rememberWebViewJsBridge()
-    if (api.kcefHelper.restartRequired.value) {
-        Text(text = "Restart required.")
-    } else {
-        if (api.kcefHelper.initialized.value) {
-            WebView(
-                modifier = modifier,
-                state = webViewState
-            )
-            if (loadingState is LoadingState.Loading) {
-                LinearProgressIndicator(
-                    progress = loadingState.progress,
-                    color = loadingLineColor,
-                    modifier = Modifier.fillMaxWidth().align(Alignment.BottomStart)
-                )
-            }
+) = withDesktopScope {
+    DraggableView(
+        modifier = modifier,
+        contentPadding = contentPadding,
+        dragEnabled = dragEnabled,
+        backgroundColor = backgroundColor,
+        dragBackgroundColor = dragBackgroundColor
+    ) {
+        val webViewState = remember(url) {
+            if (url.startsWith("http")) WebViewState(WebContent.Url(url))
+            else WebViewState(WebContent.Url("file://$url"))
+        }
+        val loadingState = remember(webViewState) { webViewState.loadingState }
+        val _jsBridge: WebViewJsBridge = rememberWebViewJsBridge()
+        if (api.kcefHelper.restartRequired.value) {
+            Text(text = "Restart required.")
         } else {
-            Box(
-                modifier = Modifier.matchParentSize()
-                    .padding(8.dp)
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.fillMaxSize(),
-                    color = Color.White,
-                    strokeWidth = 10.dp,
-                    backgroundColor = Color.Transparent
+            if (api.kcefHelper.initialized.value) {
+                WebView(
+                    modifier = modifier,
+                    state = webViewState
                 )
-                Text(
-                    modifier = Modifier.align(Alignment.Center),
-                    text = "${api.kcefHelper.downloading.value}%"
-                )
+                if (loadingState is LoadingState.Loading) {
+                    LinearProgressIndicator(
+                        progress = loadingState.progress,
+                        color = loadingLineColor,
+                        modifier = Modifier.fillMaxWidth().align(Alignment.BottomStart)
+                    )
+                }
+            } else {
+                Box(
+                    modifier = Modifier.matchParentSize()
+                        .padding(8.dp)
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.fillMaxSize(),
+                        color = Color.White,
+                        strokeWidth = 10.dp,
+                        backgroundColor = Color.Transparent
+                    )
+                    Text(
+                        modifier = Modifier.align(Alignment.Center),
+                        text = "${api.kcefHelper.downloading.value}%"
+                    )
+                }
             }
         }
-    }
-    LaunchedEffect(Unit) {
-        api.kcefHelper.init()
-        if (jsBridge != null) _jsBridge.register(jsBridge)
-        webViewState.webSettings.apply {
-            isJavaScriptEnabled = true
-            with(desktopWebSettings) {
+        LaunchedEffect(Unit) {
+            api.kcefHelper.init()
+            if (jsBridge != null) _jsBridge.register(jsBridge)
+            webViewState.webSettings.apply {
+                isJavaScriptEnabled = true
+                with(desktopWebSettings) {
 //                offScreenRendering = true
-                transparent = true
-                this.disablePopupWindows = disablePopupWindows
+                    transparent = true
+                    this.disablePopupWindows = disablePopupWindows
+                }
             }
         }
     }
 }
+
+@Preview
+@Composable
+fun ComposeWebViewPreview() = ComposeWebView()

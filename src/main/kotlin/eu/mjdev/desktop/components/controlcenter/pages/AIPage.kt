@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.controlcenter.pages
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,11 +11,13 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import eu.mjdev.desktop.components.controlcenter.ControlCenterPage
+import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPage
+import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPageScope.Companion.remember
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import kotlinx.coroutines.launch
 
@@ -105,3 +108,7 @@ fun AIPage() = ControlCenterPage(
         }
     }
 }
+
+@Preview
+@Composable
+fun AIPagePreview() =  AIPage().render()

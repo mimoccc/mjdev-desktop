@@ -29,7 +29,7 @@ fun FullScreenWindow(
     onCreate: ChromeWindowState.() -> Unit = {},
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {
     },
-    content: @Composable ChromeWindowScope.() -> Unit = {}
+    content: @Composable () -> Unit = {}
 ) = ChromeWindow(
     windowState = windowState,
     enabled = enabled,

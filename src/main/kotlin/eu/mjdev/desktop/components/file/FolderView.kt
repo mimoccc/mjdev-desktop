@@ -17,7 +17,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.DpOffset
+import eu.mjdev.desktop.data.DesktopFolderItem
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import java.io.File
@@ -32,16 +32,15 @@ import java.io.File
 // XWrapperBase
 // ShellFolderManager
 // X11GraphicsEnvironment
-@Suppress("FunctionName")
+@Suppress("FunctionName", "SimplifyBooleanWithConstants")
 @OptIn(ExperimentalLayoutApi::class)
-@Preview
 @Composable
 fun FolderView(
     modifier: Modifier = Modifier,
     showHidden: Boolean = false,
     directoryFirst: Boolean = true,
     showHomeFolder: Boolean = false,
-    path: File?,
+    path: File? = File("/"),
     api: DesktopProvider = LocalDesktop.current,
     files: List<DesktopFolderItem> = remember(path) {
         path?.list()
@@ -104,9 +103,6 @@ fun FolderView(
     }
 }
 
-data class DesktopFolderItem(
-    val path: File,
-    val customName: String? = null,
-    var priority: Int = Int.MIN_VALUE,
-    var position: DpOffset = DpOffset.Unspecified
-)
+@Preview
+@Composable
+fun FolderViewPreview() = FolderView()

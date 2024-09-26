@@ -25,11 +25,11 @@ import eu.mjdev.desktop.components.desktoppanel.applets.DesktopMenuIcon
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelFavoriteApps
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelLanguage
 import eu.mjdev.desktop.components.sliding.SlidingMenu
-import eu.mjdev.desktop.components.sliding.VisibilityState
-import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.components.sliding.base.VisibilityState
+import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.components.tooltip.Tooltip
-import eu.mjdev.desktop.components.tooltip.TooltipData
 import eu.mjdev.desktop.data.App
+import eu.mjdev.desktop.data.TooltipData
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.ColorUtils.lighter
 import eu.mjdev.desktop.extensions.Compose.height
@@ -37,18 +37,15 @@ import eu.mjdev.desktop.extensions.Modifier.topShadow
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelExitAnimation
 import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.withDesktopScope
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.windows.ChromeWindowState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun DesktopPanel(
-    api: DesktopProvider = LocalDesktop.current,
     dividerWidth: Dp = 4.dp,
     iconSize: DpSize = DpSize(56.dp, 56.dp),
     iconPadding: PaddingValues = PaddingValues(4.dp),
@@ -74,7 +71,9 @@ fun DesktopPanel(
         // todo
     },
     onFocusChange: (Boolean) -> Unit = {},
-    onAppClick: (App) -> Unit = { app -> api.appsProvider.startApp(app) },
+    onAppClick: (App, DesktopProvider) -> Unit = { app, api ->
+        api.appsProvider.startApp(app)
+    },
     onAppContextMenuClick: (App) -> Unit = {
         // todo
     },
@@ -82,7 +81,7 @@ fun DesktopPanel(
         // todo
     },
 ) = withDesktopScope {
-    var tooltipState = remember { mutableStateOf<Any?>(null) }
+    val tooltipState = remember { mutableStateOf<Any?>(null) }
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
         if (visible)
             iconSize.height + iconOuterPadding.height + tooltipHeight + panelContentPadding.height
@@ -205,7 +204,7 @@ fun DesktopPanel(
                                     iconPadding = iconPadding,
                                     iconOuterPadding = iconOuterPadding,
                                     onTooltip = { item -> tooltipState.value = item },
-                                    onAppClick = onAppClick,
+                                    onAppClick = { app -> onAppClick(app, api) },
                                     onContextMenuClick = onAppContextMenuClick
                                 )
                                 DesktopPanelLanguage(
@@ -221,3 +220,7 @@ fun DesktopPanel(
         }
     }
 }
+
+@Preview
+@Composable
+fun DesktopPanelPreview() = DesktopPanel()

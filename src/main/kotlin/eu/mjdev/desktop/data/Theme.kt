@@ -5,8 +5,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import eu.mjdev.desktop.components.fonticon.MaterialIconFont
-import eu.mjdev.desktop.components.fonticon.MaterialSymbolsSharp
+import eu.mjdev.desktop.fonts.MaterialIconFont
+import eu.mjdev.desktop.fonts.MaterialSymbolsSharp
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 
 // todo all customizable

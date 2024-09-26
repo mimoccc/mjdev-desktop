@@ -25,7 +25,6 @@ import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @OptIn(ExperimentalComposeUiApi::class)
-@Preview
 @Composable
 fun DesktopPanelIcon(
     api: DesktopProvider = LocalDesktop.current,
@@ -42,12 +41,14 @@ fun DesktopPanelIcon(
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     iconState: MutableState<Boolean> = rememberState(false),
     contentDescription: String? = null,
-    onToolTip: (item: Any?) -> Unit,
-    onClick: () -> Unit,
-    onContextMenuClick: () -> Unit
+    onToolTip: (item: Any?) -> Unit = {},
+    onClick: () -> Unit = {},
+    onContextMenuClick: () -> Unit = {}
 ) {
-    val iconName = remember(app, icon) { app?.name ?: icon }
-    val materialIcon = remember(iconName) { api.currentUser.theme.iconSet.iconForName(iconName) ?: "?".toInt() }
+    val materialIcon = remember(app, icon) {
+        val iconName = app?.name ?: icon // todo better guess
+        api.currentUser.theme.iconSet.iconForName(iconName) ?: "?".toInt()
+    }
     val background = when {
         iconState.value -> iconBackgroundHover
         else -> Color.Transparent
@@ -85,7 +86,7 @@ fun DesktopPanelIcon(
                 onRightClick = onContextMenuClick
             )
         }
-        if (isStarting) {
+        if (isStarting || isRunning) {
             CircularProgressIndicator(
                 modifier = Modifier.padding(4.dp).size(iconSize),
                 color = iconColor,
@@ -95,3 +96,7 @@ fun DesktopPanelIcon(
         }
     }
 }
+
+@Preview
+@Composable
+fun DesktopPanelIconPreview() = DesktopPanelIcon()

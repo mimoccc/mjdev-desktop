@@ -18,20 +18,19 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun DonutChart(
     modifier: Modifier = Modifier,
     title: String = "",
-    textColor: Color = Color.White,
-    outerCircularColor: Color = Color.White,
-    innerCircularColor: Color = Color.White,
-    ratioLineColor: Color = Color.White,
+    textColor: Color = Color.Black,
+    outerCircularColor: Color = Color.Black,
+    innerCircularColor: Color = Color.Black,
+    ratioLineColor: Color = Color.Black,
     animationDuration: Int = 3000,
     refreshTimeout: Long = 5000L,
     animation: AnimationSpec<Float> = TweenSpec(durationMillis = animationDuration),
     legendPosition: LegendPosition = LegendPosition.BOTTOM,
-    dataHandler: () -> List<PieChartData>
+    dataHandler: () -> List<PieChartData> = { emptyList() }
 ) {
     var data by rememberState(dataHandler())
     val textStyle by rememberState(TextStyle(color = textColor))
@@ -59,3 +58,14 @@ fun DonutChart(
         }
     }
 }
+
+@Preview
+@Composable
+fun DonutChartPreview() = DonutChart(
+    dataHandler = {
+        listOf(
+            PieChartData(0.4, Color.Blue, "test1"),
+            PieChartData(0.4, Color.Gray, "test1")
+        )
+    }
+)

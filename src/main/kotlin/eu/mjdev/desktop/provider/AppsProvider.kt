@@ -5,11 +5,10 @@ import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.data.DesktopFile
 import eu.mjdev.desktop.extensions.Custom.invalidate
+import eu.mjdev.desktop.extensions.Custom.jsonToList
 import eu.mjdev.desktop.extensions.Locale.toLocale
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
-import eu.mjdev.desktop.helpers.managers.GnomeManager
-import eu.mjdev.desktop.helpers.system.Command
-import eu.mjdev.desktop.helpers.system.Command.Companion.toList
+import eu.mjdev.desktop.helpers.system.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -142,16 +141,14 @@ class AppsProvider(
 
     fun startApp(app: App) {
         scope.launch(Dispatchers.IO) {
-            api.gnome.setDarkColorScheme()
-            api.gnome.setGTKTheme(GnomeManager.THEME_ADWAITA_DARK)
-            if (app.isRunning) {
-                // todo menu to switch
-                if (app.isWindowFocus(api)) {
-                    app.minimizeWindow(api)
-                } else {
-                    app.requestWindowFocus(api)
-                }
-            } else {
+//            if (app.isRunning) {
+//                // todo menu to switch
+//                if (app.isWindowFocus(api)) {
+//                    app.minimizeWindow(api)
+//                } else {
+//                    app.requestWindowFocus(api)
+//                }
+//            } else {
                 app.onStarting {
                     if (favoriteApps.contains(app)) {
                         favoriteApps.invalidate()
@@ -169,21 +166,19 @@ class AppsProvider(
                     if (result != EmptyException) {
                         result.printStackTrace()
                     }
-                }.start()
+                }.start(api)
                 favoriteApps.invalidate()
-            }
+//            }
         }
     }
 
     init {
-        Command(
+        Shell.executeAndRead(
             "gsettings",
             "get",
             "org.gnome.shell",
             "favorite-apps"
-        ).execute()
-            ?.toList<String>()
-            ?.mapNotNull { deskFileName ->
+        ).jsonToList<String>().mapNotNull { deskFileName ->
                 allAppsDesktopFiles.filter { deskFile ->
                     deskFile.file.name?.contentEquals(deskFileName) == true
                 }.map { deskFile ->

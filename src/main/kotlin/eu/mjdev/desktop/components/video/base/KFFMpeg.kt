@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components.video;
+package eu.mjdev.desktop.components.video.base
 
 import androidx.compose.ui.graphics.asComposeImageBitmap
 import androidx.compose.ui.unit.IntSize
@@ -66,6 +66,7 @@ data class KVideoStream(
     val codec: String
 ) : KAVStream
 
+@Suppress("unused")
 data class KAudioStream(
     override val id: Int
 ) : KAVStream
@@ -205,8 +206,8 @@ class KFrameGrabber(
     private val stream = fmtCtx.streams(kStream.id)
     private val kCodecContext = KAVCodecContext(stream.codecpar(), hwDecoder)
     private val codecCtx = kCodecContext.codecCtx
-    val targetWidth = targetSize?.width ?: codecCtx.width()
-    val targetHeight = targetSize?.height ?: codecCtx.height()
+    private val targetWidth = targetSize?.width ?: codecCtx.width()
+    private val targetHeight = targetSize?.height ?: codecCtx.height()
     private val dstFormat = avutil.AV_PIX_FMT_BGRA // Format matches the internal skia image format
     private val skiaFormat = ImageInfo(
         targetWidth,
@@ -328,6 +329,7 @@ fun errCheck(returnCode: Int, errorMessage: String? = null) {
     }
 }
 
+@Suppress("FunctionName")
 fun av_err2str(errNum: Int): String {
     val charArray = ByteArray(avutil.AV_ERROR_MAX_STRING_SIZE)
     avutil.av_strerror(errNum, charArray, avutil.AV_ERROR_MAX_STRING_SIZE.toLong())

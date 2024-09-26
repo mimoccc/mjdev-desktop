@@ -9,25 +9,18 @@ import com.sun.jna.platform.unix.X11.*
 import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.NativeLongByReference
 import com.sun.jna.ptr.PointerByReference
+import kotlin.jvm.optionals.getOrNull
 
-@Suppress(
-    "unused", "MemberVisibilityCanBePrivate", "FunctionName", "LocalVariableName", "SameParameterValue",
-    "DEPRECATION", "UNUSED_PARAMETER"
-)
+@Suppress("LocalVariableName", "FunctionName", "SameParameterValue", "unused")
 class WindowsManager {
-    private val x11: X11 by lazy {
-        INSTANCE
-    }
-    private val x11Ext by lazy {
-        Native.loadLibrary("X11", X11Ext::class.java)
-    }
-    private val xmu by lazy {
-        Native.loadLibrary("Xmu", Xmu::class.java)
-    }
+    private val x11: X11 by lazy { Native.load("X11", X11::class.java) }
+    private val x11Ext by lazy { Native.load("X11", X11Ext::class.java) }
+
+    @Suppress("unused")
+    private val xmu by lazy { Native.load("Xmu", Xmu::class.java) }
     private val display: Display by lazy { x11.XOpenDisplay(null) }
     private val rootWindow: Window
         get() = x11.XDefaultRootWindow(display)
-
     val allSystemWindows: List<SystemWindow>
         get() = getAllWindows(rootWindow, 0)
 
@@ -53,27 +46,24 @@ class WindowsManager {
         for (id in ids) {
             if (id == 0L) continue
             Window(id).also { window ->
-                windowList.add(
-                    SystemWindow(
-                        this,
-                        id,
-                        getWindowName(window) ?: "",
-                        getWindowPid(window) ?: 0L,
-                        getWindowClass(window) ?: "",
-                        getWindowDesktop(window) ?: 0L
-                    )
-                )
+                val pid = getWindowPid(window) ?: 0L
+                val name = getWindowName(window) ?: ""
+                val cls = getWindowClass(window) ?: ""
+                val desk = getWindowDesktop(window) ?: 0L
+                val cmd = getWindowCommand(pid) ?: ""
+                val icon = getWindowIconName(window) ?: ""
+                windowList.add(SystemWindow(id, name, icon, pid, cls, desk, cmd))
                 getAllWindows(window, depth + 1)
             }
         }
         return windowList
     }
 
-    fun getWindowsByPids(
+    private fun getWindowsByPids(
         pids: List<Long>
-    ): List<IWindow> = allSystemWindows.filter { pids.contains(it.pid) }
+    ): List<SystemWindow> = allSystemWindows.filter { pids.contains(it.pid) }
 
-    fun getWindowPid(
+    private fun getWindowPid(
         window: Window
     ) = get_property_as_long(
         window,
@@ -81,7 +71,7 @@ class WindowsManager {
         "_NET_WM_PID"
     )
 
-    fun getWindowName(
+    private fun getWindowName(
         window: Window
     ) = get_property_as_utf8_string(
         window,
@@ -89,7 +79,7 @@ class WindowsManager {
         "_NET_WM_NAME"
     )
 
-    fun getWindowClass(
+    private fun getWindowClass(
         window: Window
     ) = get_property_as_utf8_string(
         window,
@@ -97,7 +87,13 @@ class WindowsManager {
         "WM_CLASS"
     )
 
-    fun getWindowDesktop(
+    private fun getWindowCommand(
+        pid: Long
+    ): String? = ProcessHandle.allProcesses().toList().firstOrNull {
+        it.pid() == pid
+    }?.info()?.command()?.getOrNull()
+
+    private fun getWindowDesktop(
         window: Window
     ) = get_property_as_long(
         window,
@@ -105,10 +101,26 @@ class WindowsManager {
         "_NET_SHOWING_DESKTOP"
     )
 
+    // todo
+    private fun getWindowIconName(
+        @Suppress("UNUSED_PARAMETER") window: Window
+    ): String? {
+//        val icon_name_return = PointerByReference()
+//        if (x11Ext.XGetIconName(display, window, icon_name_return) == 0) {
+//            g_free(icon_name_return.pointer)
+//            return null
+//        }
+//        return g_strdup(icon_name_return.pointer)
+        return null
+    }
+
     fun minimizeWindow(window: Window): Boolean =
         x11Ext.XIconifyWindow(display, window, x11.XDefaultScreen(display)) == TRUE
 
-    fun maximizeWindow(window: Window) {
+    @Suppress("UNUSED_PARAMETER")
+    fun maximizeWindow(
+        window: Window
+    ) {
         // todo
     }
 
@@ -125,7 +137,7 @@ class WindowsManager {
         pids: List<Long>
     ): Boolean = get_active_window()?.let { aw ->
         getWindowsByPids(pids).any {
-            it.window.toLong() == aw.toLong()
+            it.id == aw.toLong()
         }
     } ?: false
 
@@ -157,7 +169,6 @@ class WindowsManager {
     }
 
     private fun get_property_as_int(
-        display: Display,
         win: Window,
         xa_prop_type: Atom,
         prop_name: String
@@ -292,11 +303,11 @@ class WindowsManager {
 
     private fun activate_window(
         window: Window,
-        switch_desktop: Boolean
+        switch_desktop: Boolean = true
     ): Boolean {
-        var desktop: Int? = get_property_as_int(display, window, XA_CARDINAL, "_NET_WM_DESKTOP")
+        var desktop: Int? = get_property_as_int(window, XA_CARDINAL, "_NET_WM_DESKTOP")
         if (desktop == null) {
-            desktop = get_property_as_int(display, window, XA_CARDINAL, "_WIN_WORKSPACE")
+            desktop = get_property_as_int(window, XA_CARDINAL, "_WIN_WORKSPACE")
         }
         if (switch_desktop && (desktop != null)) {
             client_msg(
@@ -332,47 +343,38 @@ class WindowsManager {
         const val EXIT_FAILURE: Boolean = false
     }
 
-    class SystemWindow(
-        val windowTracker: WindowsManager,
+    data class SystemWindow(
         val id: Long,
         val name: String,
+        val iconName: String,
         val pid: Long,
         val windowClass: String,
         val desktop: Long,
-        override val window: Window = Window(id)
-    ) : IWindow {
-        override fun toFront() {
-            windowTracker.activateWindow(window)
+        val command: String,
+    ) {
+        companion object {
+            val SystemWindow.window: Window get() = Window(id)
+
+            fun SystemWindow.toFront(wmanager: WindowsManager) {
+                wmanager.activateWindow(window)
+            }
+
+            fun SystemWindow.minimize(wmanager: WindowsManager) {
+                wmanager.minimizeWindow(window)
+            }
+
+            fun SystemWindow.maximize(wmanager: WindowsManager) {
+                wmanager.maximizeWindow(window)
+            }
+
+            fun SystemWindow.close(wmanager: WindowsManager) {
+                wmanager.closeWindow(window)
+            }
         }
-
-        override fun minimize() {
-            windowTracker.minimizeWindow(window)
-        }
-
-        override fun maximize() {
-            windowTracker.maximizeWindow(window)
-        }
-
-        override fun close() {
-            windowTracker.closeWindow(window)
-        }
-
-        override fun toString(): String {
-            return "WID : $id  PID: $pid NAME: $name"
-        }
-    }
-
-    interface IWindow {
-        val window: Window
-
-        fun toFront() {}
-        fun minimize() {}
-        fun maximize() {}
-        fun close() {}
     }
 
     private interface Xmu : Library {
-        fun XmuClientWindow(display: Display?, win: Window?): Window?
+        fun XmuClientWindow(display: Display?, window: Window?): Window?
     }
 
     private interface X11Ext : Library {
@@ -444,8 +446,8 @@ class WindowsManager {
             screen: Int
         ): Int
 
-        companion object {
-            const val XC_CROSS_HAIR: Int = 34
-        }
+//        companion object {
+//            const val XC_CROSS_HAIR: Int = 34
+//        }
     }
 }

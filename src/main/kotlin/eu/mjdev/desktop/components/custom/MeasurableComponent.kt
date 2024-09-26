@@ -1,13 +1,11 @@
 package eu.mjdev.desktop.components.custom
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 
 @Suppress("FunctionName", "unused")
-@Preview
 @Composable
 fun MeasurableComponent(
     key: Any,

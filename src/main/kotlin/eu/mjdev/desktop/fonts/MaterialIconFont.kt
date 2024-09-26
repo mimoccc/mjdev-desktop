@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package eu.mjdev.desktop.components.fonticon
+package eu.mjdev.desktop.fonts
 
 import androidx.compose.ui.text.font.FontFamily
 import me.xdrop.fuzzywuzzy.FuzzySearch

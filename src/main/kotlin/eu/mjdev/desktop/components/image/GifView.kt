@@ -14,11 +14,10 @@ import java.io.File
 import java.io.FileInputStream
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun GifView(
     modifier: Modifier = Modifier,
-    src: String
+    src: String = ""
 ) = BoxWithConstraints {
     val file by remember(src) { mutableStateOf(File(src)) }
     val streamData by remember(file) { mutableStateOf(FileInputStream(file)) }
@@ -48,3 +47,7 @@ fun GifView(
         currentFrame = nextFrame
     }
 }
+
+@Preview
+@Composable
+fun GifViewPreview() = GifView()

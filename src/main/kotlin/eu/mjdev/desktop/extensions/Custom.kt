@@ -6,6 +6,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.NativePaint
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
+import com.google.gson.Gson
 import eu.mjdev.desktop.helpers.streams.ResourceStream
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.channelFlow
@@ -66,6 +67,14 @@ object Custom {
     fun loadKey(key: String): String = runCatching {
         ResourceStream("keys/$key.key").string
     }.getOrNull().orEmpty()
+
+    inline fun <reified T> String.jsonToList(): List<T> = runCatching {
+        Gson().fromJson(this, List::class.java).mapNotNull { item -> item as? T }
+    }.getOrNull() ?: emptyList()
+
+    inline fun <reified T> String.to(): T? = runCatching {
+        Gson().fromJson(this, T::class.java)
+    }.getOrNull()
 
     val Process.command: String?
         get() = info().command().getOrNull()

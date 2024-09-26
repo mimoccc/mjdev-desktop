@@ -22,7 +22,6 @@ import eu.mjdev.desktop.extensions.Compose.size
 
 @Suppress("DEPRECATION")
 @OptIn(ExperimentalFoundationApi::class)
-@Preview
 @Composable
 fun ShapedIcon(
     modifier: Modifier = Modifier,
@@ -35,8 +34,8 @@ fun ShapedIcon(
     iconShape: Shape = CircleShape,
     innerPadding: PaddingValues = PaddingValues(4.dp),
     outerPadding: PaddingValues = PaddingValues(2.dp),
-    onRightClick: () -> Unit,
-    onClick: () -> Unit
+    onRightClick: () -> Unit = {},
+    onClick: () -> Unit = {}
 ) = Box(
     modifier = modifier
         .padding(outerPadding)
@@ -75,3 +74,7 @@ fun ShapedIcon(
         }
     }
 }
+
+@Preview
+@Composable
+fun ShapedIconPreview() = ShapedIcon()

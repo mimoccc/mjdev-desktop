@@ -14,13 +14,13 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.icon.ShapedIcon
 import eu.mjdev.desktop.components.text.AutoResizeText
+import eu.mjdev.desktop.fonts.MaterialIconFont
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun FontIcon(
-    iconId: Int,
+    iconId: Int = 0,
     iconicFont: MaterialIconFont = LocalDesktop.current.currentUser.theme.iconSet,
     iconSize: DpSize = DpSize(32.dp, 32.dp),
     iconColor: Color = Color.Black,
@@ -29,8 +29,8 @@ fun FontIcon(
     contentDescription: String = "",
     outerPadding: PaddingValues = PaddingValues(2.dp),
     iconShape: Shape = CircleShape,
-    onRightClick: () -> Unit,
-    onClick: () -> Unit
+    onRightClick: () -> Unit = {},
+    onClick: () -> Unit = {}
 ) = ShapedIcon(
     iconSize = iconSize,
     iconColor = iconColor,
@@ -50,3 +50,7 @@ fun FontIcon(
     onClick = onClick,
     onRightClick = onRightClick
 )
+
+@Preview
+@Composable
+fun FontIconPreview() = FontIcon()

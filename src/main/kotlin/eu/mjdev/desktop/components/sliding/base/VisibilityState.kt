@@ -1,21 +1,17 @@
-package eu.mjdev.desktop.components.sliding
+package eu.mjdev.desktop.components.sliding.base
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.layout.LayoutCoordinates
-import androidx.compose.ui.unit.DpSize
 import eu.mjdev.desktop.helpers.internal.DpBounds
 import eu.mjdev.desktop.helpers.internal.DpBounds.Companion.toDpBounds
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 @Suppress("CanBeParameter", "unused", "MemberVisibilityCanBePrivate")
 class VisibilityState(
     private val startState: Boolean = false,
-    var enabled: Boolean = true,
-    val containerSize: DpSize = DpSize.Zero
+    var enabled: Boolean = true
 ) {
     private val visibleState: MutableState<Boolean> = mutableStateOf(startState)
     private val boundsState: MutableState<DpBounds> = mutableStateOf(DpBounds.Zero)
@@ -73,10 +69,9 @@ class VisibilityState(
         fun rememberVisibilityState(
             startState: Boolean = false,
             enabled: Boolean = true,
-            api: DesktopProvider = LocalDesktop.current,
         ): VisibilityState {
-            return remember(startState, enabled, api.containerSize) {
-                VisibilityState(startState, enabled, api.containerSize)
+            return remember(startState, enabled) {
+                VisibilityState(startState, enabled)
             }
         }
     }

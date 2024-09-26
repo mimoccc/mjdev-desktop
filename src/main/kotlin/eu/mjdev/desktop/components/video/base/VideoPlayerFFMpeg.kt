@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components.video
+package eu.mjdev.desktop.components.video.base
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.*
@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlin.math.min
 
+@Suppress("unused")
 class FFmpegVideoPlayerState {
     private val kContext = KAVFormatContext()
 
@@ -19,7 +20,8 @@ class FFmpegVideoPlayerState {
         internal set
     var progress: Float by mutableStateOf(0f)
         internal set
-    var aspectRatio: Float by mutableStateOf(1f)
+    @Suppress("RedundantSetter")
+    private var aspectRatio: Float by mutableStateOf(1f)
         private set
     var displayFPS: Float by mutableStateOf(0f)
         internal set
@@ -29,6 +31,7 @@ class FFmpegVideoPlayerState {
     var frameGrabber: KFrameGrabber? by mutableStateOf(null)
         private set
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var metadata: Map<String, String> by mutableStateOf(emptyMap())
         private set
 

@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components.controlcenter
+package eu.mjdev.desktop.components.controlcenter.base
 
 interface IControlCenterPageDataSaver {
     fun save(data: Map<Int, Any>)

@@ -13,11 +13,11 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import eu.mjdev.desktop.components.sliding.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.components.sliding.base.VisibilityState
+import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun SlidingMenu(
     modifier: Modifier = Modifier,
@@ -29,7 +29,7 @@ fun SlidingMenu(
     onPointerLeave: () -> Unit = {
 //        state.hide()
     },
-    content: @Composable BoxScope.(isVisible: Boolean) -> Unit
+    content: @Composable BoxScope.(isVisible: Boolean) -> Unit = {}
 ) {
     when (orientation) {
         Horizontal -> Box(
@@ -51,3 +51,7 @@ fun SlidingMenu(
         }
     }
 }
+
+@Preview
+@Composable
+fun SlidingMenuPreview() = SlidingMenu()
