@@ -61,7 +61,7 @@ fun MainWindow() = withDesktopScope {
             onFocusChange = { focus -> handleControlCenterFocus(focus) }
         )
         Greeter()
-        InfoWindow()
+//        InfoWindow()
     }
     DisposableEffect(Unit) {
         onDispose {
