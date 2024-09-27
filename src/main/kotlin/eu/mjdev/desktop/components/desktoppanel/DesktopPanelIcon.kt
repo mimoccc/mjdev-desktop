@@ -21,13 +21,11 @@ import eu.mjdev.desktop.extensions.Compose.color
 import eu.mjdev.desktop.extensions.Compose.noElevation
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Modifier.clipRect
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DesktopPanelIcon(
-    api: DesktopProvider = LocalDesktop.current,
     app: App? = null,
     isRunning: Boolean = false,
     isStarting: Boolean = false,
@@ -44,10 +42,10 @@ fun DesktopPanelIcon(
     onToolTip: (item: Any?) -> Unit = {},
     onClick: () -> Unit = {},
     onContextMenuClick: () -> Unit = {}
-) {
+) = withDesktopScope {
     val materialIcon = remember(app, icon) {
         val iconName = app?.name ?: icon // todo better guess
-        api.currentUser.theme.iconSet.iconForName(iconName) ?: "?".toInt()
+        iconSet.iconForName(iconName) ?: "?".toInt()
     }
     val background = when {
         iconState.value -> iconBackgroundHover

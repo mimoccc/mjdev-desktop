@@ -3,6 +3,7 @@ package eu.mjdev.desktop.helpers.managers
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import dev.datlag.kcef.KCEF
+import eu.mjdev.desktop.provider.DesktopProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -10,7 +11,8 @@ import java.io.File
 import kotlin.math.max
 
 class KCEFHelper(
-    private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
+    private val api: DesktopProvider,
+    private val scope: CoroutineScope = api.scope,
     val initialized: MutableState<Boolean> = mutableStateOf(false),
     val restartRequired: MutableState<Boolean> = mutableStateOf(false),
     val downloading: MutableState<Int> = mutableStateOf(0)

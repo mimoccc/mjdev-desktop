@@ -46,8 +46,7 @@ fun AppsMenuApp(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         val appIconName = remember(app, icon) { app?.name ?: icon }
-        val materialIcon =
-            remember(appIconName) { api.currentUser.theme.iconSet.iconForName(appIconName) ?: "?".toInt() }
+        val materialIcon = remember(appIconName) { iconSet.iconForName(appIconName) ?: "?".toInt() }
         FontIcon(
             iconId = materialIcon,
             iconSize = iconSize,

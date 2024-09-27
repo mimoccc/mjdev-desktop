@@ -30,8 +30,6 @@ import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.windows.ChromeWindowState
@@ -43,7 +41,6 @@ import kotlinx.coroutines.launch
 @Suppress("FunctionName", "DEPRECATION")
 @Composable
 fun ControlCenter(
-    api: DesktopProvider = LocalDesktop.current,
     pagerState: MutableState<Int> = rememberState(0),
     controlCenterState: VisibilityState = rememberVisibilityState(),
     scope: CoroutineScope = rememberCoroutineScope(),
@@ -52,18 +49,20 @@ fun ControlCenter(
     onFocusChange: (Boolean) -> Unit = {},
     onContextMenuClick: () -> Unit = {}
 ) = withDesktopScope {
-    val backgroundAlpha by remember { api.currentUser.theme.controlCenterBackgroundAlphaState }
-    val controlCenterExpandedWidth by remember { api.currentUser.theme.controlCenterExpandedWidthState }
-    val controlCenterDividerWidth by remember { api.currentUser.theme.controlCenterDividerWidthState }
-    val controlCenterIconSize by remember { api.currentUser.theme.controlCenterIconSizeState }
-    val pages by remember { api.controlCenterPagesState }
-    val pagesFiltered = rememberCalculated(pages) { pages.filter { p -> p.condition.invoke(api) } }
+    // todo remove those
+    val backgroundAlpha by remember { theme.controlCenterBackgroundAlphaState }
+    val controlCenterExpandedWidth by remember { theme.controlCenterExpandedWidthState }
+    val controlCenterDividerWidth by remember { theme.controlCenterDividerWidthState }
+    val controlCenterIconSize by remember { theme.controlCenterIconSizeState }
+    //
+    val pagesFiltered =
+        rememberCalculated(controlCenterPages) { controlCenterPages.filter { p -> p.condition.invoke(api) } }
     val position by rememberCalculated { WindowPosition.Aligned(Alignment.TopEnd) }
     val size by rememberCalculated {
         if (controlCenterState.isVisible) {
-            DpSize(controlCenterExpandedWidth, api.containerSize.height)
+            DpSize(controlCenterExpandedWidth, containerSize.height)
         } else {
-            DpSize(controlCenterDividerWidth, api.containerSize.height)
+            DpSize(controlCenterDividerWidth, containerSize.height)
         }
     }
     val windowState: ChromeWindowState = rememberChromeWindowState(position = position, size = size)

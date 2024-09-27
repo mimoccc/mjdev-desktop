@@ -8,7 +8,7 @@ import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 
-@Suppress("unused", "MemberVisibilityCanBePrivate", "HasPlatformType")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class App(
     val file: File = File("nonexistent_file_path"),
     val desktopFile: DesktopFile = DesktopFile(file),
@@ -81,12 +81,10 @@ class App(
             .apply {
                 triggerStarted()
                 println("app started")
-                println("system windows : ${api.windows.allSystemWindows}")
             }
             .onExit {
                 triggerStop()
                 println("app stopped")
-                println("system windows : ${api.windows.allSystemWindows}")
             }
     }.onFailure { error ->
         triggerStop(error)

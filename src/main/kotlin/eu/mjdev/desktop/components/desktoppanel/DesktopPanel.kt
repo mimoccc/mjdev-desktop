@@ -36,7 +36,7 @@ import eu.mjdev.desktop.extensions.Compose.height
 import eu.mjdev.desktop.extensions.Modifier.topShadow
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelExitAnimation
-import eu.mjdev.desktop.provider.DesktopProvider
+import eu.mjdev.desktop.provider.DesktopScope
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.windows.ChromeWindowState
@@ -64,35 +64,20 @@ fun DesktopPanel(
         }
     },
     position: WindowPosition.Aligned = WindowPosition.Aligned(Alignment.BottomCenter),
-    onMenuIconClicked: () -> Unit = {
-        // todo
-    },
-    onMenuIconContextMenuClicked: () -> Unit = {
-        // todo
-    },
+    onMenuIconClicked: () -> Unit = { },
+    onMenuIconContextMenuClicked: () -> Unit = { },
     onFocusChange: (Boolean) -> Unit = {},
-    onAppClick: (App, DesktopProvider) -> Unit = { app, api ->
-        api.appsProvider.startApp(app)
-    },
-    onAppContextMenuClick: (App) -> Unit = {
-        // todo
-    },
-    onLanguageClick: () -> Unit = {
-        // todo
-    },
+    onAppClick: DesktopScope.(App) -> Unit = { app -> startApp(app) },
+    onAppContextMenuClick: (App) -> Unit = { },
+    onLanguageClick: () -> Unit = { },
 ) = withDesktopScope {
     val tooltipState = remember { mutableStateOf<Any?>(null) }
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
-        if (visible)
-            iconSize.height + iconOuterPadding.height + tooltipHeight + panelContentPadding.height
-        else
-            dividerWidth
+        if (visible) iconSize.height + iconOuterPadding.height + tooltipHeight + panelContentPadding.height
+        else dividerWidth
     }
     val size = remember(panelState.isVisible) {
-        DpSize(
-            api.containerSize.width,
-            panelHeight(panelState.isVisible)
-        )
+        DpSize(containerSize.width, panelHeight(panelState.isVisible))
     }
     val windowState: ChromeWindowState = rememberChromeWindowState(position = position, size = size)
     ChromeWindow(
@@ -158,9 +143,9 @@ fun DesktopPanel(
                                 .background(
                                     brush = Brush.verticalGradient(
                                         colors = listOf(
-                                            backgroundColor.copy(alpha = 0.3f),
-                                            backgroundColor.copy(alpha = 0.7f),
-                                            backgroundColor.copy(alpha = 0.8f),
+                                            backgroundColor.alpha(0.3f),
+                                            backgroundColor.alpha(0.7f),
+                                            backgroundColor.alpha(0.8f),
                                         )
                                     )
                                 )
@@ -204,7 +189,7 @@ fun DesktopPanel(
                                     iconPadding = iconPadding,
                                     iconOuterPadding = iconOuterPadding,
                                     onTooltip = { item -> tooltipState.value = item },
-                                    onAppClick = { app -> onAppClick(app, api) },
+                                    onAppClick = { app -> onAppClick(app) },
                                     onContextMenuClick = onAppContextMenuClick
                                 )
                                 DesktopPanelLanguage(

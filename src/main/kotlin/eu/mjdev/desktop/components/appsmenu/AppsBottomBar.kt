@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.icon.ShapedIcon
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
@@ -21,8 +20,6 @@ import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 @Composable
 fun AppsBottomBar(
     modifier: Modifier = Modifier,
-    iconBackgroundColor: Color = Color.White,
-    iconColor: Color = Color.Black,
     backButtonVisible: Boolean = false,
     onContextMenuClick: () -> Unit = {},
     onBackClick: () -> Unit = {}
@@ -36,8 +33,8 @@ fun AppsBottomBar(
             if (backButtonVisible) {
                 ShapedIcon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    iconColor = iconColor,
-                    iconBackgroundColor = iconBackgroundColor,
+                    iconColor = borderColor,
+                    iconBackgroundColor = iconsTintColor,
                     onRightClick = onContextMenuClick,
                     onClick = onBackClick
                 )
@@ -53,22 +50,22 @@ fun AppsBottomBar(
         ) {
             ShapedIcon(
                 imageVector = Icons.Filled.RestartAlt,
-                iconColor = iconColor,
-                iconBackgroundColor = iconBackgroundColor,
+                iconColor = borderColor,
+                iconBackgroundColor = iconsTintColor,
                 onRightClick = onContextMenuClick,
                 onClick = { api.restart() }
             )
             ShapedIcon(
                 imageVector = Icons.AutoMirrored.Filled.Logout,
-                iconColor = iconColor,
-                iconBackgroundColor = iconBackgroundColor,
+                iconColor = borderColor,
+                iconBackgroundColor = iconsTintColor,
                 onRightClick = onContextMenuClick,
                 onClick = { api.logOut() }
             )
             ShapedIcon(
                 imageVector = Icons.Filled.PowerOff,
-                iconColor = iconColor,
-                iconBackgroundColor = iconBackgroundColor,
+                iconColor = borderColor,
+                iconBackgroundColor = iconsTintColor,
                 onRightClick = onContextMenuClick,
                 onClick = { api.shutdown() }
             )

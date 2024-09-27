@@ -6,12 +6,12 @@ import java.io.File
 
 @Suppress("CanBeParameter", "unused")
 class GtkTheme(
-    val themeName: String = "mjdev",
     val api: DesktopProvider,
-    val themesDir: File = File(api.homeDir, ".themes"),
-    val themeDir: File = File(themesDir, themeName),
-    val themeDesktopFile: File = File(themeDir, "index.theme"),
-    val themeCssFile: File = File(themeDir, "gtk.css")
+    private val themeName: String = "mjdev",
+    private val themesDir: File = File(api.homeDir, ".themes"),
+    private val themeDir: File = File(themesDir, themeName),
+    private val themeDesktopFile: File = File(themeDir, "index.theme"),
+    private val themeCssFile: File = File(themeDir, "gtk.css")
 ) {
     val desktopFile: DesktopFile = DesktopFile.create(themeDesktopFile) // todo
 

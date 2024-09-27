@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.components.text.TextWithShadow
+import eu.mjdev.desktop.extensions.Custom.ParsedList
 import eu.mjdev.desktop.extensions.Custom.dateFlow
 import eu.mjdev.desktop.extensions.Custom.timeFlow
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
@@ -29,7 +31,7 @@ fun Clock(
     dateTextColor: Color = Color.Black,
     showTime: Boolean = true,
     showDate: Boolean = true,
-//    talkEveryHour: Boolean = true,
+    talkEveryHour: Boolean = true,
 ) = withDesktopScope {
     Box(
         modifier = modifier,
@@ -54,15 +56,16 @@ fun Clock(
                 color = dateTextColor
             )
         }
-//        LaunchedEffect(time) {
-//            if (time.isNotEmpty()) {
-//                val parsed = time.split(":")
-//                val isZeroMinutes = (parsed.getOrNull(1) ?: "-") == "00"
-//                if (talkEveryHour && isZeroMinutes) {
-//                    api.ai.talk("It is ${parsed.firstOrNull()} hour")
-//                }
-//            }
-//        }
+        LaunchedEffect(time) {
+            if (time.isNotEmpty()) {
+                val parsed = ParsedList(time, ":")
+                val isZeroSeconds = (parsed.getOrNull(2) ?: "-") == "00"
+                val isZeroMinutes = (parsed.getOrNull(1) ?: "-") == "00"
+                if (talkEveryHour && isZeroMinutes && isZeroSeconds) {
+                    ai.talk("It is ${parsed.firstOrNull()} hour")
+                }
+            }
+        }
     }
 }
 

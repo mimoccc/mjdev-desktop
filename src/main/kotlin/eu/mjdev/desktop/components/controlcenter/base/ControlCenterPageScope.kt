@@ -10,7 +10,6 @@ class ControlCenterPageScope(
     api: DesktopProvider,
     val cache: PageCache
 ) : DesktopScope(api) {
-
     companion object {
         @Suppress("UnusedReceiverParameter")
         @Composable

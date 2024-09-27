@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import nl.marc_apps.tts.TextToSpeechFactory
 import nl.marc_apps.tts.experimental.ExperimentalDesktopTarget
 
-@Suppress("MemberVisibilityCanBePrivate", "unused", "UNUSED_PARAMETER", "RemoveEmptyClassBody")
+@Suppress("MemberVisibilityCanBePrivate", "unused", "UNUSED_PARAMETER")
 class AIProvider(
     val scope: CoroutineScope,
     var pluginAI: IAIPlugin = AiPluginNull(scope),
@@ -35,7 +35,12 @@ class AIProvider(
         suspend fun ask(question: String): String
     }
 
+    interface STTListener {
+        fun onTextRecognized(text: String)
+    }
+
     interface ISTTPlugin {
+        val listeners: List<STTListener>
     }
 
     interface TTSPlugin {
@@ -43,6 +48,7 @@ class AIProvider(
     }
 
     class STTPluginNull(scope: CoroutineScope) : ISTTPlugin {
+        override val listeners: List<STTListener> = mutableListOf()
     }
 
     @OptIn(ExperimentalDesktopTarget::class)
@@ -54,6 +60,7 @@ class AIProvider(
         }
 
         override fun talk(text: String, clearQueue: Boolean) {
+            println("talking: $text")
             scope.launch {
                 textToSpeech.await()?.say(text, clearQueue)
             }
@@ -64,6 +71,7 @@ class AIProvider(
         val scope: CoroutineScope
     ) : TTSPlugin {
         override fun talk(text: String, clearQueue: Boolean) {
+            println("talking: $text")
             scope.launch(Dispatchers.IO) {
                 Shell.executeAndRead(
                     "/opt/swift/bin/swift",
@@ -94,7 +102,7 @@ class AIProvider(
             var error: Throwable? = null
             runCatching {
                 if (key.isEmpty()) {
-                    throw(Exception("Error: No gemini api key provided, pleas read manual and provide Your api key."))
+                    throw (Exception("Error: No gemini api key provided, pleas read manual and provide Your api key."))
                 } else {
                     generativeModel?.generateContent(content {
                         text(question)

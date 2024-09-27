@@ -48,7 +48,7 @@ fun FolderIcon(
             }
         }
     }
-    val iconId: Int = remember(path) { api.currentUser.theme.iconSet.iconForName(iconName) ?: "?".toInt() }
+    val iconId: Int = remember(path) { iconSet.iconForName(iconName) ?: "?".toInt() }
     val computedSize = remember(path) { iconSize + 2.dp }
     DraggableView(
         modifier = Modifier.wrapContentSize(),

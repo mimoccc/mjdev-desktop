@@ -139,16 +139,19 @@ class AppsProvider(
 
     val favoriteApps = mutableStateListOf<App>()
 
-    fun startApp(app: App) {
+    fun startApp(
+        app: App,
+        windowsManager: WindowsManager = api.windowsManager
+    ) {
         scope.launch(Dispatchers.IO) {
-//            if (app.isRunning) {
-//                // todo menu to switch
-//                if (app.isWindowFocus(api)) {
-//                    app.minimizeWindow(api)
-//                } else {
-//                    app.requestWindowFocus(api)
-//                }
-//            } else {
+            if (app.isRunning) {
+                // todo menu to switch
+                if (windowsManager.isWindowFocus(app)) {
+                    windowsManager.minimizeWindow(app)
+                } else {
+                    windowsManager.requestWindowFocus(app)
+                }
+            } else {
                 app.onStarting {
                     if (favoriteApps.contains(app)) {
                         favoriteApps.invalidate()
@@ -167,8 +170,8 @@ class AppsProvider(
                         result.printStackTrace()
                     }
                 }.start(api)
-                favoriteApps.invalidate()
-//            }
+            }
+            favoriteApps.invalidate()
         }
     }
 

@@ -13,7 +13,7 @@ import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 fun WifiSettingsPage() = ControlCenterPage(
     icon = Icons.Filled.Wifi,
     name = "Wifi",
-    condition = { connection.isWifiAdapterAvailable }
+    condition = { connectionManager.isWifiAdapterAvailable }
 ) {
     Box(
         modifier = Modifier.fillMaxSize()

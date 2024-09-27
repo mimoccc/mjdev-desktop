@@ -13,7 +13,7 @@ import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 fun EthSettingsPage() = ControlCenterPage(
     icon = Icons.Filled.SettingsEthernet,
     name = "Ethernet",
-    condition = { connection.isEthAdapterAvailable }
+    condition = { connectionManager.isEthAdapterAvailable }
 ) {
     Box(
         modifier = Modifier.fillMaxSize()

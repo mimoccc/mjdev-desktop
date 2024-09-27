@@ -1,5 +1,7 @@
 package eu.mjdev.desktop.data
 
+import eu.mjdev.desktop.extensions.Custom.ParsedBoolean
+import eu.mjdev.desktop.extensions.Custom.ParsedList
 import org.ini4j.Ini
 import java.io.File
 
@@ -17,37 +19,53 @@ class DesktopFile(
         get() = file.name
 
     val type
-        get() = props?.get(Prop_Type) ?: ""
+        get() = DesktopFileType(props?.get(Prop_Type))
 
     val version
-        get() = props?.get(Prop_Version) ?: ""
+        get() = props?.get(Prop_Version).orEmpty()
 
     val name
-        get() = props?.get(Prop_Name) ?: ""
+        get() = props?.get(Prop_Name).orEmpty()
 
     val comment
-        get() = props?.get(Prop_Comment) ?: ""
+        get() = props?.get(Prop_Comment).orEmpty()
 
     val path
-        get() = props?.get(Prop_Path) ?: ""
+        get() = props?.get(Prop_Path).orEmpty()
 
     val exec
-        get() = props?.get(Prop_Exec) ?: ""
+        get() = props?.get(Prop_Exec).orEmpty()
 
     val icon
-        get() = props?.get(Prop_Icon) ?: ""
+        get() = props?.get(Prop_Icon).orEmpty()
 
     val categories
-        get() = (props?.get(Prop_Categories) ?: "").split(";").toList()
+        get() = ParsedList(props?.get(Prop_Categories))
 
     val notifyOnStart
-        get() = (props?.get(Prop_StartupNotify) ?: "false").asBoolean()
+        get() = ParsedBoolean(props?.get(Prop_StartupNotify))
 
     val runInTerminal
-        get() = (props?.get(Prop_Terminal) ?: "false").asBoolean()
+        get() = ParsedBoolean(props?.get(Prop_Terminal))
 
     val absolutePath: String
         get() = file.absolutePath
+
+    enum class DesktopFileType(
+        val header: String
+    ) {
+        Unknown(""),
+        Application("Application"),
+        Theme("X-GNOME-Metatheme");
+
+        companion object {
+            operator fun invoke(
+                value: String?
+            ): DesktopFileType = value.orEmpty().trim().let { v ->
+                entries.firstOrNull { e -> e.header.contentEquals(v, true) } ?: Unknown
+            }
+        }
+    }
 
     companion object {
         const val Prop_Type = "Type" // string "Application"
@@ -63,6 +81,12 @@ class DesktopFile(
         const val Prop_GenericName = "GenericName"
         const val Prop_MimeType = "MimeType" // string delimited ;
         const val Prop_Actions = "Actions"
+        const val Prop_DBusActivatable = "DBusActivatable"
+
+        const val Prop_X_GNOME_UsesNotifications = "X-GNOME-UsesNotifications"
+        const val Prop_X_Purism_FormFactor = "X-Purism-FormFactor"
+        const val Prop_X_Unity_IconBackgroundColor = "X-Unity-IconBackgroundColor"
+        const val Prop_X_Ubuntu_Gettext_Domain = "X-Ubuntu-Gettext-Domain"
 
         private fun String.asBoolean(): Boolean = when (this.lowercase()) {
             "true" -> true

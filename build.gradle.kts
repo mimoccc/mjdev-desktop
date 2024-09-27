@@ -101,7 +101,8 @@ allprojects {
         implementation("io.github.irgaly.kfswatch:kfswatch:1.3.0")
         // java gnome
         implementation("com.github.bailuk:java-gtk:0.5.0")
-
+        // wnck
+        // todo
         // compose debugger
 //        implementation("io.github.theapache64:rebugger:1.0.0-rc03")
         // music

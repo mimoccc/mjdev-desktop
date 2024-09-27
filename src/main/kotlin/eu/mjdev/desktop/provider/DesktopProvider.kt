@@ -9,6 +9,8 @@ import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.pages.*
+import eu.mjdev.desktop.data.App
+import eu.mjdev.desktop.data.DesktopFile
 import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.helpers.adb.AdbDiscover.Companion.adbDevicesHandler
@@ -19,6 +21,7 @@ import eu.mjdev.desktop.helpers.system.DBus
 import eu.mjdev.desktop.helpers.system.OsRelease
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.AIProvider.AiPluginGemini
+import eu.mjdev.desktop.theme.gtk.GtkTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.awt.*
@@ -43,10 +46,10 @@ class DesktopProvider(
     }
     val osDetails by lazy { OsRelease() }
     val toolkit: Toolkit by lazy { Toolkit.getDefaultToolkit() }
-    val kcefHelper: KCEFHelper by lazy { KCEFHelper(scope) }
+    val kcefHelper: KCEFHelper by lazy { KCEFHelper(this) }
     val gnome: GnomeManager by lazy { GnomeManager() }
-    val connection: ConnectivityManager by lazy { ConnectivityManager() }
-    val windows: WindowsManager by lazy { WindowsManager() }
+    val connectionManager: ConnectivityManager by lazy { ConnectivityManager() }
+    val windowsManager: WindowsManager by lazy { WindowsManager(this) }
     val dbus: DBus by lazy { DBus() }
     val ai: AIProvider by lazy {
         // todo user can configure
@@ -58,6 +61,7 @@ class DesktopProvider(
             println("Mounted: ${this.targetDirectory}")
         }
     }
+    val gtkTheme: GtkTheme by lazy { GtkTheme(this) }
     val palette: Palette by lazy { Palette(scope, currentUser.theme.backgroundColor) }
     val homeDir: File
         get() = currentUser.homeDir
@@ -90,14 +94,13 @@ class DesktopProvider(
         get() = runCatching {
             toolkit.isAlwaysOnTopSupported
         }.getOrNull() ?: false
-//    val cursorSize
+
+    //    val cursorSize
 //        get() = toolkit.getBestCursorSize(32, 32).let {
 //            DpSize(it.width.dp, it.height.dp)
 //        }
-    val desktopUtils: Desktop? by lazy {
-        if (Desktop.isDesktopSupported()) {
-            Desktop.getDesktop()
-        } else null
+    val desktopUtils: Desktop by lazy {
+        Desktop.getDesktop()
     }
     val controlCenterPages
         get() = controlCenterPagesState.value
@@ -109,6 +112,9 @@ class DesktopProvider(
         get() = graphicsDevice.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.TRANSLUCENT)
 
     init {
+        runCatching {
+            windowsManager.init()
+        }
         runCatching {
             currentUser.theme.controlCenterExpandedWidth = containerSize.width.div(4)
         }
@@ -137,24 +143,24 @@ class DesktopProvider(
             kcefHelper.dispose()
         }
         runCatching {
-            windows.dispose()
+            windowsManager.dispose()
         }
     }
 
     fun openMail(emailAddress: String) = runCatching {
-        desktopUtils?.mail(URI.create("mailto:$emailAddress"))
+        desktopUtils.mail(URI.create("mailto:$emailAddress"))
     }
 
     fun openBrowser(url: String) = runCatching {
-        desktopUtils?.browse(URI.create(url))
+        desktopUtils.browse(URI.create(url))
     }
 
     fun openDirectoryForFile(path: String) = runCatching {
-        desktopUtils?.browseFileDirectory(File(path))
+        desktopUtils.browseFileDirectory(File(path))
     }
 
     fun moveToTrash(file: File) = runCatching {
-        desktopUtils?.moveToTrash(file)
+        desktopUtils.moveToTrash(file)
     }
 
     fun moveToTrash(filePath: String) = runCatching {
@@ -162,7 +168,7 @@ class DesktopProvider(
     }
 
     fun openFileInAssociated(file: File) = runCatching {
-        desktopUtils?.open(file)
+        desktopUtils.open(file)
     }
 
     fun openFileInAssociated(filePath: String) = runCatching {
@@ -254,6 +260,16 @@ class DesktopProvider(
                 imageLoader,
                 isDebug
             )
+        }
+
+        fun Desktop.startApp(app: App) {
+            startApp(app.desktopFile)
+        }
+
+        fun Desktop.startApp(
+            desktopFile: DesktopFile
+        ) {
+            this.open(desktopFile.file)
         }
     }
 }

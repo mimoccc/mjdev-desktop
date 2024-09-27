@@ -15,7 +15,24 @@ import java.text.DateFormat
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
+@Suppress("FunctionName")
 object Custom {
+
+    fun ParsedList(
+        value: String?,
+        delimiter: String = ";"
+    ): List<String> = value?.split(delimiter)?.toList() ?: emptyList()
+
+    fun ParsedBoolean(
+        value: String?,
+        defaultValue: Boolean = false
+    ) = value.orEmpty().trim().lowercase().let { b ->
+        when (b) {
+            "true" -> true
+            "1" -> true
+            else -> defaultValue
+        }
+    }
 
     fun NativePaint.setMaskFilter(
         blurRadius: Float

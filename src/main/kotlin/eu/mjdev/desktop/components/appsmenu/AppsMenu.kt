@@ -32,7 +32,7 @@ import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Modifier.dropShadow
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
-import eu.mjdev.desktop.provider.DesktopProvider
+import eu.mjdev.desktop.provider.DesktopScope
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.windows.ChromeWindowState
@@ -47,31 +47,24 @@ fun AppsMenu(
     enterAnimation: EnterTransition = AppsMenuEnterAnimation,
     exitAnimation: ExitTransition = AppsMenuExitAnimation,
     onFocusChange: (Boolean) -> Unit = {},
-    onAppClick: (App, DesktopProvider) -> Unit = { app, api ->
-        api.appsProvider.startApp(app)
-    },
-    onAppContextMenuClick: (App) -> Unit = {
-        // todo
-    },
-    onCategoryContextMenuClick: (Category) -> Unit = {
-        // todo
-    },
-    onUserAvatarClick: () -> Unit = {
-        // todo
-    }
+    onAppClick: DesktopScope.(App) -> Unit = { app -> startApp(app) },
+    onAppContextMenuClick: DesktopScope.(App) -> Unit = {},
+    onCategoryContextMenuClick: (Category) -> Unit = {},
+    onUserAvatarClick: () -> Unit = {}
 ) = withDesktopScope {
-    val appMenuMinWidth by remember { api.currentUser.theme.appMenuMinWidthState }
-    val appMenuMinHeight by remember { api.currentUser.theme.appMenuMinHeightState }
-    val menuPadding by remember { api.currentUser.theme.appMenuOuterPaddingState }
-    // todo
-    var items: List<Any> by remember(api.appsProvider) { mutableStateOf(api.appsProvider.appCategories) }
+    // todo remove those three
+    val appMenuMinWidth by remember { theme.appMenuMinWidthState }
+    val appMenuMinHeight by remember { theme.appMenuMinHeightState }
+    val menuPadding by remember { theme.appMenuOuterPaddingState }
+
+    var items: List<Any> by remember(appCategories) { mutableStateOf(appCategories) }
     val onCategoryClick: (Category) -> Unit = { category ->
-        items = api.appsProvider.categoriesAndApps[category.name]?.sortedBy { it.name } ?: emptyList()
+        items = appCategoriesAndApps[category.name]?.sortedBy { it.name } ?: emptyList()
     }
     val position by rememberCalculated {
         WindowPosition.Absolute(
             panelState.bounds.x,
-            api.containerSize.height - (panelState.bounds.height + appMenuMinHeight)
+            containerSize.height - (panelState.bounds.height + appMenuMinHeight)
         )
     }
     val windowState: ChromeWindowState = rememberChromeWindowState(position = position)
@@ -152,9 +145,6 @@ fun AppsMenu(
                                 items(items) { item ->
                                     AppsMenuCategory(
                                         category = item as Category,
-                                        backgroundColor = backgroundColor,
-                                        iconTint = textColor,
-                                        textColor = textColor,
                                         onClick = { onCategoryClick(item) },
                                         onContextMenuClick = { onCategoryContextMenuClick(item) }
                                     )
@@ -169,7 +159,7 @@ fun AppsMenu(
                                         iconTint = textColor,
                                         textColor = textColor,
                                         onClick = {
-                                            onAppClick(item, api)
+                                            onAppClick(item)
                                         },
                                         onContextMenuClick = {
                                             onAppContextMenuClick(item)
@@ -202,11 +192,9 @@ fun AppsMenu(
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .background(backgroundColor),
-                        iconColor = borderColor,
-                        iconBackgroundColor = iconsTintColor,
                         backButtonVisible = items.first() is App,
                         onBackClick = {
-                            items = api.appsProvider.appCategories
+                            items = appCategories
                         },
                         onContextMenuClick = {
                             // todo : context menu
@@ -217,7 +205,7 @@ fun AppsMenu(
         }
         launchedEffect(menuState.isVisible) {
             if (!menuState.isVisible) {
-                items = api.appsProvider.appCategories
+                items = appCategories
             }
         }
     }
