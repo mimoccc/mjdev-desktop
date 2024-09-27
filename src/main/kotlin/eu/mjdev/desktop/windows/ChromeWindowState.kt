@@ -113,7 +113,6 @@ class ChromeWindowState(
             }
         }
 
-        @Suppress("UNUSED_PARAMETER")
         @Composable
         fun updateAnimState(
             visible: Boolean,
