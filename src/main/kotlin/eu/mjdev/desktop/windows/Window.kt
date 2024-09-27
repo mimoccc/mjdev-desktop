@@ -15,8 +15,12 @@ import androidx.compose.ui.window.*
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 import java.awt.*
 import java.awt.event.*
+import java.awt.image.BufferedImage
+import java.awt.image.ConvolveOp
+import java.awt.image.Kernel
 import java.util.*
 import javax.swing.JFrame
+import javax.swing.JPanel
 import kotlin.math.roundToInt
 
 @Suppress("FunctionName")
@@ -36,7 +40,7 @@ fun Window(
     onLostFocus: (window: ComposeWindow) -> Unit = {},
     onStateChanged: (window: ComposeWindow) -> Unit = {},
     onCloseRequest: () -> Unit,
-    state: ChromeWindowState =  rememberChromeWindowState(),
+    state: ChromeWindowState = rememberChromeWindowState(),
     visible: Boolean = true,
     title: String = "",
     icon: Painter? = null,
@@ -366,6 +370,7 @@ fun Window(
             create().apply {
                 this.compositionLocalContext = compositionLocalContext
                 this.exceptionHandler = windowExceptionHandlerFactory.exceptionHandler(this)
+//                BlurBackground.applyBlurBackground(this)
                 setContent(onPreviewKeyEvent, onKeyEvent, content)
             }
         },
@@ -378,6 +383,7 @@ fun Window(
             component.componentOrientation = layoutDirection.componentOrientation
             val wasDisplayable = component.isDisplayable
             update(component)
+//            BlurBackground.applyBlurBackground(component)
             if (!wasDisplayable && component.isDisplayable) {
                 component.contentPane.paint(component.contentPane.graphics)
             }
@@ -444,5 +450,51 @@ class WindowEventsAdapter(
     override fun windowClosing(e: WindowEvent) {
         onClosing(window)
         currentOnCloseRequest()
+    }
+}
+
+@Suppress("unused")
+object BlurBackground {
+    private val blurKernel = floatArrayOf(
+        0.0625f, 0.125f, 0.0625f,
+        0.125f, 0.25f, 0.125f,
+        0.0625f, 0.125f, 0.0625f
+    )
+    private val kernel = Kernel(3, 3, blurKernel)
+    private val blurOp = ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null)
+
+    fun applyBlurBackground(frame: JFrame) {
+        try {
+            BufferedImage(
+                frame.width,
+                frame.height,
+                BufferedImage.TYPE_INT_ARGB
+            ).let { image ->
+                image.graphics.also { graphics ->
+                    frame.contentPane.paint(graphics)
+//                    graphics.dispose()
+                    blurOp.filter(image, null).let { blurredImage ->
+                        frame.contentPane = BackgroundPanel(blurredImage)
+//                        frame.contentPane.layout = null
+                    }
+                }
+            }
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
+    }
+
+    private class BackgroundPanel(
+        private val image: BufferedImage
+    ) : JPanel() {
+        init {
+            isOpaque = false
+        }
+
+        override fun paintComponent(g: Graphics) {
+            super.paintComponent(g)
+            val r = g.clipBounds
+            g.drawImage(image, r.x, r.y, r.width, r.height, null)
+        }
     }
 }

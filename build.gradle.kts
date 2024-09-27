@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.compose.desktop)
     alias(libs.plugins.kotlin.serialization)
+//    alias(libs.plugins.kotlin.kapt)
 //    id("dev.datlag.sekret") version "2.0.0-alpha-07"
 //    id("com.bintray.gradle.plugins.bintray")
 }
@@ -87,8 +88,8 @@ allprojects {
 //        implementation(libs.dbus.java.transport.native.unixsocket)
         // testing yet
         // anim
-        implementation("org.jetbrains.compose.animation:animation:1.7.0-alpha03")
-        implementation("org.jetbrains.compose.animation:animation-graphics:1.7.0-alpha03")
+//        implementation("org.jetbrains.compose.animation:animation:1.7.0-alpha03")
+//        implementation("org.jetbrains.compose.animation:animation-graphics:1.7.0-alpha03")
 //        // images metadata
 //        implementation("com.ashampoo:kim:0.18.4")
         // connectivity
@@ -99,8 +100,12 @@ allprojects {
         implementation("com.github.skydoves:flexible-bottomsheet-material3:0.1.5")
         // fs watcher
         implementation("io.github.irgaly.kfswatch:kfswatch:1.3.0")
+        // blur
+//        implementation("dev.chrisbanes.haze:haze:0.7.3")
         // java gnome
-        implementation("com.github.bailuk:java-gtk:0.5.0")
+//        implementation("com.github.bailuk:java-gtk:0.5.0")
+        // wayland
+//        implementation("org.freedesktop:wayland:1.4.0")
         // wnck
         // todo
         // compose debugger

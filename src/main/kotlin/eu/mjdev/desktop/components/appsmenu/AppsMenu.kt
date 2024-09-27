@@ -56,7 +56,7 @@ fun AppsMenu(
     val appMenuMinWidth by remember { theme.appMenuMinWidthState }
     val appMenuMinHeight by remember { theme.appMenuMinHeightState }
     val menuPadding by remember { theme.appMenuOuterPaddingState }
-
+    //
     var items: List<Any> by remember(appCategories) { mutableStateOf(appCategories) }
     val onCategoryClick: (Category) -> Unit = { category ->
         items = appCategoriesAndApps[category.name]?.sortedBy { it.name } ?: emptyList()
@@ -81,7 +81,9 @@ fun AppsMenu(
                     menuState.onFocusChange(focused)
                     onFocusChange(focused)
                 },
-                content = { content() }
+                content = {
+                    content()
+                }
             )
         }
     }
