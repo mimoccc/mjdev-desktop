@@ -35,7 +35,14 @@ object Compose {
     val Color.Companion.DarkBlue
         get() = Color(0xff202060)
 
-    fun Color.toHex(): String {
+    fun Color.rgbToHex(): String {
+        val red = (red * 255).toInt()
+        val green = (green * 255).toInt()
+        val blue = (blue * 255).toInt()
+        return String.format("#%02x%02x%02x", red, green, blue)
+    }
+
+    fun Color.rgbaToHex(): String {
         val alpha : Int= (alpha * 255).toInt()
         val red = (red * 255).toInt()
         val green = (green * 255).toInt()

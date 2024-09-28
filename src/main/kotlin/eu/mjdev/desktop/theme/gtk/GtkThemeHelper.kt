@@ -13,7 +13,7 @@ import eu.mjdev.desktop.data.DesktopFile.Companion.CursorTheme
 import eu.mjdev.desktop.data.DesktopFile.Companion.ButtonLayout
 import eu.mjdev.desktop.data.DesktopFile.Companion.UseOverlayScrollbars
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
-import eu.mjdev.desktop.extensions.Compose.toHex
+import eu.mjdev.desktop.extensions.Compose.rgbToHex
 import eu.mjdev.desktop.helpers.internal.Palette
 import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_ADWAITA
 import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_ADWAITA_DARK
@@ -22,7 +22,7 @@ import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_YARU
 import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 
-@Suppress("unused")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class GtkThemeHelper(
     private val api: DesktopProvider,
     private val palette: Palette = api.palette,
@@ -87,68 +87,87 @@ class GtkThemeHelper(
         var fgColor: Color = Color.SuperDarkGray
         var baseColor: Color = Color.SuperDarkGray
         var textColor: Color = Color.SuperDarkGray
+        var borderColor: Color = Color.SuperDarkGray
         var selectedBgColor: Color = Color.SuperDarkGray
         var selectedFgColor: Color = Color.SuperDarkGray
         var tooltipBgColor: Color = Color.SuperDarkGray
         var tooltipFgColor: Color = Color.SuperDarkGray
+        var errorFgColor: Color = Color.White
+        var errorBgColor: Color = Color.Red
+        var successFgColor: Color = Color.White
+        var successBgColor: Color = Color.Red
+        var questionFgColor: Color = Color.White
+        var questionBgColor: Color = Color.Yellow
+        var warningFgColor: Color = Color.White
+        var warningBgColor: Color = Color.Magenta
+        var infoFgColor: Color = Color.Black
+        var infoBgColor: Color = Color.White
+        var osdFgColor : Color = Color.Black
+        var osdBgColor : Color = Color.SuperDarkGray
 
         override fun toString() = """
-            @define-color bg_color ${bgColor.toHex()};
-            @define-color fg_color ${fgColor.toHex()};
-            @define-color base_color ${baseColor.toHex()};
-            @define-color text_color ${textColor.toHex()};
-            @define-color selected_bg_color ${selectedBgColor.toHex()};
-            @define-color selected_fg_color ${selectedFgColor.toHex()};
-            @define-color tooltip_bg_color ${tooltipBgColor.toHex()};
-            @define-color tooltip_fg_color ${tooltipFgColor.toHex()};
-            @define-color info_fg_color ${fgColor.toHex()};
-            @define-color info_bg_color ${bgColor.toHex()};
-            @define-color warning_fg_color ${fgColor.toHex()};
-            @define-color warning_bg_color ${bgColor.toHex()};
-            @define-color question_fg_color ${fgColor.toHex()};
-            @define-color question_bg_color ${bgColor.toHex()};
-            @define-color error_fg_color rgb (235, 235, 235);
-            @define-color error_bg_color rgb (223, 56, 44);
-            
+            @define-color bg_color ${bgColor.rgbToHex()};
+            @define-color fg_color ${fgColor.rgbToHex()};
+            @define-color base_color ${baseColor.rgbToHex()};
+            @define-color text_color ${textColor.rgbToHex()};
+            @define-color selected_bg_color ${selectedBgColor.rgbToHex()};
+            @define-color selected_fg_color ${selectedFgColor.rgbToHex()};
+            @define-color tooltip_bg_color ${tooltipBgColor.rgbToHex()};
+            @define-color tooltip_fg_color ${tooltipFgColor.rgbToHex()};
+            @define-color info_fg_color ${infoFgColor.rgbToHex()};
+            @define-color info_bg_color ${infoBgColor.rgbToHex()};
+            @define-color warning_fg_color ${warningFgColor.rgbToHex()};
+            @define-color warning_bg_color ${warningBgColor.rgbToHex()};
+            @define-color question_fg_color ${questionFgColor.rgbToHex()};
+            @define-color question_bg_color ${questionBgColor.rgbToHex()};
+            @define-color error_fg_color ${errorFgColor.rgbToHex()};
+            @define-color error_bg_color ${errorBgColor.rgbToHex()};
+            @define-color success_color ${successBgColor.rgbToHex()};
+            @define-color error_color ${errorBgColor.rgbToHex()};
+            @define-color dark_bg_color${bgColor.rgbToHex()};
+            @define-color dark_fg_color ${fgColor.rgbToHex()};
+            @define-color osd_fg_color ${osdFgColor.rgbToHex()};
+            @define-color osd_bg_color ${osdBgColor.rgbToHex()};
+            @define-color osd_border_color ${borderColor.rgbToHex()};
             @define-color link_color @selected_bg_color;
-            
-            @define-color success_color #4e9a06;
-            @define-color error_color #df382c;
-            
-            @define-color button_bg_color shade (@bg_color, 1.02); /*shade (#cdcdcd, 1.08);*/
+            @define-color button_bg_color shade (@bg_color, 1.02);
             @define-color notebook_button_bg_color shade (@bg_color, 1.02);
             @define-color button_insensitive_bg_color mix (@button_bg_color, @bg_color, 0.6);
-            @define-color dark_bg_color${bgColor.toHex()};
-            @define-color dark_fg_color #dfdbd2;
             @define-color backdrop_fg_color mix (@bg_color, @fg_color, 0.8);
             @define-color backdrop_text_color mix (@base_color, @text_color, 0.8);
             @define-color backdrop_dark_fg_color mix (@dark_bg_color, @dark_fg_color, 0.75);
-            /*@define-color backdrop_dark_bg_color mix (@dark_bg_color, @dark_fg_color, 0.75);*/
+            @define-color backdrop_dark_bg_color mix (@dark_bg_color, @dark_fg_color, 0.75);
             @define-color backdrop_selected_bg_color shade (@bg_color, 0.92);
             @define-color backdrop_selected_fg_color @fg_color;
             @define-color focus_color alpha (@selected_bg_color, 0.5);
             @define-color focus_bg_color alpha (@selected_bg_color, 0.1);
             @define-color shadow_color alpha(black, 0.5);
             
-            @define-color osd_fg_color #eeeeec;
-            @define-color osd_bg_color alpha(#202526, 0.7);
-            @define-color osd_border_color alpha(black, 0.7);
+            window {
+                background-color: ${bgColor.rgbToHex()};
+            	border-radius: 8px;
+            	border-bottom-left-radius: 8px;
+            	border-bottom-right-radius: 8px;
+            	box-shadow: 0px 0px 0px 1px ${textColor.rgbToHex()};
+            	border: 1px solid ${textColor.rgbToHex()};
+            	border-top: none;
+            }
             
             decoration {
-            	background-color: ${bgColor.toHex()};
+            	background-color: ${bgColor.rgbToHex()};
             	border-radius: 8px;
-            	border-bottom-left-radius: ${textColor.toHex()};
-            	border-bottom-right-radius: ${textColor.toHex()};
-            	box-shadow: 0px 0px 0px 1px ${textColor.toHex()};
-            	border: 1px solid ${textColor.toHex()};
+            	border-bottom-left-radius: 8px;
+            	border-bottom-right-radius: 8px;
+            	box-shadow: 0px 0px 0px 1px ${textColor.rgbToHex()};
+            	border: 1px solid ${textColor.rgbToHex()};
             	border-top: none;
             }
             
             headerbar {
-                background-color: ${bgColor.toHex()};
-            	border-bottom: 1px solid ${textColor.toHex()};
-            	box-shadow: 0px 1px 0px 0px ${textColor.toHex()};
-            	border-top: 1px solid ${textColor.toHex()};
+                background-color: ${bgColor.rgbToHex()};
+            	border-bottom: 1px solid ${textColor.rgbToHex()};
+            	box-shadow: 0px 1px 0px 0px ${textColor.rgbToHex()};
+            	border-top: 1px solid ${textColor.rgbToHex()};
             }
             
         """.trimIndent()

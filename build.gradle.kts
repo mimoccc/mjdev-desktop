@@ -100,6 +100,8 @@ allprojects {
         implementation("com.github.skydoves:flexible-bottomsheet-material3:0.1.5")
         // fs watcher
         implementation("io.github.irgaly.kfswatch:kfswatch:1.3.0")
+        // sikulix
+//        implementation("com.sikulix:sikulixapi:2.0.5")
         // blur
 //        implementation("dev.chrisbanes.haze:haze:0.7.3")
         // java gnome
