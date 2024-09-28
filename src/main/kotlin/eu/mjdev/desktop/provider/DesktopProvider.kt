@@ -62,7 +62,7 @@ class DesktopProvider(
         }
     }
     val gtkTheme: GtkTheme by lazy { GtkTheme(this) }
-    val palette: Palette by lazy { Palette(scope, currentUser.theme.backgroundColor) }
+    val palette: Palette by lazy { Palette(this) }
     val homeDir: File
         get() = currentUser.homeDir
     val allUsers: List<User>

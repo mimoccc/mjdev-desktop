@@ -8,6 +8,7 @@ import eu.mjdev.desktop.extensions.ColorUtils.darker
 import eu.mjdev.desktop.extensions.ColorUtils.isLightColor
 import eu.mjdev.desktop.extensions.ColorUtils.lighter
 import eu.mjdev.desktop.extensions.ColorUtils.nonAlphaValue
+import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Image.loadPicture
 import eu.mjdev.desktop.provider.DesktopProvider
 import kotlinx.coroutines.CoroutineScope
@@ -15,8 +16,9 @@ import kotlinx.coroutines.launch
 
 @Suppress("CanBeParameter", "MemberVisibilityCanBePrivate")
 class Palette(
-    val scope: CoroutineScope,
-    val baseColor: Color = Color.Transparent,
+    val api:DesktopProvider,
+    val scope: CoroutineScope = api.scope,
+    val baseColor: Color = Color.SuperDarkGray,
     val borderFactor: Float = 0.1f,
     val textFactor: Float = 0.6f,
 ) {
@@ -62,6 +64,7 @@ class Palette(
             backgroundColorState.value = background
             textColorState.value = text
         }
+//        api.gtkTheme.createFromPalette()
     }
 
     companion object {
@@ -76,15 +79,15 @@ class Palette(
             api: DesktopProvider,
         ) = rememberPalette(api) { api.currentUser.theme.backgroundColorState }
 
-        @Composable
-        fun rememberTextColor(
-            api: DesktopProvider,
-        ) = rememberPalette(api) { derivedStateOf { api.palette.textColor } }
+//        @Composable
+//        fun rememberTextColor(
+//            api: DesktopProvider,
+//        ) = rememberPalette(api) { derivedStateOf { api.palette.textColor } }
 
-        @Composable
-        fun rememberBorderColor(
-            api: DesktopProvider,
-        ) = rememberPalette(api) { derivedStateOf { api.palette.borderColor } }
+//        @Composable
+//        fun rememberBorderColor(
+//            api: DesktopProvider,
+//        ) = rememberPalette(api) { derivedStateOf { api.palette.borderColor } }
 
         @Composable
         fun rememberIconTintColor(

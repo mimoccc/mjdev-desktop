@@ -1,7 +1,7 @@
 package eu.mjdev.desktop.helpers.system
 
+import eu.mjdev.desktop.extensions.Custom.childs
 import eu.mjdev.desktop.extensions.Custom.command
-import eu.mjdev.desktop.extensions.Custom.readAvailable
 import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -19,14 +19,20 @@ class Shell(
     val input: BufferedReader = process.inputReader()
     val output: BufferedWriter = process.outputWriter()
 
+//    val processInfo
+//        get() = process.info()
+
     val isAlive: Boolean
         get() = process.isAlive
 
+    val isRunning:Boolean
+        get() = false // todo : implement process is running monitor
+
+    val hasChilds
+        get() = childProcesses.isNotEmpty()
+
     val pid
         get() = process.pid()
-
-    val pids
-        get() = getProcessPids()
 
     val command: String
         get() = process.command ?: ""
@@ -38,12 +44,7 @@ class Shell(
         get() = allProcesses.map { it.pid() }
 
     val childProcesses: List<ProcessHandle>
-        get() = process.descendants().toList()
-
-    fun getProcessPids(): List<Long> = mutableListOf<Long>().apply {
-        add(process.pid())
-        addAll(process.descendants().map { it.pid() }.toList())
-    }.distinct()
+        get() = process.descendants().toList() + process.childs
 
     fun toHandle(): ProcessHandle =
         process.toHandle()
@@ -60,8 +61,8 @@ class Shell(
         return this
     }
 
-    fun readOutput(): String =
-        input.readAvailable()
+    fun readOutputLine(): String =
+        input.readLine()
 
     fun readOutputLines(): List<String> = input.readLines().filter {
         it.isNotEmpty()

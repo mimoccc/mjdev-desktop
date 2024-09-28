@@ -49,14 +49,6 @@ class App(
 
     var process: Shell? = null
 
-    var subprocessId: Long? = null
-    val subProcess
-        get() = subprocessId?.let { spId ->
-            process?.allProcesses?.firstOrNull { p ->
-                p.pid() == spId
-            }
-        }
-
     var isStartingState = mutableStateOf(false)
     var isStarting: Boolean
         get() = isStartingState.value
@@ -78,9 +70,6 @@ class App(
     val command
         get() = process?.command
 
-    val pids: List<Long>
-        get() = process?.pids ?: emptyList()
-
     fun start(
         api: DesktopProvider,
         scope: CoroutineScope = api.scope
@@ -90,18 +79,12 @@ class App(
             triggerStart()
             process = Shell(api)
                 .writeCommand("export DBUS_SESSION_BUS_ADDRESS=\"unix:path=\$XDG_RUNTIME_DIR/bus\"")
-//                .writeCommand("gtk-launch", fileName, "&")
                 .writeCommand("$cmd  &")
-                .writeCommand( "echo \$\$")
                 .writeCommand( "exit")
                 .apply {
                     triggerStarted()
                     println("app started.")
-                    val subProcessString = readOutput().trim()
-                    println("shell out: $subProcessString")
-                    subprocessId = runCatching { subProcessString.toLong() }.getOrNull()
-                    println("subprocess id : $subprocessId")
-                    while (subProcess?.isAlive == true) {
+                    while (this.isRunning) {
                         delay(100)
                     }
                     triggerStop()

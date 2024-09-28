@@ -11,9 +11,27 @@ class GtkTheme(
     private val themesDir: File = File(api.homeDir, ".themes"),
     private val themeDir: File = File(themesDir, themeName),
     private val themeDesktopFile: File = File(themeDir, "index.theme"),
-    private val themeCssFile: File = File(themeDir, "gtk.css")
+    private val themeCssFile: File = File(themeDir, "gtk.css"),
+    private val desktopFile: DesktopFile = DesktopFile(themeDesktopFile)
 ) {
-    val desktopFile: DesktopFile = DesktopFile.create(themeDesktopFile) // todo
+    fun createFromPalette() {
+        themeDir.mkdirs()
+        with(desktopFile) {
+            type = DesktopFile.DesktopFileType.Theme
+            name = "mjdev"
+            comment = "dynamic mjdev theme"
+            encoding = "UTF-8" // todo
+            action(DesktopFile.DesktopFileType.Theme) {
+                gtkTheme = "mjdev"
+                metacityTheme = "mjdev"
+                iconTheme = "mjdev"
+                cursorTheme = "DMZ-White" // todo
+                buttonLayout = "close,minimize,maximize:"
+//                useOverlayScrollbars = true
+            }
+            write()
+        }
+    }
 
     /*
     [Desktop Entry]

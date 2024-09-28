@@ -16,8 +16,28 @@ import java.text.DateFormat
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
-@Suppress("FunctionName")
+@Suppress("FunctionName", "MemberVisibilityCanBePrivate", "unused")
 object Custom {
+
+    val Process.parentPid: Long?
+        get() = toHandle().parentPid
+
+    val Process.childs
+        get() = toHandle().childs
+
+    val ProcessHandle.parentPid: Long?
+        get() = parent().getOrNull()?.pid()
+
+    val ProcessHandle.childs: List<ProcessHandle>
+        get() = getProcessChilds()
+
+    fun ProcessHandle.getProcessChilds(): List<ProcessHandle> = ProcessHandle.allProcesses().filter { ph ->
+        ph.parentPid == pid()
+    }.toList().toMutableList().apply {
+        forEach { ph ->
+            addAll(ph.getProcessChilds())
+        }
+    }
 
     fun BufferedReader.readAvailable(): String = StringBuilder().apply {
         var ch = read()
@@ -30,7 +50,7 @@ object Custom {
     fun ParsedList(
         value: String?,
         delimiter: String = ";"
-    ): List<String> = value?.split(delimiter)?.toList() ?: emptyList()
+    ): MutableList<String> = value?.split(delimiter)?.toMutableList() ?: mutableListOf()
 
     fun ParsedBoolean(
         value: String?,
@@ -42,6 +62,11 @@ object Custom {
             else -> defaultValue
         }
     }
+
+    fun ParsedString(
+        value: String?,
+        defaultValue: String = ""
+    ) = value ?: defaultValue
 
     fun NativePaint.setMaskFilter(
         blurRadius: Float
