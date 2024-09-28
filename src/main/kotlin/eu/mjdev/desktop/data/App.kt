@@ -6,6 +6,9 @@ import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.DesktopProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -46,6 +49,14 @@ class App(
 
     var process: Shell? = null
 
+    var subprocessId: Long? = null
+    val subProcess
+        get() = subprocessId?.let { spId ->
+            process?.allProcesses?.firstOrNull { p ->
+                p.pid() == spId
+            }
+        }
+
     var isStartingState = mutableStateOf(false)
     var isStarting: Boolean
         get() = isStartingState.value
@@ -71,21 +82,32 @@ class App(
         get() = process?.pids ?: emptyList()
 
     fun start(
-        api: DesktopProvider
+        api: DesktopProvider,
+        scope: CoroutineScope = api.scope
     ) = runCatching {
-        println("Starting app: $name [$fileName]")
-        triggerStart()
-        process = Shell(api)
-            .writeCommand("export DBUS_SESSION_BUS_ADDRESS=\"unix:path=\$XDG_RUNTIME_DIR/bus\"")
-            .writeCommand("gtk-launch", fileName)
-            .apply {
-                triggerStarted()
-                println("app started")
-            }
-            .onExit {
-                triggerStop()
-                println("app stopped")
-            }
+        scope.launch {
+            println("Starting app: $name [$fileName].")
+            triggerStart()
+            process = Shell(api)
+                .writeCommand("export DBUS_SESSION_BUS_ADDRESS=\"unix:path=\$XDG_RUNTIME_DIR/bus\"")
+//                .writeCommand("gtk-launch", fileName, "&")
+                .writeCommand("$cmd  &")
+                .writeCommand( "echo \$\$")
+                .writeCommand( "exit")
+                .apply {
+                    triggerStarted()
+                    println("app started.")
+                    val subProcessString = readOutput().trim()
+                    println("shell out: $subProcessString")
+                    subprocessId = runCatching { subProcessString.toLong() }.getOrNull()
+                    println("subprocess id : $subprocessId")
+                    while (subProcess?.isAlive == true) {
+                        delay(100)
+                    }
+                    triggerStop()
+                    println("app stopped")
+                }
+        }
     }.onFailure { error ->
         triggerStop(error)
     }

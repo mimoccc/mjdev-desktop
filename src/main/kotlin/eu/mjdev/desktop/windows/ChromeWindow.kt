@@ -29,7 +29,7 @@ fun ChromeWindow(
     enabled: Boolean = true,
     focusable: Boolean = true,
     alwaysOnTop: Boolean = true,
-//    alwaysOnBottom: Boolean = false,
+    alwaysOnBottom: Boolean = false,
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     onCreate: ChromeWindowState.() -> Unit = {},
@@ -48,7 +48,7 @@ fun ChromeWindow(
     enabled = enabled,
     focusable = focusable,
     alwaysOnTop = alwaysOnTop,
-//    alwaysOnBottom = alwaysOnBottom,
+    alwaysOnBottom = alwaysOnBottom,
     enterAnimation = enterAnimation,
     exitAnimation = exitAnimation,
     onCreate = onCreate,
@@ -73,7 +73,7 @@ fun ChromeWindow(
     enabled: Boolean = true,
     focusable: Boolean = true,
     alwaysOnTop: Boolean = true,
-//    alwaysOnBottom: Boolean = false,
+    alwaysOnBottom: Boolean = false,
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     onCreate: ChromeWindowState.() -> Unit = {},
@@ -92,7 +92,7 @@ fun ChromeWindow(
     enabled = enabled,
     focusable = focusable,
     alwaysOnTop = alwaysOnTop,
-//    alwaysOnBottom = alwaysOnBottom,
+    alwaysOnBottom = alwaysOnBottom,
     enterAnimation = enterAnimation,
     exitAnimation = exitAnimation,
     onCreate = onCreate,
@@ -116,7 +116,7 @@ fun ChromeWindow(
     enabled: Boolean = true,
     focusable: Boolean = true,
     alwaysOnTop: Boolean = true,
-//    alwaysOnBottom: Boolean = false,
+    alwaysOnBottom: Boolean = false,
     enterAnimation: EnterTransition = fadeIn() + slideInVertically(initialOffsetY = { it }),
     exitAnimation: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     onCloseRequest: () -> Unit = {},
@@ -151,7 +151,7 @@ fun ChromeWindow(
         }
         windowState.onClosed.add(onClosed)
         windowState.onFocusChange.add(onFocusChange)
-        WindowEx(
+        Window(
             onCreate = { window ->
                 windowState.window = window
                 onCreate(windowState)
@@ -159,20 +159,20 @@ fun ChromeWindow(
 //        onOpen = {
 //            onOpened(windowState)
 //        },
-            onCloseRequest,
-            windowState,
-            wnState.value,
-            "",
-            null,
-            true,
-            transparent,
-            resizable,
-            enabled,
-            focusable,
-            alwaysOnTop,
-//        alwaysOnBottom,
-            onPreviewKeyEvent,
-            onKeyEvent,
+            onCloseRequest = onCloseRequest,
+            state = windowState,
+            visible = wnState.value,
+            title = "",
+            icon = null,
+            undecorated = true,
+            transparent = transparent,
+            resizable = resizable,
+            enabled = enabled,
+            focusable = focusable,
+            alwaysOnTop = alwaysOnTop,
+            alwaysOnBottom = alwaysOnBottom,
+            onPreviewKeyEvent = onPreviewKeyEvent,
+            onKeyEvent = onKeyEvent,
             stateHelper = windowState.stateHelper,
             focusHelper = windowState.focusHelper,
             content = {

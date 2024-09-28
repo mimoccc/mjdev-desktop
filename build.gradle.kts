@@ -72,7 +72,7 @@ allprojects {
         // gemini ai
         implementation(libs.google.generativeai)
         // jna
-        implementation(libs.jna.platform)
+//        implementation(libs.jna.platform)
         // qr code
         implementation(libs.qrose)
         // tts

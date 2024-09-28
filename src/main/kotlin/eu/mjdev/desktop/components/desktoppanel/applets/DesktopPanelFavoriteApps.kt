@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanelIcon
 import eu.mjdev.desktop.data.App
-import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("FunctionName")
@@ -33,7 +32,7 @@ fun DesktopPanelFavoriteApps(
     onAppClick: (app: App) -> Unit = {},
     onContextMenuClick: (app: App) -> Unit = {}
 ) = withDesktopScope {
-    val apps by rememberCalculated(api.appsProvider.favoriteApps.size) { api.appsProvider.favoriteApps }
+    val apps = remember(favoriteApps.size) { favoriteApps }
     Box(
         modifier = modifier
     ) {

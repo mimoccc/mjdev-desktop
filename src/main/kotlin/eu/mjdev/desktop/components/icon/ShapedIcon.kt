@@ -1,10 +1,8 @@
 package eu.mjdev.desktop.components.icon
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.mouseClickable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -15,13 +13,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.extensions.Compose.onLeftClick
+import eu.mjdev.desktop.extensions.Compose.onMousePress
+import eu.mjdev.desktop.extensions.Compose.onRigntClick
 import eu.mjdev.desktop.extensions.Compose.size
 
-@Suppress("DEPRECATION")
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShapedIcon(
     modifier: Modifier = Modifier,
@@ -42,12 +40,9 @@ fun ShapedIcon(
         .size(iconSize + innerPadding.size + outerPadding.size)
         .background(iconBackgroundColor, iconShape)
         .clip(iconShape)
-        .mouseClickable {
-            if (buttons.isSecondaryPressed) {
-                onRightClick()
-            } else {
-                onClick()
-            }
+        .onMousePress {
+            onLeftClick { onClick() }
+            onRigntClick { onRightClick() }
         }
 ) {
     Box(
@@ -59,14 +54,7 @@ fun ShapedIcon(
             customContent()
         } else {
             Icon(
-                modifier = Modifier.fillMaxSize()
-                    .mouseClickable {
-                        if (buttons.isSecondaryPressed) {
-                            onRightClick()
-                        } else {
-                            onClick()
-                        }
-                    },
+                modifier = Modifier.fillMaxSize(),
                 imageVector = imageVector,
                 contentDescription = contentDescription,
                 tint = iconColor

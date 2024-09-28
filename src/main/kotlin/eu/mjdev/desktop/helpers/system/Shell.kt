@@ -1,6 +1,7 @@
 package eu.mjdev.desktop.helpers.system
 
 import eu.mjdev.desktop.extensions.Custom.command
+import eu.mjdev.desktop.extensions.Custom.readAvailable
 import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -9,7 +10,7 @@ import java.io.BufferedWriter
 class Shell(
     val api: DesktopProvider,
     val shellType: ShellType = ShellType.SH,
-) : AutoCloseable {
+) {
     val environment: Environment = Environment()
     val process: Process = Runtime.getRuntime().exec(
         arrayOf(shellType.cmd),
@@ -39,66 +40,6 @@ class Shell(
     val childProcesses: List<ProcessHandle>
         get() = process.descendants().toList()
 
-//    val allWindows
-//        get() = api.windows.allSystemWindows
-
-//    val allWindowPids
-//        get() = allWindows.map { it.pid }.toList()
-
-//    val processWindows
-//        get() = allWindows.filter { pids.contains(it.pid) }
-
-//    val processWindowsPids
-//        get() = processWindows.map { it.pid }
-
-//    val hasWindow: Boolean
-//        get() = processWindows.isNotEmpty()
-
-//    val isRunning: Boolean = hasWindow
-
-//    fun isWindowFocus(api: DesktopProvider): Boolean =
-//        api.windows.isWindowActive(pids)
-
-//    fun hasWindow(api: DesktopProvider) =
-//        api.windows.getWindowsByPids(pids).isNotEmpty()
-
-//    fun requestWindowFocus(api: DesktopProvider) {
-//        val windows = api.windows.getWindowsByPids(pids)
-//        if (windows.isNotEmpty()) {
-//            windows.forEach { w -> w.toFront() }
-//        }
-//    }
-
-//    fun minimizeWindow(api: DesktopProvider) {
-//        val windows = api.windows.getWindowsByPids(pids)
-//        if (windows.isNotEmpty()) {
-//            windows.forEach { w -> w.minimize() }
-//        }
-//    }
-
-//    fun maximizeWindow(api: DesktopProvider) {
-//        val windows = api.windows.getWindowsByPids(pids)
-//        if (windows.isNotEmpty()) {
-//            windows.forEach { w -> w.maximize() }
-//        }
-//    }
-
-//    fun closeWindow(api: DesktopProvider) {
-//        val windows = api.windows.getWindowsByPids(pids)
-//        if (windows.isNotEmpty()) {
-//            windows.forEach { w -> w.close() }
-//        } else {
-//            close()
-//        }
-//    }
-
-    fun onExit(
-        block: (Shell) -> Unit
-    ): Shell {
-        waitFor(block)
-        return this
-    }
-
     fun getProcessPids(): List<Long> = mutableListOf<Long>().apply {
         add(process.pid())
         addAll(process.descendants().map { it.pid() }.toList())
@@ -106,18 +47,6 @@ class Shell(
 
     fun toHandle(): ProcessHandle =
         process.toHandle()
-
-    fun waitFor(
-        block: (Shell) -> Unit
-    ): Shell {
-//        while (hasWindow) {
-//            process.waitFor()
-//        }
-        return apply {
-            block(this)
-            close()
-        }
-    }
 
     fun writeCommand(cmd: String): Shell {
         output.write(cmd + "\n")
@@ -132,7 +61,7 @@ class Shell(
     }
 
     fun readOutput(): String =
-        input.readText()
+        input.readAvailable()
 
     fun readOutputLines(): List<String> = input.readLines().filter {
         it.isNotEmpty()
@@ -143,8 +72,10 @@ class Shell(
         return this
     }
 
-    override fun close() =
+    fun close(): Shell {
         process.destroy()
+        return this
+    }
 
     companion object {
         fun executeAndRead(cmd: String, vararg args: String): String =

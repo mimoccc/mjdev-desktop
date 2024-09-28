@@ -8,22 +8,23 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.fonticon.FontIcon
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.extensions.Compose.color
 import eu.mjdev.desktop.extensions.Compose.noElevation
+import eu.mjdev.desktop.extensions.Compose.onLeftClick
+import eu.mjdev.desktop.extensions.Compose.onMouseEnter
+import eu.mjdev.desktop.extensions.Compose.onMouseLeave
+import eu.mjdev.desktop.extensions.Compose.onMousePress
+import eu.mjdev.desktop.extensions.Compose.onRigntClick
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Modifier.clipRect
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DesktopPanelIcon(
     app: App? = null,
@@ -40,8 +41,8 @@ fun DesktopPanelIcon(
     iconState: MutableState<Boolean> = rememberState(false),
     contentDescription: String? = null,
     onToolTip: (item: Any?) -> Unit = {},
+    onContextMenuClick: () -> Unit = {},
     onClick: () -> Unit = {},
-    onContextMenuClick: () -> Unit = {}
 ) = withDesktopScope {
     val materialIcon = remember(app, icon) {
         val iconName = app?.name ?: icon // todo better guess
@@ -55,23 +56,25 @@ fun DesktopPanelIcon(
         modifier = Modifier
             .size(iconSize)
             .clipRect()
-            .onPointerEvent(PointerEventType.Enter) {
+            .onMouseEnter {
                 iconState.value = true
                 onToolTip(app ?: contentDescription)
             }
-            .onPointerEvent(PointerEventType.Exit) {
+            .onMouseLeave {
                 iconState.value = false
             }
-            .onPointerEvent(PointerEventType.Press) {
+            .onMousePress {
                 iconState.value = false
+                onLeftClick { onClick() }
+                onRigntClick { onContextMenuClick() }
             }
     ) {
         Button(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(0.dp),
-            onClick = onClick,
             colors = ButtonDefaults.color(background),
-            elevation = ButtonDefaults.noElevation()
+            elevation = ButtonDefaults.noElevation(),
+            onClick = {}
         ) {
             FontIcon(
                 iconId = materialIcon,
@@ -80,8 +83,6 @@ fun DesktopPanelIcon(
                 iconSize = iconSize,
                 innerPadding = iconPadding,
                 outerPadding = iconOuterPadding,
-                onClick = onClick,
-                onRightClick = onContextMenuClick
             )
         }
         if (isStarting || isRunning) {

@@ -5,7 +5,10 @@ package eu.mjdev.desktop.extensions
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.unit.*
 import coil3.ImageLoader
 import coil3.PlatformContext
@@ -125,6 +128,56 @@ object Compose {
         vararg key: Any?,
         calculation: () -> T
     ) = remember(*key) { derivedStateOf { calculation() } }
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    fun Modifier.onMouseEnter(
+        pass: PointerEventPass = PointerEventPass.Main,
+        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit
+    ): Modifier = onPointerEvent(
+        eventType = PointerEventType.Enter,
+        pass = pass,
+        onEvent = onEvent
+    )
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    fun Modifier.onMouseLeave(
+        pass: PointerEventPass = PointerEventPass.Main,
+        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit
+    ): Modifier = onPointerEvent(
+        eventType = PointerEventType.Exit,
+        pass = pass,
+        onEvent = onEvent
+    )
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    fun Modifier.onMousePress(
+        pass: PointerEventPass = PointerEventPass.Main,
+        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit
+    ): Modifier = onPointerEvent(
+        eventType = PointerEventType.Press,
+        pass = pass,
+        onEvent = onEvent
+    )
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    val AwaitPointerEventScope.isPrimary
+        get() = currentEvent.button.isPrimary
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    val AwaitPointerEventScope.isSecondary
+        get() = currentEvent.button.isSecondary
+
+    fun AwaitPointerEventScope.onLeftClick(
+        block: AwaitPointerEventScope.() -> Unit
+    ) {
+        if (isPrimary) block()
+    }
+
+    fun AwaitPointerEventScope.onRigntClick(
+        block: AwaitPointerEventScope.() -> Unit
+    ) {
+        if (isSecondary) block()
+    }
 
 //    Toolkit.getDefaultToolkit().addAWTEventListener({ event ->
 //        }, AWTEvent.MOUSE_EVENT_MASK or AWTEvent.FOCUS_EVENT_MASK

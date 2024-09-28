@@ -13,11 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
@@ -28,6 +25,7 @@ import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
+import eu.mjdev.desktop.extensions.Compose.onMouseEnter
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Modifier.dropShadow
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
@@ -38,7 +36,6 @@ import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.windows.ChromeWindowState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Suppress("FunctionName", "LocalVariableName")
 @Composable
 fun AppsMenu(
@@ -104,7 +101,7 @@ fun AppsMenu(
                     0.dp
                 )
                 .onPlaced(menuState::onPlaced)
-                .onPointerEvent(PointerEventType.Enter) {
+                .onMouseEnter {
                     windowState.requestFocus()
                 }
         ) {

@@ -1,21 +1,20 @@
 package eu.mjdev.desktop.windows
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.mouseClickable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.isSecondaryPressed
 import eu.mjdev.desktop.components.background.BackgroundImage
 import eu.mjdev.desktop.components.sliding.base.VisibilityState
+import eu.mjdev.desktop.extensions.Compose.onLeftClick
+import eu.mjdev.desktop.extensions.Compose.onMousePress
+import eu.mjdev.desktop.extensions.Compose.onRigntClick
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
-@OptIn(ExperimentalFoundationApi::class)
-@Suppress("FunctionName", "DEPRECATION")
+@Suppress("FunctionName")
 @Preview
 @Composable
 fun DesktopWindow(
@@ -59,13 +58,14 @@ fun DesktopWindow(
         BackgroundImage(
             modifier = Modifier
                 .fillMaxSize()
-                .mouseClickable {
-                    if (buttons.isSecondaryPressed) {
-//                        contextMenuState.show()
-                    } else {
+                .onMousePress {
+                    onLeftClick {
                         panelState.hide()
                         menuState.hide()
                         controlCenterState.hide()
+                    }
+                    onRigntClick {
+//                        contextMenuState.show()
                     }
                 },
             onChange = { src ->

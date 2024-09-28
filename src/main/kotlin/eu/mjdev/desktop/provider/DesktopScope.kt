@@ -81,6 +81,9 @@ open class DesktopScope(
     val appCategoriesAndApps
         get() = appsProvider.categoriesAndApps
 
+    val favoriteApps
+        get() = appsProvider.favoriteApps
+
     val palette
         get() = api.palette
 

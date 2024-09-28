@@ -9,14 +9,12 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
 import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.extensions.Compose.onMouseEnter
+import eu.mjdev.desktop.extensions.Compose.onMouseLeave
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Suppress("FunctionName")
 @Composable
 fun SlidingMenu(
@@ -35,8 +33,8 @@ fun SlidingMenu(
         Horizontal -> Box(
             modifier = modifier
                 .fillMaxHeight()
-                .onPointerEvent(PointerEventType.Enter) { onPointerEnter() }
-                .onPointerEvent(PointerEventType.Exit) { onPointerLeave() }
+                .onMouseEnter { onPointerEnter() }
+                .onMouseLeave { onPointerLeave() }
         ) {
             content(state.isVisible)
         }
@@ -44,8 +42,8 @@ fun SlidingMenu(
         Vertical -> Box(
             modifier = modifier
                 .fillMaxWidth()
-                .onPointerEvent(PointerEventType.Enter) { onPointerEnter() }
-                .onPointerEvent(PointerEventType.Exit) { onPointerLeave() }
+                .onMouseEnter { onPointerEnter() }
+                .onMouseLeave { onPointerLeave() }
         ) {
             content(state.isVisible)
         }

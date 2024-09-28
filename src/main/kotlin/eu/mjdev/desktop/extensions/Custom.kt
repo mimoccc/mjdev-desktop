@@ -11,12 +11,21 @@ import eu.mjdev.desktop.helpers.streams.ResourceStream
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
+import java.io.BufferedReader
 import java.text.DateFormat
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 @Suppress("FunctionName")
 object Custom {
+
+    fun BufferedReader.readAvailable(): String = StringBuilder().apply {
+        var ch = read()
+        while (ch != -1) {
+            append(Char(ch))
+            ch = read()
+        }
+    }.toString()
 
     fun ParsedList(
         value: String?,
@@ -76,9 +85,10 @@ object Custom {
         }.collectAsState(initial = "")
 
     // todo better solution
-    fun <T> SnapshotStateList<T>.invalidate() = toList().also {
+    fun <T> SnapshotStateList<T>.invalidate() = apply {
+        val old = toList()
         clear()
-        addAll(it)
+        addAll(old)
     }
 
     fun loadKey(key: String): String = runCatching {

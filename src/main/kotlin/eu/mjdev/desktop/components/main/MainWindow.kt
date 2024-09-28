@@ -10,7 +10,6 @@ import eu.mjdev.desktop.components.controlcenter.ControlCenter
 import eu.mjdev.desktop.components.desktop.Desktop
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanel
 import eu.mjdev.desktop.components.greeter.Greeter
-import eu.mjdev.desktop.components.info.InfoWindow
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.DesktopWindow

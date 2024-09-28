@@ -15,19 +15,14 @@ import androidx.compose.ui.window.*
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 import java.awt.*
 import java.awt.event.*
-import java.awt.image.BufferedImage
-import java.awt.image.ConvolveOp
-import java.awt.image.Kernel
 import java.util.*
 import javax.swing.JFrame
-import javax.swing.JPanel
 import kotlin.math.roundToInt
 
 @Suppress("FunctionName")
 @Preview
 @Composable
 fun Window(
-//    onOpen: (window: ComposeWindow) -> Unit = {},
     onCreate: (window: ComposeWindow) -> Unit = {},
     onOpen: (window: ComposeWindow) -> Unit = {},
     onClosing: (window: ComposeWindow) -> Unit = {},
@@ -50,8 +45,11 @@ fun Window(
     enabled: Boolean = true,
     focusable: Boolean = true,
     alwaysOnTop: Boolean = false,
-//    alwaysOnBottom: Boolean = false,
+    alwaysOnBottom: Boolean = false,
     closeAction: Int = JFrame.DO_NOTHING_ON_CLOSE,
+//    blurEnabled: Boolean = true,
+    focusHelper: WindowFocusHelper,
+    stateHelper: WindowStateHelper,
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
     onKeyEvent: (KeyEvent) -> Boolean = { false },
     content: @Composable FrameWindowScope.() -> Unit
@@ -65,7 +63,7 @@ fun Window(
     val currentEnabled by rememberUpdatedState(enabled)
     val currentFocusable by rememberUpdatedState(focusable)
     val currentAlwaysOnTop by rememberUpdatedState(alwaysOnTop)
-//    val currentAlwaysOnBottom by rememberUpdatedState(alwaysOnBottom)
+    val currentAlwaysOnBottom by rememberUpdatedState(alwaysOnBottom)
     val currentOnCloseRequest by rememberUpdatedState(onCloseRequest)
     val updater = remember(::ComponentUpdater)
     val appliedState = remember {
@@ -94,8 +92,9 @@ fun Window(
         onPreviewKeyEvent = onPreviewKeyEvent,
         onKeyEvent = onKeyEvent,
         create = {
-            val graphicsConfiguration = WindowLocationTracker.lastActiveGraphicsConfiguration
-            ComposeWindow(graphicsConfiguration = graphicsConfiguration).apply {
+            ComposeWindow(
+                graphicsConfiguration = WindowLocationTracker.lastActiveGraphicsConfiguration
+            ).apply {
                 defaultCloseOperation = closeAction
                 listeners.windowListenerRef.registerWithAndSet(
                     this,
@@ -153,14 +152,14 @@ fun Window(
                 set(currentTransparent, window::isTransparent::set)
                 set(currentResizable, window::setResizable)
                 set(currentEnabled, window::setEnabled)
-//                if (alwaysOnBottom) {
-//                    set(false, window::setFocusableWindowState)
-//                    set(false, window::setAlwaysOnTop)
-//                    set(false, window::setAutoRequestFocus)
-//                } else {
-                set(currentFocusable, window::setFocusableWindowState)
-                set(currentAlwaysOnTop, window::setAlwaysOnTop)
-//                }
+                if (currentAlwaysOnBottom) {
+                    set(false, window::setFocusableWindowState)
+                    set(false, window::setAlwaysOnTop)
+                    set(false, window::setAutoRequestFocus)
+                } else {
+                    set(currentFocusable, window::setFocusableWindowState)
+                    set(currentAlwaysOnTop, window::setAlwaysOnTop)
+                }
             }
             if (state.size != appliedState.size) {
                 window.setSizeSafely(state.size, state.placement)
@@ -183,7 +182,12 @@ fun Window(
                 appliedState.isMinimized = state.isMinimized
             }
         },
-        content = content
+        content = {
+//            windowBlur(blurEnabled)
+            stateHelper.register(window)
+            focusHelper.register(window)
+            content()
+        }
     )
 }
 
@@ -370,22 +374,20 @@ fun Window(
             create().apply {
                 this.compositionLocalContext = compositionLocalContext
                 this.exceptionHandler = windowExceptionHandlerFactory.exceptionHandler(this)
-//                BlurBackground.applyBlurBackground(this)
                 setContent(onPreviewKeyEvent, onKeyEvent, content)
             }
         },
         dispose = {
             dispose(it)
         },
-        update = { component ->
-            component.compositionLocalContext = compositionLocalContext
-            component.exceptionHandler = windowExceptionHandlerFactory.exceptionHandler(component)
-            component.componentOrientation = layoutDirection.componentOrientation
-            val wasDisplayable = component.isDisplayable
-            update(component)
-//            BlurBackground.applyBlurBackground(component)
-            if (!wasDisplayable && component.isDisplayable) {
-                component.contentPane.paint(component.contentPane.graphics)
+        update = { window ->
+            window.compositionLocalContext = compositionLocalContext
+            window.exceptionHandler = windowExceptionHandlerFactory.exceptionHandler(window)
+            window.componentOrientation = layoutDirection.componentOrientation
+            val wasDisplayable = window.isDisplayable
+            update(window)
+            if (!wasDisplayable && window.isDisplayable) {
+                window.contentPane.paint(window.contentPane.graphics)
             }
         },
     )
@@ -450,51 +452,5 @@ class WindowEventsAdapter(
     override fun windowClosing(e: WindowEvent) {
         onClosing(window)
         currentOnCloseRequest()
-    }
-}
-
-@Suppress("unused")
-object BlurBackground {
-    private val blurKernel = floatArrayOf(
-        0.0625f, 0.125f, 0.0625f,
-        0.125f, 0.25f, 0.125f,
-        0.0625f, 0.125f, 0.0625f
-    )
-    private val kernel = Kernel(3, 3, blurKernel)
-    private val blurOp = ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null)
-
-    fun applyBlurBackground(frame: JFrame) {
-        try {
-            BufferedImage(
-                frame.width,
-                frame.height,
-                BufferedImage.TYPE_INT_ARGB
-            ).let { image ->
-                image.graphics.also { graphics ->
-                    frame.contentPane.paint(graphics)
-//                    graphics.dispose()
-                    blurOp.filter(image, null).let { blurredImage ->
-                        frame.contentPane = BackgroundPanel(blurredImage)
-//                        frame.contentPane.layout = null
-                    }
-                }
-            }
-        } catch (e: Throwable) {
-            e.printStackTrace()
-        }
-    }
-
-    private class BackgroundPanel(
-        private val image: BufferedImage
-    ) : JPanel() {
-        init {
-            isOpaque = false
-        }
-
-        override fun paintComponent(g: Graphics) {
-            super.paintComponent(g)
-            val r = g.clipBounds
-            g.drawImage(image, r.x, r.y, r.width, r.height, null)
-        }
     }
 }

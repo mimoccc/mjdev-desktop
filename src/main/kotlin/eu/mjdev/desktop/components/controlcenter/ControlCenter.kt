@@ -3,14 +3,12 @@ package eu.mjdev.desktop.components.controlcenter
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation.Horizontal
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.mouseClickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -18,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -26,6 +23,9 @@ import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.sliding.SlidingMenu
 import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.extensions.Compose.onLeftClick
+import eu.mjdev.desktop.extensions.Compose.onMousePress
+import eu.mjdev.desktop.extensions.Compose.onRigntClick
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
@@ -37,8 +37,7 @@ import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
-@Suppress("FunctionName", "DEPRECATION")
+@Suppress("FunctionName")
 @Composable
 fun ControlCenter(
     pagerState: MutableState<Int> = rememberState(0),
@@ -135,13 +134,17 @@ fun ControlCenter(
                                                     }
                                                 )
                                             }
-                                            .mouseClickable {
-                                                if (buttons.isSecondaryPressed) {
-                                                    onContextMenuClick()
-                                                } else {
+                                            .onMousePress {
+                                                onLeftClick {
                                                     scope.launch {
                                                         pagerState.value = idx
                                                     }
+                                                }
+                                                onRigntClick {
+                                                    scope.launch {
+                                                        pagerState.value = idx
+                                                    }
+                                                    onContextMenuClick()
                                                 }
                                             },
                                         imageVector = page.icon,
