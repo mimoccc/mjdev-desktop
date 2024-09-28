@@ -1,6 +1,7 @@
 package eu.mjdev.desktop.components.text
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -37,25 +38,29 @@ fun TextAny(
     maxLines: Int = Int.MAX_VALUE,
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current
-) = Text(
-    text = textFrom(text),
-    modifier = modifier,
-    color = color,
-    minLines = minLines,
-    fontSize = fontSize,
-    fontStyle = fontStyle,
-    fontWeight = fontWeight,
-    fontFamily = fontFamily,
-    letterSpacing = letterSpacing,
-    textDecoration = textDecoration,
-    textAlign = textAlign,
-    lineHeight = lineHeight,
-    overflow = overflow,
-    softWrap = softWrap,
-    maxLines = maxLines,
-    onTextLayout = onTextLayout,
-    style = style
-)
+) = SelectionContainer(
+    modifier = modifier
+) {
+    Text(
+        text = textFrom(text),
+        modifier = modifier,
+        color = color,
+        minLines = minLines,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
+        fontWeight = fontWeight,
+        fontFamily = fontFamily,
+        letterSpacing = letterSpacing,
+        textDecoration = textDecoration,
+        textAlign = textAlign,
+        lineHeight = lineHeight,
+        overflow = overflow,
+        softWrap = softWrap,
+        maxLines = maxLines,
+        onTextLayout = onTextLayout,
+        style = style
+    )
+}
 
 @Preview
 @Composable

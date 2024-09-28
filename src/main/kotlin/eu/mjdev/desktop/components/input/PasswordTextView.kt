@@ -12,10 +12,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
@@ -30,6 +26,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.icons.Icons
 
 @Suppress("FunctionName")
 @OptIn(ExperimentalFoundationApi::class)
@@ -50,12 +47,13 @@ fun PasswordTextView(
 ) {
     val iconVisible = remember {
         derivedStateOf {
-            if (passwordVisible.value) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+            if (passwordVisible.value) Icons.TextFieldVisiblePassword
+            else Icons.TextFieldInVisiblePassword
         }
     }
     val iconSend = remember {
         derivedStateOf {
-            if (password.value.isNotEmpty()) Icons.AutoMirrored.Filled.Send else null
+            if (password.value.isNotEmpty()) Icons.SendIcon else null
         }
     }
     val description = remember {
