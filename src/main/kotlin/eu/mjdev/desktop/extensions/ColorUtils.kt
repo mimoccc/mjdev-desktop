@@ -1,9 +1,7 @@
 package eu.mjdev.desktop.extensions
 
-import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.graphics.toArgb
 import java.util.*
 
 @Suppress("unused", "UnusedReceiverParameter")

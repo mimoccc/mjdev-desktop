@@ -3,6 +3,16 @@ package eu.mjdev.desktop.data
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
+import eu.mjdev.desktop.data.DesktopFile.Companion.Categories
+import eu.mjdev.desktop.data.DesktopFile.Companion.Comment
+import eu.mjdev.desktop.data.DesktopFile.Companion.Exec
+import eu.mjdev.desktop.data.DesktopFile.Companion.Icon
+import eu.mjdev.desktop.data.DesktopFile.Companion.Name
+import eu.mjdev.desktop.data.DesktopFile.Companion.NotifyOnStart
+import eu.mjdev.desktop.data.DesktopFile.Companion.Path
+import eu.mjdev.desktop.data.DesktopFile.Companion.RunInTerminal
+import eu.mjdev.desktop.data.DesktopFile.Companion.Type
+import eu.mjdev.desktop.data.DesktopFile.Companion.Version
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.DesktopProvider
@@ -13,32 +23,32 @@ import java.io.File
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class App(
-    val file: File = File("nonexistent_file_path"),
-    val desktopFile: DesktopFile = DesktopFile(file),
+    val file: File? = null,
+    val desktopFile: DesktopFile? = runCatching { file?.let { f -> DesktopFile(f) } }.getOrNull(),
     val isFavorite: Boolean = false
 ) {
     val fileName
-        get() = desktopFile.fileName
+        get() = desktopFile?.fileName
     val type
-        get() = desktopFile.type
+        get() = desktopFile?.desktopSection?.Type ?: ""
     val version
-        get() = desktopFile.version
+        get() = desktopFile?.desktopSection?.Version ?: ""
     val name
-        get() = desktopFile.name
+        get() = desktopFile?.desktopSection?.Name ?: ""
     val comment
-        get() = desktopFile.comment
+        get() = desktopFile?.desktopSection?.Comment ?: ""
     val path
-        get() = desktopFile.path
+        get() = desktopFile?.desktopSection?.Path ?: ""
     val exec
-        get() = desktopFile.exec
+        get() = desktopFile?.desktopSection?.Exec ?: ""
     val iconName
-        get() = desktopFile.icon
+        get() = desktopFile?.desktopSection?.Icon ?: ""
     val categories
-        get() = desktopFile.categories.ifEmptyCategories { listOf(Category.UNCATEGORIZED) }
+        get() = desktopFile?.desktopSection?.Categories.ifEmptyCategories { listOf(Category.UNCATEGORIZED) }
     val notifyOnStart
-        get() = desktopFile.notifyOnStart
+        get() = desktopFile?.desktopSection?.NotifyOnStart ?: false
     val runInTerminal
-        get() = desktopFile.runInTerminal
+        get() = desktopFile?.desktopSection?.RunInTerminal ?: false
 
     var iconTint: Color? = null
     val iconBackground: Color = Color.White
@@ -80,7 +90,7 @@ class App(
             process = Shell(api)
                 .writeCommand("export DBUS_SESSION_BUS_ADDRESS=\"unix:path=\$XDG_RUNTIME_DIR/bus\"")
                 .writeCommand("$cmd  &")
-                .writeCommand( "exit")
+                .writeCommand("exit")
                 .apply {
                     triggerStarted()
                     println("app started.")
@@ -137,8 +147,7 @@ class App(
     override fun equals(other: Any?): Boolean {
         return when {
             other is App -> {
-                @Suppress("PlatformExtensionReceiverOfInline")
-                other.file.name.contentEquals(file.name)
+                other.file?.name?.contentEquals(file?.name) ?: false
             }
 
             else -> false

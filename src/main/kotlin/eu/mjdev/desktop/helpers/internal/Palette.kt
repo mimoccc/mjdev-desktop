@@ -16,13 +16,13 @@ import kotlinx.coroutines.launch
 
 @Suppress("CanBeParameter", "MemberVisibilityCanBePrivate")
 class Palette(
-    val api:DesktopProvider,
+    val api: DesktopProvider,
     val scope: CoroutineScope = api.scope,
-    val baseColor: Color = Color.SuperDarkGray,
+    val initialColor: Color = Color.SuperDarkGray,
     val borderFactor: Float = 0.1f,
     val textFactor: Float = 0.6f,
 ) {
-    val backgroundColorState: MutableState<Color> = mutableStateOf(baseColor)
+    val backgroundColorState: MutableState<Color> = mutableStateOf(initialColor)
     var backgroundColor
         get() = backgroundColorState.value
         set(value) {
@@ -45,6 +45,21 @@ class Palette(
     val iconsTintColor
         get() = if (textColor.isLightColor) textColor else backgroundColor.lighter(textFactor)
 
+    val baseColor
+        get() = backgroundColor
+
+    val selectedBgColor
+        get() = textColor
+
+    val selectedFgColor
+        get() = iconsTintColor
+
+    val tooltipBgColor
+        get() = backgroundColor
+
+    val tooltipFgColor
+        get() = textColor
+
     fun update(src: Any?) = scope.launch {
         loadPicture(src).getOrNull()?.let { image ->
             val width = image.width
@@ -65,6 +80,7 @@ class Palette(
             textColorState.value = text
         }
 //        api.gtkTheme.createFromPalette()
+//        api.gnome.setGTKTheme(THEME_MJDEV)
     }
 
     companion object {

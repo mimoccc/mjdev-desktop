@@ -21,7 +21,7 @@ import eu.mjdev.desktop.helpers.system.DBus
 import eu.mjdev.desktop.helpers.system.OsRelease
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.AIProvider.AiPluginGemini
-import eu.mjdev.desktop.theme.gtk.GtkTheme
+import eu.mjdev.desktop.theme.gtk.GtkThemeHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.awt.*
@@ -61,7 +61,7 @@ class DesktopProvider(
             println("Mounted: ${this.targetDirectory}")
         }
     }
-    val gtkTheme: GtkTheme by lazy { GtkTheme(this) }
+    val gtkTheme: GtkThemeHelper by lazy { GtkThemeHelper(this) }
     val palette: Palette by lazy { Palette(this) }
     val homeDir: File
         get() = currentUser.homeDir
@@ -267,9 +267,9 @@ class DesktopProvider(
         }
 
         fun Desktop.startApp(
-            desktopFile: DesktopFile
+            desktopFile: DesktopFile?
         ) {
-            this.open(desktopFile.file)
+            open(desktopFile?.file)
         }
     }
 }

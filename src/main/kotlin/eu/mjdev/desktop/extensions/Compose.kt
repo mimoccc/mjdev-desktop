@@ -35,6 +35,14 @@ object Compose {
     val Color.Companion.DarkBlue
         get() = Color(0xff202060)
 
+    fun Color.toHex(): String {
+        val alpha : Int= (alpha * 255).toInt()
+        val red = (red * 255).toInt()
+        val green = (green * 255).toInt()
+        val blue = (blue * 255).toInt()
+        return String.format("#%02x%02x%02x%02x", alpha, red, green, blue)
+    }
+
     val PaddingValues.width: Dp
         get() = calculateLeftPadding(LayoutDirection.Ltr) + calculateRightPadding(LayoutDirection.Ltr)
 

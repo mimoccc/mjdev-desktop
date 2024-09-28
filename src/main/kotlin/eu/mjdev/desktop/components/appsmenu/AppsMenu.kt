@@ -191,7 +191,7 @@ fun AppsMenu(
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .background(backgroundColor),
-                        backButtonVisible = items.first() is App,
+                        backButtonVisible = items.firstOrNull() is App,
                         onBackClick = {
                             items = appCategories
                         },

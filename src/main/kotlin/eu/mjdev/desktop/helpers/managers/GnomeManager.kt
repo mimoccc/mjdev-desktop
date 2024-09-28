@@ -90,6 +90,7 @@ class GnomeManager {
         const val COLOR_SCHEME_MJDEV = "mjdev"
 
         const val THEME_YARU = "Yaru"
+        const val THEME_ADWAITA = "Adwaita"
         const val THEME_ADWAITA_DARK = "Adwaita-dark"
         const val THEME_MJDEV = "mjdev"
     }
