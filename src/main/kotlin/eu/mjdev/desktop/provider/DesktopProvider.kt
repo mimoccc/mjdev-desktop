@@ -17,7 +17,6 @@ import eu.mjdev.desktop.helpers.adb.AdbDiscover.Companion.adbDevicesHandler
 import eu.mjdev.desktop.helpers.bitmap.Bitmap
 import eu.mjdev.desktop.helpers.internal.Palette
 import eu.mjdev.desktop.helpers.managers.*
-import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_MJDEV
 import eu.mjdev.desktop.helpers.system.DBus
 import eu.mjdev.desktop.helpers.system.OsRelease
 import eu.mjdev.desktop.helpers.system.Shell
@@ -128,15 +127,15 @@ class DesktopProvider(
         runCatching {
             lastTheme = gnome.getGTKTheme()
         }
-        runCatching {
-            gnome.setGTKTheme(THEME_MJDEV)
-        }
+//        runCatching {
+//            gnome.setGTKTheme(THEME_MJDEV)
+//        }
     }
 
     override fun close() {
-        runCatching {
-            gnome.setGTKTheme(lastTheme)
-        }
+//        runCatching {
+//            gnome.setGTKTheme(lastTheme)
+//        }
         runCatching {
             mounts.dispose()
         }

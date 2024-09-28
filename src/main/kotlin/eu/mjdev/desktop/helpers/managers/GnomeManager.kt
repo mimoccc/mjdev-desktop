@@ -33,15 +33,15 @@ class GnomeManager {
         schemeName
     )
 
-    fun setGTKTheme(
-        themeName: String = THEME_YARU
-    ) = Shell.executeAndRead(
-        "gsettings",
-        "set",
-        "org.gnome.desktop.interface",
-        "gtk-theme",
-        themeName
-    )
+//    fun setGTKTheme(
+//        themeName: String = THEME_YARU
+//    ) = Shell.executeAndRead(
+//        "gsettings",
+//        "set",
+//        "org.gnome.desktop.interface",
+//        "gtk-theme",
+//        themeName
+//    )
 
     fun getGTKTheme(): String = Shell.executeAndRead(
         "gsettings",
@@ -92,7 +92,7 @@ class GnomeManager {
         const val THEME_YARU = "Yaru"
         const val THEME_ADWAITA = "Adwaita"
         const val THEME_ADWAITA_DARK = "Adwaita-dark"
-        const val THEME_MJDEV = "mjdev"
+        const val THEME_MJDEV = "Mjdev"
     }
 
 }
