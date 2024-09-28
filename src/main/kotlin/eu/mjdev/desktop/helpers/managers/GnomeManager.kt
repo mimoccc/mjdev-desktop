@@ -70,8 +70,8 @@ class GnomeManager {
         themeName
     )
 
-    fun setDarkColorScheme() =
-        setColorScheme(COLOR_SCHEME_PREFER_DARK)
+//    fun setDarkColorScheme() =
+//        setColorScheme(COLOR_SCHEME_PREFER_DARK)
 
 //    fun recursiveVariantValue(variant: Variant<*>): Any {
 //        val value = variant.value

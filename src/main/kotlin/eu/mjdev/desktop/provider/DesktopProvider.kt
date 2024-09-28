@@ -17,6 +17,7 @@ import eu.mjdev.desktop.helpers.adb.AdbDiscover.Companion.adbDevicesHandler
 import eu.mjdev.desktop.helpers.bitmap.Bitmap
 import eu.mjdev.desktop.helpers.internal.Palette
 import eu.mjdev.desktop.helpers.managers.*
+import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_MJDEV
 import eu.mjdev.desktop.helpers.system.DBus
 import eu.mjdev.desktop.helpers.system.OsRelease
 import eu.mjdev.desktop.helpers.system.Shell
@@ -128,7 +129,7 @@ class DesktopProvider(
             lastTheme = gnome.getGTKTheme()
         }
         runCatching {
-            gnome.setGTKTheme(GnomeManager.THEME_MJDEV)
+            gnome.setGTKTheme(THEME_MJDEV)
         }
     }
 
