@@ -6,7 +6,6 @@ import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 
-@SuppressWarnings("ALL")
 public class GifDecoder {
     public static final int STATUS_OK = 0;
     public static final int STATUS_FORMAT_ERROR = 1;
@@ -44,23 +43,13 @@ public class GifDecoder {
     protected byte[] suffix;
     protected byte[] pixelStack;
     protected byte[] pixels;
-    protected ArrayList frames;
+    protected ArrayList<GifFrame> frames;
     protected int frameCount;
-
-    static class GifFrame {
-        public GifFrame(BufferedImage im, int del) {
-            image = im;
-            delay = del;
-        }
-
-        public BufferedImage image;
-        public int delay;
-    }
 
     public int getDelay(int n) {
         delay = -1;
         if ((n >= 0) && (n < frameCount)) {
-            delay = ((GifFrame) frames.get(n)).delay;
+            delay = frames.get(n).delay;
         }
         return delay;
     }
@@ -73,6 +62,7 @@ public class GifDecoder {
         return getFrame(0);
     }
 
+    @SuppressWarnings("unused")
     public int getLoopCount() {
         return loopCount;
     }
@@ -154,11 +144,12 @@ public class GifDecoder {
     public BufferedImage getFrame(int n) {
         BufferedImage im = null;
         if ((n >= 0) && (n < frameCount)) {
-            im = ((GifFrame) frames.get(n)).image;
+            im = frames.get(n).image;
         }
         return im;
     }
 
+    @SuppressWarnings("unused")
     public Dimension getFrameSize() {
         return new Dimension(width, height);
     }
@@ -202,7 +193,7 @@ public class GifDecoder {
             status = STATUS_OPEN_ERROR;
         }
         try {
-           if(is != null) is.close();
+            if (is != null) is.close();
         } catch (IOException e) {
             // no op
         }
@@ -215,6 +206,7 @@ public class GifDecoder {
             name = name.trim().toLowerCase();
             //noinspection IndexOfReplaceableByContains
             if ((name.indexOf("file:") >= 0) || (name.indexOf(":/") > 0)) {
+                @SuppressWarnings("deprecation")
                 URL url = new URL(name);
                 in = new BufferedInputStream(url.openStream());
             } else {
@@ -339,7 +331,7 @@ public class GifDecoder {
     protected void init() {
         status = STATUS_OK;
         frameCount = 0;
-        frames = new ArrayList();
+        frames = new ArrayList<>();
         gct = null;
         lct = null;
     }
@@ -535,6 +527,7 @@ public class GifDecoder {
         return read() | (read() << 8);
     }
 
+    @SuppressWarnings("unused")
     protected void resetFrame() {
         lastDispose = dispose;
         lastRect = new Rectangle(ix, iy, iw, ih);

@@ -257,7 +257,15 @@ createTask(
     group = "mjdev",
     description = "Task packages project to be published."
 ) {
+//    dependsOn("packageAppImage")
     dependsOn("packageDeb")
+//    dependsOn("packageDmg")
+//    dependsOn("packageExe")
+//    dependsOn("packageMsi")
+//    dependsOn("packagePkg")
+//    dependsOn("packageRpm")
+
+//    dependsOn("packageReleaseDeb")
 }
 
 createTask(
