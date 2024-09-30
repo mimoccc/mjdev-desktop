@@ -33,15 +33,15 @@ class GnomeManager {
         schemeName
     )
 
-//    fun setGTKTheme(
-//        themeName: String = THEME_YARU
-//    ) = Shell.executeAndRead(
-//        "gsettings",
-//        "set",
-//        "org.gnome.desktop.interface",
-//        "gtk-theme",
-//        themeName
-//    )
+    fun setGTKTheme(
+        themeName: String = THEME_YARU
+    ) = Shell.executeAndRead(
+        "gsettings",
+        "set",
+        "org.gnome.desktop.interface",
+        "gtk-theme",
+        themeName
+    )
 
     fun getGTKTheme(): String = Shell.executeAndRead(
         "gsettings",

@@ -3,16 +3,6 @@ package eu.mjdev.desktop.data
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
-import eu.mjdev.desktop.data.DesktopFile.Companion.Categories
-import eu.mjdev.desktop.data.DesktopFile.Companion.Comment
-import eu.mjdev.desktop.data.DesktopFile.Companion.Exec
-import eu.mjdev.desktop.data.DesktopFile.Companion.Icon
-import eu.mjdev.desktop.data.DesktopFile.Companion.Name
-import eu.mjdev.desktop.data.DesktopFile.Companion.NotifyOnStart
-import eu.mjdev.desktop.data.DesktopFile.Companion.Path
-import eu.mjdev.desktop.data.DesktopFile.Companion.RunInTerminal
-import eu.mjdev.desktop.data.DesktopFile.Companion.Type
-import eu.mjdev.desktop.data.DesktopFile.Companion.Version
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.DesktopProvider

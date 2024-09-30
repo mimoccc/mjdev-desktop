@@ -2,23 +2,12 @@ package eu.mjdev.desktop.theme.gtk
 
 import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.data.DesktopFile
-import eu.mjdev.desktop.data.DesktopFile.Companion.Comment
-import eu.mjdev.desktop.data.DesktopFile.Companion.Encoding
-import eu.mjdev.desktop.data.DesktopFile.Companion.Name
-import eu.mjdev.desktop.data.DesktopFile.Companion.Type
-import eu.mjdev.desktop.data.DesktopFile.Companion.MetacityTheme
-import eu.mjdev.desktop.data.DesktopFile.Companion.GtkTheme
-import eu.mjdev.desktop.data.DesktopFile.Companion.IconTheme
-import eu.mjdev.desktop.data.DesktopFile.Companion.CursorTheme
-import eu.mjdev.desktop.data.DesktopFile.Companion.ButtonLayout
-import eu.mjdev.desktop.data.DesktopFile.Companion.UseOverlayScrollbars
+import eu.mjdev.desktop.data.DesktopFile.Companion.desktopFile
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.rgbToHex
 import eu.mjdev.desktop.helpers.internal.Palette
-import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_ADWAITA
 import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_ADWAITA_DARK
 import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_MJDEV
-import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_YARU
 import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 
@@ -43,17 +32,16 @@ class GtkThemeHelper(
     }
 
     private fun createDesktopFile() {
-        if (!themeDir.exists()) themeDir.mkdirs()
-        if (!themeDesktopFile.exists()) themeDesktopFile.delete()
-        themeDesktopFile.createNewFile()
-        with(DesktopFile(themeDesktopFile)) {
-            section(DesktopFile.DesktopFileType.DesktopEntry) {
+        desktopFile(themeDesktopFile) {
+            mkDirs()
+            deleteFile()
+            desktopSection {
                 Type = DesktopFile.DesktopFileType.Theme
                 Name = THEME_MJDEV
                 Comment = "dynamic system theme"
                 Encoding = "UTF-8" // todo
             }
-            section(DesktopFile.DesktopFileType.Theme) {
+            themeSection {
                 GtkTheme = THEME_MJDEV
                 MetacityTheme = THEME_ADWAITA_DARK
                 IconTheme = THEME_ADWAITA_DARK
@@ -65,24 +53,19 @@ class GtkThemeHelper(
         }
     }
 
-    private fun createCssFile(file: File) {
-        theme {
-            bgColor = palette.backgroundColor
-            fgColor = palette.textColor
-            baseColor = palette.baseColor
-            textColor = palette.textColor
-            selectedBgColor = palette.selectedBgColor
-            selectedFgColor = palette.selectedFgColor
-            tooltipBgColor = palette.tooltipBgColor
-            tooltipFgColor = palette.tooltipFgColor
-        }.toString().also { data ->
-            file.apply { parentFile.mkdirs() }.writeText(data)
-        }
+    private fun createCssFile(file: File) = theme(file) {
+        bgColor = palette.backgroundColor
+        fgColor = palette.textColor
+        baseColor = palette.baseColor
+        textColor = palette.textColor
+        selectedBgColor = palette.selectedBgColor
+        selectedFgColor = palette.selectedFgColor
+        tooltipBgColor = palette.tooltipBgColor
+        tooltipFgColor = palette.tooltipFgColor
+        write()
     }
 
-    class Theme(
-        val name: String = THEME_ADWAITA,
-    ) {
+    class Theme(val file: File) {
         var bgColor: Color = Color.SuperDarkGray
         var fgColor: Color = Color.SuperDarkGray
         var baseColor: Color = Color.SuperDarkGray
@@ -102,8 +85,8 @@ class GtkThemeHelper(
         var warningBgColor: Color = Color.Magenta
         var infoFgColor: Color = Color.Black
         var infoBgColor: Color = Color.White
-        var osdFgColor : Color = Color.Black
-        var osdBgColor : Color = Color.SuperDarkGray
+        var osdFgColor: Color = Color.Black
+        var osdBgColor: Color = Color.SuperDarkGray
 
         override fun toString() = """
             @define-color bg_color ${bgColor.rgbToHex()};
@@ -175,8 +158,18 @@ class GtkThemeHelper(
 
     companion object {
         fun theme(
-            name: String = THEME_YARU,
+            file: File,
             block: Theme.() -> Unit
-        ) = Theme(name).apply(block)
+        ) = Theme(file).apply(block)
+
+        fun Theme.write() {
+            toString().also { data ->
+                file.apply {
+                    parentFile.mkdirs()
+                    delete()
+                    createNewFile()
+                }.writeText(data)
+            }
+        }
     }
 }

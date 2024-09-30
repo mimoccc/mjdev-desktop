@@ -127,7 +127,7 @@ class AppsProvider(
     val categoriesAndApps
         get() = mutableMapOf<String, List<App>>().let { map ->
             allApps.forEach { app ->
-                app.categories.forEach { category ->
+                app.categories?.forEach { category ->
                     if (!map.containsKey(category)) {
                         map[category] = mutableListOf()
                     }

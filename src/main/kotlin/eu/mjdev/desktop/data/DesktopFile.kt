@@ -8,7 +8,7 @@ import org.ini4j.Profile.Section
 import org.ini4j.Wini
 import java.io.File
 
-@Suppress("unused", "MemberVisibilityCanBePrivate", "ConstPropertyName")
+@Suppress("unused", "MemberVisibilityCanBePrivate", "ConstPropertyName", "PropertyName")
 class DesktopFile(
     val file: File,
     val content: Ini = Wini(file),
@@ -20,20 +20,146 @@ class DesktopFile(
         get() = content.map { if (it is Section) it else null }.filterNotNull().associateBy { it.value.toString() }
 
     val desktopSection
-        get() = content[DesktopFileType.DesktopEntry.text]
+        get() = content[DesktopFileType.DesktopEntry.text]?.let { DesktopSectionScope(it) }
 
     val themeSection
-        get() = content[DesktopFileType.Theme.text]
+        get() = content[DesktopFileType.Theme.text]?.let { ThemeSectionScope(it) }
 
     fun section(
         type: DesktopFileType,
         block: Section.() -> Unit
     ) = (content[type.text] ?: content.add(type.text))?.apply(block)
 
+    fun desktopSection(
+        block: DesktopSectionScope.() -> Unit
+    ) = section(DesktopFile.DesktopFileType.DesktopEntry) {
+        DesktopSectionScope(this).apply(block)
+    }
+
+    fun themeSection(
+        block: ThemeSectionScope.() -> Unit
+    ) = section(DesktopFile.DesktopFileType.Theme) {
+        ThemeSectionScope(this).apply(block)
+    }
+
     fun write() {
-        if (file.exists()) file.delete()
+        if (file.exists()) {
+            file.delete()
+        }
         file.createNewFile()
         content.store(file)
+    }
+
+    interface ISectionScope {
+        val section: Section
+    }
+
+    class DesktopSectionScope(
+        override val section: Section
+    ) : ISectionScope {
+        var Type: DesktopFileType
+            get() = DesktopFileType(section[Prop_Type])
+            set(value) {
+                section[Prop_Type] = value.text
+            }
+
+        var Version: String
+            get() = ParsedString(section[Prop_Version])
+            set(value) {
+                section[Prop_Version] = value
+            }
+
+        var Name: String
+            get() = ParsedString(section[Prop_Name])
+            set(value) {
+                section[Prop_Name] = value
+            }
+
+        var Comment: String
+            get() = ParsedString(section[Prop_Comment])
+            set(value) {
+                section[Prop_Comment] = value
+            }
+
+        var Path: String
+            get() = ParsedString(section[Prop_Path])
+            set(value) {
+                section[Prop_Path] = value
+            }
+
+        var Exec: String
+            get() = ParsedString(section[Prop_Exec])
+            set(value) {
+                section[Prop_Exec] = value
+            }
+
+        var Icon: String
+            get() = ParsedString(section[Prop_Icon])
+            set(value) {
+                section[Prop_Icon] = value
+            }
+        var Encoding: String
+            get() = ParsedString(section[Prop_Encoding])
+            set(value) {
+                section[Prop_Encoding] = value
+            }
+        var NotifyOnStart: Boolean
+            get() = ParsedBoolean(section[Prop_StartupNotify])
+            set(value) {
+                section[Prop_StartupNotify] = value.toString()
+            }
+
+        var RunInTerminal: Boolean
+            get() = ParsedBoolean(section[Prop_Terminal])
+            set(value) {
+                section[Prop_Terminal] = value.toString()
+            }
+
+        var Categories: MutableList<String>
+            get() = ParsedList(section[Prop_Categories])
+            set(value) {
+                section[Prop_Categories] = value.joinToString { "$it;" }
+            }
+    }
+
+    class ThemeSectionScope(
+        override val section: Section
+    ) : ISectionScope {
+        var GtkTheme: String
+            get() = ParsedString(section[Prop_GtkTheme])
+            set(value) {
+                section[Prop_GtkTheme] = value
+            }
+
+        var MetacityTheme: String
+            get() = ParsedString(section[Prop_MetacityTheme])
+            set(value) {
+                section[Prop_MetacityTheme] = value
+            }
+
+        var IconTheme: String
+            get() = ParsedString(section[Prop_IconTheme])
+            set(value) {
+                section[Prop_IconTheme] = value
+            }
+
+        var CursorTheme: String
+            get() = ParsedString(section[Prop_CursorTheme])
+            set(value) {
+                section[Prop_CursorTheme] = value
+            }
+
+        var ButtonLayout: String
+            get() = ParsedString(section[Prop_ButtonLayout])
+            set(value) {
+                section[Prop_ButtonLayout] = value
+            }
+
+        var UseOverlayScrollbars: Boolean
+            get() = ParsedBoolean(section[Prop_X_Ubuntu_UseOverlayScrollbars])
+            set(value) {
+                section[Prop_X_Ubuntu_UseOverlayScrollbars] = value.toString()
+            }
     }
 
     enum class DesktopFileType(val text: String) {
@@ -49,6 +175,28 @@ class DesktopFile(
                 entries.firstOrNull { e -> e.text.contentEquals(v, true) } ?: Unknown
             }
         }
+    }
+
+    fun mkDirs(): DesktopFile {
+        if (!file.parentFile.exists()) file.parentFile.mkdirs()
+        return this
+    }
+
+    fun deleteFile(): DesktopFile {
+        if (file.exists()) file.delete()
+        return this
+    }
+
+    fun createNewFile(): DesktopFile {
+        file.createNewFile()
+        return this
+    }
+
+    fun newFile(): DesktopFile {
+        mkDirs()
+        deleteFile()
+        createNewFile()
+        return this
     }
 
     companion object {
@@ -80,107 +228,9 @@ class DesktopFile(
         const val Prop_ButtonLayout = "ButtonLayout"
         const val Prop_X_Ubuntu_UseOverlayScrollbars = "X-Ubuntu-UseOverlayScrollbars"
 
-        var Section.Type: DesktopFileType
-            get() = DesktopFileType(this[Prop_Type])
-            set(value) {
-                this[Prop_Type] = value.text
-            }
-
-        var Section.Version: String
-            get() = ParsedString(this[Prop_Version])
-            set(value) {
-                this[Prop_Version] = value
-            }
-
-        var Section.Name: String
-            get() = ParsedString(this[Prop_Name])
-            set(value) {
-                this[Prop_Name] = value
-            }
-
-        var Section.Comment: String
-            get() = ParsedString(this[Prop_Comment])
-            set(value) {
-                this[Prop_Comment] = value
-            }
-
-        var Section.Path: String
-            get() = ParsedString(this[Prop_Path])
-            set(value) {
-                this[Prop_Path] = value
-            }
-
-        var Section.Exec: String
-            get() = ParsedString(this[Prop_Exec])
-            set(value) {
-                this[Prop_Exec] = value
-            }
-
-        var Section.Icon: String
-            get() = ParsedString(this[Prop_Icon])
-            set(value) {
-                this[Prop_Icon] = value
-            }
-
-        var Section.Encoding: String
-            get() = ParsedString(this[Prop_Encoding])
-            set(value) {
-                this[Prop_Encoding] = value
-            }
-
-        var Section.NotifyOnStart: Boolean
-            get() = ParsedBoolean(this[Prop_StartupNotify])
-            set(value) {
-                this[Prop_StartupNotify] = value.toString()
-            }
-
-        var Section.RunInTerminal: Boolean
-            get() = ParsedBoolean(this[Prop_Terminal])
-            set(value) {
-                this[Prop_Terminal] = value.toString()
-            }
-
-        var Section.Categories: MutableList<String>
-            get() = ParsedList(this[Prop_Categories])
-            set(value) {
-                this[Prop_Categories] = value.joinToString { "$it;" }
-            }
-
-        var Section.GtkTheme: String
-            get() = ParsedString(this[Prop_GtkTheme])
-            set(value) {
-                this[Prop_GtkTheme] = value
-            }
-
-        var Section.MetacityTheme: String
-            get() = ParsedString(this[Prop_MetacityTheme])
-            set(value) {
-                this[Prop_MetacityTheme] = value
-            }
-
-        var Section.IconTheme: String
-            get() = ParsedString(this[Prop_IconTheme])
-            set(value) {
-                this[Prop_IconTheme] = value
-            }
-
-        var Section.CursorTheme: String
-            get() = ParsedString(this[Prop_CursorTheme])
-            set(value) {
-                this[Prop_CursorTheme] = value
-            }
-
-        var Section.ButtonLayout: String
-            get() = ParsedString(this[Prop_ButtonLayout])
-            set(value) {
-                this[Prop_ButtonLayout] = value
-            }
-
-        var Section.UseOverlayScrollbars: Boolean
-            get() = ParsedBoolean(this[Prop_X_Ubuntu_UseOverlayScrollbars])
-            set(value) {
-                this[Prop_X_Ubuntu_UseOverlayScrollbars] = value.toString()
-            }
-
+        fun desktopFile(
+            file: File,
+            block: DesktopFile.() -> Unit
+        ) = DesktopFile(file).apply(block)
     }
 }

@@ -1,3 +1,4 @@
+import org.jetbrains.compose.desktop.DesktopExtension
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -55,12 +56,9 @@ allprojects {
         implementation(libs.coil.compose)
         implementation(libs.coil.mp)
         implementation(libs.coil.svg)
-//        implementation(libs.coil.gif)
         implementation(libs.coil.network.okhttp)
         // ffmpeg
         implementation(libs.ffmpeg.platform)
-        // palette
-//        implementation(libs.material.kolor)
         // json
         implementation(libs.google.gson)
         // no log
@@ -72,20 +70,20 @@ allprojects {
         // gemini ai
         implementation(libs.google.generativeai)
         // jna
-//        implementation(libs.jna.platform)
+        implementation(libs.jna.platform)
         // qr code
         implementation(libs.qrose)
         // tts
         implementation(libs.tts)
+        // dbus
+        implementation(libs.dbus.java.core)
+        implementation(libs.dbus.java.transport.native.unixsocket)
         // paths
 //        implementation("me.sujanpoudel.multiplatform.utils:multiplatform-paths:0.2.2")
         // files
 //        implementation("io.github.vinceglb:filekit-core:0.8.2")
         // files with composable utilities
 //        implementation("io.github.vinceglb:filekit-compose:0.8.2")
-        // dbus
-//        implementation(libs.dbus.java.core)
-//        implementation(libs.dbus.java.transport.native.unixsocket)
         // testing yet
         // anim
 //        implementation("org.jetbrains.compose.animation:animation:1.7.0-alpha03")
@@ -100,6 +98,10 @@ allprojects {
         implementation("com.github.skydoves:flexible-bottomsheet-material3:0.1.5")
         // fs watcher
         implementation("io.github.irgaly.kfswatch:kfswatch:1.3.0")
+        // stt
+        implementation("com.alphacephei:vosk:0.3.32+")
+        // custom components
+        implementation("com.composables:core:1.12.0")
         // sikulix
 //        implementation("com.sikulix:sikulixapi:2.0.5")
         // blur
@@ -141,6 +143,10 @@ allprojects {
 //        implementation("com.github.SmartToolFactory:Compose-Extended-Gestures:2.0.0")
 //        implementation ("androidx.compose.ui:ui-text-google-fonts:1.6.8")
     }
+}
+
+inline fun <reified T> Project.configureIfExists(fn: T.() -> Unit) {
+    extensions.findByType(T::class.java)?.fn()
 }
 
 fun Project.createTask(
@@ -223,12 +229,12 @@ compose {
                     modules("jdk.security.auth")
                 }
                 targetFormats(
-                    TargetFormat.Dmg,
-                    TargetFormat.Msi,
+//                    TargetFormat.Dmg,
+//                    TargetFormat.Msi,
                     TargetFormat.Deb,
-                    TargetFormat.Exe,
+//                    TargetFormat.Exe,
                     TargetFormat.AppImage,
-                    TargetFormat.Pkg,
+//                    TargetFormat.Pkg,
                     TargetFormat.Rpm
                 )
 //                buildTypes.release.proguard {
@@ -237,6 +243,14 @@ compose {
 //                appResourcesRootDir.set(project.rootDir.resolve("resources"))
             }
         }
+    }
+}
+
+configureIfExists<DesktopExtension> {
+    application {
+        jvmArgs += "--enable-preview"
+    }
+    nativeApplication {
     }
 }
 
