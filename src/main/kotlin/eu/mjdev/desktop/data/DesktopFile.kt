@@ -11,7 +11,7 @@ import java.io.File
 @Suppress("unused", "MemberVisibilityCanBePrivate", "ConstPropertyName", "PropertyName")
 class DesktopFile(
     val file: File,
-    val content: Ini = Wini(file),
+    val content: Ini = runCatching { Wini(file) }.getOrNull() ?: Wini(),
 ) {
     var fileName: String = file.name
     val absolutePath: String = file.absolutePath
