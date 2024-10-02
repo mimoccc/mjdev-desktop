@@ -13,7 +13,6 @@ import eu.mjdev.desktop.extensions.Image.loadPicture
 import eu.mjdev.desktop.helpers.managers.GnomeManager
 import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_MJDEV
 import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.theme.gtk.GtkThemeHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -21,7 +20,6 @@ import kotlinx.coroutines.launch
 class Palette(
     val api: DesktopProvider,
     val gnome: GnomeManager = api.gnome,
-    val gtkTheme: GtkThemeHelper = api.gtkTheme,
     val scope: CoroutineScope = api.scope,
     val initialColor: Color = Color.SuperDarkGray,
     val borderFactor: Float = 0.1f,
@@ -90,7 +88,7 @@ class Palette(
     }
 
     fun createFromPalette() =
-        gtkTheme.createFromPalette()
+        api.gtkTheme.createFromPalette()
 
     fun setGtkTheme(
         themeName: String = THEME_MJDEV
