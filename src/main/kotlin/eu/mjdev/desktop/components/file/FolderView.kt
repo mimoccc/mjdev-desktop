@@ -4,18 +4,12 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import com.composables.core.*
 import eu.mjdev.desktop.data.DesktopFolderItem
-import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Modifier.conditional
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
@@ -32,7 +26,7 @@ import java.io.File
 // ShellFolderManager
 // X11GraphicsEnvironment
 @Suppress("FunctionName", "SimplifyBooleanWithConstants")
-@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FolderView(
     modifier: Modifier = Modifier,
@@ -69,15 +63,21 @@ fun FolderView(
     zIndexState: MutableState<Int> = remember { mutableStateOf(files.size) },
     orientation: Orientation = Orientation.Vertical,
     scrollState: ScrollState = rememberScrollState(),
-    scrollbarsState: ScrollAreaState = rememberScrollAreaState(scrollState)
+//    scrollbarsState: ScrollAreaState = rememberScrollAreaState(scrollState)
 ) = Box(
     modifier = modifier.conditional(
-        condition = orientation == Orientation.Horizontal,
+        condition = orientation == Orientation.Vertical,
         onTrue = {
-            verticalScroll(scrollState)
+            verticalScroll(
+                state = scrollState,
+                enabled = scrollState.canScrollForward
+            )
         },
         onFalse = {
-            horizontalScroll(scrollState)
+            horizontalScroll(
+                state = scrollState,
+                enabled = scrollState.canScrollForward
+            )
         }
     )
 ) {
@@ -93,7 +93,7 @@ fun FolderView(
             )
         }
     }
-    ScrollArea(state = scrollbarsState) {
+//    ScrollArea(state = scrollbarsState) {
         if (orientation == Orientation.Horizontal) {
             FlowRow(
                 modifier = Modifier.fillMaxSize(),
@@ -102,13 +102,13 @@ fun FolderView(
                 verticalArrangement = Arrangement.Top,
                 content = { content() }
             )
-            HorizontalScrollbar(
-                modifier = Modifier.align(Alignment.TopEnd)
-                    .fillMaxHeight()
-                    .width(4.dp)
-            ) {
-                Thumb(Modifier.background(Color.SuperDarkGray))
-            }
+//            HorizontalScrollbar(
+//                modifier = Modifier.align(Alignment.TopEnd)
+//                    .fillMaxHeight()
+//                    .width(4.dp)
+//            ) {
+//                Thumb(Modifier.background(Color.SuperDarkGray))
+//            }
         } else {
             FlowColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -117,14 +117,16 @@ fun FolderView(
                 verticalArrangement = Arrangement.Top,
                 content = { content() }
             )
-            VerticalScrollbar(
-                modifier = Modifier.align(Alignment.TopEnd)
-                    .fillMaxHeight()
-                    .width(4.dp)
-            ) {
-                Thumb(Modifier.background(Color.SuperDarkGray))
-            }
-        }
+//            VerticalScrollbar(
+//                modifier = Modifier.align(Alignment.TopEnd)
+//                    .fillMaxHeight()
+//                    .width(4.dp)
+//            ) {
+//                Thumb(
+//                    modifier = Modifier.background(Color.SuperDarkGray)
+//                )
+//            }
+//        }
     }
 }
 

@@ -10,7 +10,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import nl.marc_apps.tts.TextToSpeechFactory
 import nl.marc_apps.tts.experimental.ExperimentalDesktopTarget
-
+/*
+* Gemini key : https://makersuite.google.com/app/apikey
+* */
 @Suppress("MemberVisibilityCanBePrivate", "unused", "UNUSED_PARAMETER")
 class AIProvider(
     val scope: CoroutineScope,

@@ -10,15 +10,18 @@ import eu.mjdev.desktop.extensions.ColorUtils.lighter
 import eu.mjdev.desktop.extensions.ColorUtils.nonAlphaValue
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Image.loadPicture
+import eu.mjdev.desktop.helpers.managers.GnomeManager
 import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_MJDEV
-import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_YARU
 import eu.mjdev.desktop.provider.DesktopProvider
+import eu.mjdev.desktop.theme.gtk.GtkThemeHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Suppress("CanBeParameter", "MemberVisibilityCanBePrivate")
 class Palette(
     val api: DesktopProvider,
+    val gnome: GnomeManager = api.gnome,
+    val gtkTheme: GtkThemeHelper = api.gtkTheme,
     val scope: CoroutineScope = api.scope,
     val initialColor: Color = Color.SuperDarkGray,
     val borderFactor: Float = 0.1f,
@@ -83,13 +86,19 @@ class Palette(
         }
         createFromPalette()
         setGtkTheme(THEME_MJDEV)
+        setSoundTheme(THEME_MJDEV)
     }
 
     fun createFromPalette() =
-        api.gtkTheme.createFromPalette()
+        gtkTheme.createFromPalette()
 
-    fun setGtkTheme(themeName: String = THEME_YARU) =
-        api.gnome.setGTKTheme(themeName)
+    fun setGtkTheme(
+        themeName: String = THEME_MJDEV
+    ) = gnome.setGTKTheme(themeName)
+
+    fun setSoundTheme (
+        themeName: String = THEME_MJDEV
+    ) = gnome.setSoundTheme(themeName)
 
     companion object {
         @Composable

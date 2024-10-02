@@ -25,23 +25,28 @@ class GnomeManager {
 
     fun setColorScheme(
         schemeName: String
-    ) = Shell.executeAndRead(
-        "gsettings",
-        "set",
-        "org.gnome.desktop.interface",
-        "color-scheme",
-        schemeName
-    )
+    ) {
+        Shell.executeAndRead(
+            "gsettings",
+            "set",
+            "org.gnome.desktop.interface",
+            "color-scheme",
+            schemeName
+        )
+    }
 
+    @Suppress("UNUSED_PARAMETER")
     fun setGTKTheme(
         themeName: String = THEME_YARU
-    ) = Shell.executeAndRead(
-        "gsettings",
-        "set",
-        "org.gnome.desktop.interface",
-        "gtk-theme",
-        themeName
-    )
+    ) {
+//        Shell.executeAndRead(
+//            "gsettings",
+//            "set",
+//            "org.gnome.desktop.interface",
+//            "gtk-theme",
+//            themeName
+//        )
+    }
 
     fun getGTKTheme(): String = Shell.executeAndRead(
         "gsettings",

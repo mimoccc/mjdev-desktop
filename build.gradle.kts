@@ -102,6 +102,8 @@ allprojects {
         implementation("com.alphacephei:vosk:0.3.32+")
         // custom components
         implementation("com.composables:core:1.12.0")
+        // lib-app-indicator
+        implementation("org.purejava:libappindicator-gtk3-java-full:1.4.1")
         // sikulix
 //        implementation("com.sikulix:sikulixapi:2.0.5")
         // blur
