@@ -28,6 +28,7 @@ allprojects {
         mavenCentral()
     }
     dependencies {
+        api(fileTree("src/main/libs") { include("*.jar") })
         // reflection
 //        implementation(kotlin("reflect"))
         // coroutines
@@ -78,6 +79,8 @@ allprojects {
         // dbus
         implementation(libs.dbus.java.core)
         implementation(libs.dbus.java.transport.native.unixsocket)
+        // gettext
+        implementation("org.gnu.gettext:libintl:0.18.3")
         // paths
 //        implementation("me.sujanpoudel.multiplatform.utils:multiplatform-paths:0.2.2")
         // files
@@ -104,6 +107,8 @@ allprojects {
         implementation("com.composables:core:1.12.0")
         // lib-app-indicator
         implementation("org.purejava:libappindicator-gtk3-java-full:1.4.1")
+        // internationalization
+//        implementation("org.swiftshire:ji18n-core:1.0")
         // sikulix
 //        implementation("com.sikulix:sikulixapi:2.0.5")
         // blur
