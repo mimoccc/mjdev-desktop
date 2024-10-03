@@ -37,30 +37,40 @@ fun TextAny(
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
     onTextLayout: (TextLayoutResult) -> Unit = {},
-    style: TextStyle = LocalTextStyle.current
-) = SelectionContainer(
-    modifier = modifier
+    style: TextStyle = LocalTextStyle.current,
+    textSelectionEnabled: Boolean = false
 ) {
-    Text(
-        text = textFrom(text),
-        modifier = modifier,
-        color = color,
-        minLines = minLines,
-        fontSize = fontSize,
-        fontStyle = fontStyle,
-        fontWeight = fontWeight,
-        fontFamily = fontFamily,
-        letterSpacing = letterSpacing,
-        textDecoration = textDecoration,
-        textAlign = textAlign,
-        lineHeight = lineHeight,
-        overflow = overflow,
-        softWrap = softWrap,
-        maxLines = maxLines,
-        onTextLayout = onTextLayout,
-        style = style
-    )
+    val content: @Composable () -> Unit = {
+        Text(
+            text = textFrom(text),
+            modifier = modifier,
+            color = color,
+            minLines = minLines,
+            fontSize = fontSize,
+            fontStyle = fontStyle,
+            fontWeight = fontWeight,
+            fontFamily = fontFamily,
+            letterSpacing = letterSpacing,
+            textDecoration = textDecoration,
+            textAlign = textAlign,
+            lineHeight = lineHeight,
+            overflow = overflow,
+            softWrap = softWrap,
+            maxLines = maxLines,
+            onTextLayout = onTextLayout,
+            style = style
+        )
+    }
+    if (textSelectionEnabled) {
+        SelectionContainer(
+            modifier = modifier,
+            content = content
+        )
+    } else {
+        content()
+    }
 }
+
 
 @Preview
 @Composable
