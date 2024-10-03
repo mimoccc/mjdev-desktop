@@ -1,2 +1,0 @@
-#!/bin/sh
-exec /opt/mjdev-desktop/bin/mjdev-desktop

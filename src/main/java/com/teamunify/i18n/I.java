@@ -26,7 +26,7 @@ import com.teamunify.i18n.settings.DateFormatVendor;
 import com.teamunify.i18n.wiki.SimpleWikifier;
 import com.teamunify.i18n.wiki.Wikifier;
 
-///**
+/// **
 // * The central translation facility. Use the static methods like tr() to translate messages.
 // * <p/>
 // * <p/>
@@ -85,16 +85,12 @@ import com.teamunify.i18n.wiki.Wikifier;
 // * @see com.teamunify.i18n.webapp.AbstractLocaleFilter
 // */
 public final class I {
-    private static BooleanFunction<Date> nullDateTest = new BooleanFunction<Date>() {
-        public boolean apply(Date d) {
-            return d == null;
-        }
-    };
+    private static BooleanFunction<Date> nullDateTest = d -> d == null;
     private static Date defaultDate = null;
     private static Logger log = LoggerFactory.getLogger(I.class);
     private static LanguageSettingsProvider languageProvider = new ThreadLocalLanguageSettingsProvider();
 
-    private static ConcurrentHashMap<String, Locale> defaultLocales = new ConcurrentHashMap<String, Locale>();
+    private static final ConcurrentHashMap<String, Locale> defaultLocales = new ConcurrentHashMap<String, Locale>();
 
     /**
      * Set the locale that should be returned from getDefaultLocaleForLanguage() when the specified (plain) language
@@ -380,8 +376,13 @@ public final class I {
         return tr_plural(escapeFunction, singular, plural, nitems_for_plural_determination, args);
     }
 
-    public static String tr_plural(EscapeFunction f, String singular, String plural, int nitems_for_plural_determination,
-                                   Object... args) {
+    public static String tr_plural(
+            EscapeFunction f,
+            String singular,
+            String plural,
+            int nitems_for_plural_determination,
+            Object... args
+    ) {
         LanguageSetting s = languageProvider.vend();
         String xlation = GettextResource.ngettext(s.translation, singular, plural, nitems_for_plural_determination);
         s.formatter.applyPattern(xlation);
