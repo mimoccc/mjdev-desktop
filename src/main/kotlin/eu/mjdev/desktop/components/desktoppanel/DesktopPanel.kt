@@ -16,12 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onPlaced
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopMenuIcon
+import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelDateTime
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelFavoriteApps
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelLanguage
 import eu.mjdev.desktop.components.sliding.SlidingMenu
@@ -33,6 +31,7 @@ import eu.mjdev.desktop.data.TooltipData
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.ColorUtils.lighter
 import eu.mjdev.desktop.extensions.Compose.height
+import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Modifier.topShadow
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelExitAnimation
@@ -46,12 +45,10 @@ import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindow
 @Suppress("FunctionName")
 @Composable
 fun DesktopPanel(
-    dividerWidth: Dp = 4.dp,
     iconSize: DpSize = DpSize(56.dp, 56.dp),
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     showMenuIcon: Boolean = true,
-    panelContentPadding: PaddingValues = PaddingValues(4.dp),
     panelState: VisibilityState = rememberVisibilityState(),
     menuState: VisibilityState = rememberVisibilityState(),
     enterAnimation: EnterTransition = DesktopPanelEnterAnimation,
@@ -64,17 +61,19 @@ fun DesktopPanel(
         }
     },
     position: WindowPosition.Aligned = WindowPosition.Aligned(Alignment.BottomCenter),
-    onMenuIconClicked: () -> Unit = { },
-    onMenuIconContextMenuClicked: () -> Unit = { },
+    onMenuIconClicked: () -> Unit = {},
+    onMenuIconContextMenuClicked: () -> Unit = {},
     onFocusChange: (Boolean) -> Unit = {},
     onAppClick: DesktopScope.(App) -> Unit = { app -> startApp(app) },
-    onAppContextMenuClick: (App) -> Unit = { },
-    onLanguageClick: () -> Unit = { },
+    onAppContextMenuClick: (App) -> Unit = {},
+    onLanguageClick: () -> Unit = {},
+    onClockClick: () -> Unit = {}
 ) = withDesktopScope {
-    val tooltipState = remember { mutableStateOf<Any?>(null) }
+    val tooltipState = rememberState<Any?>(null)
+    val panelDividerWidth by rememberState(theme.panelDividerWidth)
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
-        if (visible) iconSize.height + iconOuterPadding.height + tooltipHeight + panelContentPadding.height
-        else dividerWidth
+        if (visible) iconSize.height + iconOuterPadding.height + tooltipHeight + theme.panelContentPadding.times(2)
+        else panelDividerWidth
     }
     val size = remember(panelState.isVisible) {
         DpSize(containerSize.width, panelHeight(panelState.isVisible))
@@ -88,35 +87,25 @@ fun DesktopPanel(
         onFocusChange = { focused ->
             panelState.onFocusChange(focused)
             onFocusChange(focused)
-        }
-    ) {
-        SlidingMenu(
-            modifier = Modifier.fillMaxWidth(),
-            orientation = Vertical,
-            state = panelState,
-            onPointerEnter = {
-                panelState.show()
-                if (!menuState.isVisible) {
-                    windowState.requestFocus()
-                }
-            },
-            onPointerLeave = {
-                if (!menuState.isVisible) {
-                    panelState.hide()
-                }
+        }) {
+        SlidingMenu(modifier = Modifier.fillMaxWidth(), orientation = Vertical, state = panelState, onPointerEnter = {
+            panelState.show()
+            if (!menuState.isVisible) {
+                windowState.requestFocus()
             }
-        ) { isVisible ->
+        }, onPointerLeave = {
+            if (!menuState.isVisible) {
+                panelState.hide()
+            }
+        }) { isVisible ->
             Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(dividerWidth),
+                modifier = Modifier.fillMaxWidth().height(panelDividerWidth),
                 color = Color.Transparent,
-                thickness = dividerWidth
+                thickness = panelDividerWidth
             )
             if (isVisible) {
                 TooltipArea(
-                    modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-                    tooltip = {
+                    modifier = Modifier.fillMaxWidth().wrapContentHeight(), tooltip = {
                         Tooltip(
                             textColor = textColor,
                             borderColor = borderColor,
@@ -124,48 +113,33 @@ fun DesktopPanel(
                             converter = tooltipConverter,
                             backgroundColor = backgroundColor
                         )
-                    },
-                    tooltipPlacement = TooltipPlacement.CursorPoint(
-                        alignment = Alignment.TopEnd,
-                        offset = DpOffset(32.dp, 32.dp)
+                    }, tooltipPlacement = TooltipPlacement.CursorPoint(
+                        alignment = Alignment.TopEnd, offset = DpOffset(32.dp, 32.dp)
                     )
                 ) {
                     Column {
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(tooltipHeight)
+                            modifier = Modifier.fillMaxWidth().height(tooltipHeight)
                         )
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .background(
-                                    brush = Brush.verticalGradient(
-                                        colors = listOf(
-                                            backgroundColor.alpha(0.3f),
-                                            backgroundColor.alpha(0.7f),
-                                            backgroundColor.alpha(0.8f),
-                                        )
+                            modifier = Modifier.fillMaxWidth().wrapContentHeight().background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        backgroundColor.alpha(0.3f),
+                                        backgroundColor.alpha(0.7f),
+                                        backgroundColor.alpha(0.8f),
                                     )
                                 )
-                                .topShadow(
-                                    color = borderColor.alpha(0.3f),
-                                    blur = 4.dp
-                                )
-                                .onPlaced(panelState::onPlaced),
+                            ).topShadow(
+                                color = borderColor.alpha(0.3f), blur = 4.dp
+                            ).onPlaced(panelState::onPlaced),
                         ) {
                             Divider(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(2.dp),
-                                color = borderColor,
-                                thickness = 2.dp
+                                modifier = Modifier.fillMaxWidth().height(2.dp), color = borderColor, thickness = 2.dp
                             )
                             Box(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(top = 4.dp)
-                                    .padding(panelContentPadding)
+                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                                    .padding(theme.panelContentPadding)
                             ) {
                                 if (showMenuIcon) {
                                     DesktopMenuIcon(
@@ -192,11 +166,18 @@ fun DesktopPanel(
                                     onAppClick = { app -> onAppClick(app) },
                                     onContextMenuClick = onAppContextMenuClick
                                 )
-                                DesktopPanelLanguage(
-                                    modifier = Modifier.align(Alignment.CenterEnd),
-                                    onTooltip = { item -> tooltipState.value = item },
-                                    onClick = onLanguageClick
-                                )
+                                DesktopPanelTray(
+                                    modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp),
+                                ) {
+                                    DesktopPanelLanguage(
+                                        onTooltip = { item -> tooltipState.value = item },
+                                        onClick = onLanguageClick
+                                    )
+                                    DesktopPanelDateTime(
+                                        onTooltip = { item -> tooltipState.value = item },
+                                        onClick = onClockClick
+                                    )
+                                }
                             }
                         }
                     }

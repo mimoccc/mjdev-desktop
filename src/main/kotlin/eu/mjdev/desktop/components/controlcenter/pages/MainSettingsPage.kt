@@ -22,7 +22,7 @@ import eu.mjdev.desktop.extensions.Modifier.rectShadow
 fun MainSettingsPage() = ControlCenterPage(
     icon = Icons.Filled.Home,
     name = "Home"
-)  {
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -47,7 +47,9 @@ fun MainSettingsPage() = ControlCenterPage(
                 thickness = 2.dp
             )
             DateTime(
-                textColor = textColor,
+                modifier = Modifier.fillMaxWidth(),
+                timeTextColor = textColor,
+                dateTextColor = textColor,
                 backgroundColor = backgroundColor
             )
         }

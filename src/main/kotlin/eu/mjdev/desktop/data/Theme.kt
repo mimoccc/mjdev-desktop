@@ -16,6 +16,8 @@ class Theme(
     backgroundRotationDelay: Long,
 
     panelLocation: PanelLocation,
+    panelDividerWidth: Dp,
+    panelContentPadding: Dp,
     panelHideDelay: Long,
 
     controlCenterLocation: ControlCenterLocation,
@@ -39,6 +41,8 @@ class Theme(
 
     val panelLocationState = mutableStateOf(panelLocation)
     val panelHideDelayState = mutableStateOf(panelHideDelay)
+    val panelDividerWidthState = mutableStateOf(panelDividerWidth)
+    val panelContentPaddingState = mutableStateOf(panelContentPadding)
 
     val controlCenterLocationState = mutableStateOf(controlCenterLocation)
     val controlPanelHideDelayState = mutableStateOf(controlPanelHideDelay)
@@ -61,6 +65,8 @@ class Theme(
         }
 
     val panelLocation get() = panelLocationState.value
+    val panelDividerWidth get() = panelDividerWidthState.value
+    val panelContentPadding get() = panelContentPaddingState.value
     val panelHideDelay get() = panelHideDelayState.value
 
     val controlCenterBackgroundAlphaState = mutableStateOf(controlCenterBackgroundAlpha)
@@ -93,13 +99,15 @@ class Theme(
                 backgroundColor = Color.SuperDarkGray,
 
                 panelLocation = PanelLocation.Bottom,
+                panelDividerWidth = 8.dp,
+                panelContentPadding = 4.dp,
                 panelHideDelay = 5000L,
 
                 controlCenterLocation = ControlCenterLocation.Right,
                 controlPanelHideDelay = 5000L,
                 controlCenterExpandedWidth = 480.dp,
                 controlCenterDividerColor = Color.SuperDarkGray,
-                controlCenterDividerWidth = 2.dp,
+                controlCenterDividerWidth = 8.dp,
                 controlCenterIconColor = Color.White,
                 controlCenterIconSize = DpSize(32.dp, 32.dp),
                 controlCenterBackgroundAlpha = 0.8f,

@@ -10,6 +10,8 @@ import eu.mjdev.desktop.components.controlcenter.ControlCenter
 import eu.mjdev.desktop.components.desktop.Desktop
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanel
 import eu.mjdev.desktop.components.greeter.Greeter
+import eu.mjdev.desktop.components.info.InfoWindow
+import eu.mjdev.desktop.components.installer.Installer
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.DesktopWindow
@@ -19,6 +21,8 @@ fun MainWindow() = withDesktopScope {
     val controlCenterState = rememberVisibilityState()
     val panelState = rememberVisibilityState()
     val menuState = rememberVisibilityState()
+    val installWindowSate = rememberVisibilityState()
+    val infoWindowSate = rememberVisibilityState(false) //(api.isFirstStart || api.isDebug) // todo
     val handleMenuFocus: (Boolean) -> Unit = { focus ->
         if (!menuState.isWindowFocus && !focus && !controlCenterState.isWindowFocus) {
             menuState.hide()
@@ -60,7 +64,16 @@ fun MainWindow() = withDesktopScope {
             onFocusChange = { focus -> handleControlCenterFocus(focus) }
         )
         Greeter()
-//        InfoWindow()
+        InfoWindow(
+            state = infoWindowSate,
+            showInstallWindow = {
+                infoWindowSate.hide()
+                installWindowSate.show()
+            }
+        )
+        Installer(
+            state = installWindowSate
+        )
     }
     DisposableEffect(Unit) {
         onDispose {

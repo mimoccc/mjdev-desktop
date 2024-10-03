@@ -26,17 +26,17 @@ fun DesktopPanelText(
     modifier: Modifier = Modifier,
     text: String = "text",
     textColor: Color = Color.White,
-    backgroundHover: Color = Color.Red,
+    backgroundHover: Color = Color.White.copy(alpha = 0.4f),
     textPadding: PaddingValues = PaddingValues(4.dp),
     buttonState: MutableState<Boolean> = rememberState(false),
-    onToolTip: (item: Any?) -> Unit = {},
+    onTooltip: (item: Any?) -> Unit = {},
     onClick: () -> Unit = {},
 ) = Box(
     modifier = modifier
         .wrapContentSize()
         .onMouseEnter {
             buttonState.value = true
-            onToolTip(text)
+            onTooltip(text)
         }
         .onMouseLeave {
             buttonState.value = false
