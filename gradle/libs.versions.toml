@@ -8,7 +8,7 @@ appMaintainer = "mj@mjdev.org<Milan Jurkulak>"
 appMenuGroup = "Desktop"
 appVendor = "mjdev"
 packageName = "org.mjdev.desktop"
-packageVersion = "1.0.0"
+packageVersion = "1.0.1"
 #
 gradle = "8.4.0"
 kotlin = "1.9.22"
