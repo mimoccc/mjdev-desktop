@@ -1,6 +1,7 @@
 package eu.mjdev.desktop.extensions
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.NativePaint
@@ -142,5 +143,9 @@ object Custom {
 
 //    operator fun PaddingValues.minus(dp: Dp) =
 //        copy(width = width - dp, height = height - dp)
+
+    fun MutableState<Boolean>.toggle() {
+        value = !value
+    }
 
 }

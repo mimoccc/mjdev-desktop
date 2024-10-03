@@ -1,8 +1,11 @@
 package eu.mjdev.desktop.extensions
 
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import eu.mjdev.desktop.helpers.compose.Gravity
 import java.util.*
+import kotlin.math.roundToInt
 
 @Suppress("unused", "UnusedReceiverParameter")
 object ColorUtils {
@@ -51,6 +54,18 @@ object ColorUtils {
         )
     }
 
+    fun Color.invert(): Color {
+        val a :Int = alpha.roundToInt()
+        val r :Int = 255 - red.roundToInt()
+        val g :Int = 255 - green.roundToInt()
+        val b :Int = 255 - blue.roundToInt()
+        val color = ((a and 0xFF) shl 24) or
+                ((r and 0xFF) shl 16) or
+                ((g and 0xFF) shl 8) or
+                (b and 0xFF)
+        return Color(color)
+    }
+
     fun Color.lighter(factor: Float) = copy(
         red = red + factor,
         green = green + factor,
@@ -70,5 +85,32 @@ object ColorUtils {
             rnd.nextInt(256),
         ).alpha(alpha)
     }
+
+    fun createVerticalColorBrush(
+        color: Color,
+        gravity: Gravity
+    ): Brush = Brush.verticalGradient(
+        when (gravity) {
+            Gravity.TOP -> listOf(
+                color,
+                color,
+                color,
+                color.copy(alpha = 0.8f),
+                color.copy(alpha = 0.5f),
+                Color.Transparent
+            )
+
+            Gravity.BOTTOM -> listOf(
+                Color.Transparent,
+                color.copy(alpha = 0.5f),
+                color.copy(alpha = 0.8f),
+                color,
+                color,
+                color,
+            )
+
+            else -> listOf(color)
+        }
+    )
 
 }
