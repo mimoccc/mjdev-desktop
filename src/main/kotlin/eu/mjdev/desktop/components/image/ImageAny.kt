@@ -24,7 +24,7 @@ import org.jetbrains.skia.Bitmap
 import java.io.File
 import androidx.compose.foundation.Image as ComposeImage
 
-@Suppress("FunctionName")
+@Suppress("FunctionName", "UNUSED_PARAMETER")
 @Composable
 fun ImageAny(
     src: Any? = Icons.Filled.SupervisedUserCircle,
@@ -35,6 +35,7 @@ fun ImageAny(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
+    placeholder: @Composable () -> Unit = {}, // todo
     onLoading: () -> Unit = {},
     onFail: (error: Throwable) -> Unit = {}
 ) = withDesktopScope {
