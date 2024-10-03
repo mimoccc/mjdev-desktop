@@ -36,7 +36,9 @@ import kotlin.system.exitProcess
 class DesktopProvider(
     val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
     val imageLoader: ImageLoader? = null,
-    val isDebug: Boolean = true
+    val isDebug: Boolean = true,
+    val isFirstStart: Boolean = true, // todo
+    val isInstalled:Boolean = false, // todo
 ) : AutoCloseable {
     val scriptManager: ScriptEngineManager by lazy { ScriptEngineManager() }
     val scriptEngine: ScriptEngine by lazy {
@@ -258,7 +260,7 @@ class DesktopProvider(
             DesktopProvider(
                 scope,
                 imageLoader,
-                isDebug
+                isDebug,
             )
         }
 
