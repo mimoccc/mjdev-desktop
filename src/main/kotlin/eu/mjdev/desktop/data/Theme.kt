@@ -99,7 +99,7 @@ class Theme(
                 backgroundColor = Color.SuperDarkGray,
 
                 panelLocation = PanelLocation.Bottom,
-                panelDividerWidth = 8.dp,
+                panelDividerWidth = 16.dp,
                 panelContentPadding = 4.dp,
                 panelHideDelay = 5000L,
 
@@ -107,7 +107,7 @@ class Theme(
                 controlPanelHideDelay = 5000L,
                 controlCenterExpandedWidth = 480.dp,
                 controlCenterDividerColor = Color.SuperDarkGray,
-                controlCenterDividerWidth = 8.dp,
+                controlCenterDividerWidth = 4.dp,
                 controlCenterIconColor = Color.White,
                 controlCenterIconSize = DpSize(32.dp, 32.dp),
                 controlCenterBackgroundAlpha = 0.8f,

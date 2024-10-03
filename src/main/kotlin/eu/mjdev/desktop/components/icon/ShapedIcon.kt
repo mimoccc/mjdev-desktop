@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.extensions.Compose.onLeftClick
 import eu.mjdev.desktop.extensions.Compose.onMousePress
-import eu.mjdev.desktop.extensions.Compose.onRigntClick
+import eu.mjdev.desktop.extensions.Compose.onRightClick
 import eu.mjdev.desktop.extensions.Compose.size
 
 @Composable
@@ -42,7 +42,7 @@ fun ShapedIcon(
         .clip(iconShape)
         .onMousePress {
             onLeftClick { onClick() }
-            onRigntClick { onRightClick() }
+            onRightClick { onRightClick() }
         }
 ) {
     Box(

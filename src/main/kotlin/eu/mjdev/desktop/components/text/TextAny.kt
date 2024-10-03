@@ -3,7 +3,7 @@ package eu.mjdev.desktop.components.text
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,7 +36,7 @@ fun TextAny(
     softWrap: Boolean = true,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
-    onTextLayout: (TextLayoutResult) -> Unit = {},
+    onTextLayout: ((TextLayoutResult) -> Unit)? = null,
     style: TextStyle = LocalTextStyle.current,
     textSelectionEnabled: Boolean = false
 ) {
@@ -45,7 +45,6 @@ fun TextAny(
             text = textFrom(text),
             modifier = modifier,
             color = color,
-            minLines = minLines,
             fontSize = fontSize,
             fontStyle = fontStyle,
             fontWeight = fontWeight,
@@ -57,8 +56,9 @@ fun TextAny(
             overflow = overflow,
             softWrap = softWrap,
             maxLines = maxLines,
+            minLines = minLines,
             onTextLayout = onTextLayout,
-            style = style
+            style = style,
         )
     }
     if (textSelectionEnabled) {

@@ -18,7 +18,7 @@ import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.extensions.Compose.onLeftClick
 import eu.mjdev.desktop.extensions.Compose.onMousePress
-import eu.mjdev.desktop.extensions.Compose.onRigntClick
+import eu.mjdev.desktop.extensions.Compose.onRightClick
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("FunctionName")
@@ -37,7 +37,7 @@ fun AppsMenuApp(
     Row(
         modifier = modifier.onMousePress {
             onLeftClick { onClick() }
-            onRigntClick { onContextMenuClick() }
+            onRightClick { onContextMenuClick() }
         },
         verticalAlignment = Alignment.CenterVertically,
     ) {

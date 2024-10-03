@@ -25,7 +25,7 @@ import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.onLeftClick
 import eu.mjdev.desktop.extensions.Compose.onMousePress
-import eu.mjdev.desktop.extensions.Compose.onRigntClick
+import eu.mjdev.desktop.extensions.Compose.onRightClick
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
@@ -91,7 +91,7 @@ fun ControlCenter(
                 Divider(
                     modifier = Modifier.fillMaxHeight()
                         .width(controlCenterDividerWidth),
-                    color = borderColor,
+                    color = Color.Transparent,
                     thickness = controlCenterDividerWidth
                 )
             } else {
@@ -140,7 +140,7 @@ fun ControlCenter(
                                                         pagerState.value = idx
                                                     }
                                                 }
-                                                onRigntClick {
+                                                onRightClick {
                                                     scope.launch {
                                                         pagerState.value = idx
                                                     }

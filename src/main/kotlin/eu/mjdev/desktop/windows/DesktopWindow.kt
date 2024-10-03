@@ -10,7 +10,7 @@ import eu.mjdev.desktop.components.background.BackgroundImage
 import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.extensions.Compose.onLeftClick
 import eu.mjdev.desktop.extensions.Compose.onMousePress
-import eu.mjdev.desktop.extensions.Compose.onRigntClick
+import eu.mjdev.desktop.extensions.Compose.onRightClick
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
@@ -64,7 +64,7 @@ fun DesktopWindow(
                         menuState.hide()
                         controlCenterState.hide()
                     }
-                    onRigntClick {
+                    onRightClick {
 //                        contextMenuState.show()
                     }
                 },

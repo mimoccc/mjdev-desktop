@@ -20,7 +20,7 @@ import eu.mjdev.desktop.extensions.Compose.onLeftClick
 import eu.mjdev.desktop.extensions.Compose.onMouseEnter
 import eu.mjdev.desktop.extensions.Compose.onMouseLeave
 import eu.mjdev.desktop.extensions.Compose.onMousePress
-import eu.mjdev.desktop.extensions.Compose.onRigntClick
+import eu.mjdev.desktop.extensions.Compose.onRightClick
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Modifier.clipRect
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
@@ -66,7 +66,7 @@ fun DesktopPanelIcon(
             .onMousePress {
                 iconState.value = false
                 onLeftClick { onClick() }
-                onRigntClick { onContextMenuClick() }
+                onRightClick { onContextMenuClick() }
             }
     ) {
         Button(

@@ -17,7 +17,7 @@ import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.extensions.Compose.onLeftClick
 import eu.mjdev.desktop.extensions.Compose.onMousePress
-import eu.mjdev.desktop.extensions.Compose.onRigntClick
+import eu.mjdev.desktop.extensions.Compose.onRightClick
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Composable
@@ -31,7 +31,7 @@ fun AppsMenuCategory(
     Row(
         modifier = modifier.onMousePress {
             onLeftClick { onClick(category) }
-            onRigntClick { onContextMenuClick(category) }
+            onRightClick { onContextMenuClick(category) }
         },
         verticalAlignment = Alignment.CenterVertically
     ) {
