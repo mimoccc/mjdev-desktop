@@ -98,7 +98,8 @@ fun AIPage() = ControlCenterPage(
                                 TextAny(
                                     modifier = Modifier.fillMaxWidth().padding(end = 24.dp),
                                     text = "${idx + 1}. ${textData.first}",
-                                    color = Color.White
+                                    color = Color.White,
+                                    textSelectionEnabled = true
                                 )
                                 Icon(
                                     modifier = Modifier.padding(4.dp)
@@ -124,7 +125,8 @@ fun AIPage() = ControlCenterPage(
                                 TextAny(
                                     modifier = Modifier.fillMaxWidth().padding(end = 24.dp),
                                     text = textData.second,
-                                    color = Color.White.copy(alpha = 0.9f)
+                                    color = Color.White.copy(alpha = 0.9f),
+                                    textSelectionEnabled = true
                                 )
                                 Icon(
                                     modifier = Modifier.padding(4.dp)

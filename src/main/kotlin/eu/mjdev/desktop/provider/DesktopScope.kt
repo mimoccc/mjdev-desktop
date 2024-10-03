@@ -107,6 +107,8 @@ open class DesktopScope(
         get() = textColorState.value
     val borderColor
         get() = api.palette.borderColor
+    val disabledColor
+        get() = api.palette.disabledColor
 
     fun startApp(app: App) =
         api.appsProvider.startApp(app)

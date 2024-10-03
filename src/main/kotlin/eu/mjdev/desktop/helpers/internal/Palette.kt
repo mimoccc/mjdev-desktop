@@ -63,6 +63,9 @@ class Palette(
     val tooltipFgColor
         get() = textColor
 
+    // todo
+    val disabledColor = Color.SuperDarkGray
+
     fun update(src: Any?) = scope.launch {
         loadPicture(src).getOrNull()?.let { image ->
             val width = image.width
