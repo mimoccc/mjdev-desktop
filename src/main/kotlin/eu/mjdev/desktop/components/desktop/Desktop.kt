@@ -22,15 +22,15 @@ fun Desktop(
     BoxWithConstraints(
         modifier = modifier.padding(16.dp)
     ) {
-        MemoryChart(
-            modifier = Modifier.size(350.dp, 300.dp)
-                .align(Alignment.BottomEnd)
-        )
         FolderView(
+            modifier = Modifier.size(constraints.maxWidth.dp, constraints.maxHeight.dp),
             path = api.currentUser.userDirs.desktopDirectory,
             showHomeFolder = true,
             orientation = Orientation.Vertical,
-            modifier = Modifier.size(constraints.maxWidth.dp, constraints.maxHeight.dp)
+        )
+        MemoryChart(
+            modifier = Modifier.size(350.dp, 300.dp)
+                .align(Alignment.BottomEnd)
         )
 //        ComposeWebView(
 //            modifier = Modifier.size(640.dp, 480.dp)
