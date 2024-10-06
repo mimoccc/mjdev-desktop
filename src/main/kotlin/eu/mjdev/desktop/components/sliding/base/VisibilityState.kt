@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.DpSize
 import eu.mjdev.desktop.helpers.internal.DpBounds
 import eu.mjdev.desktop.helpers.internal.DpBounds.Companion.toDpBounds
 
-@Suppress("CanBeParameter", "unused", "MemberVisibilityCanBePrivate")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class VisibilityState(
     private val startState: Boolean = false,
     var enabled: Boolean = true
@@ -30,6 +30,7 @@ class VisibilityState(
             if (enabled) {
                 visibleState.value = value
             } else {
+                visibleState.value = startState
                 println("Visible state disabled, can not set value.")
             }
         }

@@ -22,7 +22,7 @@ class Theme(
 
     controlCenterLocation: ControlCenterLocation,
     controlPanelHideDelay: Long,
-    controlCenterExpandedWidth: Dp,
+    controlCenterExpandedWidthPercent: Int,
     controlCenterDividerColor: Color = backgroundColor,
     controlCenterDividerWidth: Dp,
     controlCenterIconColor: Color,
@@ -46,7 +46,7 @@ class Theme(
 
     val controlCenterLocationState = mutableStateOf(controlCenterLocation)
     val controlPanelHideDelayState = mutableStateOf(controlPanelHideDelay)
-    var controlCenterExpandedWidthState = mutableStateOf(controlCenterExpandedWidth)
+    var controlCenterExpandedWidthState = mutableStateOf(controlCenterExpandedWidthPercent)
     val controlCenterDividerColorState = mutableStateOf(controlCenterDividerColor)
     val controlCenterDividerWidthState = mutableStateOf(controlCenterDividerWidth)
     val controlCenterIconColorState = mutableStateOf(controlCenterIconColor)
@@ -105,7 +105,7 @@ class Theme(
 
                 controlCenterLocation = ControlCenterLocation.Right,
                 controlPanelHideDelay = 5000L,
-                controlCenterExpandedWidth = 480.dp,
+                controlCenterExpandedWidthPercent = 25,
                 controlCenterDividerColor = Color.SuperDarkGray,
                 controlCenterDividerWidth = 4.dp,
                 controlCenterIconColor = Color.White,

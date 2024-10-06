@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
@@ -27,6 +28,7 @@ import eu.mjdev.desktop.extensions.Compose.onLeftClick
 import eu.mjdev.desktop.extensions.Compose.onMousePress
 import eu.mjdev.desktop.extensions.Compose.onRightClick
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
+import eu.mjdev.desktop.extensions.Compose.rememberComputed
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
@@ -50,7 +52,9 @@ fun ControlCenter(
 ) = withDesktopScope {
     // todo remove those
     val backgroundAlpha by remember { theme.controlCenterBackgroundAlphaState }
-    val controlCenterExpandedWidth by remember { theme.controlCenterExpandedWidthState }
+    val controlCenterExpandedWidth : Dp by rememberComputed {
+        (containerSize.width / 100f) * theme.controlCenterExpandedWidth
+    }
     val controlCenterDividerWidth by remember { theme.controlCenterDividerWidthState }
     val controlCenterIconSize by remember { theme.controlCenterIconSizeState }
     //

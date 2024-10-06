@@ -116,9 +116,6 @@ class DesktopProvider(
 
     init {
         runCatching {
-            currentUser.theme.controlCenterExpandedWidth = containerSize.width.div(4)
-        }
-        runCatching {
             mounts.init()
         }
         runCatching {
