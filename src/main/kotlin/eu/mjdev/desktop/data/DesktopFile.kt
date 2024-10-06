@@ -40,7 +40,7 @@ class DesktopFile(
         get() = desktopSection?.Type == DesktopFileType.Application
 
     val isCorrect
-        get() = correctedFile.exists() || fileData.contains(Prop_StartupWMClass)
+        get() = correctedFile.exists()
 
     init {
         if (isApp && !isCorrect) {
@@ -49,6 +49,7 @@ class DesktopFile(
                 println("Corrected file: file:///${correctedFile.absolutePath}")
                 correctedFile.let { f ->
                     desktopSection?.StartupWMClass = fullAppName
+                    desktopSection?.OnlyShowIn = mutableListOf()
                     writeTo(f)
                     file = f
                     fileData = file.readText()
@@ -161,11 +162,13 @@ class DesktopFile(
             set(value) {
                 section[Prop_Icon] = value
             }
+
         var Encoding: String
             get() = ParsedString(section[Prop_Encoding])
             set(value) {
                 section[Prop_Encoding] = value
             }
+
         var NotifyOnStart: Boolean
             get() = ParsedBoolean(section[Prop_StartupNotify])
             set(value) {
@@ -183,6 +186,13 @@ class DesktopFile(
             set(value) {
                 section[Prop_Categories] = value.joinToString { "$it;" }
             }
+
+        var OnlyShowIn: MutableList<String>
+            get() = ParsedList(section[Prop_OnlyShowIn])
+            set(value) {
+                section[Prop_OnlyShowIn] = value.joinToString { "$it;" }
+            }
+
         var StartupWMClass: String
             get() = ParsedString(section[Prop_StartupWMClass]).trim()
             set(value) {
@@ -258,6 +268,7 @@ class DesktopFile(
         const val Prop_Icon = "Icon"
         const val Prop_Categories = "Categories"
         const val Prop_StartupWMClass = "StartupWMClass"
+        const val Prop_OnlyShowIn = "OnlyShowIn"
 
         // todo
         const val Prop_GenericName = "GenericName"
@@ -266,7 +277,6 @@ class DesktopFile(
         const val Prop_DBusActivatable = "DBusActivatable"
         const val Prop_Encoding = "Encoding"
         const val Prop_Keywords = "Keywords"
-        const val Prop_OnlyShowIn = "OnlyShowIn"
         const val Prop_X_ExecArg = "X-ExecArg"
         const val Prop_X_Ubuntu_Gettext_Domain = "X-Ubuntu-Gettext-Domain"
         const val Prop_NoDisplay = "NoDisplay" // boolean
