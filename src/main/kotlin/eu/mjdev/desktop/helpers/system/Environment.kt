@@ -6,5 +6,6 @@ class Environment(
     init {
         putAll(System.getenv())
         put("DBUS_SESSION_BUS_ADDRESS", "unix:path=\$XDG_RUNTIME_DIR/bus")
+        put("XDG_CURRENT_DESKTOP", "ubuntu:GNOME")
     }
 }
