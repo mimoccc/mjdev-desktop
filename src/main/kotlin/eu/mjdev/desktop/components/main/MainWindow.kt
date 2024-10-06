@@ -19,7 +19,11 @@ import eu.mjdev.desktop.windows.DesktopWindow
 @Composable
 fun MainWindow() = withDesktopScope {
     val controlCenterState = rememberVisibilityState()
-    val panelState = rememberVisibilityState()
+    // todo from user setttings
+    val panelState = rememberVisibilityState(
+        enabled = false,
+        visible = true
+    )
     val menuState = rememberVisibilityState()
     val installWindowSate = rememberVisibilityState()
     val infoWindowSate = rememberVisibilityState(false) //(api.isFirstStart || api.isDebug) // todo

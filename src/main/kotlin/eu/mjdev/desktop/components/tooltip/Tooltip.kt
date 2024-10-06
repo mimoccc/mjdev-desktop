@@ -51,7 +51,9 @@ fun Tooltip(
                     TextAny(
                         text = description,
                         color = textColor,
-                        fontSize = 12.sp
+                        fontSize = 12.sp,
+                        minLines = 1,
+                        maxLines = 2
                     )
                 }
             }

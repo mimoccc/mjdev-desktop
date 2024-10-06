@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.unit.DpSize
 import eu.mjdev.desktop.helpers.internal.DpBounds
 import eu.mjdev.desktop.helpers.internal.DpBounds.Companion.toDpBounds
 
@@ -64,14 +65,19 @@ class VisibilityState(
         focusState.value = focus
     }
 
+    fun updateSize(panelSize: DpSize) {
+        bounds.height = panelSize.height
+        bounds.width = panelSize.width
+    }
+
     companion object {
         @Composable
         fun rememberVisibilityState(
-            startState: Boolean = false,
+            visible: Boolean = false,
             enabled: Boolean = true,
         ): VisibilityState {
-            return remember(startState, enabled) {
-                VisibilityState(startState, enabled)
+            return remember(visible, enabled) {
+                VisibilityState(visible, enabled)
             }
         }
     }

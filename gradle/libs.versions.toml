@@ -11,7 +11,9 @@ packageName = "org.mjdev.desktop"
 packageVersion = "1.0.1"
 #
 gradle = "8.4.0"
+gradle-versions = "0.51.0"
 kotlin = "1.9.22"
+intellij = "1.17.4"
 compose = "1.7.0-alpha03"
 okhttp3 = "5.0.0-alpha.12"
 coil3 = "3.0.0-alpha06"
@@ -109,3 +111,4 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 compose-desktop = { id = "org.jetbrains.compose", version.ref = "compose" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+gradle-versions = { id = "com.github.ben-manes.versions", version.ref = "gradle-versions" }

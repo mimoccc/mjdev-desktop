@@ -10,8 +10,8 @@ import eu.mjdev.desktop.extensions.ColorUtils.lighter
 import eu.mjdev.desktop.extensions.ColorUtils.nonAlphaValue
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Image.loadPicture
-import eu.mjdev.desktop.helpers.managers.GnomeManager
-import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_MJDEV
+import eu.mjdev.desktop.managers.GnomeManager
+import eu.mjdev.desktop.managers.GnomeManager.Companion.THEME_MJDEV
 import eu.mjdev.desktop.provider.DesktopProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

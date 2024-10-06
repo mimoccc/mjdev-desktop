@@ -2,7 +2,6 @@ package eu.mjdev.desktop.components.text
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -37,7 +36,7 @@ fun TextAny(
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
     onTextLayout: ((TextLayoutResult) -> Unit)? = null,
-    style: TextStyle = LocalTextStyle.current,
+    style: TextStyle = TextStyle.Default,
     textSelectionEnabled: Boolean = false
 ) {
     val content: @Composable () -> Unit = {

@@ -90,7 +90,7 @@ fun Gallery(
                 )
             }
         }
-    ) { _, bckColor, state ->
+    ) { _, bckColor, _ ->
         ImmersiveList(
             modifier = Modifier.fillMaxSize(),
             currentItemIndex = currentItemIndex,

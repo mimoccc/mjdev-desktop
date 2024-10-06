@@ -75,29 +75,38 @@ fun DesktopPanel(
         if (visible) iconSize.height + iconOuterPadding.height + tooltipHeight + theme.panelContentPadding.times(2)
         else panelDividerWidth
     }
-    val size = remember(panelState.isVisible) {
+    val panelSize = remember(panelState.isVisible, panelState.enabled) {
         DpSize(containerSize.width, panelHeight(panelState.isVisible))
     }
-    val windowState: ChromeWindowState = rememberChromeWindowState(position = position, size = size)
+    val windowState: ChromeWindowState = rememberChromeWindowState(
+        position = position,
+        size = panelSize
+    )
+    panelState.updateSize(panelSize - DpSize(0.dp, tooltipHeight))
     ChromeWindow(
         windowState = windowState,
         visible = true,
+        alwaysOnTop = panelState.enabled,
         enterAnimation = enterAnimation,
         exitAnimation = exitAnimation,
         onFocusChange = { focused ->
             panelState.onFocusChange(focused)
             onFocusChange(focused)
         }) {
-        SlidingMenu(modifier = Modifier.fillMaxWidth(), orientation = Vertical, state = panelState, onPointerEnter = {
-            panelState.show()
-            if (!menuState.isVisible) {
-                windowState.requestFocus()
-            }
-        }, onPointerLeave = {
-            if (!menuState.isVisible) {
-                panelState.hide()
-            }
-        }) { isVisible ->
+        SlidingMenu(
+            modifier = Modifier.fillMaxWidth(),
+            orientation = Vertical,
+            state = panelState,
+            onPointerEnter = {
+                panelState.show()
+                if (!menuState.isVisible) {
+                    windowState.requestFocus()
+                }
+            }, onPointerLeave = {
+                if (!menuState.isVisible) {
+                    panelState.hide()
+                }
+            }) { isVisible ->
             Divider(
                 modifier = Modifier.fillMaxWidth().height(panelDividerWidth),
                 color = Color.Transparent,

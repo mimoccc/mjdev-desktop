@@ -3,6 +3,7 @@ package eu.mjdev.desktop.data
 import eu.mjdev.desktop.extensions.Custom.ParsedBoolean
 import eu.mjdev.desktop.extensions.Custom.ParsedList
 import eu.mjdev.desktop.extensions.Custom.ParsedString
+import eu.mjdev.desktop.helpers.system.LinuxIni
 import org.ini4j.Ini
 import org.ini4j.Profile.Section
 import org.ini4j.Wini
@@ -10,20 +11,54 @@ import java.io.File
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "ConstPropertyName", "PropertyName")
 class DesktopFile(
-    val file: File,
-    val content: Ini = runCatching { Wini(file) }.getOrNull() ?: Wini(),
+    var file: File,
+    val correctDir: String = "/tmp/.corrected-desktop-files/",
+    val correctedFile: File = File(File(correctDir), file.name),
+    var fileData: String = (if (correctedFile.exists()) correctedFile else file).readText(),
+    var content: Ini = (runCatching { LinuxIni(fileData) }.getOrNull() ?: LinuxIni())
 ) {
-    var fileName: String = file.name
-    val absolutePath: String = file.absolutePath
+    var fileName: String = if (correctedFile.exists()) correctedFile.name else file.name
+    val absolutePath: String = if (correctedFile.exists()) correctedFile.absolutePath else file.absolutePath
+
+    val fullAppName
+        get() = if (correctedFile.exists()) correctedFile.nameWithoutExtension else file.nameWithoutExtension
 
     val sections: Map<String, Section>
-        get() = content.map { if (it is Section) it else null }.filterNotNull().associateBy { it.value.toString() }
+        get() = content.map {
+            if (it is Section) it else null
+        }.filterNotNull().associateBy {
+            it.value.toString()
+        }
 
     val desktopSection
         get() = content[DesktopFileType.DesktopEntry.text]?.let { DesktopSectionScope(it) }
 
     val themeSection
         get() = content[DesktopFileType.Theme.text]?.let { ThemeSectionScope(it) }
+
+    val isApp
+        get() = desktopSection?.Type == DesktopFileType.Application
+
+    val isCorrect
+        get() = correctedFile.exists() || fileData.contains(Prop_StartupWMClass)
+
+    init {
+        if (isApp && !isCorrect) {
+            runCatching {
+                println("Correcting file: file:///$absolutePath")
+                println("Corrected file: file:///${correctedFile.absolutePath}")
+                correctedFile.let { f ->
+                    desktopSection?.StartupWMClass = fullAppName
+                    writeTo(f)
+                    file = f
+                    fileData = file.readText()
+                    content = Wini(f)
+                }
+            }.onFailure { e ->
+                e.printStackTrace()
+            }
+        }
+    }
 
     fun section(
         type: DesktopFileType,
@@ -42,13 +77,41 @@ class DesktopFile(
         ThemeSectionScope(this).apply(block)
     }
 
-    fun write() {
-        if (file.exists()) {
-            file.delete()
-        }
-        file.createNewFile()
-        content.store(file)
+    fun mkDirs(): DesktopFile {
+        if (!file.parentFile.exists()) file.parentFile.mkdirs()
+        return this
     }
+
+    fun deleteFile(): DesktopFile {
+        if (file.exists()) file.delete()
+        return this
+    }
+
+    fun createNewFile(): DesktopFile {
+        file.createNewFile()
+        return this
+    }
+
+    fun newFile(): DesktopFile {
+        mkDirs()
+        deleteFile()
+        createNewFile()
+        return this
+    }
+
+    fun writeTo(f: File) {
+        if (!f.parentFile.exists()) {
+            f.parentFile.mkdirs()
+        }
+        if (f.exists()) {
+            f.delete()
+        }
+        f.createNewFile()
+        content.store(f)
+    }
+
+    fun write() =
+        writeTo(file)
 
     interface ISectionScope {
         val section: Section
@@ -120,6 +183,12 @@ class DesktopFile(
             set(value) {
                 section[Prop_Categories] = value.joinToString { "$it;" }
             }
+        var StartupWMClass: String
+            get() = ParsedString(section[Prop_StartupWMClass]).trim()
+            set(value) {
+                println("setting [$Prop_StartupWMClass] = $StartupWMClass")
+                section[Prop_StartupWMClass] = value
+            }
     }
 
     class ThemeSectionScope(
@@ -177,28 +246,6 @@ class DesktopFile(
         }
     }
 
-    fun mkDirs(): DesktopFile {
-        if (!file.parentFile.exists()) file.parentFile.mkdirs()
-        return this
-    }
-
-    fun deleteFile(): DesktopFile {
-        if (file.exists()) file.delete()
-        return this
-    }
-
-    fun createNewFile(): DesktopFile {
-        file.createNewFile()
-        return this
-    }
-
-    fun newFile(): DesktopFile {
-        mkDirs()
-        deleteFile()
-        createNewFile()
-        return this
-    }
-
     companion object {
         const val Prop_Type = "Type"
         const val Prop_Version = "Version"
@@ -210,17 +257,25 @@ class DesktopFile(
         const val Prop_Terminal = "Terminal"
         const val Prop_Icon = "Icon"
         const val Prop_Categories = "Categories"
+        const val Prop_StartupWMClass = "StartupWMClass"
+
+        // todo
         const val Prop_GenericName = "GenericName"
         const val Prop_MimeType = "MimeType"
         const val Prop_Actions = "Actions"
         const val Prop_DBusActivatable = "DBusActivatable"
         const val Prop_Encoding = "Encoding"
-
+        const val Prop_Keywords = "Keywords"
+        const val Prop_OnlyShowIn = "OnlyShowIn"
+        const val Prop_X_ExecArg = "X-ExecArg"
+        const val Prop_X_Ubuntu_Gettext_Domain = "X-Ubuntu-Gettext-Domain"
+        const val Prop_NoDisplay = "NoDisplay" // boolean
         const val Prop_X_GNOME_UsesNotifications = "X-GNOME-UsesNotifications"
         const val Prop_X_Purism_FormFactor = "X-Purism-FormFactor"
         const val Prop_X_Unity_IconBackgroundColor = "X-Unity-IconBackgroundColor"
-        const val Prop_X_Ubuntu_Gettext_Domain = "X-Ubuntu-Gettext-Domain"
+        const val Prop_SingleMainWindow = "SingleMainWindow"
 
+        // theme
         const val Prop_GtkTheme = "GtkTheme"
         const val Prop_MetacityTheme = "MetacityTheme"
         const val Prop_IconTheme = "IconTheme"

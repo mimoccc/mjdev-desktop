@@ -14,6 +14,7 @@ class HackedContentPane : JPanel() {
 
     init {
         isOpaque = false
+//        setLayout(BorderLayout())
 //        add(jlayer)
     }
 

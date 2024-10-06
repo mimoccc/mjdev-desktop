@@ -3,11 +3,8 @@ package eu.mjdev.desktop.icons
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.automirrored.filled.TextSnippet
-import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.material.icons.filled.*
 
 @Suppress("unused")
 object Icons {
@@ -18,4 +15,5 @@ object Icons {
     val TextSnippet = Icons.AutoMirrored.Filled.TextSnippet
     val Campaign = Icons.Filled.Campaign
     val Chat = Icons.AutoMirrored.Filled.Chat
+    val User = Icons.Filled.VerifiedUser
 }

@@ -44,8 +44,6 @@ fun DesktopPanelFavoriteApps(
             items(apps) { app ->
                 DesktopPanelIcon(
                     app = app,
-                    isStarting = app.isStarting,
-                    isRunning = app.isRunning,
                     iconColor = iconColor,
                     iconBackgroundColor = iconBackgroundColor,
                     iconColorRunning = iconColorRunning,

@@ -1,10 +1,13 @@
-import org.jetbrains.compose.desktop.DesktopExtension
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.mjdev.gradle.extensions.ProjectExt.createTask
+import org.mjdev.gradle.extensions.ProjectExt.resolve
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.compose.desktop)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.gradle.versions)
+//    DesktopPlugin
 //    alias(libs.plugins.kotlin.kapt)
 //    id("dev.datlag.sekret") version "2.0.0-alpha-07"
 //    id("com.bintray.gradle.plugins.bintray")
@@ -77,8 +80,10 @@ allprojects {
         // tts
         implementation(libs.tts)
         // dbus
-        implementation(libs.dbus.java.core)
-        implementation(libs.dbus.java.transport.native.unixsocket)
+//        implementation(libs.dbus.java.core)
+//        implementation(libs.dbus.java.transport.native.unixsocket)
+        // wayland
+        implementation("org.freedesktop:wayland-client:1.5.1")
         // gettext
         implementation("org.gnu.gettext:libintl:0.18.3")
         // paths
@@ -145,61 +150,9 @@ allprojects {
 //        implementation('org.hid4java:hid4java')
         // javascript
         // implementation(libs.mozilla.rhino)
-
-//        implementation("com.github.SmartToolFactory:Compose-Extended-Colors:1.0.0-alpha06")
-//        implementation("com.github.SmartToolFactory:Compose-Extended-Gestures:2.0.0")
 //        implementation ("androidx.compose.ui:ui-text-google-fonts:1.6.8")
     }
 }
-
-inline fun <reified T> Project.configureIfExists(fn: T.() -> Unit) {
-    extensions.findByType(T::class.java)?.fn()
-}
-
-fun Project.createTask(
-    name: String,
-    group: String = "mjdev",
-    description: String = "",
-    configureAction: Task.() -> Unit
-) = tasks.create(name).apply {
-    this.group = group
-    this.description = description
-    configureAction.invoke(this)
-}
-
-//tasks.withType(Copy::class) {
-//    from {
-//        fileTree("native") {
-//            include "*.so", "*.dylib", "*.dll"
-//        }
-//    }
-//    into {
-//        configurations.runtimeClasspath.files.collect { it.absolutePath }
-//    }
-//}
-
-//bintray {
-//    user = 'your_bintray_username'
-//    key = 'your_bintray_api_key'
-//
-//    publish = true
-//    pkg {
-//        repo = 'your_repository_name'
-//        name = project.name
-//        desc = 'Your desktop Compose application'
-//        version = project.version
-//        licenses = ['Apache-2.0']
-//        vcsUrl = 'https://github.com/your_username/your_project'
-//
-//        // Configure deb package dependencies
-//        deb {
-//            packageDescription = 'Your desktop Compose application'
-//            packageVersion = project.version
-//            packageArchitecture = 'amd64'  // Adjust based on your target architecture
-//            packageDepends = ['dbus-java', 'libgtk-3-dev']  // Replace with your actual dependencies
-//        }
-//    }
-//}
 
 compose {
     desktop {
@@ -244,20 +197,12 @@ compose {
 //                    TargetFormat.Pkg,
                     TargetFormat.Rpm
                 )
-//                buildTypes.release.proguard {
-//                    configurationFiles.from("compose-desktop.pro")
-//                }
+                buildTypes.release.proguard {
+                    configurationFiles.from("compose-desktop.pro")
+                }
 //                appResourcesRootDir.set(project.rootDir.resolve("resources"))
             }
         }
-    }
-}
-
-configureIfExists<DesktopExtension> {
-    application {
-        jvmArgs += "--enable-preview"
-    }
-    nativeApplication {
     }
 }
 
@@ -266,11 +211,11 @@ createTask(
     group = "mjdev",
     description = "Task cleans project."
 ) {
-    project.rootDir.resolve(".gradle").deleteRecursively()
-    project.rootDir.resolve("build").deleteRecursively()
-    project.rootDir.resolve("buildSrc").resolve("build").deleteRecursively()
-    project.rootDir.resolve("buildSrc").resolve(".gradle").deleteRecursively()
-    project.rootDir.resolve("packages").deleteRecursively()
+    resolve(".gradle").deleteRecursively()
+    resolve("build").deleteRecursively()
+    resolve("buildSrc").resolve("build").deleteRecursively()
+    resolve("buildSrc").resolve(".gradle").deleteRecursively()
+    resolve("packages").deleteRecursively()
 }
 
 createTask(
@@ -278,21 +223,33 @@ createTask(
     group = "mjdev",
     description = "Task packages project to be published."
 ) {
-//    dependsOn("packageAppImage")
+    dependsOn("packageAppImage")
     dependsOn("packageDeb")
 //    dependsOn("packageDmg")
 //    dependsOn("packageExe")
 //    dependsOn("packageMsi")
 //    dependsOn("packagePkg")
 //    dependsOn("packageRpm")
-
 //    dependsOn("packageReleaseDeb")
 }
 
-createTask(
+createTask<JavaExec>(
     name = "runDesktop",
     group = "mjdev",
-    description = "Task packages project to be published."
+    description = "Run app"
 ) {
-    dependsOn("run")
+    mainClass = "eu.mjdev.desktop.MainKt"
+    classpath = sourceSets.main.get().runtimeClasspath
+    jvmArgs("--enable-preview")
+}
+createTask<JavaExec>(
+    name = "runDebug",
+    group = "mjdev",
+    description = "Run app with debug parameter."
+) {
+    mainClass = "eu.mjdev.desktop.MainKt"
+    classpath = sourceSets.main.get().runtimeClasspath
+    args = arrayListOf("-d")
+    jvmArgs("--enable-preview")
+    // dbus-run-session mutter --wayland --nested
 }

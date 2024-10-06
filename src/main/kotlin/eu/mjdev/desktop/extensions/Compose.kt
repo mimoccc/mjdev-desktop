@@ -158,6 +158,12 @@ object Compose {
         calculation: () -> T
     ) = remember(*key) { derivedStateOf { calculation() } }
 
+    @Composable
+    fun <T> rememberComputed(
+        vararg key: Any?,
+        calculation: () -> T
+    ) = remember(*key) { derivedStateOf { calculation() } }
+
     @OptIn(ExperimentalComposeUiApi::class)
     fun Modifier.onMouseEnter(
         pass: PointerEventPass = PointerEventPass.Main,

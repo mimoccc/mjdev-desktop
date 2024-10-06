@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
+import eu.mjdev.desktop.windows.blur.WindowBlurManager.Companion.windowBlur
 import java.awt.*
 import java.awt.event.*
 import java.util.*
@@ -47,7 +48,7 @@ fun Window(
     alwaysOnTop: Boolean = false,
     alwaysOnBottom: Boolean = false,
     closeAction: Int = JFrame.DO_NOTHING_ON_CLOSE,
-//    blurEnabled: Boolean = true,
+    blurEnabled: Boolean = true,
     focusHelper: WindowFocusHelper,
     stateHelper: WindowStateHelper,
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
@@ -183,7 +184,7 @@ fun Window(
             }
         },
         content = {
-//            windowBlur(blurEnabled)
+            windowBlur(blurEnabled)
             stateHelper.register(window)
             focusHelper.register(window)
             content()

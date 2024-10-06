@@ -1,22 +1,22 @@
 package eu.mjdev.desktop
 
-import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.window.application
+import androidx.compose.runtime.DisposableEffect
 import eu.mjdev.desktop.components.main.MainWindow
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.rememberDesktopProvider
+import eu.mjdev.desktop.helpers.application.application
+import eu.mjdev.desktop.helpers.system.Shell
 
 fun main(
     args: Array<String>
 ) = application(
+    args = args.toList(),
     exitProcessOnExit = true
 ) {
-    val api = rememberDesktopProvider()
-    println("Started with args: ${args.toList()}")
-    MaterialTheme {
-        CompositionLocalProvider(LocalDesktop provides api) {
-            MainWindow()
+    MainWindow()
+    DisposableEffect(Unit) {
+        println("App started with args: $args")
+        Shell.autoStartApps()
+        onDispose {
+            println("App ended.")
         }
     }
 }

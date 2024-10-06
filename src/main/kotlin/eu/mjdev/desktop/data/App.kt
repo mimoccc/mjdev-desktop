@@ -6,9 +6,6 @@ import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.DesktopProvider
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.File
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -19,6 +16,8 @@ class App(
 ) {
     val fileName
         get() = desktopFile?.fileName
+    val fullAppName
+        get() = desktopFile?.fullAppName ?: ""
     val type
         get() = desktopFile?.desktopSection?.Type ?: ""
     val version
@@ -39,6 +38,8 @@ class App(
         get() = desktopFile?.desktopSection?.NotifyOnStart ?: false
     val runInTerminal
         get() = desktopFile?.desktopSection?.RunInTerminal ?: false
+    val windowClass
+        get() = desktopFile?.desktopSection?.StartupWMClass.orEmpty().ifEmpty { fullAppName }
 
     var iconTint: Color? = null
     val iconBackground: Color = Color.White
@@ -47,56 +48,39 @@ class App(
     val onStartingHandler: MutableState<() -> Unit> = mutableStateOf({})
     val onStartedHandler: MutableState<() -> Unit> = mutableStateOf({})
 
-    var process: Shell? = null
-
     var isStartingState = mutableStateOf(false)
+    var isRunningState = mutableStateOf(false)
     var isStarting: Boolean
         get() = isStartingState.value
-        set(value) {
+        internal set(value) {
             isStartingState.value = value
         }
-
-    val isRunningState = mutableStateOf(false)
     var isRunning: Boolean
         get() = isStartingState.value
-        set(value) {
+        internal set(value) {
             isStartingState.value = value
         }
 
-    // todo :  replace all params with what needed
-    val cmd
-        get() = exec.replace("%u", "").replace("%U", "").trim()
-
-    val command
-        get() = process?.command
-
-    fun start(
-        api: DesktopProvider,
-        scope: CoroutineScope = api.scope
-    ) = runCatching {
-        scope.launch {
-            println("Starting app: $name [$fileName].")
-            triggerStart()
-            process = Shell(api)
-                .writeCommand("export DBUS_SESSION_BUS_ADDRESS=\"unix:path=\$XDG_RUNTIME_DIR/bus\"")
-                .writeCommand("$cmd  &")
-                .writeCommand("exit")
-                .apply {
-                    triggerStarted()
-                    println("app started.")
-                    while (this.isRunning) {
-                        delay(100)
-                    }
-                    triggerStop()
-                    println("app stopped")
-                }
-        }
-    }.onFailure { error ->
-        triggerStop(error)
+    fun start() = runCatching {
+        println("Starting app: $name [$windowClass].")
+        println("dex -w ${desktopFile?.absolutePath}")
+        triggerStart()
+        Shell.startApp(
+            app = this@App,
+            onStarted = {
+                println("App started app: $name [$windowClass].")
+                triggerStarted()
+            },
+            onStopped = { e ->
+                println("App stopped: $name [$windowClass].")
+                triggerStop(e)
+            }
+        )
+    }.onFailure { e ->
+        triggerStop(e)
     }
 
     fun triggerStart() {
-        isRunning = false
         isStarting = true
         onStartingHandler.value.invoke()
     }
@@ -130,10 +114,6 @@ class App(
         return this
     }
 
-    fun exit() {
-        process?.close()
-    }
-
     override fun equals(other: Any?): Boolean {
         return when {
             other is App -> {
@@ -144,24 +124,35 @@ class App(
         }
     }
 
+    fun hasWindow(api: DesktopProvider): Boolean =
+        api.windowsManager.hasWindow(this)
+
     override fun hashCode(): Int {
-        var result = file.hashCode()
-        result = 31 * result + desktopFile.hashCode()
-        result = 31 * result + isRunning.hashCode()
+        var result = file?.hashCode() ?: 0
+        result = 31 * result + (desktopFile?.hashCode() ?: 0)
+        result = 31 * result + isFavorite.hashCode()
+        result = 31 * result + (fileName?.hashCode() ?: 0)
+        result = 31 * result + (fullAppName.hashCode())
+        result = 31 * result + type.hashCode()
+        result = 31 * result + version.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + comment.hashCode()
+        result = 31 * result + path.hashCode()
+        result = 31 * result + exec.hashCode()
+        result = 31 * result + iconName.hashCode()
+        result = 31 * result + categories.hashCode()
+        result = 31 * result + notifyOnStart.hashCode()
+        result = 31 * result + runInTerminal.hashCode()
+        result = 31 * result + (windowClass.hashCode())
+        result = 31 * result + (iconTint?.hashCode() ?: 0)
+        result = 31 * result + iconBackground.hashCode()
+        result = 31 * result + onStopHandler.hashCode()
+        result = 31 * result + onStartingHandler.hashCode()
+        result = 31 * result + onStartedHandler.hashCode()
+        result = 31 * result + isStartingState.hashCode()
+        result = 31 * result + isStarting.hashCode()
         return result
     }
-
-//    fun hasWindow(api: DesktopProvider): Boolean =
-//        process?.hasWindow(api) ?: false
-
-//    fun isWindowFocus(api: DesktopProvider): Boolean =
-//        process?.isWindowFocus(api) ?: false
-
-//    fun minimizeWindow(api: DesktopProvider) =
-//        process?.minimizeWindow(api) ?: false
-
-//    fun requestWindowFocus(api: DesktopProvider) =
-//        process?.requestWindowFocus(api) ?: false
 
     companion object {
         val Empty: App = App()

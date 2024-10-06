@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
@@ -21,6 +19,7 @@ import eu.mjdev.desktop.extensions.Compose.onMouseEnter
 import eu.mjdev.desktop.extensions.Compose.onMouseLeave
 import eu.mjdev.desktop.extensions.Compose.onMousePress
 import eu.mjdev.desktop.extensions.Compose.onRightClick
+import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Modifier.clipRect
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
@@ -28,8 +27,6 @@ import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 @Composable
 fun DesktopPanelIcon(
     app: App? = null,
-    isRunning: Boolean = false,
-    isStarting: Boolean = false,
     icon: String? = null,
     iconColor: Color = Color.Black,
     iconBackgroundColor: Color = Color.White,
@@ -52,6 +49,8 @@ fun DesktopPanelIcon(
         iconState.value -> iconBackgroundHover
         else -> Color.Transparent
     }
+    val isStarting by rememberCalculated(app) { app?.isStarting ?: false }
+    val isRunning by rememberCalculated(app) { app?.isRunning ?: false }
     Box(
         modifier = Modifier
             .size(iconSize)

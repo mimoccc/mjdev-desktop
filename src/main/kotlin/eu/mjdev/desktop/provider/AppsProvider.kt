@@ -7,7 +7,7 @@ import eu.mjdev.desktop.data.DesktopFile
 import eu.mjdev.desktop.extensions.Custom.invalidate
 import eu.mjdev.desktop.extensions.Custom.jsonToList
 import eu.mjdev.desktop.extensions.Locale.toLocale
-import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
+import eu.mjdev.desktop.helpers.exception.SuccessException
 import eu.mjdev.desktop.helpers.system.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -139,40 +139,27 @@ class AppsProvider(
 
     val favoriteApps = mutableStateListOf<App>()
 
-    fun startApp(
-        app: App,
-        windowsManager: WindowsManager = api.windowsManager
-    ) {
-        scope.launch(Dispatchers.IO) {
-            if (app.isRunning) {
-                // todo menu to switch
-                if (windowsManager.isWindowFocus(app)) {
-                    windowsManager.minimizeWindow(app)
-                } else {
-                    windowsManager.requestWindowFocus(app)
-                }
+    fun startApp(app: App) = scope.launch(Dispatchers.IO) {
+        app.onStarting {
+            if (favoriteApps.contains(app)) {
+                favoriteApps.invalidate()
             } else {
-                app.onStarting {
-                    if (favoriteApps.contains(app)) {
-                        favoriteApps.invalidate()
-                    } else {
-                        favoriteApps.add(app)
-                    }
-                }.onStarted {
-                    favoriteApps.invalidate()
-                }.onStop { result ->
-                    if (!app.isFavorite) {
-                        favoriteApps.remove(app)
-                    } else {
-                        favoriteApps.invalidate()
-                    }
-                    if (result != EmptyException) {
-                        result.printStackTrace()
-                    }
-                }.start(api)
+                favoriteApps.add(app)
             }
+        }.onStarted {
             favoriteApps.invalidate()
-        }
+        }.onStop { result ->
+            if (app.isFavorite) {
+                favoriteApps.invalidate()
+            } else {
+                favoriteApps.remove(app)
+            }
+            when (result) {
+                is SuccessException -> println(result.message)
+                else -> result.printStackTrace()
+            }
+        }.start()
+        favoriteApps.invalidate()
     }
 
     init {
@@ -182,18 +169,18 @@ class AppsProvider(
             "org.gnome.shell",
             "favorite-apps"
         ).jsonToList<String>().mapNotNull { deskFileName ->
-                allAppsDesktopFiles.filter { deskFile ->
-                    deskFile.file.name?.contentEquals(deskFileName) == true
-                }.map { deskFile ->
-                    App(
-                        desktopFile = deskFile,
-                        file = deskFile.file,
-                        isFavorite = true
-                    )
-                }.firstOrNull()
-            }?.also { favorite ->
-                favoriteApps.addAll(favorite)
-            }
+            allAppsDesktopFiles.filter { deskFile ->
+                deskFile.file.name?.contentEquals(deskFileName) == true
+            }.map { deskFile ->
+                App(
+                    desktopFile = deskFile,
+                    file = deskFile.file,
+                    isFavorite = true
+                )
+            }.firstOrNull()
+        }?.also { favorite ->
+            favoriteApps.addAll(favorite)
+        }
     }
 
 }

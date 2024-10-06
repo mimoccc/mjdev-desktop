@@ -183,9 +183,9 @@ fun ControlCenter(
                                 }
                             }
                             Divider(
-                                modifier = Modifier.fillMaxHeight().width(controlCenterDividerWidth),
+                                modifier = Modifier.fillMaxHeight().width(2.dp),
                                 color = Color.White.copy(0.1f),
-                                thickness = controlCenterDividerWidth
+                                thickness = 2.dp
                             )
                         }
                     }

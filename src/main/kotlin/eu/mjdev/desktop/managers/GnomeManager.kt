@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.helpers.managers
+package eu.mjdev.desktop.managers
 
 import eu.mjdev.desktop.helpers.system.Shell
 

@@ -6,10 +6,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 data class DpBounds(
-    val x: Dp,
-    val y: Dp,
-    val width: Dp,
-    val height: Dp
+    var x: Dp,
+    var y: Dp,
+    var width: Dp,
+    var height: Dp
 ) {
     companion object {
         val Zero = DpBounds(0.dp, 0.dp, 0.dp, 0.dp)

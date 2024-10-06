@@ -19,26 +19,11 @@ import kotlin.jvm.optionals.getOrNull
 
 @Suppress("FunctionName", "MemberVisibilityCanBePrivate", "unused")
 object Custom {
+    val ProcessHandle.command :String
+        get() = info().command().getOrNull().orEmpty()
 
-    val Process.parentPid: Long?
-        get() = toHandle().parentPid
-
-    val Process.childs
-        get() = toHandle().childs
-
-    val ProcessHandle.parentPid: Long?
-        get() = parent().getOrNull()?.pid()
-
-    val ProcessHandle.childs: List<ProcessHandle>
-        get() = getProcessChilds()
-
-    fun ProcessHandle.getProcessChilds(): List<ProcessHandle> = ProcessHandle.allProcesses().filter { ph ->
-        ph.parentPid == pid()
-    }.toList().toMutableList().apply {
-        forEach { ph ->
-            addAll(ph.getProcessChilds())
-        }
-    }
+    val ProcessHandle.commandLine :String
+        get() = info().commandLine().getOrNull().orEmpty()
 
     fun BufferedReader.readAvailable(): String = StringBuilder().apply {
         var ch = read()
@@ -47,6 +32,9 @@ object Custom {
             ch = read()
         }
     }.toString()
+
+    inline fun <reified T> Any?.orElse(block: () -> T) =
+        if (this == null) block() else this as T
 
     fun ParsedList(
         value: String?,

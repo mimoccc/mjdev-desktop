@@ -102,7 +102,7 @@ class LinuxWindowBlurManager(
         }
 
         fun Window.hackContentPane() {
-            println("hacking window: ${this.name}")
+//            println("hacking window: ${this.name}")
             val oldContentPane = contentPane ?: return
             val newContentPane: JComponent = HackedContentPane()
             newContentPane.name = "$name.contentPane"

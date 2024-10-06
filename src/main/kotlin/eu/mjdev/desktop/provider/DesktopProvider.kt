@@ -16,10 +16,11 @@ import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.helpers.adb.AdbDiscover.Companion.adbDevicesHandler
 import eu.mjdev.desktop.helpers.bitmap.Bitmap
 import eu.mjdev.desktop.helpers.internal.Palette
-import eu.mjdev.desktop.helpers.managers.*
+import eu.mjdev.desktop.managers.*
 import eu.mjdev.desktop.helpers.system.DBus
 import eu.mjdev.desktop.helpers.system.OsRelease
 import eu.mjdev.desktop.helpers.system.Shell
+import eu.mjdev.desktop.managers.WindowsManager
 import eu.mjdev.desktop.provider.AIProvider.AiPluginGemini
 import eu.mjdev.desktop.theme.gtk.GtkThemeHelper
 import kotlinx.coroutines.CoroutineScope
@@ -35,10 +36,11 @@ import kotlin.system.exitProcess
 @Suppress("unused", "MemberVisibilityCanBePrivate", "SameParameterValue")
 class DesktopProvider(
     val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
+    val args: List<String> = emptyList(),
     val imageLoader: ImageLoader? = null,
     val isDebug: Boolean = true,
     val isFirstStart: Boolean = true, // todo
-    val isInstalled:Boolean = false, // todo
+    val isInstalled: Boolean = false, // todo
 ) : AutoCloseable {
     val scriptManager: ScriptEngineManager by lazy { ScriptEngineManager() }
     val scriptEngine: ScriptEngine by lazy {
@@ -96,11 +98,10 @@ class DesktopProvider(
         get() = runCatching {
             toolkit.isAlwaysOnTopSupported
         }.getOrNull() ?: false
-
-    //    val cursorSize
-//        get() = toolkit.getBestCursorSize(32, 32).let {
-//            DpSize(it.width.dp, it.height.dp)
-//        }
+    val cursorSize
+        get() = toolkit.getBestCursorSize(32, 32).let {
+            DpSize(it.width.dp, it.height.dp)
+        }
     val desktopUtils: Desktop by lazy {
         Desktop.getDesktop()
     }
@@ -114,9 +115,6 @@ class DesktopProvider(
         get() = graphicsDevice.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.TRANSLUCENT)
 
     init {
-        runCatching {
-            windowsManager.init()
-        }
         runCatching {
             currentUser.theme.controlCenterExpandedWidth = containerSize.width.div(4)
         }
@@ -255,12 +253,14 @@ class DesktopProvider(
             scope: CoroutineScope = rememberCoroutineScope(),
             imageLoader: ImageLoader = asyncImageLoader(),
             isDebug: Boolean = LocalInspectionMode.current,
+            args: List<String> = emptyList(),
         ) = remember {
             println("default initialized desktop provider created")
             DesktopProvider(
-                scope,
-                imageLoader,
-                isDebug,
+                scope = scope,
+                imageLoader = imageLoader,
+                args = args,
+                isDebug = isDebug || args.contains("-d")
             )
         }
 

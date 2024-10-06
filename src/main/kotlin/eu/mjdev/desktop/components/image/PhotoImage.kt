@@ -8,12 +8,16 @@
 
 package eu.mjdev.desktop.components.image
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
@@ -51,9 +55,24 @@ fun PhotoImage(
     if (src == null) {
         placeholder()
     } else {
-        ImageAny (
+        ImageAny(
             src = src,
-            modifier = modifier
+            modifier = modifier.border(
+                BorderStroke(borderSize, borderColor),
+                shape
+            ).background(
+                backgroundColor,
+                shape
+            ).alpha(alpha),
+            alignment = alignment,
+            contentScale = contentScale,
+            alpha = alpha,
+            colorFilter = colorFilter,
+//            filterQuality = filterQuality,
+            placeholder = placeholder,
+            contentDescription = contentDescription,
+            onLoading = {},
+            onFail = {}
         )
 //        GlideImage(
 //            imageModel = { src },

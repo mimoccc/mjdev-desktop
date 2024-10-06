@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.helpers.managers
+package eu.mjdev.desktop.managers
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf

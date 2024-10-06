@@ -6,8 +6,8 @@ import eu.mjdev.desktop.data.DesktopFile.Companion.desktopFile
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.rgbToHex
 import eu.mjdev.desktop.helpers.internal.Palette
-import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_ADWAITA_DARK
-import eu.mjdev.desktop.helpers.managers.GnomeManager.Companion.THEME_MJDEV
+import eu.mjdev.desktop.managers.GnomeManager.Companion.THEME_ADWAITA_DARK
+import eu.mjdev.desktop.managers.GnomeManager.Companion.THEME_MJDEV
 import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 
