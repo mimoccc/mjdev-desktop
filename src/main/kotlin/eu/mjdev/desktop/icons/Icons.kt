@@ -15,5 +15,5 @@ object Icons {
     val TextSnippet = Icons.AutoMirrored.Filled.TextSnippet
     val Campaign = Icons.Filled.Campaign
     val Chat = Icons.AutoMirrored.Filled.Chat
-    val User = Icons.Filled.VerifiedUser
+    val User = Icons.Filled.AccountCircle
 }

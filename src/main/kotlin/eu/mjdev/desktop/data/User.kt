@@ -1,9 +1,8 @@
 package eu.mjdev.desktop.data
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.SupervisedUserCircle
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.helpers.system.UserDirs
+import eu.mjdev.desktop.icons.Icons
 import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 
@@ -29,7 +28,7 @@ class User(
     val shell: String
         get() = dataItems[6]
     val picture: Any
-        get() = loadPicture(dataItems[5], ".face") ?: Icons.Filled.SupervisedUserCircle
+        get() = loadPicture(dataItems[5], ".face") ?: Icons.User
 
     val homeDir
         get() = File(home)
