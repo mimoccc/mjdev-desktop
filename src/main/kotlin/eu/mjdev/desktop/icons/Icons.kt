@@ -1,13 +1,12 @@
 package eu.mjdev.desktop.icons
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Chat
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.automirrored.filled.TextSnippet
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 
 @Suppress("unused")
 object Icons {
+    val BackArrow = Icons.AutoMirrored.Filled.ArrowBack
     val SendIcon = Icons.AutoMirrored.Filled.Send
     val TextFieldVisiblePassword = Icons.Filled.Visibility
     val TextFieldInVisiblePassword = Icons.Filled.VisibilityOff
@@ -16,4 +15,8 @@ object Icons {
     val Campaign = Icons.Filled.Campaign
     val Chat = Icons.AutoMirrored.Filled.Chat
     val User = Icons.Filled.AccountCircle
+    val LogOutUser = Icons.AutoMirrored.Filled.Logout
+    val PowerOffComputer = Icons.Filled.PowerOff
+    val RestartComputer = Icons.Filled.RestartAlt
+//    val SuspendComputer = Icons.Filled.Sleep
 }

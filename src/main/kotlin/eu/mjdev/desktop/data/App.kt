@@ -6,7 +6,6 @@ import eu.mjdev.desktop.extensions.Custom.command
 import eu.mjdev.desktop.extensions.Custom.commandLine
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.helpers.system.Shell
-import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -139,8 +138,8 @@ class App(
         }
     }
 
-    fun hasWindow(api: DesktopProvider): Boolean =
-        api.windowsManager.hasWindow(this)
+//    fun hasWindow(api: DesktopProvider): Boolean =
+//        api.windowsManager.hasWindow(this)
 
     override fun hashCode(): Int {
         var result = file?.hashCode() ?: 0

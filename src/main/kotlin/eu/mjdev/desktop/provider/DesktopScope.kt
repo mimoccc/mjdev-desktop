@@ -48,26 +48,26 @@ open class DesktopScope(
     val ai
         get() = api.ai
 
-    val adb
-        get() = api.adbHandler
+//    val adb
+//        get() = api.adbHandler
 
     val imageLoader
         get() = api.imageLoader
 
-    val scriptManager
-        get() = api.scriptManager
+//    val scriptManager
+//        get() = api.scriptManager
 
-    val scriptEngine
-        get() = api.scriptEngine
+//    val scriptEngine
+//        get() = api.scriptEngine
 
     val connectionManager
         get() = api.connectionManager
 
-    val windowsManager
-        get() = api.windowsManager
+//    val windowsManager
+//        get() = api.windowsManager
 
-    val dbus
-        get() = api.dbus
+//    val dbus
+//        get() = api.dbus
 
     val gnome
         get() = api.gnome

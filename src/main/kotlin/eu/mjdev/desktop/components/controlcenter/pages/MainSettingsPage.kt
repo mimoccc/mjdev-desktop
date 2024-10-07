@@ -90,10 +90,9 @@ fun MainSettingsPage() = ControlCenterPage(
                     backgroundColor = backgroundColor,
                     shadowColor = borderColor.alpha(0.3f),
                     iconTintColor = iconsTintColor,
-//                    textColor = textColor,
                     onPowerButtonClick = {
                         // todo : dialog
-                        api.shutdown()
+                        api.logOut()
                     }
                 )
             }

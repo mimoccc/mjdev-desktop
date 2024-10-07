@@ -192,6 +192,9 @@ fun AppsMenu(
                             .wrapContentHeight()
                             .background(backgroundColor),
                         backButtonVisible = items.firstOrNull() is App,
+                        onHideMenu = {
+                            menuState.hide()
+                        },
                         onBackClick = {
                             items = appCategories
                         },
