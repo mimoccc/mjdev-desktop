@@ -27,7 +27,7 @@ class ProcessManager(
     init {
         job = scope.launch {
             while (isActive) {
-                ProcessHandle.allProcesses().toList().let { phList ->
+                ProcessHandle.allProcesses().toList().filterNotNull().let { phList ->
                     phList.forEach { ph ->
                         if (!containsProcess(ph)) {
                             ProcessWrapper(ph).also { pw ->
