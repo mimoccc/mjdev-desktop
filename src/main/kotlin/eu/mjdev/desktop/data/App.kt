@@ -1,8 +1,9 @@
 package eu.mjdev.desktop.data
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import eu.mjdev.desktop.extensions.Custom.command
+import eu.mjdev.desktop.extensions.Custom.commandLine
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.DesktopProvider
@@ -40,6 +41,18 @@ class App(
         get() = desktopFile?.desktopSection?.RunInTerminal ?: false
     val windowClass
         get() = desktopFile?.desktopSection?.StartupWMClass.orEmpty().ifEmpty { fullAppName }
+
+    val cmd
+        get() = exec.split(" ").first()
+
+    val hasProcess: Boolean = ProcessHandle.allProcesses().toList().any { ph ->
+        ph.command.contentEquals(windowClass, true) ||
+                ph.command.contains(cmd, true) ||
+                ph.command.contains(name, true) ||
+                ph.commandLine.contentEquals(windowClass, true) ||
+                ph.commandLine.contains(cmd, true) ||
+                ph.commandLine.contains(name, true)
+    }
 
     var iconTint: Color? = null
     val iconBackground: Color = Color.White
@@ -134,7 +147,7 @@ class App(
         result = 31 * result + (desktopFile?.hashCode() ?: 0)
         result = 31 * result + isFavorite.hashCode()
         result = 31 * result + (fileName?.hashCode() ?: 0)
-        result = 31 * result + (fullAppName.hashCode())
+        result = 31 * result + fullAppName.hashCode()
         result = 31 * result + type.hashCode()
         result = 31 * result + version.hashCode()
         result = 31 * result + name.hashCode()
@@ -145,14 +158,13 @@ class App(
         result = 31 * result + categories.hashCode()
         result = 31 * result + notifyOnStart.hashCode()
         result = 31 * result + runInTerminal.hashCode()
-        result = 31 * result + (windowClass.hashCode())
+        result = 31 * result + windowClass.hashCode()
+        result = 31 * result + cmd.hashCode()
+        result = 31 * result + hasProcess.hashCode()
         result = 31 * result + (iconTint?.hashCode() ?: 0)
         result = 31 * result + iconBackground.hashCode()
-        result = 31 * result + onStopHandler.hashCode()
-        result = 31 * result + onStartingHandler.hashCode()
-        result = 31 * result + onStartedHandler.hashCode()
-        result = 31 * result + isStartingState.hashCode()
         result = 31 * result + isStarting.hashCode()
+        result = 31 * result + isRunning.hashCode()
         return result
     }
 
@@ -167,6 +179,24 @@ class App(
                 list.isEmpty() -> block()
                 else -> list
             }
+        }
+
+        @Composable
+        fun rememberRunningIndicator(app: App?) = remember(
+            app,
+            app?.isFavorite,
+            app?.isRunning,
+            app?.isStarting
+        ) {
+            RunningAppIndicator(app)
+        }
+
+        // todo
+        class RunningAppIndicator(
+            val app: App?
+        ) : State<Boolean> {
+            override val value: Boolean
+                get() = app?.isRunning == true || app?.hasProcess == true
         }
     }
 }

@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.fonticon.FontIcon
 import eu.mjdev.desktop.data.App
+import eu.mjdev.desktop.data.App.Companion.rememberRunningIndicator
 import eu.mjdev.desktop.extensions.Compose.color
 import eu.mjdev.desktop.extensions.Compose.noElevation
 import eu.mjdev.desktop.extensions.Compose.onLeftClick
@@ -50,7 +51,7 @@ fun DesktopPanelIcon(
         else -> Color.Transparent
     }
     val isStarting by rememberCalculated(app) { app?.isStarting ?: false }
-    val isRunning by rememberCalculated(app) { app?.isRunning ?: false }
+    val isRunning by rememberRunningIndicator(app)
     Box(
         modifier = Modifier
             .size(iconSize)

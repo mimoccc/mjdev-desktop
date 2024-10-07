@@ -251,6 +251,8 @@ class GtkThemeHelper(
             }
             
             .titlebar, headerbar {
+                padding-top: 2px;
+                padding-bottom: 2px;
                 background-image: none;
                 background-color: ${bgColor.hexRgb};
             }

@@ -43,6 +43,12 @@ jobs:
       - name: Build Release
         id: build_release
         run: ./gradlew --stacktrace clean createPackages
+      # generate version number to env
+      - name: Prepare Version Number
+        id: prepare_version
+        run: |
+          export $APP_VERSION=$(date '+%Y-%m-%d');
+          echo "GITHUB_APP_VERSION_NAME=$(echo $APP_VERSION)" >> $GITHUB_ENV
       # publish package release
       - name: Create Release
         id: release
