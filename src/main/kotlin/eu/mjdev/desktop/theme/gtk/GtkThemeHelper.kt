@@ -235,7 +235,7 @@ class GtkThemeHelper(
                 border-top-right-radius: 8px;
                 border-top-left-radius: 8px;
             	box-shadow: 0px 0px 0px 1px ${textColor.hexRgb};
-            	border: 1px solid ${borderColor.hexRgb};
+            	border: 2px solid ${bgColor.hexRgb};
             	border-top: none;
                 box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             }
@@ -253,8 +253,6 @@ class GtkThemeHelper(
             .titlebar, headerbar {
                 background-image: none;
                 background-color: ${bgColor.hexRgb};
-                border-top: 1px solid ${borderColor.hexRgb};
-                border-bottom: 1px solid ${buttonBgColor.hexRgb};
             }
 
             .titlebar:backdrop, headerbar:backdrop  {
