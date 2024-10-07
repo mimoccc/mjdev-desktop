@@ -6,6 +6,8 @@ import eu.mjdev.desktop.extensions.Custom.command
 import eu.mjdev.desktop.extensions.Custom.commandLine
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.helpers.system.Shell
+import eu.mjdev.desktop.provider.DesktopProvider
+import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import java.io.File
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -43,15 +45,6 @@ class App(
 
     val cmd
         get() = exec.split(" ").first()
-
-    val hasProcess: Boolean = ProcessHandle.allProcesses().toList().any { ph ->
-        ph.command.contentEquals(windowClass, true) ||
-                ph.command.contains(cmd, true) ||
-                ph.command.contains(name, true) ||
-                ph.commandLine.contentEquals(windowClass, true) ||
-                ph.commandLine.contains(cmd, true) ||
-                ph.commandLine.contains(name, true)
-    }
 
     var iconTint: Color? = null
     val iconBackground: Color = Color.White
@@ -159,7 +152,6 @@ class App(
         result = 31 * result + runInTerminal.hashCode()
         result = 31 * result + windowClass.hashCode()
         result = 31 * result + cmd.hashCode()
-        result = 31 * result + hasProcess.hashCode()
         result = 31 * result + (iconTint?.hashCode() ?: 0)
         result = 31 * result + iconBackground.hashCode()
         result = 31 * result + isStarting.hashCode()
@@ -181,21 +173,25 @@ class App(
         }
 
         @Composable
-        fun rememberRunningIndicator(app: App?) = remember(
+        fun rememberRunningIndicator(
+            app: App?,
+            api: DesktopProvider = LocalDesktop.current
+        ) = remember(
             app,
             app?.isFavorite,
             app?.isRunning,
             app?.isStarting
         ) {
-            RunningAppIndicator(app)
+            RunningAppIndicator(api, app)
         }
 
         // todo
         class RunningAppIndicator(
+            val api: DesktopProvider,
             val app: App?
         ) : State<Boolean> {
             override val value: Boolean
-                get() = app?.isRunning == true || app?.hasProcess == true
+                get() = app?.isRunning == true || api.processManager.hasAppProcess(app)
         }
     }
 }

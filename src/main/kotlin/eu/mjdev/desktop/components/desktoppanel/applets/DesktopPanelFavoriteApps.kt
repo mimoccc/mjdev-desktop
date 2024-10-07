@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanelIcon
 import eu.mjdev.desktop.data.App
+import eu.mjdev.desktop.extensions.Custom.invalidate
+import eu.mjdev.desktop.managers.ProcessManager.Companion.processManagerListener
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("FunctionName")
@@ -33,6 +35,7 @@ fun DesktopPanelFavoriteApps(
     onContextMenuClick: (app: App) -> Unit = {}
 ) = withDesktopScope {
     val apps = remember(favoriteApps.size) { favoriteApps }
+    processManagerListener { apps.invalidate() }
     Box(
         modifier = modifier
     ) {

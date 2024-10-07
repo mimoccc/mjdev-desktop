@@ -59,9 +59,8 @@ class DesktopProvider(
 //    }
     val gtkTheme by lazy { GtkThemeHelper(this) }
     val palette by lazy { Palette(this) }
-    val desktopUtils: Desktop by lazy {
-        Desktop.getDesktop()
-    }
+    val desktopUtils: Desktop by lazy { Desktop.getDesktop() }
+    val processManager by lazy { ProcessManager() }
 
     val homeDir
         get() = currentUser.homeDir
@@ -128,6 +127,7 @@ class DesktopProvider(
 //    }
 
     override fun close() {
+        processManager.close()
 //        runCatching {
 //            mounts.dispose()
 //        }

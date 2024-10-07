@@ -1,16 +1,19 @@
 package eu.mjdev.desktop.components.appsmenu
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.icon.ShapedIcon
 import eu.mjdev.desktop.components.input.SearchField
+import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.icons.Icons
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
@@ -21,33 +24,28 @@ fun AppsBottomBar(
     backButtonVisible: Boolean = false,
     onContextMenuClick: () -> Unit = {},
     onHideMenu: () -> Unit = {},
+    onSearch: (String) -> Unit = {},
     onBackClick: () -> Unit = {}
 ) = withDesktopScope {
-    Box(
+    val textState = rememberState("")
+    Row(
         modifier = modifier.padding(8.dp)
     ) {
-        Row(
-            modifier = Modifier.align(Alignment.BottomStart)
-        ) {
-            if (backButtonVisible) {
-                ShapedIcon(
-                    imageVector = Icons.BackArrow,
-                    iconColor = borderColor,
-                    iconBackgroundColor = iconsTintColor,
-                    onRightClick = onContextMenuClick,
-                    onClick = onBackClick
-                )
-            }
-        }
-        Row(
-            modifier = Modifier.align(Alignment.BottomCenter)
-        ) {
-            SearchField(
-                modifier = Modifier.fillMaxWidth()
+        if (backButtonVisible && textState.value.isEmpty()) {
+            ShapedIcon(
+                imageVector = Icons.BackArrow,
+                iconColor = borderColor,
+                iconBackgroundColor = iconsTintColor,
+                onRightClick = onContextMenuClick,
+                onClick = onBackClick
             )
         }
+//        SearchField(
+//            modifier = Modifier.fillMaxWidth().background(Color.Red),
+//            textState = textState
+//        )
         Row(
-            modifier = Modifier.align(Alignment.BottomEnd)
+            modifier = Modifier.wrapContentWidth()
         ) {
             ShapedIcon(
                 imageVector = Icons.RestartComputer,
