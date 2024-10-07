@@ -51,12 +51,19 @@ class User(
     companion object {
         val Nobody = User(":x:-1:-1:::")
 
-        fun isLoggedIn(un: String): Boolean =
-            Shell.executeAndRead("whoami").trim().contentEquals(un)
+        fun isLoggedIn(
+            un: String
+        ): Boolean = Shell.executeAndRead("whoami").trim().contentEquals(un)
 
-        fun loadPicture(home: String, pic: String): File? = loadPicture(File(home), pic)
+        fun loadPicture(
+            home: String,
+            pic: String
+        ): File? = loadPicture(File(home), pic)
 
-        fun loadPicture(homeDir: File, picName: String): File? = File(homeDir, picName).let {
+        fun loadPicture(
+            homeDir: File,
+            picName: String
+        ): File? = File(homeDir, picName).let {
             if(it.exists()) it else null
         }
 

@@ -35,18 +35,15 @@ class GnomeManager {
         )
     }
 
-    @Suppress("UNUSED_PARAMETER")
     fun setGTKTheme(
         themeName: String = THEME_YARU
-    ) {
-//        Shell.executeAndRead(
-//            "gsettings",
-//            "set",
-//            "org.gnome.desktop.interface",
-//            "gtk-theme",
-//            themeName
-//        )
-    }
+    ) = Shell.executeAndRead(
+        "gsettings",
+        "set",
+        "org.gnome.desktop.interface",
+        "gtk-theme",
+        themeName
+    )
 
     fun getGTKTheme(): String = Shell.executeAndRead(
         "gsettings",
@@ -75,8 +72,8 @@ class GnomeManager {
         themeName
     )
 
-//    fun setDarkColorScheme() =
-//        setColorScheme(COLOR_SCHEME_PREFER_DARK)
+    fun setDarkColorScheme() =
+        setColorScheme(COLOR_SCHEME_PREFER_DARK)
 
 //    fun recursiveVariantValue(variant: Variant<*>): Any {
 //        val value = variant.value
@@ -95,9 +92,13 @@ class GnomeManager {
         const val COLOR_SCHEME_MJDEV = "mjdev"
 
         const val THEME_YARU = "Yaru"
+
         const val THEME_ADWAITA = "Adwaita"
         const val THEME_ADWAITA_DARK = "Adwaita-dark"
+
         const val THEME_MJDEV = "Mjdev"
+
+        const val THEME_CURSOR_BLOOM = "bloom"
     }
 
 }

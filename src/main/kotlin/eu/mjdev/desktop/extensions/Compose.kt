@@ -60,6 +60,8 @@ object Compose {
         return String.format("#%02x%02x%02x", red, green, blue)
     }
 
+    val Color.hexRgb get() = rgbToHex()
+
     fun Color.rgbaToHex(): String {
         val alpha: Int = (alpha * 255).toInt()
         val red = (red * 255).toInt()
@@ -67,6 +69,8 @@ object Compose {
         val blue = (blue * 255).toInt()
         return String.format("#%02x%02x%02x%02x", alpha, red, green, blue)
     }
+
+    val Color.hexRgba get() = rgbaToHex()
 
     val PaddingValues.width: Dp
         get() = calculateLeftPadding(LayoutDirection.Ltr) + calculateRightPadding(LayoutDirection.Ltr)

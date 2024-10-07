@@ -20,7 +20,8 @@ fun main(
     DisposableEffect(Unit) {
         println("App started with args: $args")
         Shell {
-            autoStartApps()
+            // todo
+//            autoStartApps()
         }
         onDispose {
             println("App ended.")

@@ -19,11 +19,22 @@ import kotlin.jvm.optionals.getOrNull
 
 @Suppress("FunctionName", "MemberVisibilityCanBePrivate", "unused")
 object Custom {
-    val ProcessHandle.command :String
+    val Process.handle: ProcessHandle
+        get() = toHandle()
+
+    val ProcessHandle.command: String
         get() = info().command().getOrNull().orEmpty()
 
-    val ProcessHandle.commandLine :String
+    val ProcessHandle.commandLine: String
         get() = info().commandLine().getOrNull().orEmpty()
+
+    val Process.consoleOutput: String
+        get() {
+            val sj = StringJoiner(System.lineSeparator())
+            val bfr = BufferedReader(inputReader())
+            bfr.lines().iterator().forEachRemaining { s: String? -> sj.add(s) }
+            return sj.toString()
+        }
 
     fun BufferedReader.readAvailable(): String = StringBuilder().apply {
         var ch = read()
@@ -33,8 +44,9 @@ object Custom {
         }
     }.toString()
 
-    inline fun <reified T> Any?.orElse(block: () -> T) =
-        if (this == null) block() else this as T
+    inline fun <reified T> Any?.orElse(
+        block: () -> T
+    ) = if (this == null) block() else this as T
 
     fun ParsedList(
         value: String?,

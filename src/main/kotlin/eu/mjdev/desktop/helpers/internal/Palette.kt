@@ -16,7 +16,7 @@ import eu.mjdev.desktop.provider.DesktopProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Suppress("CanBeParameter", "MemberVisibilityCanBePrivate")
+@Suppress("CanBeParameter", "MemberVisibilityCanBePrivate", "unused")
 class Palette(
     val api: DesktopProvider,
     val gnome: GnomeManager = api.gnome,
@@ -52,10 +52,11 @@ class Palette(
         get() = backgroundColor
 
     val selectedBgColor
-        get() = textColor
-
-    val selectedFgColor
         get() = iconsTintColor
+
+    // todo
+    val selectedFgColor
+        get() = if (selectedBgColor.isLightColor) textColor else backgroundColor
 
     val tooltipBgColor
         get() = backgroundColor
@@ -86,8 +87,8 @@ class Palette(
             textColorState.value = text
         }
         createFromPalette()
-        setGtkTheme(THEME_MJDEV)
-        setSoundTheme(THEME_MJDEV)
+//        setGtkTheme(THEME_MJDEV)
+//        setSoundTheme(THEME_MJDEV)
     }
 
     fun createFromPalette() =
