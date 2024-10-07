@@ -1,40 +1,51 @@
 package eu.mjdev.desktop.helpers.system
 
 import eu.mjdev.desktop.data.App
+import eu.mjdev.desktop.extensions.Custom.consoleOutput
 import eu.mjdev.desktop.helpers.exception.ErrorException.Companion.error
 import eu.mjdev.desktop.helpers.exception.SuccessException.Companion.success
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.io.BufferedReader
-import java.util.*
-
-private val Process.consoleOutput: String
-    get() {
-        val sj = StringJoiner(System.lineSeparator())
-        val bfr = BufferedReader(inputReader())
-        bfr.lines().iterator().forEachRemaining { s: String? -> sj.add(s) }
-        return sj.toString()
-    }
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
-object Shell {
+class Shell(
+    block: ShellScope.() -> Unit
+) {
+    val environment by lazy { Environment() }
 
-    val environment: Environment
-        get() = Environment()
+    init {
+        ShellScope(this).apply(block)
+    }
 
-    val Process.handle: ProcessHandle
-        get() = toHandle()
+    class ShellScope(
+        val shell: Shell,
+        val environment: Environment = shell.environment
+    ) {
+        fun autoStartApps() = shell.autoStartApps()
 
-    fun autoStartApps() = CoroutineScope(Dispatchers.IO).launch {
-        ProcessBuilder("dex", "-a").apply {
-            environment().putAll(environment)
-        }.also { processBuilder ->
-            runCatching {
-                processBuilder.start()
-            }.onFailure { e ->
-                e.printStackTrace()
-            }
+        fun startApp(
+            app: App,
+            onStarted: () -> Unit = {},
+            onStopped: (e: Throwable) -> Unit = {},
+        ) = shell.startApp(app, onStarted, onStopped)
+
+        fun executeAndRead(
+            cmd: String,
+            vararg args: String
+        ): String = executeAndRead(cmd, *args)
+
+        fun executeAndReadLines(
+            cmd: String,
+            vararg args: String
+        ): List<String> = executeAndReadLines(cmd, *args)
+    }
+
+    fun autoStartApps() = ProcessBuilder("dex", "-a").apply {
+        environment().putAll(environment)
+    }.also { processBuilder ->
+        runCatching {
+            processBuilder.start()
+
+        }.onFailure { e ->
+            e.printStackTrace()
         }
     }
 
@@ -66,11 +77,11 @@ object Shell {
         }
     }
 
-    fun executeAndRead(
-        cmd: String,
-        vararg args: String
-    ): String =
-        Runtime.getRuntime().exec(
+    companion object {
+        fun executeAndRead(
+            cmd: String,
+            vararg args: String
+        ): String = Runtime.getRuntime().exec(
             mutableListOf<String>().apply {
                 add(cmd)
                 addAll(args)
@@ -79,8 +90,10 @@ object Shell {
             waitFor()
         }.inputReader().readText()
 
-    fun executeAndReadLines(cmd: String, vararg args: String): List<String> =
-        Runtime.getRuntime().exec(
+        fun executeAndReadLines(
+            cmd: String,
+            vararg args: String
+        ): List<String> = Runtime.getRuntime().exec(
             mutableListOf<String>().apply {
                 add(cmd)
                 addAll(args)
@@ -88,4 +101,5 @@ object Shell {
         ).apply {
             waitFor()
         }.inputReader().readText().lines()
+    }
 }

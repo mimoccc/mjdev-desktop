@@ -11,10 +11,17 @@ fun main(
     args = args.toList(),
     exitProcessOnExit = true
 ) {
+    // net devices  : ls /sys/class/net
+    // wifi list    : nmcli -t -f ALL dev wifi
+    // wave mon     : apt install wavemon
+    // connect gui  : nmtui
+    // eth settings : iwconfig
     MainWindow()
     DisposableEffect(Unit) {
         println("App started with args: $args")
-        Shell.autoStartApps()
+        Shell {
+            autoStartApps()
+        }
         onDispose {
             println("App ended.")
         }

@@ -65,17 +65,19 @@ class App(
         println("Starting app: $name [$windowClass].")
         println("dex -w ${desktopFile?.absolutePath}")
         triggerStart()
-        Shell.startApp(
-            app = this@App,
-            onStarted = {
-                println("App started app: $name [$windowClass].")
-                triggerStarted()
-            },
-            onStopped = { e ->
-                println("App stopped: $name [$windowClass].")
-                triggerStop(e)
-            }
-        )
+        Shell {
+            startApp(
+                app = this@App,
+                onStarted = {
+                    println("App started app: $name [$windowClass].")
+                    triggerStarted()
+                },
+                onStopped = { e ->
+                    println("App stopped: $name [$windowClass].")
+                    triggerStop(e)
+                }
+            )
+        }
     }.onFailure { e ->
         triggerStop(e)
     }
