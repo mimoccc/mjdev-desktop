@@ -14,7 +14,9 @@ class DesktopFile(
     var file: File,
     val correctDir: String = "/tmp/.corrected-desktop-files/",
     val correctedFile: File = File(File(correctDir), file.name),
-    var fileData: String = (if (correctedFile.exists()) correctedFile else file).readText(),
+    var fileData: String = runCatching {
+        (if (correctedFile.exists()) correctedFile else file).readText()
+    }.getOrNull().orEmpty(),
     var content: Ini = (runCatching { LinuxIni(fileData) }.getOrNull() ?: LinuxIni())
 ) {
     var fileName: String = if (correctedFile.exists()) correctedFile.name else file.name
