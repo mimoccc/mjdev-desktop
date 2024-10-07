@@ -3,6 +3,7 @@ package eu.mjdev.desktop.theme.gtk
 import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.data.DesktopFile
 import eu.mjdev.desktop.data.DesktopFile.Companion.desktopFile
+import eu.mjdev.desktop.extensions.ColorUtils.darker
 import eu.mjdev.desktop.extensions.ColorUtils.isLightColor
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.hexRgb
@@ -70,13 +71,8 @@ class GtkThemeHelper(
         tooltipBgColor = palette.tooltipBgColor
         tooltipFgColor = palette.tooltipFgColor
 
-        // todo
-        buttonBgColor = palette.iconsTintColor
-        // if (palette.backgroundColor.isLightColor) palette.textColor else palette.iconsTintColor
-
-        // todo
-        buttonFgColor = if (palette.iconsTintColor.isLightColor) Color.Black else Color.White
-        // if (palette.backgroundColor.isLightColor) palette.iconsTintColor else palette.textColor
+        buttonBgColor = palette.backgroundColor.darker(0.1f)
+        buttonFgColor = if (buttonBgColor.isLightColor) Color.Black else Color.White
 
         write()
     }
