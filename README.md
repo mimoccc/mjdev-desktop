@@ -36,6 +36,7 @@ Build on compose kotlin and jvm.
 - connect to another desktop to share files (p2p)
 - no files on desktop (only links, user invisible action. all will be placed in home folder, as it should be)
 - ai typing helper like copilot from desktop documents (secure, offline)
+- custom apps api
 
 # screenshots
 
