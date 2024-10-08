@@ -35,6 +35,7 @@ import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Modifier.topShadow
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelExitAnimation
+import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.globalKeyEventHandler
 import eu.mjdev.desktop.provider.DesktopScope
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
@@ -83,16 +84,20 @@ fun DesktopPanel(
         size = panelSize
     )
     panelState.updateSize(panelSize - DpSize(0.dp, tooltipHeight))
+    globalKeyEventHandler(panelState.isVisible && panelState.enabled) {
+        onEscape {
+            panelState.hide()
+            true
+        }
+    }
     ChromeWindow(
         windowState = windowState,
         visible = true,
         alwaysOnTop = panelState.enabled,
         enterAnimation = enterAnimation,
         exitAnimation = exitAnimation,
-        onFocusChange = { focused ->
-            panelState.onFocusChange(focused)
-            onFocusChange(focused)
-        }) {
+        onFocusChange = onFocusChange
+    ) {
         SlidingMenu(
             modifier = Modifier.fillMaxWidth(),
             orientation = Vertical,

@@ -32,6 +32,7 @@ import eu.mjdev.desktop.extensions.Compose.rememberComputed
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
+import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.globalKeyEventHandler
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.windows.ChromeWindowState
@@ -52,7 +53,7 @@ fun ControlCenter(
 ) = withDesktopScope {
     // todo remove those
     val backgroundAlpha by remember { theme.controlCenterBackgroundAlphaState }
-    val controlCenterExpandedWidth : Dp by rememberComputed {
+    val controlCenterExpandedWidth: Dp by rememberComputed {
         (containerSize.width / 100f) * theme.controlCenterExpandedWidth
     }
     val controlCenterDividerWidth by remember { theme.controlCenterDividerWidthState }
@@ -69,15 +70,18 @@ fun ControlCenter(
         }
     }
     val windowState: ChromeWindowState = rememberChromeWindowState(position = position, size = size)
+    globalKeyEventHandler(controlCenterState.isVisible && controlCenterState.enabled) {
+        onEscape {
+            controlCenterState.hide()
+            true
+        }
+    }
     ChromeWindow(
         visible = true,
         windowState = windowState,
         enterAnimation = enterAnimation,
         exitAnimation = exitAnimation,
-        onFocusChange = { focused ->
-            controlCenterState.onFocusChange(focused)
-            onFocusChange(focused)
-        }
+        onFocusChange = onFocusChange
     ) {
         SlidingMenu(
             modifier = Modifier.fillMaxHeight(),
@@ -86,9 +90,6 @@ fun ControlCenter(
             onPointerEnter = {
                 controlCenterState.show()
                 windowState.requestFocus()
-            },
-            onPointerLeave = {
-                // controlCenterState.hide()
             }
         ) { isVisible ->
             if (!isVisible) {

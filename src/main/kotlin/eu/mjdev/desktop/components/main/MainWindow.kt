@@ -40,10 +40,8 @@ fun MainWindow() = withDesktopScope {
             menuState = menuState,
             onMenuIconClicked = { if (!menuState.isVisible) menuState.show() },
             onFocusChange = { focus ->
-                if (!focus) {
-                    if (!menuState.isVisible) {
-                        panelState.hide()
-                    }
+                if (panelState.enabled && !focus && !menuState.isVisible) {
+                    panelState.hide()
                 }
             }
         )
@@ -51,12 +49,8 @@ fun MainWindow() = withDesktopScope {
             menuState = menuState,
             panelState = panelState,
             onFocusChange = { focus ->
-                if (!menuState.isWindowFocus && !focus && !controlCenterState.isWindowFocus) {
+                if (!focus) {
                     menuState.hide()
-                } else {
-                    if(menuState.isVisible) {
-                        requestFocus()
-                    }
                 }
             }
         )

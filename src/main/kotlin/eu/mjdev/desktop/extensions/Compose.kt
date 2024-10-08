@@ -249,11 +249,15 @@ object Compose {
     }
 
     fun MutableState<String>.removeLast() {
-        value.take(value.length - 1)
+        if (value.isNotEmpty()) value = value.take(value.length - 1)
     }
 
     operator fun MutableState<String>.plus(text: String) {
         value += text
+    }
+
+    operator fun MutableState<String>.plus(char: Char) {
+        value += char
     }
 
     @Composable

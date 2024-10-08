@@ -33,9 +33,9 @@ import eu.mjdev.desktop.extensions.Compose.rememberComputed
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Compose.removeLast
 import eu.mjdev.desktop.extensions.Modifier.dropShadow
-import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.keyEventHandler
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
+import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.globalKeyEventHandler
 import eu.mjdev.desktop.provider.DesktopScope
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
@@ -83,35 +83,34 @@ fun AppsMenu(
         )
     }
     val windowState: ChromeWindowState = rememberChromeWindowState(position = position)
+    globalKeyEventHandler(menuState.isVisible && menuState.enabled) {
+        onEscape {
+            menuState.hide()
+            true
+        }
+        onBack {
+            searchTextState.clear()
+            true
+        }
+        onBackSpace {
+            searchTextState.removeLast()
+            true
+        }
+        onDelete {
+            searchTextState.clear()
+            true
+        }
+        onChar { char ->
+            searchTextState + char
+            true
+        }
+    }
     ChromeWindow(
         visible = menuState.isVisible,
         enterAnimation = enterAnimation,
         exitAnimation = exitAnimation,
         windowState = windowState,
-        onFocusChange = { focused ->
-            menuState.onFocusChange(focused)
-            onFocusChange(focused)
-        },
-        onKeyEvent = { event ->
-            keyEventHandler(event) {
-                onEscape {
-                    menuState.hide()
-                }
-                onBack {
-                    searchTextState.clear()
-                }
-                onBackSpace {
-                    searchTextState.removeLast()
-                }
-                onDelete {
-                    searchTextState.clear()
-                }
-                onChar { char ->
-                    searchTextState + char
-                }
-            }
-            true
-        }
+        onFocusChange = onFocusChange
     ) {
         Box(
             modifier = Modifier

@@ -16,7 +16,6 @@ class VisibilityState(
 ) {
     private val visibleState: MutableState<Boolean> = mutableStateOf(startState)
     private val boundsState: MutableState<DpBounds> = mutableStateOf(DpBounds.Zero)
-    private val focusState: MutableState<Boolean> = mutableStateOf(false)
 
     var bounds: DpBounds
         get() = boundsState.value
@@ -34,9 +33,6 @@ class VisibilityState(
                 println("Visible state disabled, can not set value.")
             }
         }
-
-    val isWindowFocus
-        get() = focusState.value
 
     fun show() {
         if (!isVisible) {
@@ -60,10 +56,6 @@ class VisibilityState(
 
     fun onPlaced(lc: LayoutCoordinates) {
         bounds = lc.toDpBounds()
-    }
-
-    fun onFocusChange(focus: Boolean) {
-        focusState.value = focus
     }
 
     fun updateSize(panelSize: DpSize) {

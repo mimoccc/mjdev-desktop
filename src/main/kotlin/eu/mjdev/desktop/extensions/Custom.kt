@@ -48,6 +48,15 @@ object Custom {
         block: () -> T
     ) = if (this == null) block() else this as T
 
+    val Char.isPrintable: Boolean
+        get() {
+            val block = Character.UnicodeBlock.of(this)
+            return (!Character.isISOControl(this)) &&
+                    this != java.awt.event.KeyEvent.CHAR_UNDEFINED &&
+                    block != null &&
+                    block != Character.UnicodeBlock.SPECIALS
+        }
+
     fun ParsedList(
         value: String?,
         delimiter: String = ";"
