@@ -51,7 +51,10 @@ fun AppsMenu(
     exitAnimation: ExitTransition = AppsMenuExitAnimation,
     searchTextState: MutableState<String> = rememberState(""),
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
-    onAppClick: DesktopScope.(App) -> Unit = { app -> startApp(app) },
+    onAppClick: DesktopScope.(App) -> Unit = { app ->
+        startApp(app)
+        menuState.hide()
+    },
     onAppContextMenuClick: DesktopScope.(App) -> Unit = {},
     onCategoryContextMenuClick: (Category) -> Unit = {},
     onUserAvatarClick: () -> Unit = {}
