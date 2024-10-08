@@ -244,6 +244,18 @@ object Compose {
         } else false
     }
 
+    fun MutableState<String>.clear() {
+        value = ""
+    }
+
+    fun MutableState<String>.removeLast() {
+        value.take(value.length - 1)
+    }
+
+    operator fun MutableState<String>.plus(text: String) {
+        value += text
+    }
+
     @Composable
     fun Modifier.requestFocusOnTouch(
         focusRequester: FocusRequester,

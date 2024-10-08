@@ -27,23 +27,6 @@ fun MainWindow() = withDesktopScope {
     val menuState = rememberVisibilityState()
     val installWindowSate = rememberVisibilityState()
     val infoWindowSate = rememberVisibilityState(false) //(api.isFirstStart || api.isDebug) // todo
-    val handleMenuFocus: (Boolean) -> Unit = { focus ->
-        if (!menuState.isWindowFocus && !focus && !controlCenterState.isWindowFocus) {
-            menuState.hide()
-        }
-    }
-    val handlePanelFocus: (Boolean) -> Unit = { focus ->
-        if (!focus) {
-            if (!menuState.isVisible) {
-                panelState.hide()
-            }
-        }
-    }
-    val handleControlCenterFocus: (Boolean) -> Unit = { focus ->
-        if (!focus) {
-            controlCenterState.hide()
-        }
-    }
     DesktopWindow(
         panelState = panelState,
         controlCenterState = controlCenterState,
@@ -56,16 +39,34 @@ fun MainWindow() = withDesktopScope {
             panelState = panelState,
             menuState = menuState,
             onMenuIconClicked = { if (!menuState.isVisible) menuState.show() },
-            onFocusChange = { focus -> handlePanelFocus(focus) }
+            onFocusChange = { focus ->
+                if (!focus) {
+                    if (!menuState.isVisible) {
+                        panelState.hide()
+                    }
+                }
+            }
         )
         AppsMenu(
             menuState = menuState,
             panelState = panelState,
-            onFocusChange = { focus -> handleMenuFocus(focus) }
+            onFocusChange = { focus ->
+                if (!menuState.isWindowFocus && !focus && !controlCenterState.isWindowFocus) {
+                    menuState.hide()
+                } else {
+                    if(menuState.isVisible) {
+                        requestFocus()
+                    }
+                }
+            }
         )
         ControlCenter(
             controlCenterState = controlCenterState,
-            onFocusChange = { focus -> handleControlCenterFocus(focus) }
+            onFocusChange = { focus ->
+                if (!focus) {
+                    controlCenterState.hide()
+                }
+            }
         )
         Greeter()
         InfoWindow(

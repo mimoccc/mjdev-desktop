@@ -81,6 +81,9 @@ open class DesktopScope(
     val appCategoriesAndApps
         get() = appsProvider.categoriesAndApps
 
+    val allApps
+        get() = appsProvider.allApps
+
     val favoriteApps
         get() = appsProvider.favoriteApps
 
@@ -109,6 +112,10 @@ open class DesktopScope(
         get() = api.palette.borderColor
     val disabledColor
         get() = api.palette.disabledColor
+
+    val appMenuMinWidth = theme.appMenuMinWidth
+    val appMenuMinHeight = theme.appMenuMinHeight
+    val menuPadding = theme.appMenuOuterPadding
 
     fun startApp(app: App) =
         api.appsProvider.startApp(app)

@@ -32,33 +32,38 @@ fun ShapedIcon(
     iconShape: Shape = CircleShape,
     innerPadding: PaddingValues = PaddingValues(4.dp),
     outerPadding: PaddingValues = PaddingValues(2.dp),
+    visible: Boolean = true,
     onRightClick: () -> Unit = {},
     onClick: () -> Unit = {}
-) = Box(
-    modifier = modifier
-        .padding(outerPadding)
-        .size(iconSize + innerPadding.size + outerPadding.size)
-        .background(iconBackgroundColor, iconShape)
-        .clip(iconShape)
-        .onMousePress {
-            onLeftClick { onClick() }
-            onRightClick { onRightClick() }
-        }
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding),
-    ) {
-        if (customContent != null) {
-            customContent()
-        } else {
-            Icon(
-                modifier = Modifier.fillMaxSize(),
-                imageVector = imageVector,
-                contentDescription = contentDescription,
-                tint = iconColor
-            )
+    if (visible) {
+        Box(
+            modifier = modifier
+                .padding(outerPadding)
+                .size(iconSize + innerPadding.size + outerPadding.size)
+                .background(iconBackgroundColor, iconShape)
+                .clip(iconShape)
+                .onMousePress {
+                    onLeftClick { onClick() }
+                    onRightClick { onRightClick() }
+                }
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+            ) {
+                if (customContent != null) {
+                    customContent()
+                } else {
+                    Icon(
+                        modifier = Modifier.fillMaxSize(),
+                        imageVector = imageVector,
+                        contentDescription = contentDescription,
+                        tint = iconColor
+                    )
+                }
+            }
         }
     }
 }

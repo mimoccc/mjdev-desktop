@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.config.JvmTarget
 import org.mjdev.gradle.extensions.ProjectExt.createTask
 import org.mjdev.gradle.extensions.ProjectExt.resolve
 
@@ -15,6 +16,32 @@ plugins {
 
 group = libs.versions.packageName.get()
 version = libs.versions.packageVersion.get()
+
+kotlin {
+//    compilerOptions.jvmTarget = JvmTarget.JVM_17
+//    jvm {
+//        jvmToolchain(11)
+//        withJava()
+//    }
+//    sourceSets {
+//        val jvmMain by getting {
+//            dependencies {
+//                implementation(compose.desktop.currentOs)
+//            }
+//        }
+//        val jvmTest by getting
+//    }
+}
+
+//configurations {
+//    "implementation" {
+//        exclude(group = "androidx.compose.animation")
+//        exclude(group = "androidx.compose.foundation")
+//        exclude(group = "androidx.compose.material")
+//        exclude(group = "androidx.compose.runtime")
+//        exclude(group = "androidx.compose.ui")
+//    }
+//}
 
 allprojects {
     repositories {
@@ -83,9 +110,14 @@ allprojects {
 //        implementation(libs.dbus.java.core)
 //        implementation(libs.dbus.java.transport.native.unixsocket)
         // wayland
-        implementation("org.freedesktop:wayland-client:1.5.1")
+//        implementation("org.freedesktop:wayland-client:1.5.1")
         // gettext
         implementation("org.gnu.gettext:libintl:0.18.3")
+        // constraint
+        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.4.0")
+        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03")
+        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded-core")
+        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded")
         // paths
 //        implementation("me.sujanpoudel.multiplatform.utils:multiplatform-paths:0.2.2")
         // files
@@ -103,15 +135,15 @@ allprojects {
         // web
         implementation("io.github.kevinnzou:compose-webview-multiplatform:1.9.40-alpha01")
         // bottom sheet flexible
-        implementation("com.github.skydoves:flexible-bottomsheet-material3:0.1.5")
-        // fs watcher
-        implementation("io.github.irgaly.kfswatch:kfswatch:1.3.0")
+//        implementation("com.github.skydoves:flexible-bottomsheet-material3:0.1.5")
         // stt
-        implementation("com.alphacephei:vosk:0.3.32+")
+//        implementation("com.alphacephei:vosk:0.3.32+")
+        // fs watcher
+//        implementation("io.github.irgaly.kfswatch:kfswatch:1.3.0")
         // custom components
         implementation("com.composables:core:1.12.0")
         // lib-app-indicator
-        implementation("org.purejava:libappindicator-gtk3-java-full:1.4.1")
+//        implementation("org.purejava:libappindicator-gtk3-java-full:1.4.1")
         // internationalization
 //        implementation("org.swiftshire:ji18n-core:1.0")
         // sikulix

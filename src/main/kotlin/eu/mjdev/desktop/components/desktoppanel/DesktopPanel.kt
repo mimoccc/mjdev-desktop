@@ -63,7 +63,7 @@ fun DesktopPanel(
     position: WindowPosition.Aligned = WindowPosition.Aligned(Alignment.BottomCenter),
     onMenuIconClicked: () -> Unit = {},
     onMenuIconContextMenuClicked: () -> Unit = {},
-    onFocusChange: (Boolean) -> Unit = {},
+    onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     onAppClick: DesktopScope.(App) -> Unit = { app -> startApp(app) },
     onAppContextMenuClick: (App) -> Unit = {},
     onLanguageClick: () -> Unit = {},

@@ -11,6 +11,7 @@ package eu.mjdev.desktop.managers
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import eu.mjdev.desktop.data.App
+import eu.mjdev.desktop.extensions.Custom.orElse
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import kotlinx.coroutines.*
@@ -49,7 +50,7 @@ class ProcessManager(
         iterator().apply {
             while (hasNext()) {
                 val pw = next()
-                if (!pw.processHandle.isAlive) {
+                if (pw.processHandle?.isAlive != true) {
                     remove()
                     listeners.filterIsInstance<ProcessRemoveListener>().forEach { l ->
                         l.onProcessRemoved(pw.processHandle)
@@ -80,21 +81,21 @@ class ProcessManager(
         job?.cancel()
     }
 
-    fun hasAppProcess(app: App?): Boolean = if (app == null) false
-    else {
-        val appCmd = app.cmd
-        val appName = app.name
-        val appFullName = app.fullAppName
-        any { ph ->
-            ph.command.contains(appName) ||
-                    ph.command.contains(appCmd) ||
-                    ph.command.contains(appFullName) ||
-                    ph.commandLine.contains(appName) ||
-                    ph.commandLine.contains(appCmd) ||
-                    ph.commandLine.contains(appFullName)
+    // todo : something raises error
+    fun hasAppProcess(app: App?): Boolean = runCatching {
+        val appCmd = app?.cmd
+        val appName = app?.name
+        val appFullName = app?.fullAppName
+        any { pw ->
+            (appName != null && pw.command.contains(appName)) ||
+                    (appCmd != null && pw.command.contains(appCmd)) ||
+                    (appFullName != null && pw.command.contains(appFullName)) ||
+                    (appName != null && pw.commandLine.contains(appName)) ||
+                    (appCmd != null && pw.commandLine.contains(appCmd)) ||
+                    (appFullName != null && pw.commandLine.contains(appFullName))
 
         }
-    }
+    }.getOrNull() ?: false
 
     companion object {
         fun ArrayList<ProcessWrapper>.containsProcess(ph: ProcessHandle) = ph.pid().let { pid ->
@@ -105,23 +106,23 @@ class ProcessManager(
 
         @Composable
         fun processManagerListener(
-            onChanged: ProcessManager.(processHandle: ProcessHandle) -> Unit,
+            onChanged: ProcessManager.(processHandle: ProcessHandle?) -> Unit,
         ) = processManagerListener(onChanged, onChanged)
 
         @Composable
         fun processManagerListener(
-            onAdd: ProcessManager.(processHandle: ProcessHandle) -> Unit,
-            onRemove: ProcessManager.(processHandle: ProcessHandle) -> Unit,
+            onAdd: ProcessManager.(processHandle: ProcessHandle?) -> Unit,
+            onRemove: ProcessManager.(processHandle: ProcessHandle?) -> Unit,
             api: DesktopProvider = LocalDesktop.current,
             processManger: ProcessManager = api.processManager
         ) {
             val addListener = object : ProcessAddListener {
-                override fun onProcessAdded(processHandle: ProcessHandle) {
+                override fun onProcessAdded(processHandle: ProcessHandle?) {
                     onAdd.invoke(processManger, processHandle)
                 }
             }
             val removeListener = object : ProcessRemoveListener {
-                override fun onProcessRemoved(processHandle: ProcessHandle) {
+                override fun onProcessRemoved(processHandle: ProcessHandle?) {
                     onRemove.invoke(processManger, processHandle)
                 }
             }
@@ -139,17 +140,17 @@ class ProcessManager(
     interface ProcessListener
 
     interface ProcessAddListener : ProcessListener {
-        fun onProcessAdded(processHandle: ProcessHandle)
+        fun onProcessAdded(processHandle: ProcessHandle?)
     }
 
     interface ProcessRemoveListener : ProcessListener {
-        fun onProcessRemoved(processHandle: ProcessHandle)
+        fun onProcessRemoved(processHandle: ProcessHandle?)
     }
 
     class ProcessWrapper(
-        val processHandle: ProcessHandle,
-        val pid: Long = processHandle.pid(),
-        val info: ProcessHandle.Info? = processHandle.info(),
+        val processHandle: ProcessHandle?,
+        val pid: Long = processHandle?.pid().orElse { -1L },
+        val info: ProcessHandle.Info? = processHandle?.info(),
         val command: String = info?.command()?.getOrNull().orEmpty(),
         val commandLine: String = info?.commandLine()?.getOrNull().orEmpty()
     ) {

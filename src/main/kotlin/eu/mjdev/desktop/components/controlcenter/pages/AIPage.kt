@@ -35,7 +35,6 @@ fun AIPage() = ControlCenterPage(
     condition = { ai.isAvailable() }
 ) {
     val clipboardManager = LocalClipboardManager.current
-    val iconSize = 24.dp
     val questionsList = remember { mutableStateListOf<Pair<String, String>>() }
     val request = rememberState("")
     val iconSend = androidx.compose.runtime.remember {
@@ -103,7 +102,7 @@ fun AIPage() = ControlCenterPage(
                                 )
                                 Icon(
                                     modifier = Modifier.padding(4.dp)
-                                        .size(iconSize)
+                                        .size(24.dp)
                                         .align(Alignment.TopEnd)
                                         .onClick {
                                             clipboardManager.setText(AnnotatedString(textData.first))
@@ -130,7 +129,7 @@ fun AIPage() = ControlCenterPage(
                                 )
                                 Icon(
                                     modifier = Modifier.padding(4.dp)
-                                        .size(iconSize)
+                                        .size(24.dp)
                                         .align(Alignment.TopEnd)
                                         .onClick {
                                             clipboardManager.setText(AnnotatedString(textData.second))
@@ -170,7 +169,7 @@ fun AIPage() = ControlCenterPage(
                             if (request.value.isNotEmpty()) {
                                 Icon(
                                     modifier = Modifier.padding(4.dp)
-                                        .size(iconSize)
+                                        .size(24.dp)
                                         .onClick {
                                             clipboardManager.setText(AnnotatedString(request.value))
                                         },
@@ -182,7 +181,7 @@ fun AIPage() = ControlCenterPage(
                             if (iconSend.value != null) {
                                 Icon(
                                     modifier = Modifier.padding(4.dp)
-                                        .size(iconSize)
+                                        .size(24.dp)
                                         .onClick { onDone() },
                                     imageVector = iconSend.value!!,
                                     tint = Color.White.copy(alpha = 0.9f),

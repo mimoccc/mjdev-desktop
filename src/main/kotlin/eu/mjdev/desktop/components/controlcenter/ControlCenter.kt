@@ -47,7 +47,7 @@ fun ControlCenter(
     scope: CoroutineScope = rememberCoroutineScope(),
     enterAnimation: EnterTransition = ControlCenterEnterAnimation,
     exitAnimation: ExitTransition = ControlCenterExitAnimation,
-    onFocusChange: (Boolean) -> Unit = {},
+    onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     onContextMenuClick: () -> Unit = {}
 ) = withDesktopScope {
     // todo remove those

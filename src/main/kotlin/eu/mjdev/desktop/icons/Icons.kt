@@ -10,6 +10,7 @@ object Icons {
     val SendIcon = Icons.AutoMirrored.Filled.Send
     val TextFieldVisiblePassword = Icons.Filled.Visibility
     val TextFieldInVisiblePassword = Icons.Filled.VisibilityOff
+    val TextFieldClearText = Icons.Filled.Clear // todo
     val CopyToClipboard = Icons.Filled.ContentCopy
     val TextSnippet = Icons.AutoMirrored.Filled.TextSnippet
     val Campaign = Icons.Filled.Campaign

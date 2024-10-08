@@ -24,10 +24,16 @@ import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememb
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
+import eu.mjdev.desktop.extensions.Compose.clear
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.extensions.Compose.onMouseEnter
+import eu.mjdev.desktop.extensions.Compose.plus
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
+import eu.mjdev.desktop.extensions.Compose.rememberComputed
+import eu.mjdev.desktop.extensions.Compose.rememberState
+import eu.mjdev.desktop.extensions.Compose.removeLast
 import eu.mjdev.desktop.extensions.Modifier.dropShadow
+import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.keyEventHandler
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
 import eu.mjdev.desktop.provider.DesktopScope
@@ -36,27 +42,39 @@ import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.windows.ChromeWindowState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
-@Suppress("FunctionName", "LocalVariableName")
+@Suppress("FunctionName")
 @Composable
 fun AppsMenu(
     panelState: VisibilityState = rememberVisibilityState(),
     menuState: VisibilityState = rememberVisibilityState(),
     enterAnimation: EnterTransition = AppsMenuEnterAnimation,
     exitAnimation: ExitTransition = AppsMenuExitAnimation,
-    onFocusChange: (Boolean) -> Unit = {},
+    searchTextState: MutableState<String> = rememberState(""),
+    onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     onAppClick: DesktopScope.(App) -> Unit = { app -> startApp(app) },
     onAppContextMenuClick: DesktopScope.(App) -> Unit = {},
     onCategoryContextMenuClick: (Category) -> Unit = {},
     onUserAvatarClick: () -> Unit = {}
 ) = withDesktopScope {
-    // todo remove those three
-    val appMenuMinWidth by remember { theme.appMenuMinWidthState }
-    val appMenuMinHeight by remember { theme.appMenuMinHeightState }
-    val menuPadding by remember { theme.appMenuOuterPaddingState }
-    //
-    var items: List<Any> by remember(appCategories) { mutableStateOf(appCategories) }
-    val onCategoryClick: (Category) -> Unit = { category ->
-        items = appCategoriesAndApps[category.name]?.sortedBy { it.name } ?: emptyList()
+    var category by rememberState("")
+    val items by rememberComputed(searchTextState.value, category) {
+        when {
+            searchTextState.value.isNotEmpty() -> appsProvider.allApps
+                .filter { app ->
+                    app.desktopFile?.fileData?.contains(searchTextState.value) == true
+                }
+
+            category.isNotEmpty() -> appCategoriesAndApps[category]?.sortedBy { app ->
+                app.name
+            } ?: emptyList<App>()
+
+            else -> appCategories
+        }
+    }
+    val onCategoryClick: (Category) -> Unit = remember {
+        { c ->
+            category = c.name
+        }
     }
     val position by rememberCalculated {
         WindowPosition.Absolute(
@@ -65,26 +83,36 @@ fun AppsMenu(
         )
     }
     val windowState: ChromeWindowState = rememberChromeWindowState(position = position)
-    val Container: @Composable (content: @Composable () -> Unit) -> Unit = { content ->
-        if (isDebug) {
-            content()
-        } else {
-            ChromeWindow(
-                visible = menuState.isVisible,
-                enterAnimation = enterAnimation,
-                exitAnimation = exitAnimation,
-                windowState = windowState,
-                onFocusChange = { focused ->
-                    menuState.onFocusChange(focused)
-                    onFocusChange(focused)
-                },
-                content = {
-                    content()
+    ChromeWindow(
+        visible = menuState.isVisible,
+        enterAnimation = enterAnimation,
+        exitAnimation = exitAnimation,
+        windowState = windowState,
+        onFocusChange = { focused ->
+            menuState.onFocusChange(focused)
+            onFocusChange(focused)
+        },
+        onKeyEvent = { event ->
+            keyEventHandler(event) {
+                onEscape {
+                    menuState.hide()
                 }
-            )
+                onBack {
+                    searchTextState.clear()
+                }
+                onBackSpace {
+                    searchTextState.removeLast()
+                }
+                onDelete {
+                    searchTextState.clear()
+                }
+                onChar { char ->
+                    searchTextState + char
+                }
+            }
+            true
         }
-    }
-    Container {
+    ) {
         Box(
             modifier = Modifier
                 .width(appMenuMinWidth)
@@ -192,11 +220,12 @@ fun AppsMenu(
                             .wrapContentHeight()
                             .background(backgroundColor),
                         backButtonVisible = items.firstOrNull() is App,
+                        searchTextState = searchTextState,
                         onHideMenu = {
                             menuState.hide()
                         },
                         onBackClick = {
-                            items = appCategories
+                            category = ""
                         },
                         onContextMenuClick = {
                             // todo : context menu
@@ -207,7 +236,7 @@ fun AppsMenu(
         }
         launchedEffect(menuState.isVisible) {
             if (!menuState.isVisible) {
-                items = appCategories
+                category = ""
             }
         }
     }
