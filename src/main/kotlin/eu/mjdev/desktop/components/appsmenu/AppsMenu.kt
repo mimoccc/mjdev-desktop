@@ -53,6 +53,7 @@ fun AppsMenu(
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     onAppClick: DesktopScope.(App) -> Unit = { app ->
         startApp(app)
+        searchTextState.clear()
         menuState.hide()
     },
     onAppContextMenuClick: DesktopScope.(App) -> Unit = {},
