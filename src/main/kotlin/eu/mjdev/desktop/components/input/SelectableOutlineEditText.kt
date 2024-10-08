@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.TextUnit
 
 @Composable
 fun SelectableOutlineEditText(
@@ -23,6 +24,7 @@ fun SelectableOutlineEditText(
     enabled: Boolean = true,
     readOnly: Boolean = false,
     textStyle: TextStyle = TextStyle.Default,
+    textSize: TextUnit = TextUnit.Unspecified,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -45,7 +47,7 @@ fun SelectableOutlineEditText(
         onValueChange = onValueChange,
         enabled = enabled,
         readOnly = readOnly,
-        textStyle = textStyle,
+        textStyle = textStyle.copy(fontSize = textSize),
         label = label,
         placeholder = placeholder,
         leadingIcon = leadingIcon,

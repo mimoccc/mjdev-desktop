@@ -21,7 +21,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.icons.Icons
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -31,6 +33,7 @@ fun SearchFieldPassive(
     textState: MutableState<String> = mutableStateOf(""),
     textColor: Color = Color.White,
     textStyle: TextStyle = TextStyle.Default,
+    textSize:TextUnit = 18.sp,
     onClearClick: () -> Unit = {}
 ) = SelectableOutlineEditText(
     value = textState.value,
@@ -38,6 +41,7 @@ fun SearchFieldPassive(
     enabled = false,
     singleLine = true,
     textStyle = textStyle,
+    textSize=textSize,
     colors = TextFieldDefaults.outlinedTextFieldColors(
         backgroundColor = Color.Transparent,
         textColor = textColor,

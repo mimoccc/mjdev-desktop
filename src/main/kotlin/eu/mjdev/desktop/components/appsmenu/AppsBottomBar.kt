@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.components.icon.ShapedIcon
 import eu.mjdev.desktop.components.input.SearchFieldPassive
 import eu.mjdev.desktop.extensions.Compose.clear
@@ -38,6 +39,7 @@ fun AppsBottomBar(
                 modifier = Modifier.fillMaxWidth().focusable(true),
                 textState = searchTextState,
                 textColor = iconsTintColor,
+                textSize = 20.sp,
                 textStyle = TextStyle(
                     fontWeight = FontWeight.Bold
                 ),
