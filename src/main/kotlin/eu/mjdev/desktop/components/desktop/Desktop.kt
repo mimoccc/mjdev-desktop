@@ -2,36 +2,52 @@ package eu.mjdev.desktop.components.desktop
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import eu.mjdev.desktop.components.desktop.widgets.MemoryChart
 import eu.mjdev.desktop.components.file.FolderView
+import eu.mjdev.desktop.components.sliding.base.VisibilityState
+import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("FunctionName")
 @Preview
 @Composable
 fun Desktop(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    panelState: VisibilityState = rememberVisibilityState()
 ) = withDesktopScope {
+    val bottomPadding by rememberCalculated(panelState.enabled) {
+        if (panelState.enabled) 0.dp else max(0.dp, panelState.bounds.height)
+    }
     BoxWithConstraints(
         modifier = modifier.padding(16.dp)
     ) {
-        FolderView(
-            modifier = Modifier.size(constraints.maxWidth.dp, constraints.maxHeight.dp),
-            path = api.currentUser.userDirs.desktopDirectory,
-            showHomeFolder = true,
-            orientation = Orientation.Vertical,
-        )
-        MemoryChart(
-            modifier = Modifier.size(350.dp, 300.dp)
-                .align(Alignment.BottomEnd)
-        )
+        Box(
+            modifier = Modifier.size(
+                constraints.maxWidth.dp,
+                constraints.maxHeight.dp
+            ).padding(
+                bottom = bottomPadding
+            )
+        ) {
+            FolderView(
+                modifier = Modifier.fillMaxSize(),
+                path = api.currentUser.userDirs.desktopDirectory,
+                showHomeFolder = true,
+                orientation = Orientation.Vertical,
+            )
+            MemoryChart(
+                modifier = Modifier.size(350.dp, 300.dp)
+                    .align(Alignment.BottomEnd)
+            )
+        }
 //        ComposeWebView(
 //            modifier = Modifier.size(640.dp, 480.dp)
 //                .align(Alignment.Center)

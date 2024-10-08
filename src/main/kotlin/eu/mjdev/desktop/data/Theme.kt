@@ -101,7 +101,7 @@ class Theme(
                 panelLocation = PanelLocation.Bottom,
                 panelDividerWidth = 16.dp,
                 panelContentPadding = 4.dp,
-                panelHideDelay = 5000L,
+                panelHideDelay = 0L,
 
                 controlCenterLocation = ControlCenterLocation.Right,
                 controlPanelHideDelay = 5000L,

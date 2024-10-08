@@ -19,11 +19,7 @@ import eu.mjdev.desktop.windows.DesktopWindow
 @Composable
 fun MainWindow() = withDesktopScope {
     val controlCenterState = rememberVisibilityState()
-    // todo from user setttings
-    val panelState = rememberVisibilityState(
-        enabled = false,
-        visible = true
-    )
+    val panelState = rememberVisibilityState(true, panelAutoHideEnabled)
     val menuState = rememberVisibilityState()
     val installWindowSate = rememberVisibilityState()
     val infoWindowSate = rememberVisibilityState(false) //(api.isFirstStart || api.isDebug) // todo
@@ -33,33 +29,28 @@ fun MainWindow() = withDesktopScope {
         menuState = menuState
     ) {
         Desktop(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            panelState = panelState,
         )
         DesktopPanel(
             panelState = panelState,
             menuState = menuState,
             onMenuIconClicked = { if (!menuState.isVisible) menuState.show() },
             onFocusChange = { focus ->
-                if (panelState.enabled && !focus && !menuState.isVisible) {
-                    panelState.hide()
-                }
+                if (panelState.enabled && !focus && !menuState.isVisible) panelState.hide()
             }
         )
         AppsMenu(
             menuState = menuState,
             panelState = panelState,
             onFocusChange = { focus ->
-                if (!focus) {
-                    menuState.hide()
-                }
+                if (!focus) menuState.hide()
             }
         )
         ControlCenter(
             controlCenterState = controlCenterState,
             onFocusChange = { focus ->
-                if (!focus) {
-                    controlCenterState.hide()
-                }
+                if (!focus) controlCenterState.hide()
             }
         )
         Greeter()

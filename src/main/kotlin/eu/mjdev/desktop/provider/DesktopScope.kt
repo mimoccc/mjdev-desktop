@@ -117,6 +117,9 @@ open class DesktopScope(
     val appMenuMinHeight = theme.appMenuMinHeight
     val menuPadding = theme.appMenuOuterPadding
 
+    val panelAutoHideEnabled
+        get() = theme.panelHideDelay > 0L
+
     fun startApp(app: App) =
         api.appsProvider.startApp(app)
 
