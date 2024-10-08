@@ -121,23 +121,31 @@ class AppsProvider(
     val appCategories
         get() = mutableListOf<String>().apply {
             allApps.forEach { app ->
-                addAll(app.categories)
+                addAll(app.categories.map { c -> provideCategory(c) })
             }
         }.distinct().sorted().map { Category(it) }
     val categoriesAndApps
         get() = mutableMapOf<String, List<App>>().let { map ->
             allApps.forEach { app ->
                 app.categories?.forEach { category ->
-                    if (!map.containsKey(category)) {
-                        map[category] = mutableListOf()
+                    val cat = provideCategory(category)
+                    if (!map.containsKey(cat)) {
+                        map[cat] = mutableListOf()
                     }
-                    (map[category] as MutableList<App>).add(app)
+                    (map[cat] as MutableList<App>).addIfNotExists(app)
                 }
             }
             map
         }
 
     val favoriteApps = mutableStateListOf<App>()
+
+    // todo languages
+    fun provideCategory(category: String): String {
+        return if (
+            category.trim().isEmpty() || category.trim().startsWith("X-", true)
+        ) "Uncategorized" else category
+    }
 
     fun startApp(app: App) = scope.launch(Dispatchers.IO) {
         app.onStarting {
@@ -183,4 +191,12 @@ class AppsProvider(
         }
     }
 
+    companion object {
+        private fun MutableList<App>.addIfNotExists(app: App) {
+            val contains = any { a -> a.fullAppName.contentEquals(app.fullAppName) }
+            if (!contains) {
+                add(app)
+            }
+        }
+    }
 }

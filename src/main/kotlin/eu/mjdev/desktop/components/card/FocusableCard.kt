@@ -119,7 +119,7 @@ fun FocusableCard(
             ) {
                 TextAny(
                     modifier = Modifier.padding(titlePadding),
-                    maxLines = 1,
+                    singleLine = true,
                     color = textColor,
                     style = MaterialTheme.typography.bodyMedium,
                     text = item?.toString().orEmpty()
@@ -142,7 +142,7 @@ fun FocusableCard(
             ) {
                 AutoHideEmptyText(
                     modifier = Modifier.padding(titlePadding),
-                    maxLines = 1,
+                    singleLine = true,
                     color = textColor,
                     style = MaterialTheme.typography.bodySmall,
                     text = "" // todo

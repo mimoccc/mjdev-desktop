@@ -7,8 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.runtime.*
@@ -35,6 +34,7 @@ import eu.mjdev.desktop.extensions.Compose.removeLast
 import eu.mjdev.desktop.extensions.Modifier.dropShadow
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
+import eu.mjdev.desktop.helpers.compose.rememberForeverLazyListState
 import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.globalKeyEventHandler
 import eu.mjdev.desktop.provider.DesktopScope
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
@@ -50,6 +50,7 @@ fun AppsMenu(
     enterAnimation: EnterTransition = AppsMenuEnterAnimation,
     exitAnimation: ExitTransition = AppsMenuExitAnimation,
     searchTextState: MutableState<String> = rememberState(""),
+    listState: LazyListState = rememberForeverLazyListState("AppsMenu"),
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     onAppClick: DesktopScope.(App) -> Unit = { app ->
         startApp(app)
@@ -57,7 +58,7 @@ fun AppsMenu(
         menuState.hide()
     },
     onAppContextMenuClick: DesktopScope.(App) -> Unit = {},
-    onCategoryContextMenuClick: (Category) -> Unit = {},
+    onCategoryContextMenuClick: DesktopScope.(Category) -> Unit = {},
     onUserAvatarClick: () -> Unit = {}
 ) = withDesktopScope {
     var category by rememberState("")
@@ -73,11 +74,6 @@ fun AppsMenu(
             } ?: emptyList<App>()
 
             else -> appCategories
-        }
-    }
-    val onCategoryClick: (Category) -> Unit = remember {
-        { c ->
-            category = c.name
         }
     }
     val position by rememberCalculated {
@@ -164,41 +160,19 @@ fun AppsMenu(
                         color = borderColor,
                         thickness = 2.dp
                     )
-                    LazyColumn(
+                    AppsList(
                         modifier = Modifier
                             .padding(bottom = 62.dp)
                             .fillMaxSize()
-                            .padding(24.dp)
-                    ) {
-                        when (items.firstOrNull()) {
-                            is Category -> {
-                                items(items) { item ->
-                                    AppsMenuCategory(
-                                        category = item as Category,
-                                        onClick = { onCategoryClick(item) },
-                                        onContextMenuClick = { onCategoryContextMenuClick(item) }
-                                    )
-                                }
-                            }
-
-                            is App -> {
-                                items(items) { item ->
-                                    AppsMenuApp(
-                                        app = item as App,
-                                        backgroundColor = backgroundColor,
-                                        iconTint = textColor,
-                                        textColor = textColor,
-                                        onClick = {
-                                            onAppClick(item)
-                                        },
-                                        onContextMenuClick = {
-                                            onAppContextMenuClick(item)
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
+                            .padding(24.dp),
+                        category = category,
+                        listState = listState,
+                        onCategoryClick = { c -> category = c.name },
+                        onAppClick = onAppClick,
+                        onAppContextMenuClick = onAppContextMenuClick,
+                        onCategoryContextMenuClick = onCategoryContextMenuClick,
+                        items = items
+                    )
                 }
                 Column(
                     modifier = Modifier

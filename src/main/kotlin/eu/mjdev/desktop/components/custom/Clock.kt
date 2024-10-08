@@ -65,8 +65,7 @@ fun Clock(
                 fontWeight = timeTextWeight,
                 fontSize = timeTextSize,
                 color = timeTextColor,
-                maxLines = 1,
-                minLines = 1
+               singleLine = true
             )
             if (showDate) TextWithShadow(
                 text = dateFlow.value,
@@ -74,8 +73,7 @@ fun Clock(
                 fontWeight = dateTextWeight,
                 fontSize = dateTextSize,
                 color = dateTextColor,
-                maxLines = 1,
-                minLines = 1
+               singleLine = true
             )
         }
         LaunchedEffect(time) {

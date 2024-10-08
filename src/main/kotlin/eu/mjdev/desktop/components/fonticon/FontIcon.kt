@@ -20,6 +20,7 @@ import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 @Suppress("FunctionName")
 @Composable
 fun FontIcon(
+    modifier: Modifier = Modifier,
     iconId: Int = 0,
     iconicFont: MaterialIconFont = LocalDesktop.current.currentUser.theme.iconSet,
     iconSize: DpSize = DpSize(32.dp, 32.dp),
@@ -32,6 +33,7 @@ fun FontIcon(
     onRightClick: () -> Unit = {},
     onClick: () -> Unit = {}
 ) = ShapedIcon(
+    modifier = modifier,
     iconSize = iconSize,
     iconColor = iconColor,
     iconBackgroundColor = iconBackgroundColor,

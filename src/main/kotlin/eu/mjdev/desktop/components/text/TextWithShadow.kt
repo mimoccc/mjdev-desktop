@@ -29,8 +29,9 @@ fun TextWithShadow(
     fontSize: TextUnit = 16.sp,
     color: Color = Color.Red,
     overflow: TextOverflow = Ellipsis,
-    minLines: Int = 2,
-    maxLines: Int = 2,
+    singleLine: Boolean = false,
+    maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
+    minLines: Int = 1,
     text: Any? = "test"
 ) = TextAny(
     modifier = modifier,

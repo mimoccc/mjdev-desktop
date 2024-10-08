@@ -18,7 +18,7 @@ fun main(
     // eth settings : iwconfig
     MainWindow()
     DisposableEffect(Unit) {
-        println("App started with args: $args")
+        println("App started with args: ${args.toList()}")
         Shell {
             // todo
 //            autoStartApps()

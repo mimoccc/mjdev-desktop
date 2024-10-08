@@ -69,8 +69,6 @@ fun PasswordTextView(
         readOnly = false,
         label = label,
         singleLine = true,
-        maxLines = 1,
-        minLines = 1,
         shape = shape,
         colors = colors,
         placeholder = placeholder,
