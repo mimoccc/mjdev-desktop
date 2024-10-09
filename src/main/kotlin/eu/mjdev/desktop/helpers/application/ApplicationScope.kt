@@ -33,6 +33,8 @@ open class ApplicationScope(
             isOpenState.value = value
         }
 
+    val isDebug get() = args.contains("--debug")
+
     fun dispatchStart() = CoroutineScope(Dispatchers.IO).launch {
         sessionStartHandlers.invokeAllOnce(this@ApplicationScope)
     }
