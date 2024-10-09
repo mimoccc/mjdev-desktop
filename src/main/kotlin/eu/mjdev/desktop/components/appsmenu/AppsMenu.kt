@@ -66,6 +66,7 @@ fun AppsMenu(
     val appCategories by appCategories.collectAsState(emptyList())
     val items by rememberComputed(searchTextState.value, category) {
         when {
+            // todo fuzzy sort
             searchTextState.trimIsNotEmpty() -> allApps.filter { app ->
                 app.desktopData.contains(searchTextState.value)
             }

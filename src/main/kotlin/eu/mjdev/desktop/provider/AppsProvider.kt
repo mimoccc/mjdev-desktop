@@ -15,8 +15,6 @@ import eu.mjdev.desktop.extensions.Custom.lines
 import eu.mjdev.desktop.extensions.Custom.sortedByName
 import eu.mjdev.desktop.extensions.Custom.text
 import eu.mjdev.desktop.extensions.Custom.textAsLocale
-import eu.mjdev.desktop.extensions.Custom.trimIsEmpty
-import eu.mjdev.desktop.extensions.Custom.trimStartsWith
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import kotlinx.coroutines.CoroutineScope
@@ -146,13 +144,13 @@ class AppsProvider(
     }
 
     val appCategories = flowBlock {
-        allApps.flatMap { app ->
-            app.categories.map { c ->
-                provideCategory(c)
-            }.distinct().sorted()
-        }.map { c ->
+        allApps.asSequence().flatMap { app ->
+            app.categories.map { c -> provideCategory(c) }
+        }.distinct().sorted().map { c ->
             Category(c)
-        }
+        }.sortedByDescending { c ->
+            c.priority
+        }.toList()
     }.flowOn(Dispatchers.IO)
 
     val favoriteApps: Flow<List<App>> = flowBlock {
@@ -171,9 +169,10 @@ class AppsProvider(
     }.flowOn(Dispatchers.IO)
 
     // todo languages
-    fun provideCategory(category: String): String {
-        return if (
-            category.trimIsEmpty() || category.trimStartsWith("X-", true)
-        ) "Uncategorized" else category
+    fun provideCategory(name: String): String {
+        return name.trim().let { n ->
+            if (n.isEmpty() || n.startsWith("X-", true)) Category.UNCATEGORIZED
+            else name
+        }
     }
 }
