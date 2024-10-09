@@ -1,19 +1,17 @@
 package eu.mjdev.desktop.helpers.system
 
+import eu.mjdev.desktop.extensions.Custom.lines
 import java.io.File
-import kotlin.math.roundToInt
 
 @Suppress("MemberVisibilityCanBePrivate")
 class MemInfo(
-    private val info: List<String> = File("/proc/meminfo").readLines(),
+    private val info: List<String> = File("/proc/meminfo").lines,
     val free: Double = info.parseLine("MemAvailable").times(KB),
     val total: Double = info.parseLine("MemTotal").times(KB),
     val used: Double = total - free,
-    val percent: Int = (((free.div(MB) / total.div(MB)) * 100).roundToInt())
 ) {
     companion object {
         const val KB = 1024
-        const val MB = KB * KB
 
         fun List<String>.parseLine(
             filter: String

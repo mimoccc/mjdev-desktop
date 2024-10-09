@@ -10,13 +10,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation.Vertical
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onPlaced
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopMenuIcon
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelDateTime
@@ -65,7 +70,9 @@ fun DesktopPanel(
     onMenuIconClicked: () -> Unit = {},
     onMenuIconContextMenuClicked: () -> Unit = {},
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
-    onAppClick: DesktopScope.(App) -> Unit = { app -> startApp(app) },
+    onAppClick: DesktopScope.(App) -> Unit = { app ->
+        app.start()
+    },
     onAppContextMenuClick: (App) -> Unit = {},
     onLanguageClick: () -> Unit = {},
     onClockClick: () -> Unit = {}

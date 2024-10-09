@@ -31,6 +31,7 @@ import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberComputed
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Compose.removeLast
+import eu.mjdev.desktop.extensions.Custom.trimIsNotEmpty
 import eu.mjdev.desktop.extensions.Modifier.dropShadow
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
@@ -53,7 +54,7 @@ fun AppsMenu(
     listState: LazyListState = rememberForeverLazyListState("AppsMenu"),
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     onAppClick: DesktopScope.(App) -> Unit = { app ->
-        startApp(app)
+        app.start()
         searchTextState.clear()
         menuState.hide()
     },
@@ -62,16 +63,18 @@ fun AppsMenu(
     onUserAvatarClick: () -> Unit = {}
 ) = withDesktopScope {
     var category by rememberState("")
+    val appCategories by appCategories.collectAsState(emptyList())
     val items by rememberComputed(searchTextState.value, category) {
         when {
-            searchTextState.value.isNotEmpty() -> appsProvider.allApps
-                .filter { app ->
-                    app.desktopFile?.fileData?.contains(searchTextState.value) == true
-                }
+            searchTextState.trimIsNotEmpty() -> allApps.filter { app ->
+                app.desktopData.contains(searchTextState.value)
+            }
 
-            category.isNotEmpty() -> appCategoriesAndApps[category]?.sortedBy { app ->
+            category.isNotEmpty() -> allApps.filter { app ->
+                app.categories.contains(category)
+            }.sortedBy { app ->
                 app.name
-            } ?: emptyList<App>()
+            }
 
             else -> appCategories
         }

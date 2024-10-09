@@ -1,6 +1,7 @@
 package eu.mjdev.desktop.helpers.internal
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.extensions.BitmapUtils.cut
 import eu.mjdev.desktop.extensions.BitmapUtils.topMostColor
@@ -98,35 +99,7 @@ class Palette(
         themeName: String = THEME_MJDEV
     ) = gnome.setGTKTheme(themeName)
 
-    fun setSoundTheme (
+    fun setSoundTheme(
         themeName: String = THEME_MJDEV
     ) = gnome.setSoundTheme(themeName)
-
-    companion object {
-        @Composable
-        inline fun <T> rememberPalette(
-            api: DesktopProvider,
-            crossinline calculation: @DisallowComposableCalls () -> T
-        ) = remember(api.palette.backgroundColor) { calculation() }
-
-        @Composable
-        fun rememberBackgroundColor(
-            api: DesktopProvider,
-        ) = rememberPalette(api) { api.currentUser.theme.backgroundColorState }
-
-//        @Composable
-//        fun rememberTextColor(
-//            api: DesktopProvider,
-//        ) = rememberPalette(api) { derivedStateOf { api.palette.textColor } }
-
-//        @Composable
-//        fun rememberBorderColor(
-//            api: DesktopProvider,
-//        ) = rememberPalette(api) { derivedStateOf { api.palette.borderColor } }
-
-        @Composable
-        fun rememberIconTintColor(
-            api: DesktopProvider,
-        ) = rememberPalette(api) { derivedStateOf { api.palette.iconsTintColor } }
-    }
 }

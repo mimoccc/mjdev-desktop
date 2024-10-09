@@ -5,9 +5,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.fonts.MaterialIconFont
 import eu.mjdev.desktop.fonts.MaterialSymbolsSharp
-import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 
 // todo all customizable
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -97,6 +97,7 @@ class Theme(
                 iconSet = MaterialSymbolsSharp,
 
                 backgroundColor = Color.SuperDarkGray,
+                backgroundRotationDelay = 60000,
 
                 panelLocation = PanelLocation.Bottom,
                 panelDividerWidth = 16.dp,
@@ -111,8 +112,6 @@ class Theme(
                 controlCenterIconColor = Color.White,
                 controlCenterIconSize = DpSize(32.dp, 32.dp),
                 controlCenterBackgroundAlpha = 0.8f,
-
-                backgroundRotationDelay = 60000,
 
                 appMenuMinWidth = 480.dp,
                 appMenuMinHeight = 640.dp,

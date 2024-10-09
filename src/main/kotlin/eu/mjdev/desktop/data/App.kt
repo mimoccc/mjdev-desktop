@@ -2,49 +2,56 @@ package eu.mjdev.desktop.data
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
-import eu.mjdev.desktop.extensions.Custom.command
-import eu.mjdev.desktop.extensions.Custom.commandLine
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class App(
-    val file: File? = null,
-    val desktopFile: DesktopFile? = runCatching { file?.let { f -> DesktopFile(f) } }.getOrNull(),
+    val desktopFile: DesktopFile = DesktopFile.Empty,
     val isFavorite: Boolean = false
 ) {
+    constructor(file: File) : this(DesktopFile(file))
+
+    val file: File get() = desktopFile.file
+
     val fileName
-        get() = desktopFile?.fileName
+        get() = desktopFile.fileName
     val fullAppName
-        get() = desktopFile?.fullAppName ?: ""
+        get() = desktopFile.fullAppName
     val type
-        get() = desktopFile?.desktopSection?.Type ?: ""
+        get() = desktopFile.desktopSection?.Type ?: ""
     val version
-        get() = desktopFile?.desktopSection?.Version ?: ""
+        get() = desktopFile.desktopSection?.Version ?: ""
     val name
-        get() = desktopFile?.desktopSection?.Name ?: ""
+        get() = desktopFile.desktopSection?.Name ?: ""
     val comment
-        get() = desktopFile?.desktopSection?.Comment ?: ""
+        get() = desktopFile.desktopSection?.Comment ?: ""
     val path
-        get() = desktopFile?.desktopSection?.Path ?: ""
+        get() = desktopFile.desktopSection?.Path ?: ""
     val exec
-        get() = desktopFile?.desktopSection?.Exec ?: ""
+        get() = desktopFile.desktopSection?.Exec ?: ""
     val iconName
-        get() = desktopFile?.desktopSection?.Icon ?: ""
+        get() = desktopFile.desktopSection?.Icon ?: ""
     val categories
-        get() = desktopFile?.desktopSection?.Categories.ifEmptyCategories { listOf(Category.UNCATEGORIZED) }
+        get() = desktopFile.desktopSection?.Categories.ifEmptyCategories { listOf(Category.UNCATEGORIZED) }
     val notifyOnStart
-        get() = desktopFile?.desktopSection?.NotifyOnStart ?: false
+        get() = desktopFile.desktopSection?.NotifyOnStart ?: false
     val runInTerminal
-        get() = desktopFile?.desktopSection?.RunInTerminal ?: false
+        get() = desktopFile.desktopSection?.RunInTerminal ?: false
     val windowClass
-        get() = desktopFile?.desktopSection?.StartupWMClass.orEmpty().ifEmpty { fullAppName }
+        get() = desktopFile.desktopSection?.StartupWMClass.orEmpty().ifEmpty { fullAppName }
 
     val cmd
         get() = exec.split(" ").first()
+
+    val desktopData
+        get() = desktopFile.fileData
 
     var iconTint: Color? = null
     val iconBackground: Color = Color.White
@@ -66,25 +73,29 @@ class App(
             isStartingState.value = value
         }
 
-    fun start() = runCatching {
-        println("Starting app: $name [$windowClass].")
-        println("dex -w ${desktopFile?.absolutePath}")
-        triggerStart()
-        Shell {
-            startApp(
-                app = this@App,
-                onStarted = {
-                    println("App started app: $name [$windowClass].")
-                    triggerStarted()
-                },
-                onStopped = { e ->
-                    println("App stopped: $name [$windowClass].")
-                    triggerStop(e)
-                }
-            )
+    fun start(
+        scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+    ) = scope.launch(Dispatchers.IO) {
+        runCatching {
+            println("Starting app: $name [$windowClass].")
+            println("dex -w ${desktopFile.absolutePath}")
+            triggerStart()
+            Shell {
+                startApp(
+                    app = this@App,
+                    onStarted = {
+                        println("App started app: $name [$windowClass].")
+                        triggerStarted()
+                    },
+                    onStopped = { e ->
+                        println("App stopped: $name [$windowClass].")
+                        triggerStop(e)
+                    }
+                )
+            }
+        }.onFailure { e ->
+            triggerStop(e)
         }
-    }.onFailure { e ->
-        triggerStop(e)
     }
 
     fun triggerStart() {
@@ -124,21 +135,18 @@ class App(
     override fun equals(other: Any?): Boolean {
         return when {
             other is App -> {
-                other.file?.name?.contentEquals(file?.name) ?: false
+                other.fileName.contentEquals(file.name)
             }
 
             else -> false
         }
     }
 
-//    fun hasWindow(api: DesktopProvider): Boolean =
-//        api.windowsManager.hasWindow(this)
-
     override fun hashCode(): Int {
-        var result = file?.hashCode() ?: 0
-        result = 31 * result + (desktopFile?.hashCode() ?: 0)
+        var result = file.hashCode()
+        result = 31 * result + desktopFile.hashCode()
         result = 31 * result + isFavorite.hashCode()
-        result = 31 * result + (fileName?.hashCode() ?: 0)
+        result = 31 * result + fileName.hashCode()
         result = 31 * result + fullAppName.hashCode()
         result = 31 * result + type.hashCode()
         result = 31 * result + version.hashCode()

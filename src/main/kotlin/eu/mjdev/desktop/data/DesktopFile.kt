@@ -3,6 +3,7 @@ package eu.mjdev.desktop.data
 import eu.mjdev.desktop.extensions.Custom.ParsedBoolean
 import eu.mjdev.desktop.extensions.Custom.ParsedList
 import eu.mjdev.desktop.extensions.Custom.ParsedString
+import eu.mjdev.desktop.extensions.Custom.text
 import eu.mjdev.desktop.helpers.system.LinuxIni
 import org.ini4j.Ini
 import org.ini4j.Profile.Section
@@ -11,12 +12,10 @@ import java.io.File
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "ConstPropertyName", "PropertyName")
 class DesktopFile(
-    var file: File,
+    var file: File = File(""),
     val correctDir: String = "/tmp/.corrected-desktop-files/",
     val correctedFile: File = File(File(correctDir), file.name),
-    var fileData: String = runCatching {
-        (if (correctedFile.exists()) correctedFile else file).readText()
-    }.getOrNull().orEmpty(),
+    var fileData: String = (if (correctedFile.exists()) correctedFile else file).text,
     var content: Ini = (runCatching { LinuxIni(fileData) }.getOrNull() ?: LinuxIni())
 ) {
     var fileName: String = if (correctedFile.exists()) correctedFile.name else file.name
@@ -54,7 +53,7 @@ class DesktopFile(
                     desktopSection?.OnlyShowIn = mutableListOf()
                     writeTo(f)
                     file = f
-                    fileData = file.readText()
+                    fileData = file.text
                     content = Wini(f)
                 }
             }.onFailure { e ->
@@ -258,6 +257,8 @@ class DesktopFile(
     }
 
     companion object {
+        const val EXTENSION: String = "desktop"
+
         const val Prop_Type = "Type"
         const val Prop_Version = "Version"
         const val Prop_Path = "Path"
@@ -293,6 +294,8 @@ class DesktopFile(
         const val Prop_CursorTheme = "CursorTheme"
         const val Prop_ButtonLayout = "ButtonLayout"
         const val Prop_X_Ubuntu_UseOverlayScrollbars = "X-Ubuntu-UseOverlayScrollbars"
+
+        val Empty = DesktopFile()
 
         fun desktopFile(
             file: File,

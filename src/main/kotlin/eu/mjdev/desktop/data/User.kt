@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.data
 
+import eu.mjdev.desktop.extensions.Custom.lines
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.helpers.system.UserDirs
 import eu.mjdev.desktop.icons.Icons
@@ -44,7 +45,7 @@ class User(
     }
 
     fun login(
-        api:DesktopProvider,
+        api: DesktopProvider,
         password: String
     ): Boolean = api.login(userName, password)
 
@@ -63,17 +64,15 @@ class User(
         fun loadPicture(
             homeDir: File,
             picName: String
-        ): File? = File(homeDir, picName).let {
-            if(it.exists()) it else null
+        ): File? = File(homeDir, picName).let { f ->
+            if (f.exists()) f else null
         }
 
         val allUsers: List<User>
-            get() = File("/etc/passwd")
-                .readLines()
-                .filter { t ->
-                    t.contains("/home")
-                }.map {
-                    User(it)
-                }
+            get() = File("/etc/passwd").lines.filter { t ->
+                t.contains("/home")
+            }.map {
+                User(it)
+            }
     }
 }

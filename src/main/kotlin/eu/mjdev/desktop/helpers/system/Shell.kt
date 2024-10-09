@@ -56,7 +56,7 @@ class Shell(
     ) = ProcessBuilder(
         "dex",
         "-w",
-        app.desktopFile?.absolutePath
+        app.desktopFile.absolutePath
     ).apply {
         environment().putAll(environment)
     }.also { processBuilder ->
@@ -100,6 +100,6 @@ class Shell(
             }.toTypedArray()
         ).apply {
             waitFor()
-        }.inputReader().readText().lines()
+        }.inputReader().readLines()
     }
 }

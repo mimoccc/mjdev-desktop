@@ -2,6 +2,8 @@
 
 package eu.mjdev.desktop.extensions
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,6 +11,7 @@ import androidx.compose.foundation.relocation.BringIntoViewResponder
 import androidx.compose.foundation.relocation.bringIntoViewResponder
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -404,6 +407,30 @@ object Compose {
                 }
             )
         }
+    )
+
+    @Suppress("FunctionName")
+    @Composable
+    fun <S> Crossfade(
+        targetState: S,
+        modifier: Modifier = Modifier,
+        fadeInDuration: Long = 3000L,
+        fadeOutDuration: Long = 5000L,
+        contentAlignment: Alignment = Alignment.TopStart,
+        label: String = "FadeInContent",
+        contentKey: (targetState: S) -> Any? = { it },
+        content: @Composable AnimatedContentScope.(targetState: S) -> Unit
+    ) = AnimatedContent(
+        targetState = targetState,
+        modifier = modifier,
+        transitionSpec = {
+            fadeIn(animationSpec = tween(durationMillis = fadeInDuration.toInt())) togetherWith
+                    fadeOut(animationSpec = tween(durationMillis = fadeOutDuration.toInt()))
+        },
+        contentAlignment = contentAlignment,
+        label = label,
+        contentKey = contentKey,
+        content = content
     )
 
 //    Toolkit.getDefaultToolkit().addAWTEventListener({ event ->

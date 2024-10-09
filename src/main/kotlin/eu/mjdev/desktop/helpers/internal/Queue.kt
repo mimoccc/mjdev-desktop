@@ -1,24 +1,31 @@
 package eu.mjdev.desktop.helpers.internal
 
 @Suppress("unused")
-class Queue<E> : ArrayList<E>() {
-    private var index = 0
+class Queue<E>(
+    val source: Collection<E>
+) : Iterator<E> {
+    var iterator: Iterator<E> = source.iterator()
 
-    val value: E?
-        get() = runCatching {
-            val ret = this[index] as E?
-            if (index < size) index++
-            if (index >= size) index = 0
-            ret
-        }.onFailure {
-            index = 0
-        }.getOrNull()
+    override fun hasNext(): Boolean = source.isNotEmpty()
 
-    companion object {
-        fun <E> mutableQueue(vararg elements: E) = Queue<E>().apply { addAll(elements) }
+    @Deprecated(
+        message = "Deprecated please use for safety nextOrNull().",
+    )
+    override fun next(): E = when {
+        source.isEmpty() -> throw (IllegalStateException("Source is empty."))
+        iterator.hasNext() -> iterator.next()
+        else -> {
+            iterator = source.iterator()
+            iterator.next()
+        }
+    }
 
-        fun <E> mutableQueue(elements: Collection<E>) = Queue<E>().apply { addAll(elements) }
+    fun nextOrNull(): E? = when {
+        source.isEmpty() -> null
+        iterator.hasNext() -> iterator.next()
+        else -> {
+            iterator = source.iterator()
+            nextOrNull()
+        }
     }
 }
-
-

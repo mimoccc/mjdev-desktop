@@ -1,17 +1,19 @@
 package eu.mjdev.desktop.helpers.system
 
+import eu.mjdev.desktop.extensions.Custom.lines
+import eu.mjdev.desktop.extensions.Custom.notStartsWith
 import java.io.File
 
 @Suppress("unused")
 class OsRelease(
     configFile: File = File("/etc/os-release"),
-    configFileContent: List<String> = configFile.readLines().filter {
-        (!it.startsWith("#")) && (!it.trim().isEmpty())
+    configFileContent: List<String> = configFile.lines.filter { line ->
+        line.trim().let { l -> l.isNotEmpty() && l.notStartsWith("#") }
     }
 ) : HashMap<String, File>() {
     init {
         configFileContent.map {
-            it.split("=").let { Pair(it[0], it.getOrNull(1)) }
+            it.split("=").let { pair -> Pair(pair[0], pair.getOrNull(1)) }
         }.forEach {
             put(it.first, File(it.second ?: ""))
         }

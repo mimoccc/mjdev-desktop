@@ -1,104 +1,130 @@
 package eu.mjdev.desktop.provider
 
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.Category
-import eu.mjdev.desktop.data.DesktopFile
-import eu.mjdev.desktop.extensions.Custom.invalidate
+import eu.mjdev.desktop.extensions.Custom.desktopFiles
+import eu.mjdev.desktop.extensions.Custom.dirsOnly
+import eu.mjdev.desktop.extensions.Custom.filesOnly
+import eu.mjdev.desktop.extensions.Custom.flowBlock
+import eu.mjdev.desktop.extensions.Custom.get
 import eu.mjdev.desktop.extensions.Custom.jsonToList
-import eu.mjdev.desktop.extensions.Locale.toLocale
-import eu.mjdev.desktop.helpers.exception.SuccessException
+import eu.mjdev.desktop.extensions.Custom.lines
+import eu.mjdev.desktop.extensions.Custom.sortedByName
+import eu.mjdev.desktop.extensions.Custom.text
+import eu.mjdev.desktop.extensions.Custom.textAsLocale
+import eu.mjdev.desktop.extensions.Custom.trimIsEmpty
+import eu.mjdev.desktop.extensions.Custom.trimStartsWith
 import eu.mjdev.desktop.helpers.system.Shell
+import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import java.io.File
 import java.util.*
 
-@Suppress("unused", "MemberVisibilityCanBePrivate", "UNNECESSARY_SAFE_CALL")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class AppsProvider(
-    val api: DesktopProvider
+    val api: DesktopProvider,
+    val scope: CoroutineScope = api.scope
 ) {
-    val scope
-        get() = api.scope
+    companion object {
+        const val DIR_NAME_ROOT = "/"
+        const val DIR_NAME_USR = "/usr"
+        const val DIR_NAME_VAR = "/var"
+        const val DIR_NAME_DOT_CONFIG = ".config"
+        const val DIR_NAME_DOT_ICONS = ".icons"
+        const val DIR_NAME_DOT_THEMES = ".themes"
+        const val DIR_NAME_DOT_LOCAL = ".local"
+        const val DIR_NAME_SHARE = "share"
+        const val DIR_NAME_APPLICATIONS = "applications"
+        const val DIR_NAME_AUTOSTART = "autoStart"
+        const val DIR_NAME_BACKGROUNDS = "backgrounds"
+        const val DIR_NAME_MENUS = "menus"
+        const val DIR_NAME_LIB = "lib"
+        const val DIR_NAME_FLATPAK = "flatpak"
+        const val DIR_NAME_EXPORTS = "exports"
+        const val DIR_NAME_SNAPD = "snapd"
+        const val DIR_NAME_DESKTOP = "desktop"
 
-    private val configDir by lazy { api.homeDir.resolve(".config") }
-    private val iconsDir by lazy { api.homeDir.resolve(".icons") }
-    private val themesDir by lazy { api.homeDir.resolve(".themes") }
-    private val localDir by lazy { api.homeDir.resolve(".local") }
-    private val localShareDir by lazy { localDir?.resolve("share") }
-    private val allAppsDesktopFilesDir by lazy { localShareDir?.resolve("applications") }
-    private val autostartDesktopFilesDir by lazy { configDir?.resolve("autoStart") }
-    private val backgroundFilesDir by lazy { localShareDir?.resolve("backgrounds") }
-    // todo
-//    private val userBackgroundFilesDir by lazy { homeDir?.resolve("pictures") }
+        const val FILE_NAME_GNOME_APPS_MENU = "gnome-applications.menu"
+        const val FILE_NAME_BACKGROUND = "background"
+        const val FILE_NAME_MIME_APPS_LIST = "mimeapps.list"
+        const val FILE_NAME_USER_DIRS = "user-dirs.dirs"
+        const val FILE_NAME_USER_DIRS_LOCALE = "user-dirs.locale"
 
-    private val menusDir by lazy { configDir?.resolve("menus") }
+        // todo
+        @Composable
+        fun rememberFavoriteApps(
+            api: DesktopProvider = LocalDesktop.current,
+            appsProvider: AppsProvider = api.appsProvider,
+        ): State<List<App>> {
+//            var processes by mutableStateOf(0)
+//            processManagerListener { processes = size }
+            return appsProvider.favoriteApps.collectAsState(emptyList())
+            // todo
 
-    private val gnomeAppsFile by lazy { menusDir?.resolve("gnome-applications.menu") } // xml
-    private val backgroundFile by lazy { configDir?.resolve("background") } // jpg
+        }
+    }
+
+    private val rootDir = File(DIR_NAME_ROOT)
+    private val usrDir = File(DIR_NAME_USR)
+    private val varDir = File(DIR_NAME_VAR)
+
+    private val configDir = api.homeDir[DIR_NAME_DOT_CONFIG]
+    private val iconsDir = api.homeDir[DIR_NAME_DOT_ICONS]
+    private val themesDir = api.homeDir[DIR_NAME_DOT_THEMES]
+    private val localDir = api.homeDir[DIR_NAME_DOT_LOCAL]
+    private val localShareDir = localDir[DIR_NAME_SHARE]
+    private val allAppsDesktopFilesDir = localShareDir[DIR_NAME_APPLICATIONS]
+    private val autostartDesktopFilesDir = configDir[DIR_NAME_AUTOSTART]
+
+    private val backgroundFilesDir by lazy { localShareDir[DIR_NAME_BACKGROUNDS] }
+    // private val userBackgroundFilesDir by lazy { homeDir?.resolve("pictures") } // todo
+
+    private val menusDir = configDir[DIR_NAME_MENUS]
+    private val gnomeAppsFile = menusDir[FILE_NAME_GNOME_APPS_MENU] // xml
+    private val backgroundFile = configDir[FILE_NAME_BACKGROUND] // jpg
 
     private val mimeApps by lazy {
-        runCatching {
-            configDir?.resolve("mimeapps.list")?.readLines()
-        }.getOrNull()
+        configDir[FILE_NAME_MIME_APPS_LIST].lines
     } // <mime>=<desktop.file>
     private val userDirs by lazy {
-        runCatching {
-            configDir?.resolve("user-dirs.dirs")?.readText()
-        }.getOrNull()
+        configDir[FILE_NAME_USER_DIRS].text
     } // <type>="<path>"
     private val userDirsLocale by lazy {
-        runCatching {
-            configDir?.resolve("user-dirs.locale")?.readText()?.toLocale()
-        }.getOrNull()
+        configDir[FILE_NAME_USER_DIRS_LOCALE].textAsLocale
     } //SK_sk
 
     private val menusItems by lazy {
-        runCatching {
-            menusDir?.resolve("gnome-applications.menu")?.readText()
-        }.getOrNull()
+        menusDir[FILE_NAME_GNOME_APPS_MENU].text
     } // xml
 
-    private val iconThemes by lazy { runCatching { iconsDir?.listFiles() }.getOrNull() } // folders
-    private val systemThemes by lazy { runCatching { themesDir?.listFiles() }.getOrNull() } // folders
+    private val iconThemes by lazy { iconsDir.dirsOnly } // folders
+    private val systemThemes by lazy { themesDir.dirsOnly } // folders
 
     private val autoStartDesktopFiles by lazy {
-        runCatching {
-            autostartDesktopFilesDir?.listFiles()?.map { DesktopFile(it) }
-        }.getOrNull() ?: emptyList()
+        autostartDesktopFilesDir.desktopFiles
     }
 
     // todo : probably not all here, need usr and local also
     private val allAppsDesktopFilesLocal by lazy {
-        runCatching {
-            allAppsDesktopFilesDir?.listFiles()?.filter {
-                it.extension == "desktop"
-            }?.map { DesktopFile(it) }
-        }.getOrNull() ?: emptyList()
+        allAppsDesktopFilesDir.desktopFiles
     }
 
     private val allAppsDesktopFilesShared by lazy {
-        runCatching {
-            File("/usr/share/applications").listFiles()?.filter {
-                it.extension == "desktop"
-            }?.map { DesktopFile(it) }
-        }.getOrNull() ?: emptyList()
+        usrDir[DIR_NAME_SHARE][DIR_NAME_APPLICATIONS].desktopFiles
     }
 
     private val allAppsDesktopFilesFlatPack by lazy {
-        runCatching {
-            File("/var/lib/flatpak/exports/share/applications/").listFiles()?.filter {
-                it.extension == "desktop"
-            }?.map { DesktopFile(it) }
-        }.getOrNull() ?: emptyList()
+        varDir[DIR_NAME_LIB][DIR_NAME_FLATPAK][DIR_NAME_EXPORTS][DIR_NAME_SHARE][DIR_NAME_APPLICATIONS].desktopFiles
     }
 
     private val allAppsDesktopFilesSnap by lazy {
-        runCatching {
-            File("/var/lib/snapd/desktop/applications/").listFiles()?.filter {
-                it.extension == "desktop"
-            }?.map { DesktopFile(it) }
-        }.getOrNull() ?: emptyList()
+        varDir[DIR_NAME_LIB][DIR_NAME_SNAPD][DIR_NAME_DESKTOP][DIR_NAME_APPLICATIONS].desktopFiles
     }
 
     private val allAppsDesktopFiles by lazy {
@@ -109,94 +135,45 @@ class AppsProvider(
     }
 
     val currentLocale: Locale
-        get() = userDirsLocale ?: Locale.ENGLISH
+        get() = userDirsLocale
     val autoStartApps
-        get() = autoStartDesktopFiles.map { file -> App(desktopFile = file, file = file.file) }
+        get() = autoStartDesktopFiles.map { file -> App(file) }
     val allApps
-        get() = allAppsDesktopFiles.map { file -> App(desktopFile = file, file = file.file) }
-    val backgrounds
-        get() = runCatching {
-            backgroundFilesDir?.listFiles()?.toList()?.sortedBy { it.name }?.filter { it.isFile }
-        }.getOrNull() ?: emptyList<File>()
-    val appCategories
-        get() = mutableListOf<String>().apply {
-            allApps.forEach { app ->
-                addAll(app.categories.map { c -> provideCategory(c) })
-            }
-        }.distinct().sorted().map { Category(it) }
-    val categoriesAndApps
-        get() = mutableMapOf<String, List<App>>().let { map ->
-            allApps.forEach { app ->
-                app.categories?.forEach { category ->
-                    val cat = provideCategory(category)
-                    if (!map.containsKey(cat)) {
-                        map[cat] = mutableListOf()
-                    }
-                    (map[cat] as MutableList<App>).addIfNotExists(app)
-                }
-            }
-            map
+        get() = allAppsDesktopFiles.map { file -> App(file) }
+
+    val backgrounds by lazy {
+        backgroundFilesDir.filesOnly.sortedByName()
+    }
+
+    val appCategories = flowBlock {
+        allApps.flatMap { app ->
+            app.categories.map { c ->
+                provideCategory(c)
+            }.distinct().sorted()
+        }.map { c ->
+            Category(c)
         }
+    }.flowOn(Dispatchers.IO)
 
-    val favoriteApps = mutableStateListOf<App>()
-
-    // todo languages
-    fun provideCategory(category: String): String {
-        return if (
-            category.trim().isEmpty() || category.trim().startsWith("X-", true)
-        ) "Uncategorized" else category
-    }
-
-    fun startApp(app: App) = scope.launch(Dispatchers.IO) {
-        app.onStarting {
-            if (favoriteApps.contains(app)) {
-                favoriteApps.invalidate()
-            } else {
-                favoriteApps.add(app)
-            }
-        }.onStarted {
-            favoriteApps.invalidate()
-        }.onStop { result ->
-            if (app.isFavorite) {
-                favoriteApps.invalidate()
-            } else {
-                favoriteApps.remove(app)
-            }
-            when (result) {
-                is SuccessException -> println(result.message)
-                else -> result.printStackTrace()
-            }
-        }.start()
-        favoriteApps.invalidate()
-    }
-
-    init {
+    val favoriteApps: Flow<List<App>> = flowBlock {
         Shell.executeAndRead(
             "gsettings",
             "get",
             "org.gnome.shell",
             "favorite-apps"
-        ).jsonToList<String>().mapNotNull { deskFileName ->
+        ).jsonToList<String>().asSequence().flatMap { deskFileName ->
             allAppsDesktopFiles.filter { deskFile ->
-                deskFile.file.name?.contentEquals(deskFileName) == true
+                deskFile.fileName.contentEquals(deskFileName)
             }.map { deskFile ->
-                App(
-                    desktopFile = deskFile,
-                    file = deskFile.file,
-                    isFavorite = true
-                )
-            }.firstOrNull()
-        }?.also { favorite ->
-            favoriteApps.addAll(favorite)
-        }
-    }
-
-    companion object {
-        private fun MutableList<App>.addIfNotExists(app: App) {
-            val contains = any { a -> a.fullAppName.contentEquals(app.fullAppName) }
-            if (!contains) {
-                add(app)
+                App(deskFile)
             }
-        }
+        }.toList()
+    }.flowOn(Dispatchers.IO)
+
+    // todo languages
+    fun provideCategory(category: String): String {
+        return if (
+            category.trimIsEmpty() || category.trimStartsWith("X-", true)
+        ) "Uncategorized" else category
     }
 }

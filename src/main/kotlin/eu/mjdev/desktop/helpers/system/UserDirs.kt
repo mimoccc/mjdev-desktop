@@ -1,21 +1,24 @@
 package eu.mjdev.desktop.helpers.system
 
+import eu.mjdev.desktop.extensions.Custom.lines
+import eu.mjdev.desktop.extensions.Custom.notStartsWith
 import java.io.File
 
+// todo api has directories & hashmap from file
 @Suppress("unused")
 class UserDirs(
     homeDir: File,
     configFile: File = File(homeDir, "/.config/user-dirs.dirs"),
-    configFileContent: List<String> = runCatching {  configFile.readLines().filter {
-        (!it.startsWith("#")) && (!it.trim().isEmpty())
-    }.map {
-        it.replace("\$HOME", homeDir.absolutePath)
-            .replace("\"", "")
-    } }.getOrElse { emptyList() }
+    configFileContent: List<String> =
+        configFile.lines.filter { line ->
+            line.let { l -> l.isNotEmpty() && l.notStartsWith("#") }
+        }.map { s ->
+            s.replace("\$HOME", homeDir.absolutePath).replace("\"", "")
+        }
 ) : HashMap<String, File>() {
     init {
-        configFileContent.map {
-            it.split("=").let { Pair(it[0], it.getOrNull(1)) }
+        configFileContent.map { line ->
+            line.split("=").let { pair -> Pair(pair[0], pair.getOrNull(1)) }
         }.forEach {
             put(it.first, File(it.second ?: ""))
         }

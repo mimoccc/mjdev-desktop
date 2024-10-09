@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,8 +16,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanelIcon
 import eu.mjdev.desktop.data.App
-import eu.mjdev.desktop.extensions.Custom.invalidate
-import eu.mjdev.desktop.managers.ProcessManager.Companion.processManagerListener
+import eu.mjdev.desktop.provider.AppsProvider.Companion.rememberFavoriteApps
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("FunctionName")
@@ -34,8 +33,7 @@ fun DesktopPanelFavoriteApps(
     onAppClick: (app: App) -> Unit = {},
     onContextMenuClick: (app: App) -> Unit = {}
 ) = withDesktopScope {
-    val apps = remember(favoriteApps.size) { favoriteApps }
-    processManagerListener { apps.invalidate() }
+    val apps by rememberFavoriteApps()
     Box(
         modifier = modifier
     ) {

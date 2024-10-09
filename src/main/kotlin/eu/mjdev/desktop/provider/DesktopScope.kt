@@ -1,7 +1,6 @@
 package eu.mjdev.desktop.provider
 
 import androidx.compose.runtime.Composable
-import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
 // todo theme user support
@@ -9,7 +8,7 @@ import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 open class DesktopScope(
     val api: DesktopProvider
 ) {
-    val isDebug: Boolean
+    val isDebug
         get() = api.isDebug
 
     val scope
@@ -78,9 +77,6 @@ open class DesktopScope(
     val appCategories
         get() = appsProvider.appCategories
 
-    val appCategoriesAndApps
-        get() = appsProvider.categoriesAndApps
-
     val allApps
         get() = appsProvider.allApps
 
@@ -119,9 +115,6 @@ open class DesktopScope(
 
     val panelAutoHideEnabled
         get() = theme.panelHideDelay > 0L
-
-    fun startApp(app: App) =
-        api.appsProvider.startApp(app)
 
     companion object {
         @Composable
