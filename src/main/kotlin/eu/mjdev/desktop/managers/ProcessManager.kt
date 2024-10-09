@@ -19,7 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 @Suppress("unused")
 class ProcessManager(
-    val delay: Long = 250L
+    val delay: Long = 1000L
 ) : ArrayList<ProcessManager.ProcessWrapper>(), AutoCloseable {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val listeners = mutableListOf<ProcessListener>()
