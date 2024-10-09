@@ -107,8 +107,12 @@ allprojects {
         // tts
         implementation(libs.tts)
         // dbus
-//        implementation(libs.dbus.java.core)
-//        implementation(libs.dbus.java.transport.native.unixsocket)
+        implementation(libs.dbus.java.core)
+//        implementation(libs.dbus.java.osgi)
+        implementation(libs.dbus.java.utils)
+        implementation(libs.dbus.java.transport.native.unixsocket)
+        implementation(libs.dbus.java.transport.tcp)
+//        implementation("com.rm5248:dbus-java-nativefd:2.0")
         // wayland
 //        implementation("org.freedesktop:wayland-client:1.5.1")
         // gettext
@@ -274,6 +278,7 @@ createTask<JavaExec>(
     classpath = sourceSets.main.get().runtimeClasspath
     jvmArgs("--enable-preview")
 }
+
 createTask<JavaExec>(
     name = "runDebug",
     group = "mjdev",
@@ -281,7 +286,7 @@ createTask<JavaExec>(
 ) {
     mainClass = "eu.mjdev.desktop.MainKt"
     classpath = sourceSets.main.get().runtimeClasspath
-    args = arrayListOf("-d")
+    args = arrayListOf("--debug")
     jvmArgs("--enable-preview")
     // dbus-run-session mutter --wayland --nested
 }

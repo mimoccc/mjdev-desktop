@@ -57,8 +57,10 @@ jna-platform = { module = "net.java.dev.jna:jna-platform", version.ref = "jna-pl
 qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
 tts = { module = "nl.marc-apps:tts", version.ref = "tts" }
 dbus-java-core = { module = "com.github.hypfvieh:dbus-java-core", version = "5.0.0" }
+dbus-java-osgi = { module = "com.github.hypfvieh:dbus-java-osgi", version = "5.0.0" }
+dbus-java-utils = { module = "com.github.hypfvieh:dbus-java-utils", version = "5.0.0" }
 dbus-java-transport-native-unixsocket = { module = "com.github.hypfvieh:dbus-java-transport-native-unixsocket", version = "5.0.0" }
-
+dbus-java-transport-tcp= { module = "com.github.hypfvieh:dbus-java-transport-tcp", version = "5.0.0" }
 #coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil3" }
 #korau = { module = "com.soywiz.korlibs.korau:korau", version.ref = "korau" }
 #accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version = "0.35.0-alpha" }
