@@ -29,8 +29,10 @@ class LinuxWindowBlurManager(
 
     init {
         SwingUtilities.invokeLater {
-                if (window is ComposeWindow) window.setComposeLayerTransparency(true)
-                window.hackContentPane()
+            if (window is ComposeWindow) {
+                window.setComposeLayerTransparency(true)
+            }
+            window.hackContentPane()
             updateBlur()
         }
     }
@@ -40,13 +42,13 @@ class LinuxWindowBlurManager(
     }
 
     val componentAdapter = object : ComponentAdapter() {
-        override fun componentMoved(e: ComponentEvent?) = resetTransparent(e)
-        override fun componentResized(e: ComponentEvent?) = resetTransparent(e)
-        override fun componentShown(e: ComponentEvent?) = resetTransparent(e)
+        override fun componentMoved(e: ComponentEvent?) = resetBlur(e)
+        override fun componentResized(e: ComponentEvent?) = resetBlur(e)
+        override fun componentShown(e: ComponentEvent?) = resetBlur(e)
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun resetTransparent(e: AWTEvent?) {
+    private fun resetBlur(e: AWTEvent?) {
         if (blurEnabled) updateBlur()
     }
 

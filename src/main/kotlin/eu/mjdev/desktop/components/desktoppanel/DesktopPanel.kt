@@ -31,8 +31,9 @@ import eu.mjdev.desktop.components.sliding.SlidingMenu
 import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.components.tooltip.Tooltip
+import eu.mjdev.desktop.components.tooltip.TooltipState
+import eu.mjdev.desktop.components.tooltip.rememberTooltipState
 import eu.mjdev.desktop.data.App
-import eu.mjdev.desktop.data.TooltipData
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.ColorUtils.lighter
 import eu.mjdev.desktop.extensions.Compose.height
@@ -57,15 +58,9 @@ fun DesktopPanel(
     showMenuIcon: Boolean = true,
     panelState: VisibilityState = rememberVisibilityState(),
     menuState: VisibilityState = rememberVisibilityState(),
+    tooltipState: TooltipState = rememberTooltipState(),
     enterAnimation: EnterTransition = DesktopPanelEnterAnimation,
     exitAnimation: ExitTransition = DesktopPanelExitAnimation,
-    tooltipHeight: Dp = 64.dp,
-    tooltipConverter: (Any?) -> TooltipData = { item ->
-        when (item) {
-            is App -> TooltipData(title = item.name, description = item.comment)
-            else -> TooltipData(title = item.toString())
-        }
-    },
     position: WindowPosition.Aligned = WindowPosition.Aligned(Alignment.BottomCenter),
     onMenuIconClicked: () -> Unit = {},
     onMenuIconContextMenuClicked: () -> Unit = {},
@@ -77,20 +72,20 @@ fun DesktopPanel(
     onLanguageClick: () -> Unit = {},
     onClockClick: () -> Unit = {}
 ) = withDesktopScope {
-    val tooltipState = rememberState<Any?>(null)
     val panelDividerWidth by rememberState(theme.panelDividerWidth)
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
-        if (visible) iconSize.height + iconOuterPadding.height + tooltipHeight + theme.panelContentPadding.times(2)
-        else panelDividerWidth
+        if (visible)
+            iconSize.height + iconOuterPadding.height + tooltipState.tooltipHeight + theme.panelContentPadding.times(2)
+        else
+            panelDividerWidth
     }
     val panelSize = remember(panelState.isVisible, panelState.enabled) {
         DpSize(containerSize.width, panelHeight(panelState.isVisible))
     }
     val windowState: ChromeWindowState = rememberChromeWindowState(
-        position = position,
-        size = panelSize
+        position = position, size = panelSize
     )
-    panelState.updateSize(panelSize - DpSize(0.dp, tooltipHeight))
+    panelState.updateSize(panelSize - DpSize(0.dp, tooltipState.tooltipHeight))
     globalKeyEventHandler(panelState.isVisible && panelState.enabled) {
         onEscape {
             panelState.hide()
@@ -114,13 +109,15 @@ fun DesktopPanel(
                 if (!menuState.isVisible) {
                     windowState.requestFocus()
                 }
-            }, onPointerLeave = {
+            },
+            onPointerLeave = {
                 if (!menuState.isVisible) {
                     panelState.hide()
                 }
             }) { isVisible ->
             Divider(
-                modifier = Modifier.fillMaxWidth().height(panelDividerWidth),
+                modifier = Modifier.fillMaxWidth()
+                    .height(panelDividerWidth),
                 color = Color.Transparent,
                 thickness = panelDividerWidth
             )
@@ -128,38 +125,44 @@ fun DesktopPanel(
                 TooltipArea(
                     modifier = Modifier.fillMaxWidth().wrapContentHeight(), tooltip = {
                         Tooltip(
-                            textColor = textColor,
-                            borderColor = borderColor,
-                            state = tooltipState,
-                            converter = tooltipConverter,
-                            backgroundColor = backgroundColor
+                            tooltipState = tooltipState,
                         )
-                    }, tooltipPlacement = TooltipPlacement.CursorPoint(
-                        alignment = Alignment.TopEnd, offset = DpOffset(32.dp, 32.dp)
+                    },
+                    tooltipPlacement = TooltipPlacement.CursorPoint(
+                        alignment = Alignment.TopStart,
+                        offset = DpOffset(32.dp, 32.dp)
                     )
                 ) {
                     Column {
                         Box(
-                            modifier = Modifier.fillMaxWidth().height(tooltipHeight)
+                            modifier = Modifier.fillMaxWidth()
+                                .height(tooltipState.tooltipHeight)
                         )
                         Column(
-                            modifier = Modifier.fillMaxWidth().wrapContentHeight().background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(
-                                        backgroundColor.alpha(0.3f),
-                                        backgroundColor.alpha(0.7f),
-                                        backgroundColor.alpha(0.8f),
+                            modifier = Modifier.fillMaxWidth()
+                                .wrapContentHeight()
+                                .background(
+                                    brush = Brush.verticalGradient(
+                                        colors = listOf(
+                                            backgroundColor.alpha(0.3f),
+                                            backgroundColor.alpha(0.7f),
+                                            backgroundColor.alpha(0.8f),
+                                        )
                                     )
-                                )
-                            ).topShadow(
-                                color = borderColor.alpha(0.3f), blur = 4.dp
-                            ).onPlaced(panelState::onPlaced),
+                                ).topShadow(
+                                    color = borderColor.alpha(0.3f),
+                                    blur = 4.dp
+                                ).onPlaced(panelState::onPlaced),
                         ) {
                             Divider(
-                                modifier = Modifier.fillMaxWidth().height(2.dp), color = borderColor, thickness = 2.dp
+                                modifier = Modifier.fillMaxWidth()
+                                    .height(2.dp),
+                                color = borderColor,
+                                thickness = 2.dp
                             )
                             Box(
-                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(top = 4.dp)
                                     .padding(theme.panelContentPadding)
                             ) {
                                 if (showMenuIcon) {
@@ -170,7 +173,7 @@ fun DesktopPanel(
                                         iconSize = iconSize,
                                         iconPadding = iconPadding,
                                         iconOuterPadding = iconOuterPadding,
-                                        onTooltip = { item -> tooltipState.value = item },
+                                        onTooltip = { item -> tooltipState.show(item) },
                                         onClick = { onMenuIconClicked() },
                                         onContextMenuClick = onMenuIconContextMenuClicked
                                     )
@@ -183,19 +186,20 @@ fun DesktopPanel(
                                     iconSize = iconSize,
                                     iconPadding = iconPadding,
                                     iconOuterPadding = iconOuterPadding,
-                                    onTooltip = { item -> tooltipState.value = item },
+                                    onTooltip = { item -> tooltipState.show(item) },
                                     onAppClick = { app -> onAppClick(app) },
                                     onContextMenuClick = onAppContextMenuClick
                                 )
                                 DesktopPanelTray(
-                                    modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp),
+                                    modifier = Modifier.align(Alignment.CenterEnd)
+                                        .padding(end = 16.dp),
                                 ) {
                                     DesktopPanelLanguage(
-                                        onTooltip = { item -> tooltipState.value = item },
+                                        onTooltip = { item -> tooltipState.show(item) },
                                         onClick = onLanguageClick
                                     )
                                     DesktopPanelDateTime(
-                                        onTooltip = { item -> tooltipState.value = item },
+                                        onTooltip = { item -> tooltipState.show(item) },
                                         onClick = onClockClick
                                     )
                                 }

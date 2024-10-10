@@ -13,19 +13,29 @@ object BlurBackground {
         blurRadius: Float = 3f,
         contentPane: Container? = window.contentPane
     ) {
+//        val toolkit = Toolkit.getDefaultToolkit()
         val hackedPane = contentPane as? HackedContentPane
         val isHacked = hackedPane != null
         val width = window.width
         val height = window.height
         if (isHacked && (width > 0) && (height > 0)) {
             try {
-                BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB).let { image ->
-                    image.graphics.also { graphics ->
-                        hackedPane?.paint(graphics)
-                        graphics.dispose()
-                        GaussianFilter(blurRadius).filter(image, null).let { blurredImage ->
+                BufferedImage(
+                    width,
+                    height,
+                    BufferedImage.TYPE_INT_ARGB
+                ).let { image ->
+                    with(image.graphics) {
+                        hackedPane?.paint(this)
+                        GaussianFilter(
+                            blurRadius
+                        ).filter(
+                            image,
+                            null
+                        ).let { blurredImage ->
                             hackedPane?.setImage(blurredImage)
                         }
+                        dispose()
                     }
                 }
             } catch (e: Throwable) {

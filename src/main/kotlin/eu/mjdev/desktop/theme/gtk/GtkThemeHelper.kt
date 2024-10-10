@@ -230,12 +230,29 @@ class GtkThemeHelper(
             	border-bottom-right-radius: 8px;
                 border-top-right-radius: 8px;
                 border-top-left-radius: 8px;
-            	box-shadow: 0px 0px 0px 1px ${textColor.hexRgb};
-            	border: 2px solid ${bgColor.hexRgb};
+                border: 2px solid ${bgColor.hexRgb};
             	border-top: none;
-                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                position: relative;
+                box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
             }
             
+            window:before, window:after {
+                position:absolute;
+                z-index: -1;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+                top: 0;
+                bottom: 0;
+                left: 10px;
+                right: 10px;
+                border-radius: 100px / 10px;
+            }
+            
+            window:after {
+                right: 10px;
+                left: auto;
+                transform: skew(8deg) rotate(3deg);
+            }
+
             decoration {
                 background-image: none;
             	background-color: ${bgColor.hexRgb};

@@ -21,7 +21,7 @@ import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 @Composable
 fun Desktop(
     modifier: Modifier = Modifier,
-    panelState: VisibilityState = rememberVisibilityState()
+    panelState: VisibilityState = rememberVisibilityState(),
 ) = withDesktopScope {
     val bottomPadding by rememberCalculated(panelState.enabled) {
         if (panelState.enabled) 0.dp else max(0.dp, panelState.bounds.height)
