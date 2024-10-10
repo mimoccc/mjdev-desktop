@@ -85,6 +85,7 @@ class App(
                     app = this@App,
                     onStarted = {
                         println("App started app: $name [$windowClass].")
+                        println("Desktop File:")
                         triggerStarted()
                     },
                     onStopped = { e ->

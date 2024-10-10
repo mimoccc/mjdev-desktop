@@ -16,7 +16,11 @@ class DesktopFile(
     val correctDir: String = "/tmp/.corrected-desktop-files/",
     val correctedFile: File = File(File(correctDir), file.name),
     var fileData: String = (if (correctedFile.exists()) correctedFile else file).text,
-    var content: Ini = (runCatching { LinuxIni(fileData) }.getOrNull() ?: LinuxIni())
+    private var content: Ini = (runCatching {
+        LinuxIni(fileData)
+    }.onFailure { e ->
+        Exception("Error in file: ${file.absolutePath}", e).printStackTrace()
+    }.getOrNull() ?: LinuxIni())
 ) {
     var fileName: String = if (correctedFile.exists()) correctedFile.name else file.name
     val absolutePath: String = if (correctedFile.exists()) correctedFile.absolutePath else file.absolutePath
@@ -31,14 +35,14 @@ class DesktopFile(
             it.value.toString()
         }
 
-    val desktopSection
-        get() = content[DesktopFileType.DesktopEntry.text]?.let { DesktopSectionScope(it) }
+    val desktopSection : DesktopSectionScope?
+        get() = content[DesktopEntryType.DesktopEntry]?.let { DesktopSectionScope(it) }
 
     val themeSection
-        get() = content[DesktopFileType.Theme.text]?.let { ThemeSectionScope(it) }
+        get() = content[DesktopEntryType.Theme]?.let { ThemeSectionScope(it) }
 
     val isApp
-        get() = desktopSection?.Type == DesktopFileType.Application
+        get() = desktopSection?.Type == DesktopEntryType.Application
 
     val isCorrect
         get() = correctedFile.exists()
@@ -63,19 +67,19 @@ class DesktopFile(
     }
 
     fun section(
-        type: DesktopFileType,
+        type: DesktopEntryType,
         block: Section.() -> Unit
     ) = (content[type.text] ?: content.add(type.text))?.apply(block)
 
     fun desktopSection(
         block: DesktopSectionScope.() -> Unit
-    ) = section(DesktopFile.DesktopFileType.DesktopEntry) {
+    ) = section(DesktopFile.DesktopEntryType.DesktopEntry) {
         DesktopSectionScope(this).apply(block)
     }
 
     fun themeSection(
         block: ThemeSectionScope.() -> Unit
-    ) = section(DesktopFile.DesktopFileType.Theme) {
+    ) = section(DesktopFile.DesktopEntryType.Theme) {
         ThemeSectionScope(this).apply(block)
     }
 
@@ -122,8 +126,8 @@ class DesktopFile(
     class DesktopSectionScope(
         override val section: Section
     ) : ISectionScope {
-        var Type: DesktopFileType
-            get() = DesktopFileType(section[Prop_Type])
+        var Type: DesktopEntryType
+            get() = DesktopEntryType(section[Prop_Type])
             set(value) {
                 section[Prop_Type] = value.text
             }
@@ -241,7 +245,7 @@ class DesktopFile(
             }
     }
 
-    enum class DesktopFileType(val text: String) {
+    enum class DesktopEntryType(val text: String) {
         Unknown(""),
         DesktopEntry("Desktop Entry"),
         Application("Application"),
@@ -250,7 +254,7 @@ class DesktopFile(
         companion object {
             operator fun invoke(
                 value: String?
-            ): DesktopFileType = value.orEmpty().trim().let { v ->
+            ): DesktopEntryType = value.orEmpty().trim().let { v ->
                 entries.firstOrNull { e -> e.text.contentEquals(v, true) } ?: Unknown
             }
         }
@@ -296,6 +300,10 @@ class DesktopFile(
         const val Prop_X_Ubuntu_UseOverlayScrollbars = "X-Ubuntu-UseOverlayScrollbars"
 
         val Empty = DesktopFile()
+
+        operator fun Ini.get(
+            type: DesktopEntryType
+        ) : Section? = get(type.text)
 
         fun desktopFile(
             file: File,

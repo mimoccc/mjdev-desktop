@@ -41,7 +41,7 @@ class GtkThemeHelper(
             mkDirs()
             deleteFile()
             desktopSection {
-                Type = DesktopFile.DesktopFileType.Theme
+                Type = DesktopFile.DesktopEntryType.Theme
                 Name = THEME_MJDEV
                 Comment = "dynamic system theme"
                 Encoding = Charsets.UTF_8.name()

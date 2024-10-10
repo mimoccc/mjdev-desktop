@@ -2,7 +2,6 @@ package eu.mjdev.desktop.components.controlcenter.pages
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
@@ -17,11 +16,13 @@ import eu.mjdev.desktop.components.custom.PowerBlock
 import eu.mjdev.desktop.components.custom.UserAvatar
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Modifier.rectShadow
+import eu.mjdev.desktop.helpers.compose.Orientation
 
 @Suppress("FunctionName")
 fun MainSettingsPage() = ControlCenterPage(
     icon = Icons.Filled.Home,
-    name = "Home"
+    name = "Home",
+    showHeader = false
 ) {
     Box(
         modifier = Modifier.fillMaxSize()

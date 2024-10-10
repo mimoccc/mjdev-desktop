@@ -1,10 +1,5 @@
 package eu.mjdev.desktop.components.file
 
-//import androidx.compose.ui.Alignment
-//import androidx.compose.ui.graphics.Color
-//import androidx.compose.ui.unit.dp
-//import com.composables.core.*
-//import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.Orientation

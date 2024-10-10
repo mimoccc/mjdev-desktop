@@ -18,7 +18,7 @@ import eu.mjdev.desktop.extensions.Compose.onLeftClick
 import eu.mjdev.desktop.extensions.Compose.onMousePress
 import eu.mjdev.desktop.extensions.Compose.onRightClick
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
-import eu.mjdev.desktop.helpers.DottedShape
+import eu.mjdev.desktop.helpers.shape.DottedShape
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("FunctionName")

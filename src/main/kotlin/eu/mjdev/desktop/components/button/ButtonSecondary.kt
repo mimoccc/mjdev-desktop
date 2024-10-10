@@ -7,7 +7,7 @@ import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Composable
-fun ButtonPrimary(
+fun ButtonSecondary(
     text: String = "Button",
     enabled: Boolean = true,
     visible: Boolean = true,
@@ -18,7 +18,7 @@ fun ButtonPrimary(
             onClick = onClick,
             enabled = enabled,
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = iconsTintColor,
+                backgroundColor = backgroundColor,
                 disabledBackgroundColor = disabledColor
             )
         ) {

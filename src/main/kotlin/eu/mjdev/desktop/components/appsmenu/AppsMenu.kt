@@ -5,7 +5,6 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,6 +34,7 @@ import eu.mjdev.desktop.extensions.Custom.trimIsNotEmpty
 import eu.mjdev.desktop.extensions.Modifier.dropShadow
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
+import eu.mjdev.desktop.helpers.compose.Orientation
 import eu.mjdev.desktop.helpers.compose.rememberForeverLazyListState
 import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.globalKeyEventHandler
 import eu.mjdev.desktop.provider.DesktopScope
@@ -202,7 +202,7 @@ fun AppsMenu(
                             .background(backgroundColor),
                         backButtonVisible = items.firstOrNull() is App,
                         searchTextState = searchTextState,
-                        onHideMenu = {
+                        onActionClick = {
                             menuState.hide()
                         },
                         onBackClick = {

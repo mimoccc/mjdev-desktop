@@ -135,8 +135,8 @@ object Custom {
         ignoreCase: Boolean = false
     ) = !startsWith(prefix, ignoreCase)
 
-    fun String.trimIsEmpty() =
-        trim().isEmpty()
+//    fun String.trimIsEmpty() =
+//        trim().isEmpty()
 
 //    fun String.trimIsNotEmpty() =
 //        trim().isNotEmpty()
@@ -147,10 +147,10 @@ object Custom {
     fun State<String>.trimIsNotEmpty() =
         value.trim().isNotEmpty()
 
-    fun String.trimStartsWith(
-        prefix: String,
-        ignoreCase: Boolean = false
-    ) = trim().startsWith(prefix, ignoreCase)
+//    fun String.trimStartsWith(
+//        prefix: String,
+//        ignoreCase: Boolean = false
+//    ) = trim().startsWith(prefix, ignoreCase)
 
 //    fun String.trimNotStartsWith(
 //        prefix: String,
@@ -174,9 +174,9 @@ object Custom {
     }
 
     fun ParsedString(
-        value: String?,
+        value: Any?,
         defaultValue: String = ""
-    ) = value ?: defaultValue
+    ) = value?.toString() ?: defaultValue
 
     fun <T> flowBlock(
         block: suspend () -> T

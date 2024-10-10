@@ -31,7 +31,7 @@ import eu.mjdev.desktop.icons.Icons
 @Suppress("FunctionName")
 fun AIPage() = ControlCenterPage(
     icon = Icons.Chat,
-    name = "AI",
+    name = "Assistant",
     condition = { ai.isAvailable() }
 ) {
     val clipboardManager = LocalClipboardManager.current

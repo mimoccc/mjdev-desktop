@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
+import eu.mjdev.desktop.components.controlcenter.base.PageHeader
 import eu.mjdev.desktop.components.sliding.SlidingMenu
 import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
@@ -174,10 +175,14 @@ fun ControlCenter(
                                         color = borderColor,
                                         thickness = 2.dp
                                     )
-                                    Box(
+                                    Column(
                                         modifier = Modifier.width(controlCenterExpandedWidth),
                                     ) {
-                                        pagesFiltered.value[pagerState.value].render()
+                                        val page = pagesFiltered.value[pagerState.value]
+                                        PageHeader(page = page)
+                                        Box(modifier = Modifier.weight(1f)) {
+                                            page.render()
+                                        }
                                     }
                                     Divider(
                                         modifier = Modifier.fillMaxHeight()

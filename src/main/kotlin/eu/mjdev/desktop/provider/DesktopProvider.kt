@@ -1,7 +1,7 @@
 package eu.mjdev.desktop.provider
 
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.*
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
@@ -11,14 +11,20 @@ import eu.mjdev.desktop.data.DesktopFile
 import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.helpers.internal.Palette
-import eu.mjdev.desktop.managers.*
 import eu.mjdev.desktop.helpers.system.OsRelease
 import eu.mjdev.desktop.helpers.system.Shell
+import eu.mjdev.desktop.managers.ConnectivityManager
+import eu.mjdev.desktop.managers.GnomeManager
+import eu.mjdev.desktop.managers.KCEFHelper
+import eu.mjdev.desktop.managers.ProcessManager
 import eu.mjdev.desktop.provider.AIProvider.AiPluginGemini
 import eu.mjdev.desktop.theme.gtk.GtkThemeHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import java.awt.*
+import java.awt.Desktop
+import java.awt.GraphicsDevice
+import java.awt.GraphicsEnvironment
+import java.awt.Toolkit
 import java.io.File
 import java.net.URI
 import kotlin.system.exitProcess
@@ -231,13 +237,13 @@ class DesktopProvider(
     companion object {
         private val CONTROL_CENTER_PAGES = listOf(
             MainSettingsPage(),
-            EthSettingsPage(),
             WifiSettingsPage(),
+            EthSettingsPage(),
+            SoundSettingsPage(),
             BluetoothSettingsPage(),
             DisplaySettingsPage(),
-            SoundSettingsPage(),
+            DevicesPage(),
             AIPage(),
-            DevicesPage()
         )
 
         val LocalDesktop = staticCompositionLocalOf {

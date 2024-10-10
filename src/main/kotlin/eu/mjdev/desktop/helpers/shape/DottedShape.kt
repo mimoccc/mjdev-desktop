@@ -6,7 +6,7 @@
  *  w: https://mjdev.org
  */
 
-package eu.mjdev.desktop.helpers
+package eu.mjdev.desktop.helpers.shape
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect

@@ -3,16 +3,13 @@ package eu.mjdev.desktop.components.appsmenu
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import eu.mjdev.desktop.components.appbar.AppBar
 import eu.mjdev.desktop.components.icon.ShapedIcon
 import eu.mjdev.desktop.components.input.SearchFieldPassive
 import eu.mjdev.desktop.extensions.Compose.clear
@@ -20,7 +17,6 @@ import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.icons.Icons
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Suppress("FunctionName")
 @Composable
 fun AppsBottomBar(
@@ -28,12 +24,11 @@ fun AppsBottomBar(
     backButtonVisible: Boolean = true,
     searchTextState: MutableState<String> = rememberState(""),
     onContextMenuClick: () -> Unit = {},
-    onHideMenu: () -> Unit = {},
+    onActionClick: () -> Unit = {},
     onBackClick: () -> Unit = {}
 ) = withDesktopScope {
-    TopAppBar(
+    AppBar(
         modifier = modifier.focusable(false),
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
             SearchFieldPassive(
                 modifier = Modifier.fillMaxWidth().focusable(true),
@@ -46,7 +41,7 @@ fun AppsBottomBar(
                 onClearClick = { searchTextState.clear() }
             )
         },
-        navigationIcon = {
+        icon = {
             ShapedIcon(
                 modifier = Modifier.focusable(false),
                 visible = backButtonVisible && searchTextState.value.isEmpty(),
@@ -58,41 +53,8 @@ fun AppsBottomBar(
             )
         },
         actions = {
-            ShapedIcon(
-                modifier = Modifier,
-                imageVector = Icons.RestartComputer,
-                iconColor = borderColor,
-                iconBackgroundColor = iconsTintColor,
-                onRightClick = onContextMenuClick,
-                onClick = {
-                    onHideMenu()
-                    // todo : dialog
-                    api.restart()
-                }
-            )
-            ShapedIcon(
-                modifier = Modifier,
-                imageVector = Icons.PowerOffComputer,
-                iconColor = borderColor,
-                iconBackgroundColor = iconsTintColor,
-                onRightClick = onContextMenuClick,
-                onClick = {
-                    onHideMenu()
-                    // todo : dialog
-                    api.suspend()
-                }
-            )
-            ShapedIcon(
-                modifier = Modifier,
-                imageVector = Icons.LogOutUser,
-                iconColor = borderColor,
-                iconBackgroundColor = iconsTintColor,
-                onRightClick = onContextMenuClick,
-                onClick = {
-                    onHideMenu()
-                    // todo : dialog
-                    api.logOut()
-                }
+            AppActions(
+                onActionClick = onActionClick
             )
         }
     )

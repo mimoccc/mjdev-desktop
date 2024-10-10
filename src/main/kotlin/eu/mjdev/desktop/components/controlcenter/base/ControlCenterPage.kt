@@ -14,10 +14,9 @@ class ControlCenterPage(
     val condition: DesktopProvider.() -> Boolean = { true },
     val saver: IControlCenterPageDataSaver? = null,
     val cache: PageCache = PageCache(saver),
+    val showHeader: Boolean = true,
     val content: @Composable ControlCenterPageScope.() -> Unit = {},
 ) {
     @Composable
-    fun render() = withControlCenterPageScope(cache = cache) {
-        content()
-    }
+    fun render() = withControlCenterPageScope(cache = cache) { content() }
 }
