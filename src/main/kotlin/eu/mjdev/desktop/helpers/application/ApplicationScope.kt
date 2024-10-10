@@ -8,7 +8,7 @@
 
 package eu.mjdev.desktop.helpers.application
 
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.helpers.application.block.SCOPED_BLOCK

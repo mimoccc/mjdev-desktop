@@ -16,10 +16,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.material3.LocalAbsoluteTonalElevation
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.surfaceColorAtElevation
+import androidx.compose.material.LocalContentColor
+//import androidx.compose.material3.LocalAbsoluteTonalElevation
+//import androidx.compose.material3.LocalContentColor
+//import androidx.compose.material3.MaterialTheme
+//import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -134,18 +135,21 @@ private fun SurfaceImpl(
     val focused by interactionSource.collectIsFocusedAsState()
     val pressed by interactionSource.collectIsPressedAsState()
     val surfaceAlpha = stateAlpha(enabled = enabled, focused = focused, pressed = pressed, selected = selected)
-    val absoluteElevation = LocalAbsoluteTonalElevation.current + tonalElevation
+//    val absoluteElevation =
+//        LocalAbsoluteTonalElevation.current + tonalElevation
     CompositionLocalProvider(
         LocalContentColor provides contentColor,
-        LocalAbsoluteTonalElevation provides absoluteElevation
+//        LocalAbsoluteTonalElevation provides absoluteElevation
     ) {
         val zIndex by
         animateFloatAsState(
             targetValue = if (focused) FocusedZIndex else NonFocusedZIndex,
             label = "zIndex"
         )
-        val backgroundColorByState =
-            surfaceColorAtElevation(color = color, elevation = LocalAbsoluteTonalElevation.current)
+        val backgroundColorByState = surfaceColorAtElevation(
+            color = color,
+            elevation = tonalElevation, // LocalAbsoluteTonalElevation.current
+        )
         Box(
             modifier =
                 modifier
@@ -179,12 +183,15 @@ private fun SurfaceImpl(
 }
 
 @Composable
-fun surfaceColorAtElevation(color: Color, elevation: Dp): Color {
-    return if (color == MaterialTheme.colorScheme.surface) {
-        MaterialTheme.colorScheme.surfaceColorAtElevation(elevation)
-    } else {
-        color
-    }
+fun surfaceColorAtElevation(
+    color: Color,
+    elevation: Dp
+): Color {
+//    if (color == MaterialTheme.colorScheme.surface) {
+//        return MaterialTheme.colorScheme.surfaceColorAtElevation(elevation)
+//    } else {
+    return color
+//    }
 }
 
 @Suppress("ConstPropertyName")

@@ -12,11 +12,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,18 +41,18 @@ fun PasswordTextView(
     showPasswordDescription: String = "Show password",
     onDone: (password: String) -> Unit = {}
 ) {
-    val iconVisible = remember {
+    val iconVisible by remember {
         derivedStateOf {
             if (passwordVisible.value) Icons.TextFieldVisiblePassword
             else Icons.TextFieldInVisiblePassword
         }
     }
-    val iconSend = remember {
+    val iconSend by remember {
         derivedStateOf {
             if (password.value.isNotEmpty()) Icons.SendIcon else null
         }
     }
-    val description = remember {
+    val description by remember {
         derivedStateOf {
             if (passwordVisible.value) hidePasswordDescription else showPasswordDescription
         }
@@ -80,14 +76,14 @@ fun PasswordTextView(
             ) {
                 Icon(
                     modifier = Modifier.size(iconSize).onClick { passwordVisible.value = !passwordVisible.value },
-                    imageVector = iconVisible.value,
+                    imageVector = iconVisible,
                     tint = colors.textColor(true).value,
-                    contentDescription = description.value
+                    contentDescription = description
                 )
-                if (iconSend.value != null) {
+                if (iconSend != null) {
                     Icon(
                         modifier = Modifier.padding(4.dp).size(iconSize).onClick { onDone(password.value) },
-                        imageVector = iconSend.value!!,
+                        imageVector = iconSend!!,
                         tint = colors.textColor(true).value,
                         contentDescription = contentDescription
                     )

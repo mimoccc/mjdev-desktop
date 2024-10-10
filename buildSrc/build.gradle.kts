@@ -6,16 +6,16 @@ repositories {
 
 plugins {
     `kotlin-dsl`
-    java
-    `java-gradle-plugin`
+//    java
+//    `java-gradle-plugin`
 }
 
 dependencies {
 //    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
     implementation(gradleApi())
     implementation(gradleKotlinDsl())
-    implementation(libs.gradle)
-    implementation(libs.gradle.api)
+//    implementation(libs.gradle)
+//    implementation(libs.gradle.api)
 }
 
 gradlePlugin {

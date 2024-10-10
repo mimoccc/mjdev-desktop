@@ -9,9 +9,9 @@
 package eu.mjdev.desktop.components.surface.base
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ShapeDefaults
-import androidx.compose.material3.contentColorFor
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.contentColorFor
+import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
@@ -80,15 +80,15 @@ object ClickableSurfaceDefaults {
     @ReadOnlyComposable
     @Composable
     fun colors(
-        containerColor: Color = MaterialTheme.colorScheme.surface,
+        containerColor: Color = MaterialTheme.colors.surface,
         contentColor: Color = contentColorFor(containerColor),
-        focusedContainerColor: Color = MaterialTheme.colorScheme.inverseSurface,
+        focusedContainerColor: Color = MaterialTheme.colors.primarySurface,
         focusedContentColor: Color = contentColorFor(focusedContainerColor),
         pressedContainerColor: Color = focusedContainerColor,
         pressedContentColor: Color = contentColorFor(pressedContainerColor),
         disabledContainerColor: Color =
-            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = DisabledContainerAlpha),
-        disabledContentColor: Color = MaterialTheme.colorScheme.onSurface
+            MaterialTheme.colors.primarySurface.copy(alpha = DisabledContainerAlpha),
+        disabledContentColor: Color = MaterialTheme.colors.onSurface
     ) = ClickableSurfaceColors(
         containerColor = containerColor,
         contentColor = contentColor,
@@ -150,7 +150,7 @@ object ClickableSurfaceDefaults {
         focusedDisabledBorder: Border = Border(
             border = BorderStroke(width = 2.dp, color = Color.White), // todo theme
             inset = 0.dp,
-            shape = ShapeDefaults.Small
+            shape = MaterialTheme.shapes.small
         )
     ) = ClickableSurfaceBorder(
         border = border,
@@ -179,5 +179,9 @@ object ClickableSurfaceDefaults {
         glow: Glow = Glow.None,
         focusedGlow: Glow = glow,
         pressedGlow: Glow = glow
-    ) = ClickableSurfaceGlow(glow = glow, focusedGlow = focusedGlow, pressedGlow = pressedGlow)
+    ) = ClickableSurfaceGlow(
+        glow = glow,
+        focusedGlow = focusedGlow,
+        pressedGlow = pressedGlow
+    )
 }

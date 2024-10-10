@@ -1,9 +1,18 @@
+@file:Suppress("UnstableApiUsage")
+
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.config.JvmTarget
+//import org.jetbrains.kotlin.config.JvmTarget
 import org.mjdev.gradle.extensions.ProjectExt.createTask
 import org.mjdev.gradle.extensions.ProjectExt.resolve
 
 plugins {
+//    java
+//    application
+
+//    kotlin("multiplatform") version "2.0.20"
+//    alias(libs.plugins.jetbrainsCompose) apply false
+//    alias(libs.plugins.compose.compiler) apply false
+
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.compose.desktop)
     alias(libs.plugins.kotlin.serialization)
@@ -18,30 +27,25 @@ group = libs.versions.packageName.get()
 version = libs.versions.packageVersion.get()
 
 kotlin {
-//    compilerOptions.jvmTarget = JvmTarget.JVM_17
-//    jvm {
-//        jvmToolchain(11)
-//        withJava()
+//    jvm()
+//    linuxX64() {
+        /* Specify additional settings for the 'linux' target here */
 //    }
-//    sourceSets {
-//        val jvmMain by getting {
-//            dependencies {
-//                implementation(compose.desktop.currentOs)
-//            }
-//        }
-//        val jvmTest by getting
-//    }
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+    jvmToolchain(21)
 }
 
-//configurations {
-//    "implementation" {
-//        exclude(group = "androidx.compose.animation")
-//        exclude(group = "androidx.compose.foundation")
-//        exclude(group = "androidx.compose.material")
-//        exclude(group = "androidx.compose.runtime")
-//        exclude(group = "androidx.compose.ui")
-//    }
-//}
+configurations {
+    "implementation" {
+        exclude(group = "androidx.compose.animation")
+        exclude(group = "androidx.compose.foundation")
+        exclude(group = "androidx.compose.material")
+        exclude(group = "androidx.compose.runtime")
+        exclude(group = "androidx.compose.ui")
+    }
+}
 
 allprojects {
     repositories {
@@ -68,16 +72,16 @@ allprojects {
         // preview
         implementation(compose.runtime)
         // material 3
-        implementation(compose.material3)
+//        implementation(compose.material3)
         // icons
         implementation(compose.materialIconsExtended)
         // foundation
-        implementation(compose.foundation)
+//        implementation(compose.foundation)
         // preview
-        implementation(compose.uiTooling)
-        implementation(compose.preview)
+//        implementation(compose.uiTooling)
+//        implementation(compose.preview)
         // resources
-        implementation(compose.components.resources)
+//        implementation(compose.components.resources)
         // init & desktop files
         implementation(libs.ini4j)
         // http client
@@ -114,10 +118,10 @@ allprojects {
         // gettext
         implementation("org.gnu.gettext:libintl:0.18.3")
         // constraint
-        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.4.0")
-        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03")
-        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded-core")
-        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded")
+//        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.4.0")
+//        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03")
+//        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded-core")
+//        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded")
         // paths
 //        implementation("me.sujanpoudel.multiplatform.utils:multiplatform-paths:0.2.2")
         // files
@@ -274,6 +278,7 @@ createTask<JavaExec>(
     classpath = sourceSets.main.get().runtimeClasspath
     jvmArgs("--enable-preview")
 }
+
 createTask<JavaExec>(
     name = "runDebug",
     group = "mjdev",
@@ -281,7 +286,7 @@ createTask<JavaExec>(
 ) {
     mainClass = "eu.mjdev.desktop.MainKt"
     classpath = sourceSets.main.get().runtimeClasspath
-    args = arrayListOf("-d")
+    args = arrayListOf("--debug")
     jvmArgs("--enable-preview")
     // dbus-run-session mutter --wayland --nested
 }

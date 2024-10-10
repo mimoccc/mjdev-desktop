@@ -112,10 +112,10 @@ object Custom {
         get() = listFiles()?.filter { it.isDirectory }?.toList() ?: emptyList<File>()
 
     val File.lines
-        get() = runCatching { if (exists()) readLines() else null }.getOrNull() ?: emptyList()
+        get() = runCatching { if (exists()) readLines(Charsets.UTF_8) else null }.getOrNull() ?: emptyList()
 
     val File.text
-        get() = runCatching { if (exists()) readText() else null }.getOrNull() ?: ""
+        get() = runCatching { if (exists()) readText(Charsets.UTF_8) else null }.getOrNull() ?: ""
 
     val File.textAsLocale: Locale
         get() = if (exists()) readTextAsLocale() else Locale.ENGLISH

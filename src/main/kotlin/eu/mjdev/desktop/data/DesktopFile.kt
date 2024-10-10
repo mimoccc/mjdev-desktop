@@ -7,19 +7,18 @@ import eu.mjdev.desktop.extensions.Custom.text
 import eu.mjdev.desktop.helpers.system.LinuxIni
 import org.ini4j.Ini
 import org.ini4j.Profile.Section
-import org.ini4j.Wini
 import java.io.File
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "ConstPropertyName", "PropertyName")
 class DesktopFile(
     var file: File = File(""),
-    val correctDir: String = "/tmp/.corrected-desktop-files/",
-    val correctedFile: File = File(File(correctDir), file.name),
+    val correctDir: File = File("/tmp/.corrected-desktop-files/"),
+    val correctedFile: File = File(correctDir, file.name),
     var fileData: String = (if (correctedFile.exists()) correctedFile else file).text,
-    private var content: Ini = (runCatching {
+    private var content: LinuxIni = (runCatching {
         LinuxIni(fileData)
     }.onFailure { e ->
-        Exception("Error in file: ${file.absolutePath}", e).printStackTrace()
+       e.printStackTrace()
     }.getOrNull() ?: LinuxIni())
 ) {
     var fileName: String = if (correctedFile.exists()) correctedFile.name else file.name
@@ -58,7 +57,7 @@ class DesktopFile(
                     writeTo(f)
                     file = f
                     fileData = file.text
-                    content = Wini(f)
+                    content = LinuxIni(fileData)
                 }
             }.onFailure { e ->
                 e.printStackTrace()

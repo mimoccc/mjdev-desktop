@@ -12,8 +12,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,11 +75,25 @@ fun CardContent(
     subtitle: @Composable () -> Unit = {},
     description: @Composable () -> Unit = {}
 ) {
-    ProvideTextStyle(MaterialTheme.typography.titleMedium) { title.invoke() }
-    ProvideTextStyle(MaterialTheme.typography.bodySmall) {
-        Box(Modifier.graphicsLayer { alpha = SubtitleAlpha }) { subtitle.invoke() }
+    ProvideTextStyle(MaterialTheme.typography.subtitle2) {
+        title()
     }
-    ProvideTextStyle(MaterialTheme.typography.bodySmall) {
-        Box(Modifier.graphicsLayer { alpha = DescriptionAlpha }) { description.invoke() }
+    ProvideTextStyle(MaterialTheme.typography.body2) {
+        Box(
+            modifier = Modifier.graphicsLayer {
+                alpha = SubtitleAlpha
+            }
+        ) {
+            subtitle()
+        }
+    }
+    ProvideTextStyle(MaterialTheme.typography.body2) {
+        Box(
+            modifier = Modifier.graphicsLayer {
+            alpha = DescriptionAlpha
+            }
+        ) {
+            description()
+        }
     }
 }

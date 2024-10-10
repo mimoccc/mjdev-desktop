@@ -1,6 +1,5 @@
 package eu.mjdev.desktop.components.input
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -36,7 +35,6 @@ fun SelectableOutlineEditText(
     singleLine: Boolean = false,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
-    interactionSource: MutableInteractionSource? = null,
     shape: Shape = TextFieldDefaults.OutlinedTextFieldShape,
     colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
 ) = SelectionContainer(
@@ -58,7 +56,6 @@ fun SelectableOutlineEditText(
         keyboardActions = keyboardActions,
         maxLines = maxLines,
         minLines = minLines,
-        interactionSource = interactionSource,
         shape = shape,
         colors = colors
     )
@@ -84,7 +81,6 @@ fun SelectableOutlineEditText(
     singleLine: Boolean = false,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
-    interactionSource: MutableInteractionSource? = null,
     shape: Shape = TextFieldDefaults.OutlinedTextFieldShape,
     colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
 ) = SelectionContainer(
@@ -106,7 +102,6 @@ fun SelectableOutlineEditText(
         keyboardActions = keyboardActions,
         maxLines = maxLines,
         minLines = minLines,
-        interactionSource = interactionSource,
         shape = shape,
         colors = colors
     )

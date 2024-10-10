@@ -11,9 +11,9 @@ package eu.mjdev.desktop.components.card
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
@@ -121,7 +121,7 @@ fun FocusableCard(
                     modifier = Modifier.padding(titlePadding),
                     singleLine = true,
                     color = textColor,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.body1,
                     text = item?.toString().orEmpty()
                 )
             }
@@ -144,7 +144,7 @@ fun FocusableCard(
                     modifier = Modifier.padding(titlePadding),
                     singleLine = true,
                     color = textColor,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.body2,
                     text = "" // todo
                 )
             }

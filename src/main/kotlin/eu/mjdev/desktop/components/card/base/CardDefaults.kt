@@ -10,8 +10,8 @@ package eu.mjdev.desktop.components.card.base
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.contentColorFor
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
@@ -50,7 +50,7 @@ object CardDefaults {
     @ReadOnlyComposable
     @Composable
     fun colors(
-        containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+        containerColor: Color = MaterialTheme.colors.surface,
         contentColor: Color = contentColorFor(containerColor),
         focusedContainerColor: Color = containerColor,
         focusedContentColor: Color = contentColorFor(focusedContainerColor),
@@ -68,7 +68,7 @@ object CardDefaults {
     @ReadOnlyComposable
     @Composable
     fun compactCardColors(
-        containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+        containerColor: Color = MaterialTheme.colors.surface,
         contentColor: Color = Color.White,
         focusedContainerColor: Color = containerColor,
         focusedContentColor: Color = contentColor,
@@ -204,5 +204,9 @@ object CardDefaults {
         )
 
     fun CardGlow.toClickableSurfaceGlow() =
-        ClickableSurfaceGlow(glow = glow, focusedGlow = focusedGlow, pressedGlow = pressedGlow)
+        ClickableSurfaceGlow(
+            glow = glow,
+            focusedGlow = focusedGlow,
+            pressedGlow = pressedGlow
+        )
 }

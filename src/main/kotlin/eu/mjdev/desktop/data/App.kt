@@ -25,19 +25,19 @@ class App(
     val fullAppName
         get() = desktopFile.fullAppName
     val type
-        get() = desktopFile.desktopSection?.Type ?: ""
+        get() = desktopFile.desktopSection?.Type ?: DesktopFile.DesktopEntryType.Application
     val version
         get() = desktopFile.desktopSection?.Version ?: ""
     val name
-        get() = desktopFile.desktopSection?.Name ?: ""
+        get() = desktopFile.desktopSection?.Name ?: fullAppName
     val comment
-        get() = desktopFile.desktopSection?.Comment ?: ""
+        get() = desktopFile.desktopSection?.Comment ?: fullAppName
     val path
         get() = desktopFile.desktopSection?.Path ?: ""
     val exec
         get() = desktopFile.desktopSection?.Exec ?: ""
     val iconName
-        get() = desktopFile.desktopSection?.Icon ?: ""
+        get() = desktopFile.desktopSection?.Icon ?: fullAppName
     val categories
         get() = desktopFile.desktopSection?.Categories.ifEmptyCategories { listOf(Category.UNCATEGORIZED) }
     val notifyOnStart

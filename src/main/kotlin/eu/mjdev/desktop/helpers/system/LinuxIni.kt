@@ -12,19 +12,16 @@ package eu.mjdev.desktop.helpers.system
 
 import org.ini4j.Config
 import org.ini4j.Wini
-import java.io.File
-import java.io.FileInputStream
 import java.io.InputStream
 import java.io.StringBufferInputStream
 import java.nio.charset.Charset
 
-@Suppress("unused")
 class LinuxIni(
-    stream: InputStream
+    stream: InputStream,
+    charset: Charset = Charsets.UTF_8
 ) : Wini(stream) {
     constructor() : this("")
     constructor(data: String) : this(StringBufferInputStream(data))
-    constructor(file: File) : this(FileInputStream(file))
 
     init {
         config = Config().apply {
@@ -32,6 +29,19 @@ class LinuxIni(
             isPropertyFirstUpper = true
             isEscape = false
             isStrictOperator = true
+            fileEncoding = charset
+            isEmptyOption = true
+            isEmptySection = true
+        }
+    }
+
+    override fun load(
+        input: InputStream?
+    ) {
+        try {
+            super.load(input)
+        } catch (e:Exception) {
+            throw(Exception("Error in file: file:///${file.absolutePath}", e))
         }
     }
 }

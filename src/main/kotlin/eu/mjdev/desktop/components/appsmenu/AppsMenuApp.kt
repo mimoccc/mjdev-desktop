@@ -60,14 +60,14 @@ fun AppsMenuApp(
                 Modifier.padding(4.dp).fillMaxWidth()
             ) {
                 TextAny(
-                    text = app?.name ?: app?.fullAppName ?: "",
+                    text = (app?.name ?: app?.fullAppName ?: "").ifEmpty { "-" },
                     color = textColor,
                     singleLine = true,
                     fontSize = titleTextSize,
                     fontWeight = FontWeight.Bold
                 )
                 TextAny(
-                    text = app?.comment ?: "-",
+                    text = (app?.comment ?: "").ifEmpty { "-" },
                     color = textColor,
                     singleLine = true,
                     fontSize = commentTextSize,

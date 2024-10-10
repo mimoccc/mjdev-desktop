@@ -26,8 +26,13 @@ internal fun Modifier.surfaceGlow(
     shape: Shape,
     glow: Glow,
 ): Modifier {
-    val color = surfaceColorAtElevation(color = glow.elevationColor, elevation = glow.elevation)
-    val glowBlurRadiusPx = with(LocalDensity.current) { glow.elevation.toPx() }
+    val color = surfaceColorAtElevation(
+        color = glow.elevationColor,
+        elevation = glow.elevation
+    )
+    val glowBlurRadiusPx = with(LocalDensity.current) {
+        glow.elevation.toPx()
+    }
     return then(
         SurfaceGlowElement(
             shape = shape,
