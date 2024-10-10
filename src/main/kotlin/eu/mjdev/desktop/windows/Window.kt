@@ -48,7 +48,7 @@ fun Window(
     alwaysOnTop: Boolean = false,
     alwaysOnBottom: Boolean = false,
     closeAction: Int = JFrame.DO_NOTHING_ON_CLOSE,
-    blurEnabled: Boolean = true,
+    blurEnabled: Boolean = false, // todo
     focusHelper: WindowFocusHelper,
     stateHelper: WindowStateHelper,
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },

@@ -26,7 +26,6 @@ import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import java.io.File
 import kotlin.math.max
 
-// ScreencastHelper
 // DefaultShellFolder
 // ShellFolder
 // Clipboard
@@ -47,7 +46,7 @@ fun FolderView(
     iconSpacing: Dp = 2.dp,
     iconSize: DpSize = DpSize(128.dp, 128.dp),
     path: File? = File("/"),
-    orientation: Orientation = Orientation.Vertical,
+    orientation: Orientation = Orientation.Vertical, // todo
     guideVisibleState: VisibilityState = rememberVisibilityState(false),
 ) = withDesktopScope {
     val files by rememberFiles(path, api.homeDir, showHidden, directoryFirst, showHomeFolder)

@@ -2,16 +2,11 @@ package eu.mjdev.desktop.components.grid
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.grid.base.*
 import eu.mjdev.desktop.components.grid.base.Measure.calculateCellPlaces
 import eu.mjdev.desktop.components.grid.base.Measure.measure
-import eu.mjdev.desktop.components.sliding.base.VisibilityState
-import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import kotlin.math.min
 
 @Composable
@@ -19,10 +14,6 @@ fun GridPlaced(
     cells: GridPlacedCells,
     modifier: Modifier = Modifier,
     placementPolicy: GridPlacedPlacementPolicy = GridPlacedPlacementPolicy.DEFAULT,
-    guideVisible: Boolean = true,
-    guideVisibleState: VisibilityState = rememberVisibilityState(guideVisible),
-    guideLineColor: Color = Color.Black,
-    guideLineSize: Dp = 1.dp,
     content: GridPlacedScope.() -> Unit
 ) {
     val scopeContent: GridPlacedScopeImpl = GridPlacedScopeImpl(cells, placementPolicy).apply(content)

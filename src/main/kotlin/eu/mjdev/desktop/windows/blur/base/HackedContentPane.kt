@@ -1,86 +1,55 @@
 package eu.mjdev.desktop.windows.blur.base
 
-import java.awt.AlphaComposite
-import java.awt.Graphics
-import java.awt.Graphics2D
-import java.awt.image.BufferedImage
+import javax.swing.JFrame
 import javax.swing.JPanel
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
-class HackedContentPane : JPanel() {
-    private var image: BufferedImage? = null
-
-//    var jlayer: JLayer<JComponent> = JLayer(JPanel(), BlurLayerUI())
+class HackedContentPane(
+    val window: JFrame?
+) : JPanel() {
+//    val glassPanel = GlassPanel(window)
+//    var blurImage: BufferedImage? = null
 
     init {
         isOpaque = false
-//        setLayout(BorderLayout())
-//        add(jlayer)
+//        add(glassPanel)
     }
 
-    fun setImage(image: BufferedImage?) {
-        this.image = image
+    fun repaintBlur() {
+//        if (window != null && window.width > 0 && window.height > 0) {
+//            println("creating blur image")
+//            BufferedImage(
+//                window.width,
+//                window.height,
+//                BufferedImage.TYPE_INT_ARGB
+//            ).also { image ->
+//                window.paint(image.graphics)
+//                GaussianFilter(5f).filter(image, null)
+//            }.also { blurBuffer ->
+//                blurImage = blurBuffer
+//            }
+//            glassPanel.setSize(window.width, window.height)
+//        } else {
+//            glassPanel.setSize(0, 0)
+//        }
     }
 
-    fun clear() = setImage(null)
-
-    // todo not painting nothing somehow
-    override fun paint(g: Graphics) {
-        if ((width <= 0) || (height <= 0)) {
-            return
-        }
-        val gg = g.create()
-        try {
-            if (background.alpha != 255) {
-                gg.color = background
-                if (gg is Graphics2D) {
-                    gg.composite = AlphaComposite.getInstance(AlphaComposite.SRC)
-                }
-                gg.fillRect(0, 0, width, height)
-            }
-            if (image != null) {
-                g.drawImage(image, 0, 0, width, height, null)
-            }
-        } finally {
-            gg.dispose()
-        }
-        super.paint(g)
-    }
-
-//    class BlurLayerUI : LayerUI<JComponent>() {
-//        private var mOffscreenImage: BufferedImage? = null
-//        private val mOperation: BufferedImageOp
-//
+//    inner class GlassPanel(
+//        private var window: JFrame?
+//    ) : JLabel() {
 //        init {
-//            val ninth = 1.0f / 9.0f
-//            val blurKernel = floatArrayOf(
-//                ninth, ninth, ninth, ninth, ninth, ninth,
-//                ninth, ninth, ninth
-//            )
-//            mOperation = ConvolveOp(
-//                Kernel(3, 3, blurKernel),
-//                ConvolveOp.EDGE_NO_OP, null
-//            )
+//            isOpaque = false
+//            setSize(window?.width ?: 0, window?.height ?: 0)
 //        }
 //
-//        override fun paint(g: Graphics, c: JComponent) {
-//            val w = c.width
-//            val h = c.height
-//            if (w == 0 || h == 0) {
-//                return
+//        override fun paintComponent(g: Graphics?) {
+//            println("paint called")
+//            if (window != null && blurImage != null && width > 1 && height > 1) {
+//                println("painting blur")
+//                g?.color = Color.WHITE
+//                g?.fillRect(0,0,window!!.width, window!!.height)
+//                g?.drawImage(blurImage, 0, 0, window!!.width, window!!.height, null)
 //            }
-//            if (mOffscreenImage == null || mOffscreenImage!!.width != w || mOffscreenImage!!.height != h) {
-//                mOffscreenImage = BufferedImage(
-//                    w, h,
-//                    BufferedImage.TYPE_INT_RGB
-//                )
-//            }
-//            val ig2 = mOffscreenImage!!.createGraphics()
-//            ig2.clip = g.clip
-//            super.paint(ig2, c)
-//            ig2.dispose()
-//            val g2 = g as Graphics2D
-//            g2.drawImage(mOffscreenImage, mOperation, 0, 0)
 //        }
 //    }
 }
