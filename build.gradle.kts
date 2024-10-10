@@ -17,7 +17,7 @@ plugins {
 group = libs.versions.packageName.get()
 version = libs.versions.packageVersion.get()
 
-kotlin {
+//kotlin {
 //    compilerOptions.jvmTarget = JvmTarget.JVM_17
 //    jvm {
 //        jvmToolchain(11)
@@ -31,7 +31,7 @@ kotlin {
 //        }
 //        val jvmTest by getting
 //    }
-}
+//}
 
 //configurations {
 //    "implementation" {
@@ -114,10 +114,10 @@ allprojects {
         // gettext
         implementation("org.gnu.gettext:libintl:0.18.3")
         // constraint
-        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.4.0")
-        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03")
-        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded-core")
-        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded")
+//        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.4.0")
+//        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03")
+//        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded-core")
+//        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded")
         // paths
 //        implementation("me.sujanpoudel.multiplatform.utils:multiplatform-paths:0.2.2")
         // files
@@ -146,6 +146,8 @@ allprojects {
 //        implementation("org.purejava:libappindicator-gtk3-java-full:1.4.1")
         // internationalization
 //        implementation("org.swiftshire:ji18n-core:1.0")
+//        implementation("io.github.humbleui:jwm:0.4.18")
+        // humble ui
         // sikulix
 //        implementation("com.sikulix:sikulixapi:2.0.5")
         // blur
