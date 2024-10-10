@@ -10,7 +10,7 @@ package org.mjdev.gradle.extensions
 
 //import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.*
-import org.gradle.internal.impldep.jakarta.xml.bind.DatatypeConverter
+//import org.gradle.internal.impldep.jakarta.xml.bind.DatatypeConverter
 import org.gradle.kotlin.dsl.*
 import java.io.File
 
@@ -19,8 +19,8 @@ object ProjectExt {
     val Project.androidStudioVersion
         get() = project.extra.properties["android.studio.version"]
 
-    val Project.runningFromAndroidStudio
-        get() = DatatypeConverter.parseBoolean(project.extra.properties["android.injected.invoked.from.ide"].toString())
+//    val Project.runningFromAndroidStudio
+//        get() = DatatypeConverter.parseBoolean(project.extra.properties["android.injected.invoked.from.ide"].toString())
 
     val Project.isAndroidStudio
         get() = project.extra.properties.keys.contains("android.studio.version")

@@ -1,0 +1,70 @@
+package eu.mjdev.desktop.gtk.components
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ComposeNode
+import eu.mjdev.desktop.gtk.GtkApplier
+import io.github.jwharm.javagi.gobject.SignalConnection
+import eu.mjdev.desktop.gtk.SingleChildComposeNode
+import org.gnome.adw.Application
+import org.gnome.adw.ApplicationWindow
+import org.gnome.gtk.*
+
+private class GtkApplicationWindowComposeNode(gObject: ApplicationWindow) : SingleChildComposeNode<ApplicationWindow>(
+    gObject,
+    set = { content = it },
+) {
+    var styles: List<CssProvider> = emptyList()
+        set(value) {
+            styles.forEach { StyleContext.removeProviderForDisplay(gObject.display, it) }
+            field = value
+            styles.forEachIndexed { index, it ->
+                StyleContext.addProviderForDisplay(
+                    gObject.display,
+                    it,
+                    Gtk.STYLE_PROVIDER_PRIORITY_FALLBACK + 1 + index,
+                )
+            }
+        }
+    var onClose: SignalConnection<Window.CloseRequest>? = null
+}
+
+
+// TODO: fullscreen, maximized, hide on close, icon, active,
+@Composable
+fun ApplicationWindow(
+    application: Application,
+    title: String?,
+    onClose: () -> Unit,
+    styles: List<CssProvider> = emptyList(),
+    decorated: Boolean = true,
+    defaultHeight: Int = 0,
+    defaultWidth: Int = 0,
+    deletable: Boolean = true,
+    handleMenuBarAccel: Boolean = true,
+    modal: Boolean = false,
+    resizable: Boolean = true,
+    content: @Composable () -> Unit,
+) {
+    ComposeNode<GtkApplicationWindowComposeNode, GtkApplier>(
+        factory = {
+            val window = ApplicationWindow.builder().build()
+            GtkApplicationWindowComposeNode(window)
+        },
+        update = {
+            set(application) { this.gObject.application = it }
+            set(title) { this.gObject.title = it }
+            set(onClose) {
+                this.onClose?.disconnect()
+                this.onClose = this.gObject.onCloseRequest { it(); true }
+            }
+            set(styles) { this.styles = it }
+            set(decorated) { this.gObject.decorated = it }
+            set(defaultHeight to defaultWidth) { (h, w) -> this.gObject.setDefaultSize(w, h) }
+            set(deletable) { this.gObject.deletable = it }
+            set(handleMenuBarAccel) { this.gObject.handleMenubarAccel = it }
+            set(modal) { this.gObject.modal = it }
+            set(resizable) { this.gObject.resizable = it }
+        },
+        content = content,
+    )
+}

@@ -1,0 +1,75 @@
+package eu.mjdev.desktop.gtk.components
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ComposeNode
+import eu.mjdev.desktop.gtk.*
+import eu.mjdev.desktop.gtk.GtkApplier
+import eu.mjdev.desktop.gtk.GtkComposeNode
+import eu.mjdev.desktop.gtk.SingleChildComposeNode
+import eu.mjdev.desktop.gtk.VirtualComposeNode
+import eu.mjdev.desktop.gtk.VirtualComposeNodeContainer
+import eu.mjdev.desktop.gtk.modifier.Modifier
+import org.gnome.gtk.Overlay
+import org.gnome.gtk.Widget
+
+@Suppress("unused")
+@Composable
+fun Overlay(
+    mainChild: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    overlays: @Composable () -> Unit,
+) {
+    ComposeNode<GtkComposeNode<Overlay>, GtkApplier>(
+        factory = {
+            VirtualComposeNodeContainer(Overlay.builder().build())
+        },
+        update = {
+            set(modifier) { applyModifier(it) }
+        },
+        content = {
+            MainChild {
+                mainChild()
+            }
+            OverlayChildren {
+                overlays()
+            }
+        },
+    )
+}
+
+@Composable
+private fun MainChild(
+    content: @Composable () -> Unit,
+) {
+    ComposeNode<GtkComposeNode<Nothing?>, GtkApplier>(
+        factory = {
+            VirtualComposeNode<Overlay> { overlay ->
+                SingleChildComposeNode(
+                    overlay,
+                    set = { child = it },
+                )
+            }
+        },
+        update = { },
+        content = content,
+    )
+}
+
+@Composable
+private fun OverlayChildren(
+    content: @Composable () -> Unit,
+) {
+    ComposeNode<GtkComposeNode<Nothing?>, GtkApplier>(
+        factory = {
+            VirtualComposeNode<Overlay> { overlay ->
+                GtkContainerComposeNode.appendOnly<Overlay, Widget>(
+                    overlay,
+                    add = { addOverlay(it) },
+                    remove = { removeOverlay(it) },
+                )
+            }
+        },
+        update = { },
+        content = content,
+    )
+}
