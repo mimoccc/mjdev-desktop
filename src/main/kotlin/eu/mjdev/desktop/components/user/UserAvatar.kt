@@ -1,4 +1,12 @@
-package eu.mjdev.desktop.components.custom
+/*
+ * Copyright (c) Milan Jurkulák 2024.
+ *  Contact:
+ *  e: mimoccc@gmail.com
+ *  e: mj@mjdev.org
+ *  w: https://mjdev.org
+ */
+
+package eu.mjdev.desktop.components.user
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
@@ -12,7 +20,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.components.appbar.AppBar
 import eu.mjdev.desktop.components.button.TransparentButton
 import eu.mjdev.desktop.components.image.ImageAny
@@ -29,6 +39,8 @@ fun UserAvatar(
     modifier: Modifier = Modifier,
     avatarSize: Dp = 64.dp,
     orientation: Orientation = Orientation.Vertical,
+    titleTextSize: TextUnit = 16.sp,
+    detailTextSize: TextUnit = 14.sp,
     onUserAvatarClick: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) = withDesktopScope {
@@ -65,13 +77,15 @@ fun UserAvatar(
                         text = api.currentUser.userName,
                         color = textColor,
                         textAlign = TextAlign.Start,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        fontSize = titleTextSize
                     )
                     TextAny(
                         text = api.machineName,
                         color = textColor,
                         textAlign = TextAlign.Start,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        fontSize = detailTextSize
                     )
                 }
             },

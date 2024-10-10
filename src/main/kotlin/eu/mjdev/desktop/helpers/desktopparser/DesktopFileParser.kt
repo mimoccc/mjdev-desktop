@@ -8,7 +8,7 @@
 
 @file:Suppress("DEPRECATION")
 
-package eu.mjdev.desktop.helpers.system
+package eu.mjdev.desktop.helpers.desktopparser
 
 import org.ini4j.Config
 import org.ini4j.Wini
@@ -16,7 +16,7 @@ import java.io.InputStream
 import java.io.StringBufferInputStream
 import java.nio.charset.Charset
 
-class LinuxIni(
+class DesktopFileParser(
     stream: InputStream,
     charset: Charset = Charsets.UTF_8
 ) : Wini(stream) {
@@ -40,8 +40,8 @@ class LinuxIni(
     ) {
         try {
             super.load(input)
-        } catch (e:Exception) {
-            throw(Exception("Error in file: file:///${file.absolutePath}", e))
+        } catch (e: Exception) {
+//            throw(Exception("Error in file: file:///${file.absolutePath}", e))
         }
     }
 }

@@ -4,7 +4,7 @@ import eu.mjdev.desktop.extensions.Custom.ParsedBoolean
 import eu.mjdev.desktop.extensions.Custom.ParsedList
 import eu.mjdev.desktop.extensions.Custom.ParsedString
 import eu.mjdev.desktop.extensions.Custom.text
-import eu.mjdev.desktop.helpers.system.LinuxIni
+import eu.mjdev.desktop.helpers.desktopparser.DesktopFileParser
 import org.ini4j.Ini
 import org.ini4j.Profile.Section
 import java.io.File
@@ -15,11 +15,11 @@ class DesktopFile(
     val correctDir: File = File("/tmp/.corrected-desktop-files/"),
     val correctedFile: File = File(correctDir, file.name),
     var fileData: String = (if (correctedFile.exists()) correctedFile else file).text,
-    private var content: LinuxIni = (runCatching {
-        LinuxIni(fileData)
+    private var content: DesktopFileParser = (runCatching {
+        DesktopFileParser(fileData)
     }.onFailure { e ->
-       e.printStackTrace()
-    }.getOrNull() ?: LinuxIni())
+        e.printStackTrace()
+    }.getOrNull() ?: DesktopFileParser())
 ) {
     var fileName: String = if (correctedFile.exists()) correctedFile.name else file.name
     val absolutePath: String = if (correctedFile.exists()) correctedFile.absolutePath else file.absolutePath
@@ -34,7 +34,7 @@ class DesktopFile(
             it.value.toString()
         }
 
-    val desktopSection : DesktopSectionScope?
+    val desktopSection: DesktopSectionScope?
         get() = content[DesktopEntryType.DesktopEntry]?.let { DesktopSectionScope(it) }
 
     val themeSection
@@ -57,7 +57,7 @@ class DesktopFile(
                     writeTo(f)
                     file = f
                     fileData = file.text
-                    content = LinuxIni(fileData)
+                    content = DesktopFileParser(fileData)
                 }
             }.onFailure { e ->
                 e.printStackTrace()
@@ -302,7 +302,7 @@ class DesktopFile(
 
         operator fun Ini.get(
             type: DesktopEntryType
-        ) : Section? = get(type.text)
+        ): Section? = get(type.text)
 
         fun desktopFile(
             file: File,

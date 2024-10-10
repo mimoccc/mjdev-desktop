@@ -39,6 +39,8 @@ import coil3.memory.MemoryCache
 import coil3.request.CachePolicy
 import coil3.svg.SvgDecoder
 import eu.mjdev.desktop.helpers.compose.FocusHelper
+import eu.mjdev.desktop.provider.DesktopProvider
+import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -432,6 +434,16 @@ object Compose {
         contentKey = contentKey,
         content = content
     )
+
+    @Composable
+    fun isLandscapeMode(
+        api: DesktopProvider = LocalDesktop.current
+    ) = api.isLandscapeMode
+
+    @Composable
+    fun rememberDpSize(
+        initial: DpSize = DpSize.Zero
+    ) = remember { mutableStateOf(initial) }
 
 //    Toolkit.getDefaultToolkit().addAWTEventListener({ event ->
 //        }, AWTEvent.MOUSE_EVENT_MASK or AWTEvent.FOCUS_EVENT_MASK

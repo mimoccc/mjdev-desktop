@@ -10,10 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import eu.mjdev.desktop.components.custom.DateTime
 import eu.mjdev.desktop.components.custom.PowerBlock
-import eu.mjdev.desktop.components.custom.UserAvatar
+import eu.mjdev.desktop.components.user.UserAvatar
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Modifier.rectShadow
 import eu.mjdev.desktop.helpers.compose.Orientation
@@ -35,8 +36,10 @@ fun MainSettingsPage() = ControlCenterPage(
         ) {
             UserAvatar(
                 modifier = Modifier.background(backgroundColor),
-                avatarSize = 128.dp,
+                avatarSize = 96.dp,
                 orientation = Orientation.Vertical,
+                titleTextSize = 20.sp,
+                detailTextSize = 16.sp,
                 onUserAvatarClick = {
                     // todo
                 }

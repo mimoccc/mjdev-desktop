@@ -16,9 +16,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
-import eu.mjdev.desktop.components.custom.UserAvatar
 import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.components.user.UserAvatar
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.extensions.ColorUtils.alpha

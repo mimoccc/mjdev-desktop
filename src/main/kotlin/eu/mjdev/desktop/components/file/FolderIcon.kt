@@ -27,28 +27,17 @@ fun FolderIcon(
     dragEnabled: Boolean = true,
     iconSize: DpSize = DpSize(128.dp, 128.dp),
     modifier: Modifier = Modifier,
-    zIndex: () -> Int = { 0 },
     onDragStart: () -> Unit = {},
     onDragEnd: () -> Unit = {},
     onContextMenuClick: () -> Unit = {},
     onClick: () -> Unit = {},
 ) = withDesktopScope {
-    val iconName = remember(path) {
-        path.let {
-            it.extension.ifEmpty {
-                // todo
-//                if (it.list() != null)
-                "folder"
-//                else ""
-            }
-        }
-    }
+    val iconName = remember(path) { path.extension.ifEmpty { "folder" } } // todo mime type
     val iconId: Int = remember(path) { iconSet.iconForName(iconName) ?: "?".toInt() }
     val computedSize = remember(path) { iconSize + 2.dp }
     DraggableView(
         modifier = modifier,
         dragEnabled = dragEnabled,
-        zIndex = zIndex().toFloat(),
         onClick = onClick,
         onContextMenuClick = onContextMenuClick,
         onDragStart = onDragStart,

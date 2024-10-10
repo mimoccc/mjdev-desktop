@@ -14,14 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
-import eu.mjdev.desktop.components.custom.UserAvatar
 import eu.mjdev.desktop.components.input.PasswordTextView
+import eu.mjdev.desktop.components.user.UserAvatar
 import eu.mjdev.desktop.data.User
-import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
-import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.helpers.compose.Orientation
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
+import eu.mjdev.desktop.windows.ChromeWindow
 
 // todo : all users
 @Suppress("FunctionName", "unused")

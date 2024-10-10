@@ -123,14 +123,16 @@ fun DesktopPanel(
             )
             if (isVisible) {
                 TooltipArea(
-                    modifier = Modifier.fillMaxWidth().wrapContentHeight(), tooltip = {
+                    modifier = Modifier.fillMaxWidth()
+                        .wrapContentHeight(),
+                    tooltip = {
                         Tooltip(
                             tooltipState = tooltipState,
                         )
                     },
                     tooltipPlacement = TooltipPlacement.CursorPoint(
-                        alignment = Alignment.TopStart,
-                        offset = DpOffset(32.dp, 32.dp)
+                        alignment = Alignment.TopEnd,
+                        offset = DpOffset(16.dp, 64.dp)
                     )
                 ) {
                     Column {

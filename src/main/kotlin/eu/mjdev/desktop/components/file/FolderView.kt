@@ -1,22 +1,30 @@
 package eu.mjdev.desktop.components.file
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.components.custom.MeasureUnconstrainedView
+import eu.mjdev.desktop.components.grid.GridPlaced
+import eu.mjdev.desktop.components.grid.base.GridPlacedCells
+import eu.mjdev.desktop.components.grid.base.GridPlacedPlacementPolicy
+import eu.mjdev.desktop.components.guide.GuideLines
+import eu.mjdev.desktop.components.sliding.base.VisibilityState
+import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.data.DesktopFolderItem
-import eu.mjdev.desktop.extensions.Modifier.conditional
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import java.io.File
+import kotlin.math.max
 
 // ScreencastHelper
 // DefaultShellFolder
@@ -28,8 +36,8 @@ import java.io.File
 // XWrapperBase
 // ShellFolderManager
 // X11GraphicsEnvironment
-@Suppress("FunctionName", "SimplifyBooleanWithConstants")
-@OptIn(ExperimentalLayoutApi::class)
+
+@Suppress("FunctionName")
 @Composable
 fun FolderView(
     modifier: Modifier = Modifier,
@@ -37,109 +45,100 @@ fun FolderView(
     directoryFirst: Boolean = true,
     showHomeFolder: Boolean = false,
     iconSpacing: Dp = 2.dp,
+    iconSize: DpSize = DpSize(128.dp, 128.dp),
     path: File? = File("/"),
-    api: DesktopProvider = LocalDesktop.current,
-    zIndexState: MutableState<Int> = remember { mutableStateOf(0) },
     orientation: Orientation = Orientation.Vertical,
-    scrollState: ScrollState = rememberScrollState(),
-//    scrollbarsState: ScrollAreaState = rememberScrollAreaState(scrollState)
+    guideVisibleState: VisibilityState = rememberVisibilityState(false),
 ) = withDesktopScope {
-    val files by remember(path) {
-        derivedStateOf {
-            path?.list()
-                ?.toList<String>()
-                ?.sorted()
-                ?.filter { s ->
-                    (showHidden == true) || (!s.startsWith("."))
-                }?.map { filePath ->
-                    File(filePath)
-                }?.sortedByDescending {
-                    (directoryFirst == false) || (it.extension.isEmpty()) // todo isDirectory
-                }?.map { path ->
-                    DesktopFolderItem(path)
-                }?.toMutableList()
-                ?.apply {
-                    if (showHomeFolder) add(
-                        DesktopFolderItem(
-                            path = api.homeDir,
-                            customName = "Home",
-                            priority = 1
-                        )
-                    )
-                }?.sortedByDescending {
-                    it.priority
-                } ?: emptyList()
-        }
-    }
-    val content: @Composable () -> Unit = {
-        files.forEach { file ->
+    val files by rememberFiles(path, api.homeDir, showHidden, directoryFirst, showHomeFolder)
+    MeasureUnconstrainedView(
+        viewToMeasure = {
             FolderIcon(
                 modifier = Modifier.padding(iconSpacing),
-                path = file.path,
-                customName = file.customName,
-                zIndex = { zIndexState.value },
-                onDragStart = {
-                    zIndexState.value += 1
+                iconSize = iconSize,
+            )
+        }
+    ) { mw, mh ->
+        val rows = max(1, ((api.containerSize.height / mh).toInt()))
+        val columns = max(1, (files.size.div(rows)))
+        BoxWithConstraints(
+            modifier = modifier,
+            contentAlignment = Alignment.TopStart
+        ) {
+            GridPlaced(
+                cells = GridPlacedCells(
+                    rowCount = rows,
+                    columnCount = columns
+                ),
+                placementPolicy = GridPlacedPlacementPolicy(
+                    mainAxis = GridPlacedPlacementPolicy.MainAxis.VERTICAL,
+                    horizontalDirection = GridPlacedPlacementPolicy.HorizontalDirection.START_END,
+                    verticalDirection = GridPlacedPlacementPolicy.VerticalDirection.TOP_BOTTOM
+                ),
+            ) {
+                files.forEach { file ->
+                    item {
+                        FolderIcon(
+                            modifier = Modifier.padding(iconSpacing),
+                            path = file.path,
+                            customName = file.customName,
+                            iconSize = iconSize,
+                            onDragStart = {
+                                guideVisibleState.show()
+                            },
+                            onDragEnd = {
+                                guideVisibleState.hide()
+                            }
+                        )
+                    }
                 }
+            }
+            GuideLines(
+                modifier = modifier,
+                rows = (constraints.maxHeight.dp / mh).toInt(),
+                columns = (constraints.maxWidth.dp / mw).toInt(),
+                color = iconsTintColor.alpha(0.5f),
+                lineSize = 1.dp,
+                visible = guideVisibleState.isVisible
             )
         }
     }
-    Box(
-        modifier = modifier.conditional(
-            condition = orientation == Orientation.Horizontal,
-            onTrue = {
-                verticalScroll(
-                    state = scrollState,
-                    enabled = scrollState.canScrollForward
-                )
-            },
-            onFalse = {
-                horizontalScroll(
-                    state = scrollState,
-                    enabled = scrollState.canScrollForward
+}
+
+@Suppress("SimplifyBooleanWithConstants")
+@Composable
+private fun rememberFiles(
+    path: File? = null,
+    homeDir: File? = null,
+    showHidden: Boolean = true,
+    directoryFirst: Boolean = true,
+    showHomeFolder: Boolean = true
+) = remember(path, homeDir, showHidden, directoryFirst, showHomeFolder) {
+    derivedStateOf {
+        path?.listFiles()
+            ?.sorted()
+            ?.filter { f ->
+                showHidden == true || (!f.name.startsWith("."))
+            }
+            ?.sortedByDescending {
+                directoryFirst == false || it.extension.isEmpty() // todo isDirectory
+            }
+            ?.map { path ->
+                DesktopFolderItem(path)
+            }
+            ?.toMutableList()
+            ?.apply {
+                if (showHomeFolder) add(
+                    DesktopFolderItem(
+                        path = homeDir ?: File("/"),
+                        customName = "Home",
+                        priority = 1
+                    )
                 )
             }
-        )
-    ) {
-//    ScrollArea(
-//        state = scrollbarsState
-//    ) {
-        if (orientation == Orientation.Horizontal) {
-            FlowRow(
-                modifier = Modifier.fillMaxSize(),
-                overflow = FlowRowOverflow.Visible,
-                horizontalArrangement = Arrangement.Start,
-                verticalArrangement = Arrangement.Top,
-                content = { content() }
-            )
-//            HorizontalScrollbar(
-//                modifier = Modifier.align(Alignment.TopEnd)
-//                    .fillMaxWidth()
-//                    .height(4.dp)
-//            ) {
-//                Thumb(
-//                    modifier = Modifier.background(Color.SuperDarkGray)
-//                )
-//            }
-        } else {
-            FlowColumn(
-                modifier = Modifier.fillMaxSize(),
-                overflow = FlowColumnOverflow.Visible,
-                horizontalArrangement = Arrangement.Start,
-                verticalArrangement = Arrangement.Top,
-                content = { content() }
-            )
-//            VerticalScrollbar(
-//                modifier = Modifier.align(Alignment.TopEnd)
-//                    .fillMaxHeight()
-//                    .width(4.dp)
-//            ) {
-//                Thumb(
-//                    modifier = Modifier.background(Color.SuperDarkGray)
-//                )
-//            }
-//        }
-        }
+            ?.sortedByDescending {
+                it.priority
+            } ?: emptyList()
     }
 }
 

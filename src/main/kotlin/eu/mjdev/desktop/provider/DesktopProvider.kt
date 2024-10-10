@@ -98,6 +98,9 @@ class DesktopProvider(
             toolkit.screenSize.let { screen -> DpSize(screen.width.dp, screen.height.dp) }
         }.getOrNull() ?: DpSize.Zero
 
+    val isLandscapeMode: Boolean
+        get() = containerSize.let { it.width > it.height }
+
     val isAlwaysOnTopSupported
         get() = runCatching {
             toolkit.isAlwaysOnTopSupported

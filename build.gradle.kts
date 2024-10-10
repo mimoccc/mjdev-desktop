@@ -117,11 +117,6 @@ allprojects {
 //        implementation("org.freedesktop:wayland-client:1.5.1")
         // gettext
         implementation("org.gnu.gettext:libintl:0.18.3")
-        // constraint
-//        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.4.0")
-//        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03")
-//        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded-core")
-//        implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded")
         // paths
 //        implementation("me.sujanpoudel.multiplatform.utils:multiplatform-paths:0.2.2")
         // files
