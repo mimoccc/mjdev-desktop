@@ -15,6 +15,7 @@ import eu.mjdev.desktop.managers.GnomeManager
 import eu.mjdev.desktop.managers.GnomeManager.Companion.THEME_MJDEV
 import eu.mjdev.desktop.provider.DesktopProvider
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Suppress("CanBeParameter", "MemberVisibilityCanBePrivate", "unused")
@@ -68,7 +69,7 @@ class Palette(
     // todo
     val disabledColor = Color.SuperDarkGray
 
-    fun update(src: Any?) = scope.launch {
+    fun update(src: Any?) = scope.launch(Dispatchers.IO) {
         loadPicture(src).getOrNull()?.let { image ->
             val width = image.width
             val height = image.height

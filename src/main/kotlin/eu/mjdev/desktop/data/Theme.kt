@@ -92,31 +92,38 @@ class Theme(
     val appMenuOuterPadding get() = appMenuOuterPaddingState.value
 
     companion object {
-        val Default by lazy {
-            Theme(
-                iconSet = MaterialSymbolsSharp,
+        val themeCache = mutableMapOf<String, Theme>()
 
-                backgroundColor = Color.SuperDarkGray,
-                backgroundRotationDelay = 60000,
+        private val DEFAULT = Theme(
+            iconSet = MaterialSymbolsSharp,
 
-                panelLocation = PanelLocation.Bottom,
-                panelDividerWidth = 16.dp,
-                panelContentPadding = 4.dp,
-                panelHideDelay = 0L,
+            backgroundColor = Color.SuperDarkGray,
+            backgroundRotationDelay = 60000,
 
-                controlCenterLocation = ControlCenterLocation.Right,
-                controlPanelHideDelay = 5000L,
-                controlCenterExpandedWidthPercent = 25,
-                controlCenterDividerColor = Color.SuperDarkGray,
-                controlCenterDividerWidth = 4.dp,
-                controlCenterIconColor = Color.White,
-                controlCenterIconSize = DpSize(32.dp, 32.dp),
-                controlCenterBackgroundAlpha = 0.8f,
+            panelLocation = PanelLocation.Bottom,
+            panelDividerWidth = 16.dp,
+            panelContentPadding = 4.dp,
+            panelHideDelay = 0L,
 
-                appMenuMinWidth = 480.dp,
-                appMenuMinHeight = 640.dp,
-                appMenuOuterPadding = 2.dp
-            )
+            controlCenterLocation = ControlCenterLocation.Right,
+            controlPanelHideDelay = 5000L,
+            controlCenterExpandedWidthPercent = 25,
+            controlCenterDividerColor = Color.SuperDarkGray,
+            controlCenterDividerWidth = 4.dp,
+            controlCenterIconColor = Color.White,
+            controlCenterIconSize = DpSize(32.dp, 32.dp),
+            controlCenterBackgroundAlpha = 0.8f,
+
+            appMenuMinWidth = 480.dp,
+            appMenuMinHeight = 640.dp,
+            appMenuOuterPadding = 2.dp
+        )
+
+        // todo load from user settings
+        fun load(
+            user: User
+        ): Theme = themeCache[user.userName] ?: DEFAULT.apply {
+            themeCache[user.userName] = this
         }
     }
 }

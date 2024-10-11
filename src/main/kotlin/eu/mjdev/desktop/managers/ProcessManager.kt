@@ -26,7 +26,7 @@ class ProcessManager(
     private var job: Job? = null
 
     init {
-        job = scope.launch {
+        job = scope.launch(Dispatchers.IO) {
             while (isActive) {
                 ProcessHandle.allProcesses().toList().filterNotNull().let { phList ->
                     phList.forEach { ph ->

@@ -1,8 +1,8 @@
 package eu.mjdev.desktop.data
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.helpers.backgrounds.ProviderErzvo
+import eu.mjdev.desktop.helpers.backgrounds.ProviderLocal
 import eu.mjdev.desktop.helpers.backgrounds.ProviderSmug
 import eu.mjdev.desktop.helpers.internal.ImagesProvider
 import kotlinx.coroutines.CoroutineScope
@@ -11,10 +11,10 @@ import kotlinx.coroutines.launch
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class DesktopConfig(
+    val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
     val block: DesktopConfig.() -> Unit = {}
 ) {
-    val desktopBackgroundsState = mutableStateListOf<Any>()
-    val desktopBackgrounds get() = desktopBackgroundsState
+    val desktopBackgrounds = mutableListOf<Any>()
 
     init {
         block()
@@ -30,9 +30,8 @@ class DesktopConfig(
 
     @Suppress("UNCHECKED_CAST")
     fun addBackground(
-        scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
         provider: suspend () -> Any?,
-    ) = scope.launch {
+    ) = scope.launch(Dispatchers.IO) {
         provider().also { bcks ->
             when (bcks) {
                 null -> Unit
@@ -49,10 +48,19 @@ class DesktopConfig(
     }
 
     companion object {
-        val Default = DesktopConfig {
+        val configCache = mutableMapOf<String, DesktopConfig>()
+
+        private val DEFAULT = DesktopConfig {
             addBackground(ProviderSmug())
             addBackground(ProviderErzvo())
-//            addBackground(ProviderLocal(api))
+        }
+
+        // todo load from user settings
+        fun load(
+            user: User
+        ): DesktopConfig = configCache[user.userName] ?: DEFAULT.apply {
+            configCache[user.userName] = this
+            addBackground(ProviderLocal(user))
         }
     }
 }

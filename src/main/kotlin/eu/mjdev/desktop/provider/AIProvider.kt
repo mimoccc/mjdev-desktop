@@ -10,6 +10,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import nl.marc_apps.tts.TextToSpeechFactory
 import nl.marc_apps.tts.experimental.ExperimentalDesktopTarget
+
 /*
 * Gemini key : https://makersuite.google.com/app/apikey
 * */
@@ -24,7 +25,7 @@ class AIProvider(
     fun ask(
         question: String,
         block: AIProvider.(question: String, result: String) -> Unit
-    ) = scope.launch {
+    ) = scope.launch(Dispatchers.IO) {
         pluginAI.ask(question).also { result ->
             block.invoke(this@AIProvider, question, result)
         }
@@ -63,7 +64,7 @@ class AIProvider(
 
         override fun talk(text: String, clearQueue: Boolean) {
             println("talking: $text")
-            scope.launch {
+            scope.launch(Dispatchers.IO) {
                 textToSpeech.await()?.say(text, clearQueue)
             }
         }

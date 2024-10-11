@@ -7,12 +7,10 @@ import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.extensions.Custom.desktopFiles
 import eu.mjdev.desktop.extensions.Custom.dirsOnly
-import eu.mjdev.desktop.extensions.Custom.filesOnly
 import eu.mjdev.desktop.extensions.Custom.flowBlock
 import eu.mjdev.desktop.extensions.Custom.get
 import eu.mjdev.desktop.extensions.Custom.jsonToList
 import eu.mjdev.desktop.extensions.Custom.lines
-import eu.mjdev.desktop.extensions.Custom.sortedByName
 import eu.mjdev.desktop.extensions.Custom.text
 import eu.mjdev.desktop.extensions.Custom.textAsLocale
 import eu.mjdev.desktop.helpers.system.Shell
@@ -139,9 +137,9 @@ class AppsProvider(
     val allApps
         get() = allAppsDesktopFiles.map { file -> App(file) }
 
-    val backgrounds by lazy {
-        backgroundFilesDir.filesOnly.sortedByName()
-    }
+//    val backgrounds by lazy {
+//        backgroundFilesDir.filesOnly.sortedByName()
+//    }
 
     val appCategories = flowBlock {
         allApps.asSequence().flatMap { app ->

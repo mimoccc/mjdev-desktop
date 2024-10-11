@@ -116,6 +116,9 @@ open class DesktopScope(
     val panelAutoHideEnabled
         get() = theme.panelHideDelay > 0L
 
+    val backgrounds
+        get() = currentUser.backgrounds
+
     companion object {
         @Composable
         fun withDesktopScope(

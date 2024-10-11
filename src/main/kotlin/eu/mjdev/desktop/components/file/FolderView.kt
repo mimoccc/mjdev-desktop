@@ -2,7 +2,7 @@ package eu.mjdev.desktop.components.file
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -60,7 +60,7 @@ fun FolderView(
     ) { mw, mh ->
         val rows = max(1, ((api.containerSize.height / mh).toInt()))
         val columns = max(1, (files.size.div(rows)))
-        BoxWithConstraints(
+        Box(
             modifier = modifier,
             contentAlignment = Alignment.TopStart
         ) {
@@ -94,8 +94,7 @@ fun FolderView(
             }
             GuideLines(
                 modifier = modifier,
-                rows = (constraints.maxHeight.dp / mh).toInt(),
-                columns = (constraints.maxWidth.dp / mw).toInt(),
+                cellSize = DpSize(mw, mh),
                 color = iconsTintColor.alpha(0.5f),
                 lineSize = 1.dp,
                 visible = guideVisibleState.isVisible

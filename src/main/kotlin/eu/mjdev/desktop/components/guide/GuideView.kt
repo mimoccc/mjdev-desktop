@@ -17,19 +17,22 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import kotlin.math.max
 
 @Composable
 fun GuideLines(
     modifier: Modifier = Modifier,
-    rows: Int = 10,
-    columns: Int = 10,
     color: Color = Color.Black,
     lineSize: Dp = 1.dp,
     visible: Boolean = true,
+    cellSize: DpSize = DpSize(10.dp, 10.dp)
 ) = Canvas(
     modifier = modifier
 ) {
+    val rows = max(1, size.height.div(cellSize.height.value).toInt())
+    val columns = max(1, size.width.div(cellSize.width.value).toInt())
     (0..columns).forEach { i ->
         val x = i * size.width / columns
         drawLine(

@@ -9,9 +9,9 @@ import androidx.compose.ui.layout.ContentScale
 import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.extensions.Compose.Crossfade
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
-import eu.mjdev.desktop.extensions.Compose.rememberComputed
 import eu.mjdev.desktop.helpers.internal.Queue
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -25,8 +25,7 @@ fun BackgroundImage(
     onChange: (bck: Any?) -> Unit = {}
 ) = withDesktopScope {
     val switchDelay = theme.backgroundRotationDelay
-    val backgrounds by rememberComputed(appsProvider.backgrounds.size) { appsProvider.backgrounds }
-    val backgroundQueue = remember { Queue(backgrounds) }
+    val backgroundQueue = remember(backgrounds, backgrounds.size) { Queue(backgrounds) }
     var currentBackground by remember { mutableStateOf(backgroundQueue.nextOrNull()) }
     Box(
         modifier = modifier.background(backgroundColor)
@@ -36,7 +35,7 @@ fun BackgroundImage(
             fadeInDuration = fadeInDuration,
             fadeOutDuration = fadeOutDuration
         ) { value ->
-            api.scope.launch {
+            api.scope.launch(Dispatchers.IO) {
                 onChange(currentBackground)
             }
             ImageAny(

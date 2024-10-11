@@ -49,8 +49,6 @@ class DesktopFile(
     init {
         if (isApp && !isCorrect) {
             runCatching {
-//                println("Correcting file: file:///$absolutePath")
-//                println("Corrected file: file:///${correctedFile.absolutePath}")
                 correctedFile.let { f ->
                     desktopSection?.StartupWMClass = fullAppName
                     desktopSection?.OnlyShowIn = mutableListOf()

@@ -11,8 +11,6 @@ import java.io.File
 class User(
     val data: String,
     val dataItems: List<String> = data.split(":"),
-    val config: DesktopConfig = DesktopConfig.Default, // todo load
-    val theme: Theme = Theme.Default // todo load
 ) {
     val userName: String
         get() = dataItems[0]
@@ -30,23 +28,25 @@ class User(
         get() = dataItems[6]
     val picture: Any
         get() = loadPicture(dataItems[5], ".face") ?: Icons.User
-
     val homeDir
         get() = File(home)
-
     val isLoggedIn
         get() = isLoggedIn(userName)
-
     val userDirs
         get() = UserDirs(homeDir)
+    val config: DesktopConfig
+        get() = DesktopConfig.load(this) // todo load
+    val theme: Theme
+        get() = Theme.load(this) // todo load
+    val backgrounds
+        get() = config.desktopBackgrounds
 
     override fun toString(): String {
         return userName
     }
 
     fun login(
-        api: DesktopProvider,
-        password: String
+        api: DesktopProvider, password: String
     ): Boolean = api.login(userName, password)
 
     companion object {
@@ -57,13 +57,11 @@ class User(
         ): Boolean = Shell.executeAndRead("whoami").trim().contentEquals(un)
 
         fun loadPicture(
-            home: String,
-            pic: String
+            home: String, pic: String
         ): File? = loadPicture(File(home), pic)
 
         fun loadPicture(
-            homeDir: File,
-            picName: String
+            homeDir: File, picName: String
         ): File? = File(homeDir, picName).let { f ->
             if (f.exists()) f else null
         }
