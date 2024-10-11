@@ -36,6 +36,7 @@ import kotlin.math.max
 // ShellFolderManager
 // X11GraphicsEnvironment
 
+// todo orientation
 @Suppress("FunctionName")
 @Composable
 fun FolderView(

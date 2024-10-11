@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.NativePaint
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
@@ -23,7 +24,7 @@ import java.util.*
 import java.util.Locale
 import kotlin.jvm.optionals.getOrNull
 
-@Suppress("MemberVisibilityCanBePrivate", "FunctionName")
+@Suppress("MemberVisibilityCanBePrivate", "FunctionName", "unused")
 object Custom {
     val ProcessHandle.command: String
         get() = info().command().getOrNull().orEmpty()
@@ -51,6 +52,10 @@ object Custom {
                     block != null &&
                     block != Character.UnicodeBlock.SPECIALS
         }
+
+    fun <T> SnapshotStateList<T>.replaceLast(data: T) {
+        this[this.size - 1] = data
+    }
 
     fun File.listFiles(
         ext: String? = null
@@ -111,16 +116,16 @@ object Custom {
     val File.dirsOnly
         get() = listFiles()?.filter { it.isDirectory }?.toList() ?: emptyList<File>()
 
-    val File.lines
+    val File.lines: List<String>
         get() = runCatching { if (exists()) readLines(Charsets.UTF_8) else null }.getOrNull() ?: emptyList()
 
-    val File.text
-        get() = runCatching { if (exists()) readText(Charsets.UTF_8) else null }.getOrNull() ?: ""
+    val File.text: String
+        get() = runCatching { if (exists()) readText(Charsets.UTF_8) else null }.getOrNull().orEmpty()
 
     val File.textAsLocale: Locale
         get() = if (exists()) readTextAsLocale() else Locale.ENGLISH
 
-    val File.desktopFiles
+    val File.desktopFiles: List<DesktopFile>
         get() = listDesktopFiles()
 
 //    inline fun <T, K> distinctList(
@@ -255,5 +260,4 @@ object Custom {
     fun MutableState<Boolean>.toggle() {
         value = !value
     }
-
 }

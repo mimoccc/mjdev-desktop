@@ -16,17 +16,24 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.components.button.TransparentButton
 import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPageScope.Companion.remember
 import eu.mjdev.desktop.components.input.SelectableOutlineEditText
 import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.extensions.Compose.rememberState
+import eu.mjdev.desktop.extensions.Compose.scrollWithAnimToLast
+import eu.mjdev.desktop.extensions.Compose.verticalTouchScrollable
+import eu.mjdev.desktop.extensions.Custom.replaceLast
+import eu.mjdev.desktop.extensions.Modifier.clipCircle
+import eu.mjdev.desktop.helpers.compose.rememberForeverLazyListState
 import eu.mjdev.desktop.icons.Icons
 
-// todo copy only selected text to clipboard
 @OptIn(ExperimentalFoundationApi::class)
 @Suppress("FunctionName")
 fun AIPage() = ControlCenterPage(
@@ -34,7 +41,8 @@ fun AIPage() = ControlCenterPage(
     name = "Assistant",
     condition = { ai.isAvailable() }
 ) {
-    val clipboardManager = LocalClipboardManager.current
+    val scrollState = rememberForeverLazyListState("Assistant")
+    val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val questionsList = remember { mutableStateListOf<Pair<String, String>>() }
     val request = rememberState("")
     val iconSend = androidx.compose.runtime.remember {
@@ -47,13 +55,14 @@ fun AIPage() = ControlCenterPage(
         if (what.isNotEmpty()) {
             questionsList.add(Pair(what, ""))
             request.value = ""
+            scrollState.scrollWithAnimToLast(scope)
             api.ai.ask(what) { _, res ->
                 res.replace("* **", "")
                     .replace("**", "")
                     .trim()
                     .let { resx ->
-                        questionsList.removeIf { it.first == what }
-                        questionsList.add(Pair(what, resx))
+                        questionsList.replaceLast(Pair(what, resx))
+                        scrollState.scrollWithAnimToLast(scope)
                         talk(resx)
                     }
             }
@@ -61,7 +70,6 @@ fun AIPage() = ControlCenterPage(
     }
     Box(
         modifier = Modifier.fillMaxSize()
-            .background(backgroundColor)
     ) {
         Row {
             Column(
@@ -74,7 +82,8 @@ fun AIPage() = ControlCenterPage(
                         .background(
                             Color.Black.copy(alpha = 0.3f),
                             RoundedCornerShape(8.dp)
-                        )
+                        ).verticalTouchScrollable(scrollState),
+                    state = scrollState
                 ) {
                     itemsIndexed(questionsList) { idx, textData ->
                         Column(
@@ -86,60 +95,15 @@ fun AIPage() = ControlCenterPage(
                                 )
                                 .padding(4.dp),
                         ) {
-                            Box(
-                                Modifier.padding(4.dp)
-                                    .fillMaxWidth()
-                                    .background(
-                                        Color.White.copy(alpha = 0.1f),
-                                        RoundedCornerShape(8.dp)
-                                    )
-                                    .padding(8.dp)
-                            ) {
-                                TextAny(
-                                    modifier = Modifier.fillMaxWidth().padding(end = 24.dp, top = 6.dp),
-                                    text = "${idx + 1}. ${textData.first}",
-                                    color = Color.White,
-                                    textSelectionEnabled = true
-                                )
-                                Icon(
-                                    modifier = Modifier.padding(4.dp)
-                                        .size(24.dp)
-                                        .align(Alignment.TopEnd)
-                                        .onClick {
-                                            clipboardManager.setText(AnnotatedString(textData.first))
-                                        },
-                                    imageVector = Icons.CopyToClipboard,
-                                    tint = Color.White.copy(alpha = 0.9f),
-                                    contentDescription = ""
-                                )
-                            }
-                            Box(
-                                modifier = Modifier.padding(4.dp)
-                                    .fillMaxWidth()
-                                    .background(
-                                        Color.White.copy(alpha = 0.1f),
-                                        RoundedCornerShape(8.dp)
-                                    )
-                                    .padding(8.dp),
-                            ) {
-                                TextAny(
-                                    modifier = Modifier.fillMaxWidth().padding(end = 24.dp, top = 6.dp),
-                                    text = textData.second,
-                                    color = Color.White.copy(alpha = 0.9f),
-                                    textSelectionEnabled = true
-                                )
-                                Icon(
-                                    modifier = Modifier.padding(4.dp)
-                                        .size(24.dp)
-                                        .align(Alignment.TopEnd)
-                                        .onClick {
-                                            clipboardManager.setText(AnnotatedString(textData.second))
-                                        },
-                                    imageVector = Icons.CopyToClipboard,
-                                    tint = Color.White.copy(alpha = 0.9f),
-                                    contentDescription = ""
-                                )
-                            }
+                            TextBlock(
+                                idx = idx,
+                                text = textData.first,
+                                clipboardManager = clipboardManager
+                            )
+                            TextBlock(
+                                text = textData.second,
+                                clipboardManager = clipboardManager
+                            )
                         }
                     }
                 }
@@ -193,6 +157,47 @@ fun AIPage() = ControlCenterPage(
                     }
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun TextBlock(
+    idx: Int = -1,
+    text: String = "",
+    clipboardManager: ClipboardManager = LocalClipboardManager.current
+) {
+    Box(
+        Modifier.padding(4.dp)
+            .fillMaxWidth()
+            .background(
+                Color.White.copy(alpha = 0.1f),
+                RoundedCornerShape(8.dp)
+            )
+            .padding(8.dp)
+    ) {
+        TextAny(
+            modifier = Modifier.fillMaxWidth()
+                .padding(end = 24.dp),
+            text = "${if (idx >= 0) "${idx + 1}. " else ""}${text}",
+            color = Color.White,
+            textAlign = TextAlign.Start,
+            textSelectionEnabled = true
+        )
+        TransparentButton(
+            modifier = Modifier.size(32.dp)
+                .clipCircle()
+                .align(Alignment.TopEnd),
+            onClick = {
+                clipboardManager.setText(AnnotatedString(text))
+            },
+        ) {
+            Icon(
+                modifier = Modifier.size(24.dp),
+                imageVector = Icons.CopyToClipboard,
+                tint = Color.White.copy(alpha = 0.9f),
+                contentDescription = ""
+            )
         }
     }
 }

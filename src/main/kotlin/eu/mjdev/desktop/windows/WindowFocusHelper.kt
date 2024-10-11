@@ -35,7 +35,14 @@ class WindowFocusHelper(
     override fun windowStateChanged(e: WindowEvent?) {
         when (e?.newState) {
             null -> Unit
-            WINDOW_CLOSED -> window?.let { unregister(it) }
+            WINDOW_CLOSED -> window?.let {
+                onFocusChange(window, false)
+                unregister(it)
+            }
+
+            WINDOW_GAINED_FOCUS -> onFocusChange(window, true)
+            WINDOW_ICONIFIED -> onFocusChange(window, false)
+            WINDOW_DEICONIFIED -> onFocusChange(window, true)
             WINDOW_ACTIVATED -> onFocusChange(window, true)
             WINDOW_DEACTIVATED -> onFocusChange(window, false)
         }

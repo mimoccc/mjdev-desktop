@@ -12,7 +12,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +24,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
+import eu.mjdev.desktop.components.blur.BlurPanel
 import eu.mjdev.desktop.components.controlcenter.base.PageHeader
 import eu.mjdev.desktop.components.sliding.SlidingMenu
 import eu.mjdev.desktop.components.sliding.base.VisibilityState
@@ -31,6 +35,7 @@ import eu.mjdev.desktop.extensions.Compose.onRightClick
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberComputed
 import eu.mjdev.desktop.extensions.Compose.rememberState
+import eu.mjdev.desktop.extensions.Compose.runAsync
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
 import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.globalKeyEventHandler
@@ -38,15 +43,12 @@ import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.windows.ChromeWindowState
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Suppress("FunctionName")
 @Composable
 fun ControlCenter(
     pagerState: MutableState<Int> = rememberState(0),
     controlCenterState: VisibilityState = rememberVisibilityState(),
-    scope: CoroutineScope = rememberCoroutineScope(),
     enterAnimation: EnterTransition = ControlCenterEnterAnimation,
     exitAnimation: ExitTransition = ControlCenterExitAnimation,
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
@@ -71,7 +73,9 @@ fun ControlCenter(
         }
     }
     val windowState: ChromeWindowState = rememberChromeWindowState(position = position, size = size)
-    globalKeyEventHandler(controlCenterState.isVisible && controlCenterState.enabled) {
+    globalKeyEventHandler(
+        isEnabled = { controlCenterState.isVisible && controlCenterState.enabled }
+    ) {
         onEscape {
             controlCenterState.hide()
             true
@@ -101,9 +105,12 @@ fun ControlCenter(
                     thickness = controlCenterDividerWidth
                 )
             } else {
+                BlurPanel(
+                    modifier = Modifier.fillMaxHeight()
+                        .matchParentSize()
+                )
                 Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
+                    modifier = Modifier.fillMaxHeight()
                         .wrapContentSize()
                         .background(
                             backgroundColor.copy(alpha = backgroundAlpha)
@@ -142,12 +149,12 @@ fun ControlCenter(
                                             }
                                             .onMousePress {
                                                 onLeftClick {
-                                                    scope.launch {
+                                                    runAsync {
                                                         pagerState.value = idx
                                                     }
                                                 }
                                                 onRightClick {
-                                                    scope.launch {
+                                                    runAsync {
                                                         pagerState.value = idx
                                                     }
                                                     onContextMenuClick()

@@ -316,7 +316,7 @@ class ThemeManagerLinux(
 
     fun setColorScheme(
         schemeName: String
-    ) {
+    ) = api.runAsync {
         Shell.executeAndRead(
             "gsettings",
             "set",
@@ -328,41 +328,47 @@ class ThemeManagerLinux(
 
     fun setGTKTheme(
         themeName: String = THEME_YARU
-    ) = Shell.executeAndRead(
-        "gsettings",
-        "set",
-        "org.gnome.desktop.interface",
-        "gtk-theme",
-        themeName
-    )
+    ) = api.runAsync {
+        Shell.executeAndRead(
+            "gsettings",
+            "set",
+            "org.gnome.desktop.interface",
+            "gtk-theme",
+            themeName
+        )
+    }
 
-
-    fun getGTKTheme(): String = Shell.executeAndRead(
-        "gsettings",
-        "get",
-        "org.gnome.desktop.interface",
-        "gtk-theme"
-    ).replace("'", "").trim()
+//    fun getGTKTheme(): String = runAsync { Shell.executeAndRead(
+//        "gsettings",
+//        "get",
+//        "org.gnome.desktop.interface",
+//        "gtk-theme"
+//    ).replace("'", "").trim()
+//    }
 
     fun setIconTheme(
         themeName: String = THEME_YARU
-    ) = Shell.executeAndRead(
-        "gsettings",
-        "set",
-        "org.gnome.desktop.interface",
-        "icon-theme",
-        themeName
-    )
+    ) = api.runAsync {
+        Shell.executeAndRead(
+            "gsettings",
+            "set",
+            "org.gnome.desktop.interface",
+            "icon-theme",
+            themeName
+        )
+    }
 
     fun setSoundTheme(
         themeName: String = THEME_YARU
-    ) = Shell.executeAndRead(
-        "gsettings",
-        "set",
-        "org.gnome.desktop.sound",
-        "gtk-theme",
-        themeName
-    )
+    ) = api.runAsync {
+        Shell.executeAndRead(
+            "gsettings",
+            "set",
+            "org.gnome.desktop.sound",
+            "gtk-theme",
+            themeName
+        )
+    }
 
     fun setDarkColorScheme() =
         setColorScheme(COLOR_SCHEME_PREFER_DARK)

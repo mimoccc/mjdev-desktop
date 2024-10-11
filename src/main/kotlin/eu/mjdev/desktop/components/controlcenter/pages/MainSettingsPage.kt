@@ -16,6 +16,7 @@ import eu.mjdev.desktop.components.custom.DateTime
 import eu.mjdev.desktop.components.custom.PowerBlock
 import eu.mjdev.desktop.components.user.UserAvatar
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
+import eu.mjdev.desktop.extensions.Compose.runAsync
 import eu.mjdev.desktop.extensions.Modifier.rectShadow
 import eu.mjdev.desktop.helpers.compose.Orientation
 
@@ -96,7 +97,9 @@ fun MainSettingsPage() = ControlCenterPage(
                     iconTintColor = iconsTintColor,
                     onPowerButtonClick = {
                         // todo : dialog
-                        api.logOut()
+                        runAsync {
+                            api.logOut()
+                        }
                     }
                 )
             }

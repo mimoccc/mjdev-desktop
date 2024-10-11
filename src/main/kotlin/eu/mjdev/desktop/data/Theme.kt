@@ -112,7 +112,7 @@ class Theme(
             controlCenterDividerWidth = 4.dp,
             controlCenterIconColor = Color.White,
             controlCenterIconSize = DpSize(32.dp, 32.dp),
-            controlCenterBackgroundAlpha = 0.8f,
+            controlCenterBackgroundAlpha = 0.6f,
 
             appMenuMinWidth = 480.dp,
             appMenuMinHeight = 640.dp,

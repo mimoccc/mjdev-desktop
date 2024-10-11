@@ -141,11 +141,11 @@ class WindowsManager(
 //            if (id == 0L) continue
 //            Window(id).also { window ->
 //                val pid = getWindowPid(window) ?: 0L
-////                val name = getWindowName(window) ?: ""
-//                val cls = getWindowClass(window) ?: ""
+////                val name = getWindowName(window).orEmpty()
+//                val cls = getWindowClass(window).orEmpty()
 //                val desk = getWindowDesktop(window) ?: 0L
 //                val process = ProcessHandle.allProcesses().toList().firstOrNull { it.pid() == pid }
-////                val icon = getWindowIconName(window) ?: ""
+////                val icon = getWindowIconName(window).orEmpty()
 //                windowList.add(
 //                    SystemWindow(
 //                        id,

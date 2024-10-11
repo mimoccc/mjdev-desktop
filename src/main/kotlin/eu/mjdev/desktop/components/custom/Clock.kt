@@ -5,7 +5,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.onClick
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,11 +18,11 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.components.text.TextWithShadow
 import eu.mjdev.desktop.extensions.Compose.rememberState
+import eu.mjdev.desktop.extensions.Compose.runAsync
 import eu.mjdev.desktop.extensions.Custom.ParsedList
 import eu.mjdev.desktop.extensions.Custom.dateFlow
 import eu.mjdev.desktop.extensions.Custom.timeFlow
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
-import kotlinx.coroutines.launch
 
 // todo remove params
 @OptIn(ExperimentalFoundationApi::class)
@@ -40,7 +43,7 @@ fun Clock(
     val time = timeFlow.value
     var lastTalk by rememberState("")
     val talk: () -> Unit = {
-        scope.launch {
+        runAsync {
             lastTalk = time
             val parsed = ParsedList(time, ":")
             ai.talk(
@@ -65,7 +68,7 @@ fun Clock(
                 fontWeight = timeTextWeight,
                 fontSize = timeTextSize,
                 color = timeTextColor,
-               singleLine = true
+                singleLine = true
             )
             if (showDate) TextWithShadow(
                 text = dateFlow.value,
@@ -73,7 +76,7 @@ fun Clock(
                 fontWeight = dateTextWeight,
                 fontSize = dateTextSize,
                 color = dateTextColor,
-               singleLine = true
+                singleLine = true
             )
         }
         LaunchedEffect(time) {

@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
+import eu.mjdev.desktop.components.blur.BlurPanel
 import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.components.user.UserAvatar
@@ -87,7 +88,9 @@ fun AppsMenu(
         )
     }
     val windowState: ChromeWindowState = rememberChromeWindowState(position = position)
-    globalKeyEventHandler(menuState.isVisible && menuState.enabled) {
+    globalKeyEventHandler(
+        isEnabled = { menuState.isVisible && menuState.enabled }
+    ) {
         onEscape {
             menuState.hide()
             true
@@ -136,6 +139,10 @@ fun AppsMenu(
                     windowState.requestFocus()
                 }
         ) {
+            BlurPanel(
+                modifier = Modifier.fillMaxSize()
+                    .clip(RoundedCornerShape(24.dp))
+            )
             Box(
                 modifier = Modifier
                     .fillMaxSize()

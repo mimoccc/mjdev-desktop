@@ -5,6 +5,7 @@ import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.helpers.system.UserDirs
 import eu.mjdev.desktop.icons.Icons
 import eu.mjdev.desktop.provider.DesktopProvider
+import kotlinx.coroutines.flow.Flow
 import java.io.File
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
@@ -45,9 +46,9 @@ class User(
         return userName
     }
 
-    fun login(
+    suspend fun login(
         api: DesktopProvider, password: String
-    ): Boolean = api.login(userName, password)
+    ): Flow<Boolean> = api.login(userName, password)
 
     companion object {
         val Nobody = User(":x:-1:-1:::")

@@ -12,7 +12,6 @@ fun main(
     exitProcessOnExit = true
 ) {
     // net devices  : ls /sys/class/net
-    // wifi list    : nmcli -t -f ALL dev wifi
     // wave mon     : apt install wavemon
     // connect gui  : nmtui
     // eth settings : iwconfig

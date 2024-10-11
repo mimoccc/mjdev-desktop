@@ -5,9 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.extensions.Compose.Crossfade
+import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.helpers.internal.Queue
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
@@ -31,11 +33,11 @@ fun BackgroundImage(
         modifier = modifier.background(backgroundColor)
     ) {
         Crossfade(
-            targetState = currentBackground,
+            targetState = currentBackground ?: Color.SuperDarkGray,
             fadeInDuration = fadeInDuration,
             fadeOutDuration = fadeOutDuration
         ) { value ->
-            api.scope.launch(Dispatchers.IO) {
+            scope.launch(Dispatchers.IO) {
                 onChange(currentBackground)
             }
             ImageAny(

@@ -15,8 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import eu.mjdev.desktop.components.icon.ShapedIcon
+import eu.mjdev.desktop.extensions.Compose.runAsync
 import eu.mjdev.desktop.icons.Icons
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
+import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun AppActions(
@@ -40,7 +42,9 @@ fun AppActions(
             onClick = {
                 onActionClick()
                 // todo : dialog
-                api.restart()
+                runAsync(Dispatchers.IO) {
+                    api.restart()
+                }
             }
         )
         ShapedIcon(
@@ -51,7 +55,9 @@ fun AppActions(
             onClick = {
                 onActionClick()
                 // todo : dialog
-                api.suspend()
+                runAsync(Dispatchers.IO) {
+                    api.suspend()
+                }
             }
         )
         ShapedIcon(
@@ -62,7 +68,9 @@ fun AppActions(
             onClick = {
                 onActionClick()
                 // todo : dialog
-                api.logOut()
+                runAsync(Dispatchers.IO) {
+                    api.logOut()
+                }
             }
         )
     }

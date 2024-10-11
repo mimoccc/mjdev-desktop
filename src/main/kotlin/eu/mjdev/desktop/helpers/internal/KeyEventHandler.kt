@@ -10,7 +10,7 @@ package eu.mjdev.desktop.helpers.internal
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.key.Key
 import eu.mjdev.desktop.extensions.Custom.isPrintable
 import java.awt.AWTEvent
 import java.awt.Toolkit
@@ -19,7 +19,7 @@ import java.awt.event.KeyEvent as AwtKeyEvent
 
 @Suppress("CanBeParameter", "unused", "MemberVisibilityCanBePrivate")
 class KeyEventHandler(
-    private val event: AwtKeyEvent,
+    private val isEnabled: () -> Boolean = { true },
     private val block: KeyEventHandler.() -> Unit
 ) {
     private val listeners = mutableListOf<KeyEventListener>()
@@ -30,6 +30,12 @@ class KeyEventHandler(
 
     init {
         block()
+    }
+
+    fun onEvent(
+        event: AwtKeyEvent
+    ) {
+        if (!isEnabled()) return
         val code = event.keyCode
         val char = parseCharacter(event)
         val isKeyUp = event.id == AwtKeyEvent.KEY_RELEASED
@@ -72,7 +78,6 @@ class KeyEventHandler(
     class KeyEventListener(val key: Key?, val block: (Char) -> Boolean)
 
     class GlobalKeyListener(
-        val enabled: Boolean = true,
         val onKey: (event: AwtKeyEvent) -> Unit
     ) : AWTEventListener {
         init {
@@ -85,26 +90,22 @@ class KeyEventHandler(
 
         override fun eventDispatched(event: AWTEvent?) {
             (event as? AwtKeyEvent)?.also { kev ->
-                if (enabled && !event.isConsumed) onKey(kev)
+                if (!event.isConsumed) onKey(kev)
             }
         }
     }
 
     companion object {
-        fun keyEventHandler(
-            event: AwtKeyEvent,
-            block: KeyEventHandler.() -> Unit
-        ) = KeyEventHandler(event, block)
-
         @Composable
         fun globalKeyEventHandler(
-            enabled: Boolean = true,
-            block: KeyEventHandler.() -> Unit
+            isEnabled: () -> Boolean = { true },
+            block: KeyEventHandler.() -> Unit,
         ) {
-            val globalHandler = GlobalKeyListener(enabled) { event ->
-                keyEventHandler(event, block)
-            }
             DisposableEffect(Unit) {
+                val handler = KeyEventHandler(isEnabled, block)
+                val globalHandler = GlobalKeyListener { event ->
+                    handler.onEvent(event)
+                }
                 onDispose {
                     globalHandler.dispose()
                 }

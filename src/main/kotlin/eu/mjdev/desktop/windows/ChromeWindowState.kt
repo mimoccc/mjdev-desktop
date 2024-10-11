@@ -12,6 +12,7 @@ import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberState
 
+@Suppress("MemberVisibilityCanBePrivate")
 class ChromeWindowState(
     position: WindowPosition = WindowPosition.Aligned(Alignment.Center),
     size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecified),
@@ -23,7 +24,15 @@ class ChromeWindowState(
     var onOpened: MutableList<ChromeWindowState.() -> Unit> = mutableStateListOf()
     var onClosed: MutableList<ChromeWindowState.() -> Unit> = mutableStateListOf()
 
+    private val focusState: MutableState<Boolean> = mutableStateOf(false)
+    var isFocused: Boolean
+        get() = focusState.value
+        internal set(value) {
+            focusState.value = value
+        }
+
     val focusHelper: WindowFocusHelper = WindowFocusHelper { _, focus ->
+        isFocused = focus
         this@ChromeWindowState.onFocusChange.forEach {
             it.invoke(this@ChromeWindowState, focus)
         }

@@ -19,9 +19,11 @@ import eu.mjdev.desktop.components.user.UserAvatar
 import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.rememberState
+import eu.mjdev.desktop.extensions.Compose.runAsync
 import eu.mjdev.desktop.helpers.compose.Orientation
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
+import kotlinx.coroutines.flow.collectLatest
 
 // todo : all users
 @Suppress("FunctionName", "unused")
@@ -31,7 +33,11 @@ fun Greeter() = withDesktopScope {
     var isUserLoggedIn by rememberState(user.isLoggedIn)
     var passwordVisible by rememberState(false)
     val onDone: (password: String) -> Unit = { password ->
-        isUserLoggedIn = user.login(api, password)
+        runAsync {
+            user.login(api, password).collectLatest { logState ->
+                isUserLoggedIn = logState
+            }
+        }
     }
     ChromeWindow(
         position = WindowPosition.Aligned(Alignment.Center),

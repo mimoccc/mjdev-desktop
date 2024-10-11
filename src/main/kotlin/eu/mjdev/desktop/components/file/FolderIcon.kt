@@ -64,7 +64,7 @@ fun FolderIcon(
             TextWithShadow(
                 modifier = Modifier.width(computedSize.width)
                     .padding(start = 4.dp),
-                text = customName ?: path.name ?: "",
+                text = (customName ?: path.name).orEmpty(),
                 color = textColor,
                 fontWeight = FontWeight.Bold,
                 overflow = Ellipsis,

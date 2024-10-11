@@ -20,7 +20,7 @@ class UserDirs(
         configFileContent.map { line ->
             line.split("=").let { pair -> Pair(pair[0], pair.getOrNull(1)) }
         }.forEach {
-            put(it.first, File(it.second ?: ""))
+            put(it.first, File(it.second.orEmpty()))
         }
     }
 

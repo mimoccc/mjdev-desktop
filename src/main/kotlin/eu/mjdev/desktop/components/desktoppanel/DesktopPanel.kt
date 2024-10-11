@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
+import eu.mjdev.desktop.components.blur.BlurPanel
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopMenuIcon
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelDateTime
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelFavoriteApps
@@ -86,7 +87,9 @@ fun DesktopPanel(
         position = position, size = panelSize
     )
     panelState.updateSize(panelSize - DpSize(0.dp, tooltipState.tooltipHeight))
-    globalKeyEventHandler(panelState.isVisible && panelState.enabled) {
+    globalKeyEventHandler(
+        isEnabled = { panelState.isVisible && panelState.enabled }
+    ) {
         onEscape {
             panelState.hide()
             true
@@ -140,70 +143,75 @@ fun DesktopPanel(
                             modifier = Modifier.fillMaxWidth()
                                 .height(tooltipState.tooltipHeight)
                         )
-                        Column(
+                        BlurPanel(
                             modifier = Modifier.fillMaxWidth()
                                 .wrapContentHeight()
-                                .background(
-                                    brush = Brush.verticalGradient(
-                                        colors = listOf(
-                                            backgroundColor.alpha(0.3f),
-                                            backgroundColor.alpha(0.7f),
-                                            backgroundColor.alpha(0.8f),
-                                        )
-                                    )
-                                ).topShadow(
-                                    color = borderColor.alpha(0.3f),
-                                    blur = 4.dp
-                                ).onPlaced(panelState::onPlaced),
                         ) {
-                            Divider(
+                            Column(
                                 modifier = Modifier.fillMaxWidth()
-                                    .height(2.dp),
-                                color = borderColor,
-                                thickness = 2.dp
-                            )
-                            Box(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(top = 4.dp)
-                                    .padding(theme.panelContentPadding)
+                                    .wrapContentHeight()
+                                    .background(
+                                        brush = Brush.verticalGradient(
+                                            colors = listOf(
+                                                backgroundColor.alpha(0.3f),
+                                                backgroundColor.alpha(0.7f),
+                                                backgroundColor.alpha(0.8f),
+                                            )
+                                        )
+                                    ).topShadow(
+                                        color = borderColor.alpha(0.3f),
+                                        blur = 4.dp
+                                    ).onPlaced(panelState::onPlaced),
                             ) {
-                                if (showMenuIcon) {
-                                    DesktopMenuIcon(
-                                        modifier = Modifier.align(Alignment.CenterStart),
+                                Divider(
+                                    modifier = Modifier.fillMaxWidth()
+                                        .height(2.dp),
+                                    color = borderColor,
+                                    thickness = 2.dp
+                                )
+                                Box(
+                                    modifier = Modifier.fillMaxWidth()
+                                        .padding(top = 4.dp)
+                                        .padding(theme.panelContentPadding)
+                                ) {
+                                    if (showMenuIcon) {
+                                        DesktopMenuIcon(
+                                            modifier = Modifier.align(Alignment.CenterStart),
+                                            iconColor = borderColor,
+                                            iconBackgroundColor = iconsTintColor,
+                                            iconSize = iconSize,
+                                            iconPadding = iconPadding,
+                                            iconOuterPadding = iconOuterPadding,
+                                            onTooltip = { item -> tooltipState.show(item) },
+                                            onClick = { onMenuIconClicked() },
+                                            onContextMenuClick = onMenuIconContextMenuClicked
+                                        )
+                                    }
+                                    DesktopPanelFavoriteApps(
+                                        modifier = Modifier.align(Alignment.Center),
                                         iconColor = borderColor,
                                         iconBackgroundColor = iconsTintColor,
+                                        iconColorRunning = iconsTintColor.lighter(0.3f),
                                         iconSize = iconSize,
                                         iconPadding = iconPadding,
                                         iconOuterPadding = iconOuterPadding,
                                         onTooltip = { item -> tooltipState.show(item) },
-                                        onClick = { onMenuIconClicked() },
-                                        onContextMenuClick = onMenuIconContextMenuClicked
+                                        onAppClick = { app -> onAppClick(app) },
+                                        onContextMenuClick = onAppContextMenuClick
                                     )
-                                }
-                                DesktopPanelFavoriteApps(
-                                    modifier = Modifier.align(Alignment.Center),
-                                    iconColor = borderColor,
-                                    iconBackgroundColor = iconsTintColor,
-                                    iconColorRunning = iconsTintColor.lighter(0.3f),
-                                    iconSize = iconSize,
-                                    iconPadding = iconPadding,
-                                    iconOuterPadding = iconOuterPadding,
-                                    onTooltip = { item -> tooltipState.show(item) },
-                                    onAppClick = { app -> onAppClick(app) },
-                                    onContextMenuClick = onAppContextMenuClick
-                                )
-                                DesktopPanelTray(
-                                    modifier = Modifier.align(Alignment.CenterEnd)
-                                        .padding(end = 16.dp),
-                                ) {
-                                    DesktopPanelLanguage(
-                                        onTooltip = { item -> tooltipState.show(item) },
-                                        onClick = onLanguageClick
-                                    )
-                                    DesktopPanelDateTime(
-                                        onTooltip = { item -> tooltipState.show(item) },
-                                        onClick = onClockClick
-                                    )
+                                    DesktopPanelTray(
+                                        modifier = Modifier.align(Alignment.CenterEnd)
+                                            .padding(end = 16.dp),
+                                    ) {
+                                        DesktopPanelLanguage(
+                                            onTooltip = { item -> tooltipState.show(item) },
+                                            onClick = onLanguageClick
+                                        )
+                                        DesktopPanelDateTime(
+                                            onTooltip = { item -> tooltipState.show(item) },
+                                            onClick = onClockClick
+                                        )
+                                    }
                                 }
                             }
                         }

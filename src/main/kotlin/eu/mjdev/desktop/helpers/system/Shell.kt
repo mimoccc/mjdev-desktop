@@ -4,41 +4,52 @@ import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.extensions.Custom.consoleOutput
 import eu.mjdev.desktop.helpers.exception.ErrorException.Companion.error
 import eu.mjdev.desktop.helpers.exception.SuccessException.Companion.success
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-@Suppress("MemberVisibilityCanBePrivate", "unused")
+@Suppress("MemberVisibilityCanBePrivate", "unused", "RedundantSuspendModifier")
 class Shell(
-    block: ShellScope.() -> Unit
+    val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
+    block: suspend ShellScope.() -> Unit
 ) {
     val environment by lazy { Environment() }
 
     init {
-        ShellScope(this).apply(block)
+        scope.launch(Dispatchers.IO) {
+            with(ShellScope(this@Shell)) {
+                block()
+            }
+        }
     }
 
     class ShellScope(
         val shell: Shell,
         val environment: Environment = shell.environment
     ) {
-        fun autoStartApps() = shell.autoStartApps()
+        suspend fun autoStartApps() = shell.autoStartApps()
 
-        fun startApp(
+        suspend fun startApp(
             app: App,
             onStarted: () -> Unit = {},
             onStopped: (e: Throwable) -> Unit = {},
         ) = shell.startApp(app, onStarted, onStopped)
 
-        fun executeAndRead(
+        suspend fun executeAndRead(
             cmd: String,
             vararg args: String
         ): String = executeAndRead(cmd, *args)
 
-        fun executeAndReadLines(
+        suspend fun executeAndReadLines(
             cmd: String,
             vararg args: String
         ): List<String> = executeAndReadLines(cmd, *args)
     }
 
-    fun autoStartApps() = ProcessBuilder("dex", "-a").apply {
+    suspend fun autoStartApps() = ProcessBuilder(
+        CMD_DEX,
+        "-a"
+    ).apply {
         environment().putAll(environment)
     }.also { processBuilder ->
         runCatching {
@@ -49,12 +60,12 @@ class Shell(
         }
     }
 
-    fun startApp(
+    suspend fun startApp(
         app: App,
         onStarted: () -> Unit = {},
         onStopped: (e: Throwable) -> Unit = {},
     ) = ProcessBuilder(
-        "dex",
+        CMD_DEX,
         "-w",
         app.desktopFile.absolutePath
     ).apply {
@@ -78,28 +89,27 @@ class Shell(
     }
 
     companion object {
+
+        const val CMD_NMCLI = "nmcli"
+        const val CMD_ENV = "env"
+        const val CMD_DEX = "dex"
+
         fun executeAndRead(
             cmd: String,
             vararg args: String
-        ): String = Runtime.getRuntime().exec(
-            mutableListOf<String>().apply {
-                add(cmd)
-                addAll(args)
-            }.toTypedArray()
-        ).apply {
-            waitFor()
-        }.inputReader().readText()
+        ): String = runCatching {
+            Runtime.getRuntime().exec(arrayOf(cmd) + args).apply { waitFor() }
+        }.onFailure { e ->
+            e.printStackTrace()
+        }.getOrNull()?.inputReader()?.readText().orEmpty()
 
         fun executeAndReadLines(
             cmd: String,
-            vararg args: String
-        ): List<String> = Runtime.getRuntime().exec(
-            mutableListOf<String>().apply {
-                add(cmd)
-                addAll(args)
-            }.toTypedArray()
-        ).apply {
-            waitFor()
-        }.inputReader().readLines()
+            vararg args: String,
+        ): List<String> = runCatching {
+            Runtime.getRuntime().exec(arrayOf(cmd) + args).apply { waitFor() }
+        }.onFailure { e ->
+            e.printStackTrace()
+        }.getOrNull()?.inputReader()?.readLines() ?: emptyList()
     }
 }

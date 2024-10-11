@@ -6,8 +6,6 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import eu.mjdev.desktop.components.controlcenter.pages.*
-import eu.mjdev.desktop.data.App
-import eu.mjdev.desktop.data.DesktopFile
 import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.helpers.internal.Palette
@@ -23,15 +21,19 @@ import eu.mjdev.desktop.managers.processes.ProcessManager
 import eu.mjdev.desktop.managers.theme.themeManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import java.awt.Desktop
 import java.awt.GraphicsDevice
 import java.awt.GraphicsEnvironment
 import java.awt.Toolkit
 import java.io.File
 import java.net.URI
+import kotlin.coroutines.CoroutineContext
 import kotlin.system.exitProcess
 
-@Suppress("unused", "MemberVisibilityCanBePrivate", "SameParameterValue")
+@Suppress("unused", "MemberVisibilityCanBePrivate", "SameParameterValue", "RedundantSuspendModifier")
 class DesktopProvider(
     val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
     val args: List<String> = emptyList(),
@@ -139,99 +141,105 @@ class DesktopProvider(
 //        }
     }
 
-    fun openMail(emailAddress: String) = runCatching {
+    fun runAsync(
+        context: CoroutineContext = Dispatchers.IO,
+        block: suspend () -> Unit
+    ) = scope.launch(context) { block() }
+
+    suspend fun openMail(emailAddress: String) = runCatching {
         desktopUtils.mail(URI.create("mailto:$emailAddress"))
     }
 
-    fun openBrowser(url: String) = runCatching {
+    suspend fun openBrowser(url: String) = runCatching {
         desktopUtils.browse(URI.create(url))
     }
 
-    fun openDirectoryForFile(path: String) = runCatching {
+    suspend fun openDirectoryForFile(path: String) = runCatching {
         desktopUtils.browseFileDirectory(File(path))
     }
 
-    fun moveToTrash(file: File) = runCatching {
+    suspend fun moveToTrash(file: File) = runCatching {
         desktopUtils.moveToTrash(file)
     }
 
-    fun moveToTrash(filePath: String) = runCatching {
+    suspend fun moveToTrash(filePath: String) = runCatching {
         moveToTrash(File(filePath))
     }
 
     // todo, may be need another function
-    fun open(what: String) {
+    suspend fun open(what: String) {
         Shell.executeAndRead("xdg-open", what)
     }
 
-    fun openFileInAssociated(file: File) = runCatching {
+    suspend fun openFileInAssociated(file: File) = runCatching {
         desktopUtils.open(file)
     }
 
-    fun openFileInAssociated(filePath: String) = runCatching {
+    suspend fun openFileInAssociated(filePath: String) = runCatching {
         openFileInAssociated(File(filePath))
     }
 
-//    fun runScript(script: String): Any = runCatching {
-//        scriptEngine.eval(script)
-//    }
-
-//    fun runScript(file: File): Any = runCatching {
-//        scriptEngine.eval(FileReader(file))
-//    }
-
-    fun beep() = runCatching {
+    suspend fun beep() = runCatching {
         toolkit.beep()
     }
 
-    fun sync() = runCatching {
+    suspend fun sync() = runCatching {
         toolkit.sync()
     }
 
-//    fun createCustomCursor(cursor: Image, hotSpot: Point, name: String): Cursor? = runCatching {
+//    suspend fun createCustomCursor(cursor: Image, hotSpot: Point, name: String): Cursor? = runCatching {
 //        toolkit.createCustomCursor(cursor, hotSpot, name)
 //    }.getOrNull()
 
-//    fun createCustomCursor(cursor: Bitmap, hotSpot: Point, name: String): Cursor? = runCatching {
+//    suspend fun createCustomCursor(cursor: Bitmap, hotSpot: Point, name: String): Cursor? = runCatching {
 //        toolkit.createCustomCursor(cursor.image, hotSpot, name)
 //    }.getOrNull()
 
-//    fun createCustomCursor(cursor: ImageBitmap, hotSpot: Point, name: String): Cursor? = runCatching {
+//    suspend fun createCustomCursor(cursor: ImageBitmap, hotSpot: Point, name: String): Cursor? = runCatching {
 //        toolkit.createCustomCursor(cursor.toAwtImage(), hotSpot, name)
 //    }.getOrNull()
 
-    // todo
-//    fun createCustomCursor(cursor: ImageVector, hotSpot: Point, name: String) =
+//    suspend fun createCustomCursor(cursor: ImageVector, hotSpot: Point, name: String) =
 //        toolkit.createCustomCursor(cursor, hotSpot, name)
 
     @Suppress("UNUSED_PARAMETER")
-    fun login(
+    suspend fun login(
         user: String,
         password: String
-    ): Boolean {
+    ): Flow<Boolean> = flow {
         // todo
-        return true
+        emit(true)
     }
 
-    fun lock() {
+    suspend fun lock() {
         Shell.executeAndRead("/usr/bin/loginctl", "lock-sessions")
     }
 
-    fun logOut() {
+    suspend fun logOut() {
         exitProcess(0)
     }
 
-    fun suspend() {
+    suspend fun suspend() {
         Shell.executeAndRead("/usr/bin/systemctl", "suspend")
     }
 
-    fun shutdown() {
+    suspend fun shutdown() {
         Shell.executeAndRead("/usr/sbin/halt", "--poweroff")
     }
 
-    fun restart() {
+    suspend fun restart() {
         Shell.executeAndRead("/usr/sbin/halt", "--reboot")
     }
+
+//    suspend fun Desktop.startApp(app: App) {
+//        startApp(app.desktopFile)
+//    }
+
+//    suspend fun Desktop.startApp(
+//        desktopFile: DesktopFile?
+//    ) = withContext(Dispatchers.IO) {
+//        open(desktopFile?.file)
+//    }
 
     companion object {
         private val CONTROL_CENTER_PAGES = listOf(
@@ -264,16 +272,6 @@ class DesktopProvider(
                 args = args,
                 isDebug = isDebug || args.contains("-d")
             )
-        }
-
-        fun Desktop.startApp(app: App) {
-            startApp(app.desktopFile)
-        }
-
-        fun Desktop.startApp(
-            desktopFile: DesktopFile?
-        ) {
-            open(desktopFile?.file)
         }
     }
 }

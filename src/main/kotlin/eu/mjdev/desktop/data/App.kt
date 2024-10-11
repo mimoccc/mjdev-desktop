@@ -20,31 +20,31 @@ class App(
 
     val file: File get() = desktopFile.file
 
-    val fileName
+    val fileName: String
         get() = desktopFile.fileName
-    val fullAppName
+    val fullAppName: String
         get() = desktopFile.fullAppName
-    val type
+    val type: DesktopFile.DesktopEntryType
         get() = desktopFile.desktopSection?.Type ?: DesktopFile.DesktopEntryType.Application
-    val version
-        get() = desktopFile.desktopSection?.Version ?: ""
-    val name
+    val version: String
+        get() = desktopFile.desktopSection?.Version.orEmpty()
+    val name: String
         get() = desktopFile.desktopSection?.Name ?: fullAppName
-    val comment
+    val comment: String
         get() = desktopFile.desktopSection?.Comment ?: fullAppName
-    val path
-        get() = desktopFile.desktopSection?.Path ?: ""
-    val exec
-        get() = desktopFile.desktopSection?.Exec ?: ""
-    val iconName
+    val path: String
+        get() = desktopFile.desktopSection?.Path.orEmpty()
+    val exec: String
+        get() = desktopFile.desktopSection?.Exec.orEmpty()
+    val iconName: String
         get() = desktopFile.desktopSection?.Icon ?: fullAppName
-    val categories
-        get() = desktopFile.desktopSection?.Categories.ifEmptyCategories { listOf(Category.UNCATEGORIZED) }
-    val notifyOnStart
+    val categories: List<String>
+        get() = desktopFile.desktopSection?.Categories.orEmpty().ifEmptyCategories { listOf(Category.UNCATEGORIZED) }
+    val notifyOnStart: Boolean
         get() = desktopFile.desktopSection?.NotifyOnStart ?: false
-    val runInTerminal
+    val runInTerminal: Boolean
         get() = desktopFile.desktopSection?.RunInTerminal ?: false
-    val windowClass
+    val windowClass: String
         get() = desktopFile.desktopSection?.StartupWMClass.orEmpty().ifEmpty { fullAppName }
 
     val cmd

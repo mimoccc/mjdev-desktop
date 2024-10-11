@@ -6,7 +6,9 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.relocation.BringIntoViewResponder
 import androidx.compose.foundation.relocation.bringIntoViewResponder
 import androidx.compose.material.ButtonDefaults
@@ -41,10 +43,12 @@ import coil3.svg.SvgDecoder
 import eu.mjdev.desktop.helpers.compose.FocusHelper
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 object Compose {
 
@@ -444,6 +448,39 @@ object Compose {
     fun rememberDpSize(
         initial: DpSize = DpSize.Zero
     ) = remember { mutableStateOf(initial) }
+
+    fun LazyListState.scrollWithAnimTo(
+        idx: Int,
+        scope: CoroutineScope
+    ) = scope.launch {
+        animateScrollToItem(idx)
+    }
+
+    fun LazyListState.scrollWithAnimToLast(
+        scope: CoroutineScope
+    ) = scrollWithAnimTo(layoutInfo.totalItemsCount, scope)
+
+    fun DesktopScope.runAsync(
+        context: CoroutineContext = Dispatchers.Main,
+        block: suspend () -> Unit
+    ) = scope.launch(context) { block() }
+
+    // todo
+    fun Modifier.verticalTouchScrollable(
+        state: LazyListState
+    ) = this then pointerInput(Unit) {
+        detectVerticalDragGestures { _, dragAmount ->
+            println("drag ammount : $dragAmount")
+            state.dispatchRawDelta(-dragAmount)
+        }
+    }
+
+//    @Composable
+//    fun runAsync(
+//        context: CoroutineContext = Dispatchers.Main,
+//        scope: CoroutineScope = rememberCoroutineScope(),
+//        block: suspend () -> Unit
+//    ) = scope.launch(context) { block() }
 
 //    Toolkit.getDefaultToolkit().addAWTEventListener({ event ->
 //        }, AWTEvent.MOUSE_EVENT_MASK or AWTEvent.FOCUS_EVENT_MASK

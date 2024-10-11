@@ -12,7 +12,7 @@ import eu.mjdev.desktop.provider.DesktopProvider
 
 @Suppress("unused")
 open class ThemeManagerStub(
-    private val api: DesktopProvider,
+    val api: DesktopProvider,
 ) {
     open fun createFromPalette() {
         // no op

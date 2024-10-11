@@ -8,9 +8,18 @@
 
 package eu.mjdev.desktop.managers.dbus
 
+import eu.mjdev.desktop.helpers.system.Shell
+
 // todo
-@Suppress("unused")
+@Suppress("unused", "RedundantSuspendModifier")
 class DBusManager {
+    suspend fun updateEnvironment(): String =
+        Shell.executeAndRead("dbus-update-activation-environment")
+
+    // todo
+    suspend fun send(vararg args: String): String =
+        Shell.executeAndRead("dbus-send", *args)
+
 //    val connection by lazy { DBusConnection.getConnection(DBusConnection.DBusBusType.SESSION) }
 //    val settingsInterface by lazy {
 //        connection.getRemoteObject(

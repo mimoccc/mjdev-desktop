@@ -23,7 +23,7 @@ class OsRelease(
         configFileContent.map {
             it.split("=").let { pair -> Pair(pair[0], pair.getOrNull(1)) }
         }.forEach {
-            put(it.first, it.second ?: "")
+            put(it.first, it.second.orEmpty())
         }
     }
 

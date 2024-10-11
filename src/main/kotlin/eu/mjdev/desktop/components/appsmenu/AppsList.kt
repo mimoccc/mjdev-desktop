@@ -54,7 +54,7 @@ fun AppsList(
                     AppsMenuApp(
                         app = item as App,
                         showDivider = (items.size - 1) > idx,
-                        dividerColor =  textColor.alpha(0.3f),
+                        dividerColor = textColor.alpha(0.3f),
                         onClick = {
                             onAppClick(item)
                         },
