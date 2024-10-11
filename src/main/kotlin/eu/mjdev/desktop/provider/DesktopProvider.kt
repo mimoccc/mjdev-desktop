@@ -159,6 +159,11 @@ class DesktopProvider(
         moveToTrash(File(filePath))
     }
 
+    // todo, may be need another function
+    fun open(what: String) {
+        Shell.executeAndRead("xdg-open", what)
+    }
+
     fun openFileInAssociated(file: File) = runCatching {
         desktopUtils.open(file)
     }

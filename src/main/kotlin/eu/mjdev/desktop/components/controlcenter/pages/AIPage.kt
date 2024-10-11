@@ -50,6 +50,7 @@ fun AIPage() = ControlCenterPage(
             api.ai.ask(what) { _, res ->
                 res.replace("* **", "")
                     .replace("**", "")
+                    .trim()
                     .let { resx ->
                         questionsList.removeIf { it.first == what }
                         questionsList.add(Pair(what, resx))
@@ -95,7 +96,7 @@ fun AIPage() = ControlCenterPage(
                                     .padding(8.dp)
                             ) {
                                 TextAny(
-                                    modifier = Modifier.fillMaxWidth().padding(end = 24.dp),
+                                    modifier = Modifier.fillMaxWidth().padding(end = 24.dp, top = 6.dp),
                                     text = "${idx + 1}. ${textData.first}",
                                     color = Color.White,
                                     textSelectionEnabled = true
@@ -122,7 +123,7 @@ fun AIPage() = ControlCenterPage(
                                     .padding(8.dp),
                             ) {
                                 TextAny(
-                                    modifier = Modifier.fillMaxWidth().padding(end = 24.dp),
+                                    modifier = Modifier.fillMaxWidth().padding(end = 24.dp, top = 6.dp),
                                     text = textData.second,
                                     color = Color.White.copy(alpha = 0.9f),
                                     textSelectionEnabled = true

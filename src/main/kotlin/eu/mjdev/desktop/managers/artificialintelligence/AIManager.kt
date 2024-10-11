@@ -8,6 +8,8 @@
 
 package eu.mjdev.desktop.managers.artificialintelligence
 
+import eu.mjdev.desktop.managers.artificialintelligence.actions.ActionsProvider
+import eu.mjdev.desktop.managers.artificialintelligence.actions.base.ActionException.ActionNone
 import eu.mjdev.desktop.managers.artificialintelligence.base.AIPlugin
 import eu.mjdev.desktop.managers.artificialintelligence.plugins.AiPluginNull
 import eu.mjdev.desktop.managers.artificialintelligence.stt.STTPluginNull
@@ -24,7 +26,8 @@ class AIManager(
     val api: DesktopProvider,
     var pluginAI: AIPlugin,
     var pluginSTT: STTPlugin,
-    var pluginTTS: TTSPlugin
+    var pluginTTS: TTSPlugin,
+    var actions: ActionsProvider
 ) {
     val scope = api.scope
     val isAvailable: () -> Boolean = { pluginAI !is AiPluginNull }
@@ -33,8 +36,15 @@ class AIManager(
         question: String,
         block: AIManager.(question: String, result: String) -> Unit
     ) = scope.launch(Dispatchers.IO) {
-        pluginAI.ask(question).also { result ->
-            block.invoke(this@AIManager, question, result)
+        val actResult = actions.tryAction(question)
+        if (actResult is ActionNone) {
+            pluginAI.ask(question).also { result ->
+                block.invoke(this@AIManager, question, result)
+            }
+        } else {
+            actResult.message?.also { message ->
+                block.invoke(this@AIManager, question, message)
+            }
         }
     }
 
@@ -47,7 +57,12 @@ class AIManager(
             scope: CoroutineScope = api.scope,
             ai: AIPlugin = AiPluginNull(scope),
             stt: STTPlugin = STTPluginNull(scope),
-            tts: TTSPlugin = TTSPluginMain(scope)
-        ) = AIManager(api, ai, stt, tts)
+            tts: TTSPlugin = TTSPluginMain(scope),
+            actions: ActionsProvider = ActionsProvider(api) {
+                action("open calculator") {
+                    open("calculator")
+                }
+            }
+        ) = AIManager(api, ai, stt, tts, actions)
     }
 }
