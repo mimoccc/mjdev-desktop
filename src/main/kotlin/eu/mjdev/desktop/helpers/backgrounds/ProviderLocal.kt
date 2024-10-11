@@ -16,6 +16,7 @@ import eu.mjdev.desktop.provider.AppsProvider.Companion.DIR_NAME_BACKGROUNDS
 import eu.mjdev.desktop.provider.AppsProvider.Companion.DIR_NAME_DOT_LOCAL
 import eu.mjdev.desktop.provider.AppsProvider.Companion.DIR_NAME_SHARE
 
+// todo more folders
 @Suppress("unused")
 class ProviderLocal(
     private val user: User

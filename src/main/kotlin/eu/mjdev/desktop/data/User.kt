@@ -57,11 +57,13 @@ class User(
         ): Boolean = Shell.executeAndRead("whoami").trim().contentEquals(un)
 
         fun loadPicture(
-            home: String, pic: String
+            home: String,
+            pic: String
         ): File? = loadPicture(File(home), pic)
 
         fun loadPicture(
-            homeDir: File, picName: String
+            homeDir: File,
+            picName: String
         ): File? = File(homeDir, picName).let { f ->
             if (f.exists()) f else null
         }

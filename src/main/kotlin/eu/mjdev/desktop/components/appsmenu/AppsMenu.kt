@@ -68,7 +68,7 @@ fun AppsMenu(
         when {
             // todo fuzzy sort
             searchTextState.trimIsNotEmpty() -> allApps.filter { app ->
-                app.desktopData.contains(searchTextState.value)
+                app.desktopData.contains(searchTextState.value, ignoreCase = true)
             }
 
             category.isNotEmpty() -> allApps.filter { app ->
