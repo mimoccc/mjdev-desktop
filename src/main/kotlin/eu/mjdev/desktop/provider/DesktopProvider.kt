@@ -11,14 +11,16 @@ import eu.mjdev.desktop.data.DesktopFile
 import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.helpers.internal.Palette
-import eu.mjdev.desktop.helpers.system.OsRelease
 import eu.mjdev.desktop.helpers.system.Shell
-import eu.mjdev.desktop.managers.ConnectivityManager
-import eu.mjdev.desktop.managers.GnomeManager
-import eu.mjdev.desktop.managers.KCEFHelper
-import eu.mjdev.desktop.managers.ProcessManager
-import eu.mjdev.desktop.provider.AIProvider.AiPluginGemini
-import eu.mjdev.desktop.theme.gtk.GtkThemeHelper
+import eu.mjdev.desktop.managers.apps.AppsManager
+import eu.mjdev.desktop.managers.artificialintelligence.AIManager
+import eu.mjdev.desktop.managers.artificialintelligence.AIManager.Companion.aiManager
+import eu.mjdev.desktop.managers.artificialintelligence.plugins.AiPluginGemini
+import eu.mjdev.desktop.managers.connectivity.ConnectivityManager
+import eu.mjdev.desktop.managers.kcef.kcefManager
+import eu.mjdev.desktop.managers.os.osManager
+import eu.mjdev.desktop.managers.processes.ProcessManager
+import eu.mjdev.desktop.managers.theme.themeManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.awt.Desktop
@@ -38,42 +40,31 @@ class DesktopProvider(
     val isFirstStart: Boolean = true, // todo
     val isInstalled: Boolean = false, // todo
 ) : AutoCloseable {
-    //    val scriptManager: ScriptEngineManager by lazy { ScriptEngineManager() }
-//    val scriptEngine: ScriptEngine by lazy {
-//        scriptManager.getEngineByName("JavaScript").apply {
-//            // todo
-//        }
-//    }
-    val osDetails by lazy { OsRelease() }
+    val osManager by lazy { osManager(this) }
     val toolkit: Toolkit by lazy { Toolkit.getDefaultToolkit() }
-    val kcefHelper by lazy { KCEFHelper(this) }
-    val gnome by lazy { GnomeManager() }
+    val kcefHelper by lazy { kcefManager(this) }
     val connectionManager by lazy { ConnectivityManager() }
-
-    //    val windowsManager by lazy { WindowsManager(this) }
-//    val dbus: DBus by lazy { DBus() }
-    val ai: AIProvider by lazy {
-        // todo user can configure
-        AIProvider(scope, AiPluginGemini(scope))
+    val ai: AIManager by lazy {
+        aiManager(this).apply {
+            // todo user can configure
+            pluginAI = AiPluginGemini(scope)
+        }
     }
-    val appsProvider by lazy { AppsProvider(this) }
-
-    //    val mounts by lazy {
-//        FileSystemWatcher(scope) {
-//            println("Mounted: ${this.targetDirectory}")
-//        }
-//    }
-    val gtkTheme by lazy { GtkThemeHelper(this) }
+    val appsManager by lazy { AppsManager(this) }
+    val themeManager by lazy { themeManager(this) }
     val palette by lazy { Palette(this) }
     val desktopUtils: Desktop by lazy { Desktop.getDesktop() }
     val processManager by lazy { ProcessManager() }
+    //    val windowsManager by lazy { WindowsManager(this) }
+    //    val dbus: DBus by lazy { DBus() }
 
     val homeDir
         get() = currentUser.homeDir
     val allUsers
         get() = User.allUsers
+    val currentLocale get() = appsManager.currentLocale
     val machineName
-        get() = Shell.executeAndRead("hostname").trim()
+        get() = osManager.machineName
 
     // todo state
     val currentUser: User

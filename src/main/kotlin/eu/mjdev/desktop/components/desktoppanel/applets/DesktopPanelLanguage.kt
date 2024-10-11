@@ -16,7 +16,7 @@ fun DesktopPanelLanguage(
 ) = withDesktopScope {
     DesktopPanelText(
         modifier = modifier,
-        text = api.appsProvider.currentLocale.country,
+        text = currentLocale.country,
         onTooltip = onTooltip,
         onClick = onClick,
         textColor = iconsTintColor

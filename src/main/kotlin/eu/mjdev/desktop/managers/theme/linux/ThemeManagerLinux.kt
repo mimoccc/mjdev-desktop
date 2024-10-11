@@ -1,4 +1,12 @@
-package eu.mjdev.desktop.theme.gtk
+/*
+ * Copyright (c) Milan Jurkulák 2024.
+ *  Contact:
+ *  e: mimoccc@gmail.com
+ *  e: mj@mjdev.org
+ *  w: https://mjdev.org
+ */
+
+package eu.mjdev.desktop.managers.theme.linux
 
 import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.data.DesktopFile
@@ -8,29 +16,27 @@ import eu.mjdev.desktop.extensions.ColorUtils.isLightColor
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.hexRgb
 import eu.mjdev.desktop.helpers.internal.Palette
-import eu.mjdev.desktop.managers.GnomeManager.Companion.THEME_ADWAITA_DARK
-import eu.mjdev.desktop.managers.GnomeManager.Companion.THEME_CURSOR_BLOOM
-import eu.mjdev.desktop.managers.GnomeManager.Companion.THEME_MJDEV
+import eu.mjdev.desktop.helpers.system.Shell
+import eu.mjdev.desktop.managers.theme.base.ThemeManagerStub
 import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
 
-
-// global theme : ~/.config/gtk-2.0 and ~/.config/gtk-3.0 and ~/.config/gtk-4.0
 @Suppress("unused", "MemberVisibilityCanBePrivate")
-class GtkThemeHelper(
-    private val api: DesktopProvider,
-    private val palette: Palette = api.palette,
-    private val themeName: String = THEME_MJDEV,
-    private val themesDir: File = File(api.homeDir, ".themes"),
-    private val themeDir: File = File(themesDir, themeName),
-    private val themeDesktopFile: File = File(themeDir, "index.theme"),
-    private val gtk2ThemeDir: File = File(themeDir, "gtk-2.0"),
-    private val gtk3ThemeDir: File = File(themeDir, "gtk-3.0"),
-    private val gtk4ThemeDir: File = File(themeDir, "gtk-4.0"),
-    private val gtk3CssFile: File = File(gtk3ThemeDir, "gtk.css"),
-    private val gtk4CssFile: File = File(gtk4ThemeDir, "gtk.css"),
-) {
-    fun createFromPalette() {
+class ThemeManagerLinux(
+    api: DesktopProvider,
+) : ThemeManagerStub(api) {
+    private val palette: Palette = api.palette
+    private val themeName: String = THEME_MJDEV
+    private val themesDir: File = File(api.homeDir, ".themes")
+    private val themeDir: File = File(themesDir, themeName)
+    private val themeDesktopFile: File = File(themeDir, "index.theme")
+    private val gtk2ThemeDir: File = File(themeDir, "gtk-2.0")
+    private val gtk3ThemeDir: File = File(themeDir, "gtk-3.0")
+    private val gtk4ThemeDir: File = File(themeDir, "gtk-4.0")
+    private val gtk3CssFile: File = File(gtk3ThemeDir, "gtk.css")
+    private val gtk4CssFile: File = File(gtk4ThemeDir, "gtk.css")
+
+    override fun createFromPalette() {
         createDesktopFile()
         createCssFile(gtk3CssFile)
         createCssFile(gtk4CssFile)
@@ -98,7 +104,8 @@ class GtkThemeHelper(
  */
     // ~/.config/gtk-3.0/gtk.css
     // ~/.config/gtk-4.0/gtk.css
-    class Theme(val file: File) {
+    @Suppress("MemberVisibilityCanBePrivate")
+    class GtkTheme(val file: File) {
         var bgColor: Color = Color.SuperDarkGray
         var fgColor: Color = Color.SuperDarkGray
         var baseColor: Color = Color.SuperDarkGray
@@ -307,13 +314,74 @@ class GtkThemeHelper(
         """.trimIndent()
     }
 
-    companion object {
-        fun theme(
-            file: File,
-            block: Theme.() -> Unit
-        ) = Theme(file).apply(block)
+    fun setColorScheme(
+        schemeName: String
+    ) {
+        Shell.executeAndRead(
+            "gsettings",
+            "set",
+            "org.gnome.desktop.interface",
+            "color-scheme",
+            schemeName
+        )
+    }
 
-        fun Theme.write() {
+    fun setGTKTheme(
+        themeName: String = THEME_YARU
+    ) = Shell.executeAndRead(
+        "gsettings",
+        "set",
+        "org.gnome.desktop.interface",
+        "gtk-theme",
+        themeName
+    )
+
+
+    fun getGTKTheme(): String = Shell.executeAndRead(
+        "gsettings",
+        "get",
+        "org.gnome.desktop.interface",
+        "gtk-theme"
+    ).replace("'", "").trim()
+
+    fun setIconTheme(
+        themeName: String = THEME_YARU
+    ) = Shell.executeAndRead(
+        "gsettings",
+        "set",
+        "org.gnome.desktop.interface",
+        "icon-theme",
+        themeName
+    )
+
+    fun setSoundTheme(
+        themeName: String = THEME_YARU
+    ) = Shell.executeAndRead(
+        "gsettings",
+        "set",
+        "org.gnome.desktop.sound",
+        "gtk-theme",
+        themeName
+    )
+
+    fun setDarkColorScheme() =
+        setColorScheme(COLOR_SCHEME_PREFER_DARK)
+
+    companion object {
+        const val COLOR_SCHEME_PREFER_DARK = "prefer-dark"
+        const val COLOR_SCHEME_MJDEV = "mjdev"
+        const val THEME_YARU = "Yaru"
+        const val THEME_ADWAITA = "Adwaita"
+        const val THEME_ADWAITA_DARK = "Adwaita-dark"
+        const val THEME_MJDEV = "Mjdev"
+        const val THEME_CURSOR_BLOOM = "bloom"
+
+        private fun theme(
+            file: File,
+            block: GtkTheme.() -> Unit
+        ) = GtkTheme(file).apply(block)
+
+        private fun GtkTheme.write() {
             toString().also { data ->
                 file.apply {
                     parentFile.mkdirs()

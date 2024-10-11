@@ -8,12 +8,12 @@
 
 @file:Suppress("LocalVariableName")
 
-package eu.mjdev.desktop.managers
+package eu.mjdev.desktop.managers.window
 
-import com.sun.jna.platform.unix.X11.*
+import com.sun.jna.platform.unix.X11.Window
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.provider.DesktopProvider
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
 
 @Suppress("unused")
 class WindowsManager(

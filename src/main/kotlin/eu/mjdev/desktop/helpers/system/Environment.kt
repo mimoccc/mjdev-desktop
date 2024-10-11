@@ -1,6 +1,6 @@
 package eu.mjdev.desktop.helpers.system
 
-import eu.mjdev.desktop.managers.GnomeManager.Companion.THEME_MJDEV
+import eu.mjdev.desktop.managers.theme.linux.ThemeManagerLinux.Companion.THEME_MJDEV
 
 class Environment(
     val data: List<String> = Shell.executeAndReadLines("env")

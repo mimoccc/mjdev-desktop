@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanelIcon
 import eu.mjdev.desktop.data.App
-import eu.mjdev.desktop.provider.AppsProvider.Companion.rememberFavoriteApps
+import eu.mjdev.desktop.managers.apps.AppsManager.Companion.rememberFavoriteApps
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("FunctionName")

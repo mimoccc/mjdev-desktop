@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.managers
+package eu.mjdev.desktop.managers.connectivity
 
 import dev.tmapps.konnection.Konnection
 import dev.tmapps.konnection.NetworkConnection

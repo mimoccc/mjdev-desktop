@@ -26,8 +26,8 @@ open class DesktopScope(
     val isTransparencySupported
         get() = api.isTransparencySupported
 
-    val osDetails
-        get() = api.osDetails
+    val osManager
+        get() = api.osManager
 
     val machineName
         get() = api.machineName
@@ -68,20 +68,20 @@ open class DesktopScope(
 //    val dbus
 //        get() = api.dbus
 
-    val gnome
-        get() = api.gnome
+    val currentLocale
+        get() = api.currentLocale
 
-    val appsProvider
-        get() = api.appsProvider
+    val appsManager
+        get() = api.appsManager
 
     val appCategories
-        get() = appsProvider.appCategories
+        get() = appsManager.appCategories
 
     val allApps
-        get() = appsProvider.allApps
+        get() = appsManager.allApps
 
     val favoriteApps
-        get() = appsProvider.favoriteApps
+        get() = appsManager.favoriteApps
 
     val palette
         get() = api.palette

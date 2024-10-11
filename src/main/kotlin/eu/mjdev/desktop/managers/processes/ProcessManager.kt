@@ -6,7 +6,7 @@
  *  w: https://mjdev.org
  */
 
-package eu.mjdev.desktop.managers
+package eu.mjdev.desktop.managers.processes
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect

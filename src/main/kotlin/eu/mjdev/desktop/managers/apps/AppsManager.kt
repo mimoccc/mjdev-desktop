@@ -1,4 +1,12 @@
-package eu.mjdev.desktop.provider
+/*
+ * Copyright (c) Milan Jurkulák 2024.
+ *  Contact:
+ *  e: mimoccc@gmail.com
+ *  e: mj@mjdev.org
+ *  w: https://mjdev.org
+ */
+
+package eu.mjdev.desktop.managers.apps
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -14,6 +22,7 @@ import eu.mjdev.desktop.extensions.Custom.lines
 import eu.mjdev.desktop.extensions.Custom.text
 import eu.mjdev.desktop.extensions.Custom.textAsLocale
 import eu.mjdev.desktop.helpers.system.Shell
+import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +32,7 @@ import java.io.File
 import java.util.*
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
-class AppsProvider(
+class AppsManager(
     val api: DesktopProvider,
     val scope: CoroutineScope = api.scope
 ) {
@@ -56,13 +65,12 @@ class AppsProvider(
         @Composable
         fun rememberFavoriteApps(
             api: DesktopProvider = LocalDesktop.current,
-            appsProvider: AppsProvider = api.appsProvider,
+            appsManager: AppsManager = api.appsManager,
         ): State<List<App>> {
 //            var processes by mutableStateOf(0)
 //            processManagerListener { processes = size }
-            return appsProvider.favoriteApps.collectAsState(emptyList())
+            return appsManager.favoriteApps.collectAsState(emptyList())
             // todo
-
         }
     }
 

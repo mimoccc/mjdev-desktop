@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.managers
+package eu.mjdev.desktop.managers.filesystem
 
 //import io.github.irgaly.kfswatch.KfsDirectoryWatcher
 //import io.github.irgaly.kfswatch.KfsDirectoryWatcherEvent
