@@ -8,6 +8,8 @@
 
 package eu.mjdev.desktop.components.blur
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,11 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.image.ImageAny
+import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 // todo real blur
@@ -31,7 +36,7 @@ fun BlurPanel(
     contentAlignment: Alignment = Alignment.TopStart,
     propagateMinConstraints: Boolean = false,
     blurRadius: Dp = 20.dp,
-    alpha: Float = 0.5f,
+    alpha: Float = 0.1f,
     content: @Composable BoxScope.() -> Unit = {}
 ) = withDesktopScope {
     BoxWithConstraints(
@@ -43,6 +48,16 @@ fun BlurPanel(
             modifier = modifier.fillMaxSize().alpha(alpha).blur(blurRadius),
             src = painterResource("images/$resourceId"),
             contentScale = if (maxHeight > maxWidth) ContentScale.FillHeight else ContentScale.FillWidth
+        )
+        Box(
+            modifier = Modifier.fillMaxSize().background(
+                Brush.radialGradient(
+                    listOf(
+                        Color.Transparent,
+                        backgroundColor.alpha(0.5f)
+                    )
+                )
+            )
         )
         content()
     }

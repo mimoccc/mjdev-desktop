@@ -20,7 +20,6 @@ import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Compose.runAsync
-import eu.mjdev.desktop.helpers.compose.Orientation
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 import kotlinx.coroutines.flow.collectLatest
@@ -59,7 +58,6 @@ fun Greeter() = withDesktopScope {
                 UserAvatar(
                     modifier = Modifier,
                     avatarSize = 128.dp,
-                    orientation = Orientation.Vertical,
                     onUserAvatarClick = {
                         passwordVisible = true
                     }

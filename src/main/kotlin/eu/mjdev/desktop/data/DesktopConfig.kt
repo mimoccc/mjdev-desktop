@@ -51,8 +51,8 @@ class DesktopConfig(
         val configCache = mutableMapOf<String, DesktopConfig>()
 
         private val DEFAULT = DesktopConfig {
-            addBackground(ProviderSmug())
-            addBackground(ProviderErzvo())
+//            addBackground(ProviderSmug())
+//            addBackground(ProviderErzvo())
         }
 
         // todo load from user settings

@@ -9,12 +9,14 @@ import androidx.compose.foundation.TooltipPlacement
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation.Vertical
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onPlaced
@@ -75,10 +77,10 @@ fun DesktopPanel(
 ) = withDesktopScope {
     val panelDividerWidth by rememberState(theme.panelDividerWidth)
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
-        if (visible)
-            iconSize.height + iconOuterPadding.height + tooltipState.tooltipHeight + theme.panelContentPadding.times(2)
-        else
-            panelDividerWidth
+        if (visible) {
+            iconSize.height + iconOuterPadding.height + tooltipState.tooltipHeight +
+                    theme.panelContentPadding.times(2) + 8.dp
+        } else panelDividerWidth
     }
     val panelSize = remember(panelState.isVisible, panelState.enabled) {
         DpSize(containerSize.width, panelHeight(panelState.isVisible))
@@ -146,6 +148,7 @@ fun DesktopPanel(
                         BlurPanel(
                             modifier = Modifier.fillMaxWidth()
                                 .wrapContentHeight()
+                                .clip(RoundedCornerShape(panelSize.height.div(2)))
                         ) {
                             Column(
                                 modifier = Modifier.fillMaxWidth()
@@ -153,14 +156,20 @@ fun DesktopPanel(
                                     .background(
                                         brush = Brush.verticalGradient(
                                             colors = listOf(
-                                                backgroundColor.alpha(0.3f),
-                                                backgroundColor.alpha(0.7f),
-                                                backgroundColor.alpha(0.8f),
+                                                backgroundColor.alpha(0.2f),
+                                                backgroundColor.alpha(0.4f),
+                                                backgroundColor.alpha(0.5f),
                                             )
                                         )
-                                    ).topShadow(
+                                    )
+                                    .clip(RoundedCornerShape(panelSize.height.div(2)))
+                                    .topShadow(
                                         color = borderColor.alpha(0.3f),
                                         blur = 4.dp
+                                    ).padding(
+                                        start = 4.dp,
+                                        end = 4.dp,
+                                        bottom = 4.dp
                                     ).onPlaced(panelState::onPlaced),
                             ) {
                                 Divider(

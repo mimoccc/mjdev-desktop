@@ -15,7 +15,7 @@ import eu.mjdev.desktop.extensions.ColorUtils.darker
 import eu.mjdev.desktop.extensions.ColorUtils.isLightColor
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.hexRgb
-import eu.mjdev.desktop.helpers.internal.Palette
+import eu.mjdev.desktop.extensions.Custom.get
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.managers.theme.base.ThemeManagerStub
 import eu.mjdev.desktop.provider.DesktopProvider
@@ -25,21 +25,27 @@ import java.io.File
 class ThemeManagerLinux(
     api: DesktopProvider,
 ) : ThemeManagerStub(api) {
-    private val palette: Palette = api.palette
-    private val themeName: String = THEME_MJDEV
-    private val themesDir: File = File(api.homeDir, ".themes")
-    private val themeDir: File = File(themesDir, themeName)
-    private val themeDesktopFile: File = File(themeDir, "index.theme")
-    private val gtk2ThemeDir: File = File(themeDir, "gtk-2.0")
-    private val gtk3ThemeDir: File = File(themeDir, "gtk-3.0")
-    private val gtk4ThemeDir: File = File(themeDir, "gtk-4.0")
-    private val gtk3CssFile: File = File(gtk3ThemeDir, "gtk.css")
-    private val gtk4CssFile: File = File(gtk4ThemeDir, "gtk.css")
+    private val palette = api.palette
+    private val themeName = THEME_MJDEV
+    private val homeDir = api.homeDir
+    private val themesDir = homeDir[".themes"]
+    private val systemThemeDir = homeDir[".config"]
+    private val themeDir = themesDir[themeName]
+    private val themeDesktopFile = themeDir["index.theme"]
+    private val gtk2ThemeDir = themeDir["gtk-2.0"]
+    private val gtk3ThemeDir = themeDir["gtk-3.0"]
+    private val gtk4ThemeDir = themeDir["gtk-4.0"]
+    private val gtk3CssFile = gtk3ThemeDir["gtk.css"]
+    private val gtk4CssFile = gtk4ThemeDir["gtk.css"]
+    private val systemGtk3CssFile = gtk3ThemeDir["gtk.css"]
+    private val systemGtk4CssFile = gtk4ThemeDir["gtk.css"]
 
     override fun createFromPalette() {
         createDesktopFile()
         createCssFile(gtk3CssFile)
         createCssFile(gtk4CssFile)
+        createCssFile(systemGtk3CssFile)
+        createCssFile(systemGtk4CssFile)
     }
 
     private fun createDesktopFile() {

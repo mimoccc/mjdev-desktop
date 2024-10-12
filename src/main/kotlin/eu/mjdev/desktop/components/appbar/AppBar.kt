@@ -11,7 +11,7 @@ package eu.mjdev.desktop.components.appbar
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,7 +20,13 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun AppBar(
     modifier: Modifier = Modifier,
-    contentPadding :PaddingValues = PaddingValues(4.dp),
+    contentPadding: PaddingValues = PaddingValues(4.dp),
+    iconVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    titleVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    actionsVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    iconPadding: PaddingValues = PaddingValues(),
+    titlePadding: PaddingValues = PaddingValues(),
+    actionsPadding: PaddingValues = PaddingValues(),
     icon: @Composable RowScope.() -> Unit = {},
     title: @Composable RowScope.() -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
@@ -29,19 +35,24 @@ fun AppBar(
         modifier = modifier
             .height(IntrinsicSize.Min)
             .padding(contentPadding),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Bottom,
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.wrapContentHeight()
+                .padding(iconPadding),
+            verticalAlignment = iconVerticalAlignment,
             content = icon
         )
         Row(
-            modifier = Modifier.weight(1f),
-            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f).wrapContentHeight()
+                .padding(titlePadding),
+            verticalAlignment = titleVerticalAlignment,
             content = title
         )
         Row(
-            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.wrapContentHeight()
+                .padding(actionsPadding),
+            verticalAlignment = actionsVerticalAlignment,
             content = actions
         )
     }

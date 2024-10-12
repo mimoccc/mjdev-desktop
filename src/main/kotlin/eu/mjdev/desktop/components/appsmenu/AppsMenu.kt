@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
@@ -35,7 +36,6 @@ import eu.mjdev.desktop.extensions.Custom.trimIsNotEmpty
 import eu.mjdev.desktop.extensions.Modifier.dropShadow
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
-import eu.mjdev.desktop.helpers.compose.Orientation
 import eu.mjdev.desktop.helpers.compose.rememberForeverLazyListState
 import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.globalKeyEventHandler
 import eu.mjdev.desktop.provider.DesktopScope
@@ -147,19 +147,39 @@ fun AppsMenu(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(menuPadding)
-                    .background(backgroundColor.copy(alpha = 0.7f), RoundedCornerShape(24.dp))
+                    .background(backgroundColor.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
                     .border(2.dp, borderColor, RoundedCornerShape(24.dp))
                     .clip(RoundedCornerShape(24.dp))
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    UserAvatar(
-                        modifier = Modifier.background(backgroundColor),
-                        avatarSize = 64.dp,
-                        orientation = Orientation.Horizontal,
-                        onUserAvatarClick = onUserAvatarClick
-                    )
+                    BoxWithConstraints(
+                        contentAlignment = Alignment.BottomStart
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth()
+                                .height(64.dp)
+                                .background(
+                                    Brush.horizontalGradient(
+                                        listOf(
+                                            backgroundColor.alpha(0.3f),
+                                            backgroundColor,
+                                            backgroundColor.alpha(0.3f)
+                                        ),
+                                        startX = 0f,
+                                        endX = 0f
+                                    )
+                                )
+                        )
+                        UserAvatar(
+                            titleVerticalAlignment = Alignment.Bottom,
+                            iconPadding = PaddingValues(bottom = 16.dp),
+                            titlePadding = PaddingValues(bottom = 4.dp),
+                            avatarSize = 64.dp,
+                            onUserAvatarClick = onUserAvatarClick
+                        )
+                    }
                     Divider(
                         modifier = Modifier
                             .fillMaxWidth()

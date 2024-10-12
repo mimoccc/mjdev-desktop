@@ -1,9 +1,7 @@
 package eu.mjdev.desktop.components.desktoppanel.applets
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,13 +36,6 @@ fun DesktopMenuIcon(
         onToolTip = onTooltip,
         onClick = onClick,
         onContextMenuClick = onContextMenuClick
-    )
-    Divider(
-        modifier = Modifier
-            .padding(2.dp)
-            .height(iconSize.height - 8.dp)
-            .width(2.dp)
-            .background(Color.White.copy(alpha = 0.4f))
     )
 }
 

@@ -18,7 +18,6 @@ import eu.mjdev.desktop.components.user.UserAvatar
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.runAsync
 import eu.mjdev.desktop.extensions.Modifier.rectShadow
-import eu.mjdev.desktop.helpers.compose.Orientation
 
 @Suppress("FunctionName")
 fun MainSettingsPage() = ControlCenterPage(
@@ -38,7 +37,6 @@ fun MainSettingsPage() = ControlCenterPage(
             UserAvatar(
                 modifier = Modifier.background(backgroundColor),
                 avatarSize = 96.dp,
-                orientation = Orientation.Vertical,
                 titleTextSize = 20.sp,
                 detailTextSize = 16.sp,
                 onUserAvatarClick = {

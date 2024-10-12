@@ -5,9 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import eu.mjdev.desktop.components.image.ImageAny
+import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.Crossfade
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
@@ -45,6 +47,16 @@ fun BackgroundImage(
                 contentScale = ContentScale.Crop,
                 src = value,
                 onFail = onError
+            )
+            Box(
+                modifier = modifier.background(
+                    Brush.radialGradient(
+                        listOf(
+                            Color.Transparent,
+                            backgroundColor.alpha(0.6f)
+                        )
+                    )
+                )
             )
         }
         launchedEffect(currentBackground) {

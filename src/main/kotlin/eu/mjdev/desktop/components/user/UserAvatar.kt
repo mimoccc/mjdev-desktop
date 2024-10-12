@@ -30,7 +30,6 @@ import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
 import eu.mjdev.desktop.extensions.Modifier.clipCircle
-import eu.mjdev.desktop.helpers.compose.Orientation
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("FunctionName")
@@ -38,14 +37,25 @@ import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 fun UserAvatar(
     modifier: Modifier = Modifier,
     avatarSize: Dp = 64.dp,
-    orientation: Orientation = Orientation.Vertical,
     titleTextSize: TextUnit = 16.sp,
     detailTextSize: TextUnit = 14.sp,
+    iconVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    titleVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    actionsVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    iconPadding : PaddingValues = PaddingValues(),
+    titlePadding : PaddingValues = PaddingValues(),
+    actionsPadding : PaddingValues = PaddingValues(),
     onUserAvatarClick: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) = withDesktopScope {
-    val content: @Composable (orientation: Orientation) -> Unit = {
+    val content: @Composable () -> Unit = {
         AppBar(
+            iconVerticalAlignment = iconVerticalAlignment,
+            titleVerticalAlignment = titleVerticalAlignment,
+            actionsVerticalAlignment = actionsVerticalAlignment,
+            iconPadding = iconPadding,
+            titlePadding = titlePadding,
+            actionsPadding = actionsPadding,
             icon = {
                 TransparentButton(
                     modifier = Modifier
@@ -70,8 +80,7 @@ fun UserAvatar(
                         .fillMaxWidth()
                         .padding(top = 8.dp),
                     verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = if (orientation == Orientation.Vertical) Alignment.CenterHorizontally
-                    else Alignment.Start
+                    horizontalAlignment = Alignment.Start
                 ) {
                     TextAny(
                         text = api.currentUser.userName,
@@ -97,25 +106,26 @@ fun UserAvatar(
             .wrapContentWidth()
             .padding(16.dp)
     ) {
-        when (orientation) {
-            Orientation.Vertical -> Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                content = { content(orientation) }
-            )
+//        when (orientation) {
+//            Orientation.Vertical -> Column(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .align(Alignment.Center),
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                content = { content(orientation) }
+//            )
 
-            Orientation.Horizontal -> Row(
+//            Orientation.Horizontal ->
+        Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.TopCenter),
                 horizontalArrangement = Arrangement.Start,
-                content = { content(orientation) }
+                content = { content() }
             )
         }
     }
-}
+//}
 
 @Preview
 @Composable
@@ -124,12 +134,6 @@ fun UserAvatarPreview() {
         UserAvatar(
             modifier = Modifier.fillMaxWidth()
                 .background(Color.SuperDarkGray),
-            orientation = Orientation.Vertical
-        )
-        UserAvatar(
-            modifier = Modifier.fillMaxWidth()
-                .background(Color.SuperDarkGray),
-            orientation = Orientation.Horizontal
         )
     }
 }
