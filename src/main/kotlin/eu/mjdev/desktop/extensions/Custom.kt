@@ -96,10 +96,10 @@ object Custom {
         ext: String = DesktopFile.EXTENSION
     ): List<DesktopFile> = listFiles(ext) { f -> DesktopFile(f) }
 
-//    inline fun <reified T : Any> MutableList<T>.addIfNotExists(
-//        element: T,
-//        equal: (e1: T, e2: T) -> Boolean = { e1, e2 -> e1 == e2 }
-//    ) = any { e -> equal(e, element) }.also { contains -> if (!contains) add(element) }
+    inline fun <reified T : Any> MutableList<T>.addIfNotExists(
+        element: T,
+        equal: (e1: T, e2: T) -> Boolean = { e1, e2 -> e1 == e2 }
+    ) = any { e -> equal(e, element) }.also { contains -> if (!contains) add(element) }
 
     operator fun File.get(name: String) =
         resolve(name)
