@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.noElevation
 import eu.mjdev.desktop.extensions.Compose.transparent
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
@@ -62,7 +63,7 @@ fun PowerBlock(
                     .padding(bottom = 36.dp)
                     .size(64.dp)
                     .clipCircle()
-                    .circleBorder(4.dp, backgroundColor)
+                    .circleBorder(2.dp, textColor.alpha(0.5f))
                     .circleShadow(4.dp, shadowColor),
                 contentPadding = PaddingValues(1.dp),
                 onClick = onPowerButtonClick,
@@ -72,12 +73,12 @@ fun PowerBlock(
                 Image(
                     modifier = Modifier
                         .size(64.dp)
-                        .background(iconTintColor, CircleShape)
+                        .background(backgroundColor, CircleShape)
                         .clipCircle()
                         .padding(8.dp),
                     imageVector = Icons.Filled.SettingsPower,
                     contentDescription = "",
-                    colorFilter = ColorFilter.tint(backgroundColor)
+                    colorFilter = ColorFilter.tint(textColor)
                 )
             }
         }

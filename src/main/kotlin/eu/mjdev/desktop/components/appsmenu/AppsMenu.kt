@@ -19,8 +19,6 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.blur.BlurPanel
-import eu.mjdev.desktop.components.sliding.base.VisibilityState
-import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.components.user.UserAvatar
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.Category
@@ -50,8 +48,8 @@ import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindow
 @Suppress("FunctionName")
 @Composable
 fun AppsMenu(
-    panelState: VisibilityState = rememberVisibilityState(),
-    menuState: VisibilityState = rememberVisibilityState(),
+    panelState: ChromeWindowState = rememberChromeWindowState(),
+    menuState: ChromeWindowState = rememberChromeWindowState(),
     enterAnimation: EnterTransition = AppsMenuEnterAnimation,
     exitAnimation: ExitTransition = AppsMenuExitAnimation,
     searchTextState: MutableState<String> = rememberState(""),

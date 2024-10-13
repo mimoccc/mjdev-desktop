@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
+import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberState
@@ -18,7 +19,12 @@ class ChromeWindowState(
     size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecified),
     placement: WindowPlacement = WindowPlacement.Floating,
     closeAction: WindowCloseAction,
-) : WindowState {
+    visible: Boolean = false,
+    enabled: Boolean = true,
+) : VisibilityState(
+    startState = visible,
+    enabled = enabled
+), WindowState {
 
     var onFocusChange: MutableList<ChromeWindowState.(focus: Boolean) -> Unit> = mutableStateListOf()
     var onOpened: MutableList<ChromeWindowState.() -> Unit> = mutableStateListOf()
@@ -91,8 +97,10 @@ class ChromeWindowState(
             size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecified),
             placement: WindowPlacement = WindowPlacement.Floating,
             closeAction: WindowCloseAction = WindowCloseAction.CLOSE,
-        ) = remember(position, size, placement, closeAction) {
-            ChromeWindowState(position, size, placement, closeAction)
+            visible: Boolean = false,
+            enabled: Boolean = true,
+        ) = remember(position, size, placement, closeAction, visible) {
+            ChromeWindowState(position, size, placement, closeAction, visible, enabled)
         }
 
         @Composable

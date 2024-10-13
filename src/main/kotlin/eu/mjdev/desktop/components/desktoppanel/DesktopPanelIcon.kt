@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
@@ -13,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.fonticon.FontIcon
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.App.Companion.rememberRunningIndicator
+import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.color
 import eu.mjdev.desktop.extensions.Compose.noElevation
 import eu.mjdev.desktop.extensions.Compose.onLeftClick
@@ -22,6 +26,7 @@ import eu.mjdev.desktop.extensions.Compose.onMousePress
 import eu.mjdev.desktop.extensions.Compose.onRightClick
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberState
+import eu.mjdev.desktop.extensions.Modifier.circleBorder
 import eu.mjdev.desktop.extensions.Modifier.clipRect
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
@@ -70,7 +75,7 @@ fun DesktopPanelIcon(
             }
     ) {
         Button(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().circleBorder(2.dp, textColor.alpha(0.5f)),
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.color(background),
             elevation = ButtonDefaults.noElevation(),

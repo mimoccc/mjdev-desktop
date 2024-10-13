@@ -31,8 +31,6 @@ import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelDateTime
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelFavoriteApps
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelLanguage
 import eu.mjdev.desktop.components.sliding.SlidingMenu
-import eu.mjdev.desktop.components.sliding.base.VisibilityState
-import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.components.tooltip.Tooltip
 import eu.mjdev.desktop.components.tooltip.TooltipState
 import eu.mjdev.desktop.components.tooltip.rememberTooltipState
@@ -59,8 +57,8 @@ fun DesktopPanel(
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     showMenuIcon: Boolean = true,
-    panelState: VisibilityState = rememberVisibilityState(),
-    menuState: VisibilityState = rememberVisibilityState(),
+    panelState: ChromeWindowState = rememberChromeWindowState(),
+    menuState: ChromeWindowState = rememberChromeWindowState(),
     tooltipState: TooltipState = rememberTooltipState(),
     enterAnimation: EnterTransition = DesktopPanelEnterAnimation,
     exitAnimation: ExitTransition = DesktopPanelExitAnimation,

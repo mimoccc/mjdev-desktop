@@ -27,8 +27,6 @@ import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.blur.BlurPanel
 import eu.mjdev.desktop.components.controlcenter.base.PageHeader
 import eu.mjdev.desktop.components.sliding.SlidingMenu
-import eu.mjdev.desktop.components.sliding.base.VisibilityState
-import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.onLeftClick
 import eu.mjdev.desktop.extensions.Compose.onMousePress
 import eu.mjdev.desktop.extensions.Compose.onRightClick
@@ -48,7 +46,7 @@ import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindow
 @Composable
 fun ControlCenter(
     pagerState: MutableState<Int> = rememberState(0),
-    controlCenterState: VisibilityState = rememberVisibilityState(),
+    controlCenterState: ChromeWindowState = rememberChromeWindowState(),
     enterAnimation: EnterTransition = ControlCenterEnterAnimation,
     exitAnimation: ExitTransition = ControlCenterExitAnimation,
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},

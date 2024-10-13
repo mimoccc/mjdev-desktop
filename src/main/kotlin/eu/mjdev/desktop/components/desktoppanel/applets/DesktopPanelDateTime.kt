@@ -57,8 +57,8 @@ fun DesktopPanelDateTime(
                 padding = 1.dp,
                 dateTextSize = dateTextSize,
                 timeTextSize = timeTextSize,
-                timeTextColor = iconsTintColor,
-                dateTextColor = iconsTintColor,
+                timeTextColor = textColor,
+                dateTextColor = textColor,
             )
         }
     }

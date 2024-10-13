@@ -22,6 +22,7 @@ import eu.mjdev.desktop.components.controlcenter.pages.MainSettingsPage
 import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
+import eu.mjdev.desktop.extensions.Modifier.clipCircle
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Composable
@@ -41,13 +42,13 @@ fun PageHeader(
             icon = {
                 Box(
                     modifier = Modifier.size(iconSize + 4.dp)
-                        .circleBorder(2.dp, iconsTintColor)
+                        .circleBorder(2.dp, textColor)
                         .padding(4.dp)
                 ) {
                     ImageAny(
-                        modifier = Modifier.size(iconSize),
+                        modifier = Modifier.size(iconSize).background(backgroundColor).clipCircle(),
                         src = page.icon,
-                        colorFilter = ColorFilter.tint(iconsTintColor),
+                        colorFilter = ColorFilter.tint(textColor),
                         contentDescription = ""
                     )
                 }
@@ -56,7 +57,7 @@ fun PageHeader(
                 TextAny(
                     modifier = Modifier.fillMaxWidth().padding(start = 16.dp),
                     text = page.name,
-                    color = iconsTintColor,
+                    color = textColor,
                     fontSize = 20.sp
                 )
             },

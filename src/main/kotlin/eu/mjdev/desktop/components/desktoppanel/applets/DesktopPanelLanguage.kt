@@ -19,7 +19,6 @@ fun DesktopPanelLanguage(
         text = currentLocale.country,
         onTooltip = onTooltip,
         onClick = onClick,
-        textColor = iconsTintColor
     )
 }
 

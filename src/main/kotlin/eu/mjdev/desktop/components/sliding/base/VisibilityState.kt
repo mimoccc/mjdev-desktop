@@ -10,7 +10,7 @@ import eu.mjdev.desktop.helpers.internal.DpBounds
 import eu.mjdev.desktop.helpers.internal.DpBounds.Companion.toDpBounds
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
-class VisibilityState(
+open class VisibilityState(
     private val startState: Boolean = false,
     var enabled: Boolean = true
 ) {

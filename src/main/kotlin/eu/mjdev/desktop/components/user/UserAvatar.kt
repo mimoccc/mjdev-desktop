@@ -27,6 +27,7 @@ import eu.mjdev.desktop.components.appbar.AppBar
 import eu.mjdev.desktop.components.button.TransparentButton
 import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.components.text.TextAny
+import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
 import eu.mjdev.desktop.extensions.Modifier.clipCircle
@@ -68,7 +69,7 @@ fun UserAvatar(
                     ImageAny(
                         modifier = Modifier
                             .size(avatarSize)
-                            .circleBorder(2.dp, iconsTintColor),
+                            .circleBorder(2.dp, textColor.alpha(0.5f)),
                         src = api.currentUser.picture,
                         colorFilter = if (api.currentUser.picture is ImageVector) ColorFilter.tint(iconsTintColor)
                         else null,

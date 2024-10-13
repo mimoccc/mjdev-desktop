@@ -36,7 +36,7 @@ fun BlurPanel(
     contentAlignment: Alignment = Alignment.TopStart,
     propagateMinConstraints: Boolean = false,
     blurRadius: Dp = 20.dp,
-    alpha: Float = 0.1f,
+    alpha: Float = 0.3f,
     content: @Composable BoxScope.() -> Unit = {}
 ) = withDesktopScope {
     BoxWithConstraints(
@@ -54,7 +54,7 @@ fun BlurPanel(
                 Brush.radialGradient(
                     listOf(
                         Color.Transparent,
-                        backgroundColor.alpha(0.5f)
+                        backgroundColor.alpha(alpha + 0.2f)
                     )
                 )
             )

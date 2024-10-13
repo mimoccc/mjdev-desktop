@@ -19,41 +19,43 @@ import eu.mjdev.desktop.extensions.Compose.noElevation
 import eu.mjdev.desktop.extensions.Compose.onMouseEnter
 import eu.mjdev.desktop.extensions.Compose.onMouseLeave
 import eu.mjdev.desktop.extensions.Compose.rememberState
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Preview
 @Composable
 fun DesktopPanelText(
     modifier: Modifier = Modifier,
     text: String = "text",
-    textColor: Color = Color.White,
     backgroundHover: Color = Color.White.copy(alpha = 0.4f),
     textPadding: PaddingValues = PaddingValues(4.dp),
     buttonState: MutableState<Boolean> = rememberState(false),
     onTooltip: (item: Any?) -> Unit = {},
     onClick: () -> Unit = {},
-) = Box(
-    modifier = modifier
-        .wrapContentSize()
-        .onMouseEnter {
-            buttonState.value = true
-            onTooltip(text)
-        }
-        .onMouseLeave {
-            buttonState.value = false
-        }
-) {
-    Button(
-        modifier = Modifier.padding(textPadding),
-        contentPadding = PaddingValues(0.dp),
-        onClick = onClick,
-        colors = ButtonDefaults.color(if (buttonState.value) backgroundHover else Color.Transparent),
-        elevation = ButtonDefaults.noElevation()
+) = withDesktopScope {
+    Box(
+        modifier = modifier
+            .wrapContentSize()
+            .onMouseEnter {
+                buttonState.value = true
+                onTooltip(text)
+            }
+            .onMouseLeave {
+                buttonState.value = false
+            }
     ) {
-        Text(
-            textAlign = TextAlign.Center,
-            text = text,
-            color = textColor,
-        )
+        Button(
+            modifier = Modifier.padding(textPadding),
+            contentPadding = PaddingValues(0.dp),
+            onClick = onClick,
+            colors = ButtonDefaults.color(if (buttonState.value) backgroundHover else Color.Transparent),
+            elevation = ButtonDefaults.noElevation()
+        ) {
+            Text(
+                textAlign = TextAlign.Center,
+                text = text,
+                color = textColor,
+            )
+        }
     }
 }
 

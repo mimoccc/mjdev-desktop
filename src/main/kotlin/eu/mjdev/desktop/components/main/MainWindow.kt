@@ -14,13 +14,15 @@ import eu.mjdev.desktop.components.info.InfoWindow
 import eu.mjdev.desktop.components.installer.Installer
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
+import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 import eu.mjdev.desktop.windows.DesktopWindow
 
+// todo focus manager
 @Composable
 fun MainWindow() = withDesktopScope {
-    val controlCenterState = rememberVisibilityState()
-    val panelState = rememberVisibilityState(true, panelAutoHideEnabled)
-    val menuState = rememberVisibilityState()
+    val controlCenterState = rememberChromeWindowState()
+    val panelState = rememberChromeWindowState(visible = true, enabled = panelAutoHideEnabled)
+    val menuState = rememberChromeWindowState()
     val installWindowSate = rememberVisibilityState()
     val infoWindowSate = rememberVisibilityState(false) //(api.isFirstStart || api.isDebug) // todo
     DesktopWindow(
@@ -44,7 +46,9 @@ fun MainWindow() = withDesktopScope {
             menuState = menuState,
             panelState = panelState,
             onFocusChange = { focus ->
-                if (!focus) menuState.hide()
+                if (!focus) {
+                    menuState.hide()
+                }
             }
         )
         ControlCenter(

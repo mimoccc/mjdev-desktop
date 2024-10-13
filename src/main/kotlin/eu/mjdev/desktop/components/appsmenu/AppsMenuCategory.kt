@@ -46,7 +46,7 @@ fun AppsMenuCategory(
             verticalAlignment = Alignment.CenterVertically
         ) {
             FontIcon(
-                modifier = Modifier.circleBorder(1.dp, iconsTintColor),
+                modifier = Modifier.circleBorder(1.dp, textColor),
                 iconId = materialIcon,
                 iconSize = iconSize,
                 iconColor = textColor,

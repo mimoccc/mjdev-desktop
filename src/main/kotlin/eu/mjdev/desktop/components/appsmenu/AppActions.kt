@@ -14,8 +14,11 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.icon.ShapedIcon
+import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.runAsync
+import eu.mjdev.desktop.extensions.Modifier.circleBorder
 import eu.mjdev.desktop.icons.Icons
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +38,7 @@ fun AppActions(
         modifier = modifier.wrapContentWidth()
     ) {
         ShapedIcon(
+            modifier = Modifier.circleBorder(2.dp, textColor.alpha(0.5f)),
             imageVector = iconRestart,
             iconColor = borderColor,
             iconBackgroundColor = iconsTintColor,
@@ -48,6 +52,7 @@ fun AppActions(
             }
         )
         ShapedIcon(
+            modifier = Modifier.circleBorder(2.dp, textColor.alpha(0.5f)),
             imageVector = iconPowerOff,
             iconColor = borderColor,
             iconBackgroundColor = iconsTintColor,
@@ -61,6 +66,7 @@ fun AppActions(
             }
         )
         ShapedIcon(
+            modifier = Modifier.circleBorder(2.dp, textColor.alpha(0.5f)),
             imageVector = iconLogout,
             iconColor = borderColor,
             iconBackgroundColor = iconsTintColor,
