@@ -22,12 +22,13 @@ import eu.mjdev.desktop.extensions.Modifier.circleBorder
 import eu.mjdev.desktop.extensions.Modifier.circleShadow
 import eu.mjdev.desktop.extensions.Modifier.clipCircle
 import eu.mjdev.desktop.extensions.Modifier.rectShadow
+import eu.mjdev.desktop.helpers.shape.BarShape
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 // todo shadow? background?
 @Composable
 fun PowerBlock(
-    backgroundColor: Color=Color.Transparent,
+    backgroundColor: Color = Color.Transparent,
     shadowColor: Color = Color.Black.copy(alpha = 0.3f),
     iconTintColor: Color = Color.Black,
     bottomBoxHeight: Dp = 128.dp,
@@ -37,18 +38,24 @@ fun PowerBlock(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Box(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(bottomBoxHeight),
             contentAlignment = Alignment.BottomCenter
         ) {
+            val shape = BarShape(
+                offset = (minWidth / 2).value,
+                circleRadius = 24.dp,
+                cornerRadius = 4.dp,
+                circleGap = 8.dp,
+            )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(iconHeight)
                     .rectShadow(color = shadowColor)
-                    .background(backgroundColor)
+                    .background(backgroundColor, shape)
             )
             Button(
                 modifier = Modifier

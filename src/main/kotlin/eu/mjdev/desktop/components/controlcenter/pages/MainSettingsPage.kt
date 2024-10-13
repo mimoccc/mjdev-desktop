@@ -9,6 +9,9 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPage
@@ -16,8 +19,10 @@ import eu.mjdev.desktop.components.custom.DateTime
 import eu.mjdev.desktop.components.custom.PowerBlock
 import eu.mjdev.desktop.components.user.UserAvatar
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
+import eu.mjdev.desktop.extensions.ColorUtils.darker
 import eu.mjdev.desktop.extensions.Compose.runAsync
 import eu.mjdev.desktop.extensions.Modifier.rectShadow
+import eu.mjdev.desktop.helpers.shape.BarShape
 
 @Suppress("FunctionName")
 fun MainSettingsPage() = ControlCenterPage(
@@ -32,21 +37,51 @@ fun MainSettingsPage() = ControlCenterPage(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.TopCenter)
-                .rectShadow(8.dp, borderColor.copy(alpha = 0.3f))
         ) {
-            UserAvatar(
-                modifier = Modifier.background(backgroundColor),
-                avatarSize = 96.dp,
-                titleTextSize = 20.sp,
-                detailTextSize = 16.sp,
-                onUserAvatarClick = {
-                    // todo
-                }
-            )
+            Box(
+                modifier = Modifier.clip(RectangleShape),
+                contentAlignment = Alignment.BottomStart
+            ) {
+                val shape = BarShape(
+                    offset = 68f,
+                    circleRadius = 52.dp,
+                    cornerRadius = 0.dp,
+                    circleGap = 4.dp,
+                )
+                val brush = Brush.horizontalGradient(
+                    listOf(
+                        backgroundColor.alpha(1f),
+                        backgroundColor.alpha(1f),
+                        backgroundColor.darker(0.3f),
+                        backgroundColor.alpha(0.9f),
+                        backgroundColor.alpha(0.7f)
+                    ),
+                    startX = 0f,
+                    endX = 0f
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp)
+                        .background(
+                            brush = brush,
+                            shape = shape
+                        )
+                )
+                UserAvatar(
+                    avatarSize = 96.dp,
+                    titleTextSize = 20.sp,
+                    detailTextSize = 16.sp,
+                    titleHorizontalAlignment = Alignment.CenterHorizontally,
+                    onUserAvatarClick = {
+                        // todo
+                    }
+                )
+            }
             Divider(
                 modifier = Modifier.fillMaxWidth()
                     .height(2.dp),
-                color = borderColor,
+                color = borderColor.alpha(0.5f),
                 thickness = 2.dp
             )
             DateTime(

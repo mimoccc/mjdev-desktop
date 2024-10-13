@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 fun AppBar(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(4.dp),
+    contentAlignment: Alignment.Vertical = Alignment.CenterVertically,
     iconVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     titleVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     actionsVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
@@ -35,7 +36,7 @@ fun AppBar(
         modifier = modifier
             .height(IntrinsicSize.Min)
             .padding(contentPadding),
-        verticalAlignment = Alignment.Bottom,
+        verticalAlignment = contentAlignment,
     ) {
         Row(
             modifier = Modifier.wrapContentHeight()

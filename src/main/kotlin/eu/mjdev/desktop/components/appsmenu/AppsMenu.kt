@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
@@ -24,6 +25,7 @@ import eu.mjdev.desktop.components.user.UserAvatar
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
+import eu.mjdev.desktop.extensions.ColorUtils.darker
 import eu.mjdev.desktop.extensions.Compose.clear
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.extensions.Compose.onMouseEnter
@@ -38,6 +40,7 @@ import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
 import eu.mjdev.desktop.helpers.compose.rememberForeverLazyListState
 import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.globalKeyEventHandler
+import eu.mjdev.desktop.helpers.shape.BarShape
 import eu.mjdev.desktop.provider.DesktopScope
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
@@ -154,28 +157,39 @@ fun AppsMenu(
                 Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    BoxWithConstraints(
+                    Box(
+                        modifier = Modifier.clip(RectangleShape),
                         contentAlignment = Alignment.BottomStart
                     ) {
+                        val shape = BarShape(
+                            offset = 52f,
+                            circleRadius = 24.dp,
+                            cornerRadius = 4.dp,
+                            circleGap = 8.dp,
+                        )
+                        val brush = Brush.horizontalGradient(
+                            listOf(
+                                backgroundColor.alpha(1f),
+                                backgroundColor.alpha(1f),
+                                backgroundColor.darker(0.3f),
+                                backgroundColor.alpha(0.9f),
+                                backgroundColor.alpha(0.7f)
+                            ),
+                            startX = 0f,
+                            endX = 0f
+                        )
                         Box(
                             modifier = Modifier.fillMaxWidth()
                                 .height(64.dp)
                                 .background(
-                                    Brush.horizontalGradient(
-                                        listOf(
-                                            backgroundColor.alpha(0.3f),
-                                            backgroundColor,
-                                            backgroundColor.alpha(0.3f)
-                                        ),
-                                        startX = 0f,
-                                        endX = 0f
-                                    )
+                                    brush = brush,
+                                    shape = shape
                                 )
                         )
                         UserAvatar(
                             titleVerticalAlignment = Alignment.Bottom,
                             iconPadding = PaddingValues(bottom = 16.dp),
-                            titlePadding = PaddingValues(bottom = 4.dp),
+                            titlePadding = PaddingValues(top = 24.dp, start = 20.dp),
                             avatarSize = 64.dp,
                             onUserAvatarClick = onUserAvatarClick
                         )

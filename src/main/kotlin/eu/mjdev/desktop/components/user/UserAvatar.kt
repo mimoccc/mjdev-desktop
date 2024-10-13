@@ -42,9 +42,10 @@ fun UserAvatar(
     iconVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     titleVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     actionsVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    iconPadding : PaddingValues = PaddingValues(),
-    titlePadding : PaddingValues = PaddingValues(),
-    actionsPadding : PaddingValues = PaddingValues(),
+    titleHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
+    iconPadding: PaddingValues = PaddingValues(),
+    titlePadding: PaddingValues = PaddingValues(),
+    actionsPadding: PaddingValues = PaddingValues(),
     onUserAvatarClick: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) = withDesktopScope {
@@ -53,6 +54,7 @@ fun UserAvatar(
             iconVerticalAlignment = iconVerticalAlignment,
             titleVerticalAlignment = titleVerticalAlignment,
             actionsVerticalAlignment = actionsVerticalAlignment,
+            contentAlignment = Alignment.Bottom,
             iconPadding = iconPadding,
             titlePadding = titlePadding,
             actionsPadding = actionsPadding,
@@ -80,7 +82,7 @@ fun UserAvatar(
                         .fillMaxWidth()
                         .padding(top = 8.dp),
                     verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.Start
+                    horizontalAlignment = titleHorizontalAlignment
                 ) {
                     TextAny(
                         text = api.currentUser.userName,
@@ -117,14 +119,14 @@ fun UserAvatar(
 
 //            Orientation.Horizontal ->
         Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.TopCenter),
-                horizontalArrangement = Arrangement.Start,
-                content = { content() }
-            )
-        }
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.TopCenter),
+            horizontalArrangement = Arrangement.Start,
+            content = { content() }
+        )
     }
+}
 //}
 
 @Preview
