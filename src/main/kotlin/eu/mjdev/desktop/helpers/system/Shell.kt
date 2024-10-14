@@ -96,9 +96,14 @@ class Shell(
 
         fun executeAndRead(
             cmd: String,
-            vararg args: String
+            vararg args: String,
+            onError: (Throwable) -> Unit = { e -> e.printStackTrace() }
         ): String = runCatching {
-            Runtime.getRuntime().exec(arrayOf(cmd) + args).apply { waitFor() }
+            Runtime.getRuntime().exec(arrayOf(cmd) + args).apply {
+                waitFor()
+            }.onError { e ->
+                onError(e)
+            }
         }.onFailure { e ->
             e.printStackTrace()
         }.getOrNull()?.inputReader()?.readText().orEmpty()
@@ -106,10 +111,35 @@ class Shell(
         fun executeAndReadLines(
             cmd: String,
             vararg args: String,
+            onError: (Throwable) -> Unit = { e -> e.printStackTrace() }
         ): List<String> = runCatching {
-            Runtime.getRuntime().exec(arrayOf(cmd) + args).apply { waitFor() }
+            Runtime.getRuntime().exec(arrayOf(cmd) + args).apply {
+                waitFor()
+            }.onError { e ->
+                onError(e)
+            }
         }.onFailure { e ->
-            e.printStackTrace()
+            onError(e)
         }.getOrNull()?.inputReader()?.readLines() ?: emptyList()
+
+        fun Process.onText(
+            onText: (String) -> Unit
+        ): Process {
+            if (inputStream.available() > 0) {
+                onText(inputReader().readText())
+            }
+            return this
+        }
+
+        fun Process.onError(
+            onError: (Throwable) -> Unit
+        ): Process {
+            if (errorStream.available() > 0) {
+                onError(RuntimeException(errorReader().readText()))
+            }
+            return this
+        }
     }
 }
+
+

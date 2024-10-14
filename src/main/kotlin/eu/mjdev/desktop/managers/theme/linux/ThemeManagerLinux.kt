@@ -37,8 +37,10 @@ class ThemeManagerLinux(
     private val gtk4ThemeDir = themeDir["gtk-4.0"]
     private val gtk3CssFile = gtk3ThemeDir["gtk.css"]
     private val gtk4CssFile = gtk4ThemeDir["gtk.css"]
-    private val systemGtk3CssFile = gtk3ThemeDir["gtk.css"]
-    private val systemGtk4CssFile = gtk4ThemeDir["gtk.css"]
+    private val systemGtk3ThemeDir = systemThemeDir["gtk-3.0"]
+    private val systemGtk4ThemeDir = systemThemeDir["gtk-4.0"]
+    private val systemGtk3CssFile = systemGtk3ThemeDir["gtk.css"]
+    private val systemGtk4CssFile = systemGtk4ThemeDir["gtk.css"]
 
     override fun createFromPalette() {
         createDesktopFile()

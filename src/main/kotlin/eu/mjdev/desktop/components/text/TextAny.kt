@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import eu.mjdev.desktop.extensions.Compose.textFrom
 
+// todo weight does not work when selectable enabled
 @Suppress("FunctionName")
 @Composable
 fun TextAny(

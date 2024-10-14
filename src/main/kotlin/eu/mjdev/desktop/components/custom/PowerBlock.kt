@@ -26,12 +26,10 @@ import eu.mjdev.desktop.extensions.Modifier.rectShadow
 import eu.mjdev.desktop.helpers.shape.BarShape
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
-// todo shadow? background?
 @Composable
 fun PowerBlock(
     backgroundColor: Color = Color.Transparent,
     shadowColor: Color = Color.Black.copy(alpha = 0.3f),
-    iconTintColor: Color = Color.Black,
     bottomBoxHeight: Dp = 128.dp,
     iconHeight: Dp = 64.dp,
     onPowerButtonClick: () -> Unit = {}

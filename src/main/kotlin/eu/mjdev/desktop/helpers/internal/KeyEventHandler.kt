@@ -15,6 +15,7 @@ import eu.mjdev.desktop.extensions.Custom.isPrintable
 import java.awt.AWTEvent
 import java.awt.Toolkit
 import java.awt.event.AWTEventListener
+import java.awt.event.KeyEvent.VK_TAB
 import java.awt.event.KeyEvent as AwtKeyEvent
 
 @Suppress("CanBeParameter", "unused", "MemberVisibilityCanBePrivate")
@@ -90,7 +91,12 @@ class KeyEventHandler(
 
         override fun eventDispatched(event: AWTEvent?) {
             (event as? AwtKeyEvent)?.also { kev ->
-                if (!event.isConsumed) onKey(kev)
+                val notConsumed = !kev.isConsumed
+                val isAlt = kev.isAltDown
+                val keyCode = kev.keyCode
+                val isAltTab = (isAlt && keyCode == VK_TAB)
+                if (isAltTab) return
+                if (notConsumed) onKey(kev)
             }
         }
     }

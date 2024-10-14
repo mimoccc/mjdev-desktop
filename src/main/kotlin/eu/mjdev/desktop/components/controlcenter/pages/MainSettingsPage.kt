@@ -21,7 +21,6 @@ import eu.mjdev.desktop.components.user.UserAvatar
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.ColorUtils.darker
 import eu.mjdev.desktop.extensions.Compose.runAsync
-import eu.mjdev.desktop.extensions.Modifier.rectShadow
 import eu.mjdev.desktop.helpers.shape.BarShape
 
 @Suppress("FunctionName")
@@ -50,14 +49,16 @@ fun MainSettingsPage() = ControlCenterPage(
                 )
                 val brush = Brush.horizontalGradient(
                     listOf(
-                        backgroundColor.alpha(1f),
-                        backgroundColor.alpha(1f),
-                        backgroundColor.darker(0.3f),
+                        backgroundColor.darker(0.1f),
+                        backgroundColor.darker(0.1f),
+                        backgroundColor.darker(0.1f),
                         backgroundColor.alpha(0.9f),
-                        backgroundColor.alpha(0.7f)
+                        backgroundColor.alpha(0.7f),
+                        backgroundColor.alpha(0.3f),
+                        backgroundColor.darker(0.1f).alpha(0.5f),
                     ),
-                    startX = 0f,
-                    endX = 0f
+//                    startX = 0f,
+//                    endX = 0f
                 )
                 Box(
                     modifier = Modifier
@@ -127,7 +128,6 @@ fun MainSettingsPage() = ControlCenterPage(
                 PowerBlock(
                     backgroundColor = backgroundColor,
                     shadowColor = borderColor.alpha(0.3f),
-                    iconTintColor = iconsTintColor,
                     onPowerButtonClick = {
                         // todo : dialog
                         runAsync {

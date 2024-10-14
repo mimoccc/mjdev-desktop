@@ -167,14 +167,15 @@ fun AppsMenu(
                         )
                         val brush = Brush.horizontalGradient(
                             listOf(
-                                backgroundColor.alpha(1f),
-                                backgroundColor.alpha(1f),
-                                backgroundColor.darker(0.3f),
+                                backgroundColor.darker(0.1f),
+                                backgroundColor.darker(0.1f),
+                                backgroundColor.darker(0.1f),
                                 backgroundColor.alpha(0.9f),
-                                backgroundColor.alpha(0.7f)
+                                backgroundColor.alpha(0.7f),
+                                backgroundColor.alpha(0.3f),
                             ),
-                            startX = 0f,
-                            endX = 0f
+//                            startX = 0f,
+//                            endX = 0f
                         )
                         Box(
                             modifier = Modifier.fillMaxWidth()

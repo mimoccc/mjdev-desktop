@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
@@ -35,29 +36,39 @@ fun BlurPanel(
     resourceId: String = "blur4.png",
     contentAlignment: Alignment = Alignment.TopStart,
     propagateMinConstraints: Boolean = false,
-    blurRadius: Dp = 20.dp,
+    blurRadius: Dp = 12.dp,
     alpha: Float = 0.3f,
     content: @Composable BoxScope.() -> Unit = {}
 ) = withDesktopScope {
+    val transparentGradientBrush = Brush.linearGradient(
+        colors = listOf(
+            Color(0x66FFFFFF),
+            Color(0x1AFFFFFF)
+        )
+    )
     BoxWithConstraints(
         modifier = modifier,
         contentAlignment = contentAlignment,
         propagateMinConstraints = propagateMinConstraints
     ) {
         ImageAny(
-            modifier = modifier.fillMaxSize().alpha(alpha).blur(blurRadius),
+            modifier = modifier.fillMaxSize()
+                .alpha(alpha)
+                .background(transparentGradientBrush)
+                .blur(blurRadius, edgeTreatment = BlurredEdgeTreatment.Unbounded),
             src = painterResource("images/$resourceId"),
             contentScale = if (maxHeight > maxWidth) ContentScale.FillHeight else ContentScale.FillWidth
         )
         Box(
-            modifier = Modifier.fillMaxSize().background(
-                Brush.radialGradient(
-                    listOf(
-                        Color.Transparent,
-                        backgroundColor.alpha(alpha + 0.2f)
+            modifier = Modifier.fillMaxSize()
+                .background(
+                    Brush.radialGradient(
+                        listOf(
+                            Color.Transparent,
+                            backgroundColor.alpha(alpha + 0.2f)
+                        )
                     )
                 )
-            )
         )
         content()
     }
