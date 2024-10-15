@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.gallery
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
@@ -16,14 +17,14 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import eu.mjdev.desktop.components.image.ImageAny
-import kotlinx.coroutines.delay
 import eu.mjdev.desktop.components.card.PhotoCard
-import eu.mjdev.desktop.components.immersivelist.ImmersiveInnerList
+import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.components.immersivelist.ImmersiveList
+import eu.mjdev.desktop.components.immersivelist.base.ImmersiveInnerList
 import eu.mjdev.desktop.extensions.Compose.rememberDerivedState
 import eu.mjdev.desktop.extensions.Compose.rememberFocusRequester
 import eu.mjdev.desktop.helpers.bitmap.Bitmap
+import kotlinx.coroutines.delay
 import java.io.File
 
 @Composable
@@ -192,3 +193,7 @@ val contentScaleSaver = Saver<MutableState<ContentScale>, String>(
         )
     }
 )
+
+@Preview
+@Composable
+fun GalleryPreview() = Gallery()

@@ -8,6 +8,7 @@
 
 package eu.mjdev.desktop.components.card
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
@@ -17,9 +18,9 @@ import eu.mjdev.desktop.components.card.base.*
 @Suppress("unused")
 @Composable
 fun ClassicCard(
-    onClick: () -> Unit,
-    image: @Composable BoxScope.() -> Unit,
-    title: @Composable () -> Unit,
+    onClick: () -> Unit = {},
+    image: @Composable BoxScope.() -> Unit = {},
+    title: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
     onLongClick: (() -> Unit)? = null,
     subtitle: @Composable () -> Unit = {},
@@ -47,3 +48,7 @@ fun ClassicCard(
         Column { CardContent(title = title, subtitle = subtitle, description = description) }
     }
 }
+
+@Preview
+@Composable
+fun ClassicCardPreview() = ClassicCard()

@@ -8,6 +8,7 @@
 
 package eu.mjdev.desktop.components.image
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.*
@@ -21,8 +22,8 @@ import eu.mjdev.desktop.extensions.BitmapUtils.cut
 import eu.mjdev.desktop.extensions.BitmapUtils.topMostColor
 import eu.mjdev.desktop.extensions.ColorUtils.nonAlphaValue
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
-import eu.mjdev.desktop.extensions.Modifier.conditional
 import eu.mjdev.desktop.extensions.Image.loadPicture
+import eu.mjdev.desktop.extensions.Modifier.conditional
 
 @Composable
 fun ImageColoredBackground(
@@ -72,3 +73,7 @@ fun ImageColoredBackground(
         }
     }
 }
+
+@Preview
+@Composable
+fun ImageColoredBackgroundPreview() = ImageColoredBackground()

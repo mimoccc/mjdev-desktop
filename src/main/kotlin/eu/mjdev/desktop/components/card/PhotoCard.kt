@@ -1,11 +1,12 @@
 package eu.mjdev.desktop.components.card
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Color
@@ -14,12 +15,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.card.base.CardDefaults
 import eu.mjdev.desktop.components.card.base.CardScale
-import eu.mjdev.desktop.extensions.Compose.rememberFocusState
-import eu.mjdev.desktop.extensions.Compose.rememberFocusRequester
-import eu.mjdev.desktop.helpers.compose.FocusHelper
 import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.components.image.PhotoImage
 import eu.mjdev.desktop.extensions.Compose.isFocused
+import eu.mjdev.desktop.extensions.Compose.rememberFocusRequester
+import eu.mjdev.desktop.extensions.Compose.rememberFocusState
+import eu.mjdev.desktop.helpers.compose.FocusHelper
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 
@@ -95,3 +96,6 @@ fun computeCardWidth(
 //        config.screenHeightDp / ratio
 //}.dp
 
+@Preview
+@Composable
+fun PhotoCardPreview() = PhotoCard()

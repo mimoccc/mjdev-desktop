@@ -27,7 +27,7 @@ fun DateTime(
     showTime: Boolean = true,
     showDate: Boolean = true,
     talkEveryHour: Boolean = false,
-    talkOnClick :Boolean = true
+    talkOnClick: Boolean = true
 ) = Box(
     modifier = modifier
         .background(backgroundColor)
@@ -44,7 +44,7 @@ fun DateTime(
         showTime = showTime,
         showDate = showDate,
         talkEveryHour = talkEveryHour,
-        talkOnClick=talkOnClick
+        talkOnClick = talkOnClick
     )
 }
 

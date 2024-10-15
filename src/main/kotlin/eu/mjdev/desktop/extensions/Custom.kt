@@ -190,6 +190,7 @@ object Custom {
         defaultValue: String = ""
     ) = value?.toString() ?: defaultValue
 
+    // todo move to uiState
     @Composable
     fun <T> flowBlock(
         initial: T,
@@ -225,16 +226,13 @@ object Custom {
         onError: (Throwable) -> Unit = { e -> e.printStackTrace() },
         block: suspend () -> T,
     ): MutableState<T> {
-        println("flow block called")
         val result = remember { mutableStateOf(initial) }
         LaunchedEffect(key) {
-            println("launching for new key")
             flow {
                 emit(block())
             }.catch { t ->
                 onError(t)
             }.flowOn(coroutineContext).collect { r ->
-                println("got new result")
                 result.value = r
             }
         }

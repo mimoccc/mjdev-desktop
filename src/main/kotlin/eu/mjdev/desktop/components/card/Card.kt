@@ -8,6 +8,7 @@
 
 package eu.mjdev.desktop.components.card
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -23,7 +24,7 @@ import eu.mjdev.desktop.components.surface.Surface
 
 @Composable
 fun Card(
-    onClick: () -> Unit,
+    onClick: () -> Unit = {},
     modifier: Modifier = Modifier,
     onLongClick: (() -> Unit)? = null,
     shape: CardShape = CardDefaults.shape(),
@@ -32,7 +33,7 @@ fun Card(
     border: CardBorder = CardDefaults.border(),
     glow: CardGlow = CardDefaults.glow(),
     interactionSource: MutableInteractionSource? = null,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit = {}
 ) = Surface(
     onClick = onClick,
     onLongClick = onLongClick,
@@ -46,3 +47,7 @@ fun Card(
 ) {
     Column(content = content)
 }
+
+@Preview
+@Composable
+fun CardPreview() = Card()

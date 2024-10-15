@@ -8,12 +8,18 @@
 
 package eu.mjdev.desktop.components.appsmenu
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
@@ -26,11 +32,11 @@ fun AppsList(
     modifier: Modifier = Modifier,
     category: String = "",
     listState: LazyListState = rememberForeverLazyListState("AppsMenu"),
-    onCategoryClick: DesktopScope.(Category) -> Unit,
-    onCategoryContextMenuClick: DesktopScope.(Category) -> Unit,
-    onAppClick: DesktopScope.(App) -> Unit,
-    onAppContextMenuClick: DesktopScope.(App) -> Unit,
-    items: List<Any>
+    onCategoryClick: DesktopScope.(Category) -> Unit = {},
+    onCategoryContextMenuClick: DesktopScope.(Category) -> Unit = {},
+    onAppClick: DesktopScope.(App) -> Unit = {},
+    onAppContextMenuClick: DesktopScope.(App) -> Unit = {},
+    items: List<Any> = listOf()
 ) = withDesktopScope {
     LazyColumn(
         modifier = modifier,
@@ -66,4 +72,18 @@ fun AppsList(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun AppsListPreview() {
+    AppsList(
+        modifier = Modifier.padding(8.dp)
+            .background(
+                Color.Gray,
+                RoundedCornerShape(16.dp)
+            )
+            .padding(8.dp),
+        items = listOf(App.Test, App.Test, App.Test)
+    )
 }

@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.desktoppanel
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -27,3 +28,7 @@ fun DesktopPanelTray(
         content = content
     )
 }
+
+@Preview
+@Composable
+fun DesktopPanelTrayPreview() = DesktopPanelTray()

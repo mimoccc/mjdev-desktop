@@ -3,6 +3,7 @@ package eu.mjdev.desktop.components.appsmenu
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -79,4 +80,12 @@ fun AppsMenuCategory(
 
 @Preview
 @Composable
-fun AppsMenuCategoryPreview() = AppsMenuCategory()
+fun AppsMenuCategoryPreview() = AppsMenuCategory(
+    modifier = Modifier.padding(8.dp)
+        .background(
+            Color.Gray,
+            RoundedCornerShape(16.dp)
+        )
+        .padding(8.dp),
+    category = Category("Audio")
+)

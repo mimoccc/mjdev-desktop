@@ -12,11 +12,10 @@ import androidx.compose.runtime.Immutable
 
 @Suppress("unused")
 @Immutable
-class CardScale
-internal constructor(
-    internal val scale: Float,
-    internal val focusedScale: Float,
-    internal val pressedScale: Float
+class CardScale(
+    val scale: Float,
+    val focusedScale: Float,
+    val pressedScale: Float
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

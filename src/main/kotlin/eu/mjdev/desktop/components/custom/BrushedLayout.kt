@@ -8,6 +8,7 @@
 
 package eu.mjdev.desktop.components.custom
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -29,3 +30,7 @@ fun BrushedLayout(
         }
     )
 }
+
+@Preview
+@Composable
+fun BrushedLayoutPreview() = BrushedLayout()

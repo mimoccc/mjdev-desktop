@@ -1,4 +1,4 @@
-package eu.mjdev.desktop.components.immersivelist
+package eu.mjdev.desktop.components.immersivelist.base
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition

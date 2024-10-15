@@ -1,10 +1,14 @@
 package eu.mjdev.desktop.helpers.gif;
 
-import java.net.*;
-import java.io.*;
-import java.util.*;
 import java.awt.*;
-import java.awt.image.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
 
 public class GifDecoder {
     public static final int STATUS_OK = 0;

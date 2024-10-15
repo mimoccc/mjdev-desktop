@@ -12,11 +12,10 @@ import androidx.compose.runtime.Immutable
 import eu.mjdev.desktop.components.surface.base.Border
 
 @Immutable
-class CardBorder
-internal constructor(
-    internal val border: Border,
-    internal val focusedBorder: Border,
-    internal val pressedBorder: Border
+class CardBorder(
+    val border: Border,
+    val focusedBorder: Border,
+    val pressedBorder: Border
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -37,6 +36,6 @@ internal constructor(
 
     override fun toString(): String {
         return "CardBorder(border=$border, focusedBorder=$focusedBorder, " +
-            "pressedBorder=$pressedBorder)"
+                "pressedBorder=$pressedBorder)"
     }
 }

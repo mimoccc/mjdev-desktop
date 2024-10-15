@@ -8,6 +8,7 @@
 
 package eu.mjdev.desktop.components.image
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -123,3 +124,7 @@ fun PhotoImage(
 //        )
     }
 }
+
+@Preview
+@Composable
+fun PhotoImagePreview() = PhotoImage()

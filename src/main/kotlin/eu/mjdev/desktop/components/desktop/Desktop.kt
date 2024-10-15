@@ -1,7 +1,6 @@
 package eu.mjdev.desktop.components.desktop
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,7 +40,7 @@ fun Desktop(
                 modifier = Modifier.fillMaxSize(),
                 path = api.currentUser.userDirs.desktopDirectory,
                 showHomeFolder = true,
-                orientation = Orientation.Vertical,
+//                orientation = Orientation.Vertical,
             )
             MemoryChart(
                 modifier = Modifier.size(350.dp, 300.dp)

@@ -62,4 +62,3 @@ fun DesktopPanelText(
 @Preview
 @Composable
 fun DesktopPanelTextPreview() = DesktopPanelText()
-

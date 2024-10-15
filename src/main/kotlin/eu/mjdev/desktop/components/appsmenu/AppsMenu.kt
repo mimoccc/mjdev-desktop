@@ -177,9 +177,7 @@ fun AppsMenu(
                                 backgroundColor.alpha(0.9f),
                                 backgroundColor.alpha(0.7f),
                                 backgroundColor.alpha(0.3f),
-                            ),
-//                            startX = 0f,
-//                            endX = 0f
+                            )
                         )
                         Box(
                             modifier = Modifier.fillMaxWidth()

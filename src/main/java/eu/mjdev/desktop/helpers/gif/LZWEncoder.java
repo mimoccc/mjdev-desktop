@@ -1,7 +1,7 @@
 package eu.mjdev.desktop.helpers.gif;
 
-import java.io.OutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 class LZWEncoder {
     private static final int EOF = -1;

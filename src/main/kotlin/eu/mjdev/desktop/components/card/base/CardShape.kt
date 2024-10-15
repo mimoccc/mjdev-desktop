@@ -12,11 +12,10 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Shape
 
 @Immutable
-class CardShape
-internal constructor(
-    internal val shape: Shape,
-    internal val focusedShape: Shape,
-    internal val pressedShape: Shape
+class CardShape(
+    val shape: Shape,
+    val focusedShape: Shape,
+    val pressedShape: Shape
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

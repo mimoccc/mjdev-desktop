@@ -8,11 +8,9 @@
 
 package eu.mjdev.desktop.components.blur
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,3 +71,9 @@ fun BlurPanel(
         content()
     }
 }
+
+@Preview
+@Composable
+fun BlurPanelPreview() = BlurPanel(
+    modifier = Modifier.size(480.dp, 800.dp)
+)

@@ -10,7 +10,10 @@ package eu.mjdev.desktop.components.surface.base
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.node.DrawModifierNode
@@ -28,7 +31,7 @@ internal fun Modifier.surfaceGlow(
 ): Modifier {
     val color = surfaceColorAtElevation(
         color = glow.elevationColor,
-        elevation = glow.elevation
+//        elevation = glow.elevation
     )
     val glowBlurRadiusPx = with(LocalDensity.current) {
         glow.elevation.toPx()

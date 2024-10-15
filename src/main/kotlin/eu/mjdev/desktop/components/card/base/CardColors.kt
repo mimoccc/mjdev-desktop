@@ -12,14 +12,13 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 @Immutable
-class CardColors
-internal constructor(
-    internal val containerColor: Color,
-    internal val contentColor: Color,
-    internal val focusedContainerColor: Color,
-    internal val focusedContentColor: Color,
-    internal val pressedContainerColor: Color,
-    internal val pressedContentColor: Color
+class CardColors(
+    val containerColor: Color,
+    val contentColor: Color,
+    val focusedContainerColor: Color,
+    val focusedContentColor: Color,
+    val pressedContainerColor: Color,
+    val pressedContentColor: Color
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

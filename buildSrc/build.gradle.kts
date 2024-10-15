@@ -18,13 +18,13 @@ dependencies {
 //    implementation(libs.gradle.api)
 }
 
-gradlePlugin {
-    plugins {
-        register("DesktopPlugin") {
-            id = "DesktopPlugin"
-            displayName = "DesktopPlugin"
-            description = "Common application plugin to handle all stuffs needed."
-            implementationClass = "org.mjdev.gradle.plugin.DesktopPlugin"
-        }
-    }
-}
+//gradlePlugin {
+//    plugins {
+//        register("DesktopPlugin") {
+//            id = "DesktopPlugin"
+//            displayName = "DesktopPlugin"
+//            description = "Common application plugin to handle all stuffs needed."
+//            implementationClass = "org.mjdev.gradle.plugin.DesktopPlugin"
+//        }
+//    }
+//}

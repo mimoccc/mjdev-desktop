@@ -1,18 +1,16 @@
 package eu.mjdev.desktop.components.immersivelist
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableIntState
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import eu.mjdev.desktop.components.immersivelist.base.ImmersiveListBackgroundScope
+import eu.mjdev.desktop.components.immersivelist.base.ImmersiveListScope
 import eu.mjdev.desktop.extensions.Compose.bringIntoViewIfChildrenAreFocused
 
 @Suppress("IllegalExperimentalApiUsage")
@@ -51,3 +49,7 @@ fun ImmersiveList(
         }.list()
     }
 }
+
+@Preview
+@Composable
+fun ImmersiveListPreview() = ImmersiveList()

@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.text
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -59,3 +60,7 @@ fun AutoHideEmptyText(
         )
     }
 }
+
+@Preview
+@Composable
+fun AutoHideEmptyTextPreview() = AutoHideEmptyText()

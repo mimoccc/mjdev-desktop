@@ -21,8 +21,7 @@ fun GifView(
 ) = BoxWithConstraints {
     val file by remember(src) { mutableStateOf(File(src)) }
     val streamData by remember(file) { mutableStateOf(FileInputStream(file)) }
-    val gifDecoder by remember(streamData) { mutableStateOf(
-        GifDecoder().apply { read(streamData) }) }
+    val gifDecoder by remember(streamData) { mutableStateOf(GifDecoder().apply { read(streamData) }) }
     val framesCount by remember(gifDecoder) { mutableStateOf(gifDecoder.frameCount) }
     var currentFrame by remember(gifDecoder) { mutableStateOf(0) }
     var decodedImage by remember { mutableStateOf<BufferedImage?>(null) }

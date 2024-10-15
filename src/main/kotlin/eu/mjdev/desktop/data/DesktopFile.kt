@@ -297,6 +297,19 @@ class DesktopFile(
         const val Prop_X_Ubuntu_UseOverlayScrollbars = "X-Ubuntu-UseOverlayScrollbars"
 
         val Empty = DesktopFile()
+        val Test = DesktopFile(
+            fileData = """
+                [Desktop Entry]
+                Name=mjdev-desktop
+                Comment=MJDev desktop environment
+                Exec=/opt/mjdev-desktop/bin/mjdev-desktop
+                Icon=/opt/mjdev-desktop/lib/mjdev-desktop.png
+                Terminal=false
+                Type=Application
+                Categories=Desktop
+                MimeType=
+                """.trimMargin()
+        )
 
         operator fun Ini.get(
             type: DesktopEntryType

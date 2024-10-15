@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.grid
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
@@ -11,19 +12,17 @@ import kotlin.math.min
 
 @Composable
 fun GridPlaced(
-    cells: GridPlacedCells,
     modifier: Modifier = Modifier,
+    cells: GridPlacedCells = GridPlacedCells(2, 2),
     placementPolicy: GridPlacedPlacementPolicy = GridPlacedPlacementPolicy.DEFAULT,
-    content: GridPlacedScope.() -> Unit
+    content: GridPlacedScope.() -> Unit = {}
 ) {
     val scopeContent: GridPlacedScopeImpl = GridPlacedScopeImpl(cells, placementPolicy).apply(content)
     val displayContent: List<GridPlacedContent> = scopeContent.data.toList()
     Layout(
         modifier = modifier,
         content = {
-            displayContent.forEach {
-                it.item(GridPlacedItemScopeImpl)
-            }
+            displayContent.forEach { cnt -> cnt.item(GridPlacedItemScopeImpl) }
         }
     ) { measurables, constraints ->
         check(constraints.maxWidth != Constraints.Infinity) { "Infinity width not allowed in GridPad" }
@@ -49,3 +48,7 @@ fun GridPlaced(
         }
     }
 }
+
+@Preview
+@Composable
+fun GridPlacedPreview() = GridPlaced()

@@ -26,10 +26,14 @@ plugins {
 group = libs.versions.packageName.get()
 version = libs.versions.packageVersion.get()
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor(0, "seconds")
+}
+
 kotlin {
 //    jvm()
 //    linuxX64() {
-        /* Specify additional settings for the 'linux' target here */
+    /* Specify additional settings for the 'linux' target here */
 //    }
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
@@ -117,7 +121,7 @@ allprojects {
         // dbus
         implementation(libs.dbus.java.core)
         implementation(libs.dbus.java.transport.native.unixsocket)
- // testing yet :
+        // testing yet :
         // gettext
         implementation("org.gnu.gettext:libintl:0.18.3")
         // custom components

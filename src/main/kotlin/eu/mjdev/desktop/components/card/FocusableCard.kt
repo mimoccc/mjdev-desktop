@@ -8,6 +8,7 @@
 
 package eu.mjdev.desktop.components.card
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,8 +18,11 @@ import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -26,17 +30,14 @@ import eu.mjdev.desktop.components.card.base.*
 import eu.mjdev.desktop.components.card.base.CardDefaults.colorFocusBorder
 import eu.mjdev.desktop.components.card.base.CardDefaults.colorFocusGlow
 import eu.mjdev.desktop.components.image.ImageAny
-import eu.mjdev.desktop.extensions.Compose.rememberFocusState
-import eu.mjdev.desktop.extensions.Compose.rememberFocusRequester
-import eu.mjdev.desktop.helpers.compose.FocusHelper
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.RectangleShape
 import eu.mjdev.desktop.components.text.AutoHideEmptyText
 import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.extensions.Compose.focusState
 import eu.mjdev.desktop.extensions.Compose.isFocused
+import eu.mjdev.desktop.extensions.Compose.rememberFocusRequester
+import eu.mjdev.desktop.extensions.Compose.rememberFocusState
 import eu.mjdev.desktop.extensions.Compose.requestFocusOnTouch
+import eu.mjdev.desktop.helpers.compose.FocusHelper
 
 @Composable
 fun FocusableCard(
@@ -157,3 +158,7 @@ fun FocusableCard(
         onClick?.invoke(item)
     },
 )
+
+@Preview
+@Composable
+fun FocusableCardPreview() = FocusableCard()

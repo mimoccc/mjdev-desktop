@@ -8,6 +8,7 @@
 
 package eu.mjdev.desktop.components.card
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -26,9 +27,9 @@ import eu.mjdev.desktop.components.card.base.CardDefaults.SubtitleAlpha
 
 @Composable
 fun CompactCard(
-    onClick: () -> Unit,
-    image: @Composable BoxScope.() -> Unit,
-    title: @Composable () -> Unit,
+    onClick: () -> Unit = {},
+    image: @Composable BoxScope.() -> Unit = {},
+    title: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
     onLongClick: (() -> Unit)? = null,
     subtitle: @Composable () -> Unit = {},
@@ -71,7 +72,7 @@ fun CompactCard(
 
 @Composable
 fun CardContent(
-    title: @Composable () -> Unit,
+    title: @Composable () -> Unit = {},
     subtitle: @Composable () -> Unit = {},
     description: @Composable () -> Unit = {}
 ) {
@@ -90,10 +91,18 @@ fun CardContent(
     ProvideTextStyle(MaterialTheme.typography.body2) {
         Box(
             modifier = Modifier.graphicsLayer {
-            alpha = DescriptionAlpha
+                alpha = DescriptionAlpha
             }
         ) {
             description()
         }
     }
 }
+
+@Preview
+@Composable
+fun CardContentPreview() = CardContent()
+
+@Preview
+@Composable
+fun CompactCardPreview() = CompactCard()

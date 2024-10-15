@@ -8,6 +8,7 @@
 
 package eu.mjdev.desktop.components.input
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.padding
@@ -33,7 +34,7 @@ fun SearchFieldPassive(
     textState: MutableState<String> = mutableStateOf(""),
     textColor: Color = Color.White,
     textStyle: TextStyle = TextStyle.Default,
-    textSize:TextUnit = 18.sp,
+    textSize: TextUnit = 18.sp,
     onClearClick: () -> Unit = {}
 ) = SelectableOutlineEditText(
     value = textState.value,
@@ -41,7 +42,7 @@ fun SearchFieldPassive(
     enabled = false,
     singleLine = true,
     textStyle = textStyle,
-    textSize=textSize,
+    textSize = textSize,
     colors = TextFieldDefaults.outlinedTextFieldColors(
         backgroundColor = Color.Transparent,
         textColor = textColor,
@@ -66,3 +67,7 @@ fun SearchFieldPassive(
         }
     }
 )
+
+@Preview
+@Composable
+fun SearchFieldPassivePreview() = SearchFieldPassive()

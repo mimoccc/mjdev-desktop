@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.input
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -106,3 +107,7 @@ fun SelectableOutlineEditText(
         colors = colors
     )
 }
+
+@Preview
+@Composable
+fun SelectableOutlineEditTextPreview() = SelectableOutlineEditText()

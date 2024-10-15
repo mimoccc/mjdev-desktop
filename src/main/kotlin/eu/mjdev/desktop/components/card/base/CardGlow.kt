@@ -12,11 +12,10 @@ import androidx.compose.runtime.Immutable
 import eu.mjdev.desktop.components.surface.base.Glow
 
 @Immutable
-class CardGlow
-internal constructor(
-    internal val glow: Glow,
-    internal val focusedGlow: Glow,
-    internal val pressedGlow: Glow
+class CardGlow(
+    val glow: Glow,
+    val focusedGlow: Glow,
+    val pressedGlow: Glow
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

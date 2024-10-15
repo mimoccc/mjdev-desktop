@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.components.gallery
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +28,7 @@ fun BoxWithControls(
         src: Any?,
         bckColor: Color,
         controlsState: MutableState<Boolean>
-    ) -> Unit
+    ) -> Unit = { _, _, _ -> }
 ) = ImageColoredBackground(
     modifier = modifier
 //        .swipeGestures(
@@ -50,3 +51,7 @@ fun BoxWithControls(
         controls(src, bckColor, controlsState)
     }
 }
+
+@Preview
+@Composable
+fun BoxWithControlsPreview() = BoxWithControls()

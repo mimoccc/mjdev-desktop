@@ -1,7 +1,6 @@
 package eu.mjdev.desktop.components.file
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -47,7 +46,7 @@ fun FolderView(
     iconSpacing: Dp = 2.dp,
     iconSize: DpSize = DpSize(128.dp, 128.dp),
     path: File? = File("/"),
-    orientation: Orientation = Orientation.Vertical, // todo
+//    orientation: Orientation = Orientation.Vertical, // todo
     guideVisibleState: VisibilityState = rememberVisibilityState(false),
 ) = withDesktopScope {
     val files by rememberFiles(path, api.homeDir, showHidden, directoryFirst, showHomeFolder)
@@ -58,8 +57,8 @@ fun FolderView(
                 iconSize = iconSize,
             )
         }
-    ) { mw, mh ->
-        val rows = max(1, ((api.containerSize.height / mh).toInt()))
+    ) { size ->
+        val rows = max(1, ((api.containerSize.height / size.height).toInt()))
         val columns = max(1, (files.size.div(rows)))
         Box(
             modifier = modifier,
@@ -95,7 +94,7 @@ fun FolderView(
             }
             GuideLines(
                 modifier = modifier,
-                cellSize = DpSize(mw, mh),
+                cellSize = size,
                 color = iconsTintColor.alpha(0.5f),
                 lineSize = 1.dp,
                 visible = guideVisibleState.isVisible

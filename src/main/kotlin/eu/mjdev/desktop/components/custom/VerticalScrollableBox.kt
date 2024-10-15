@@ -8,6 +8,7 @@
 
 package eu.mjdev.desktop.components.custom
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.lazy.LazyListState
@@ -32,3 +33,7 @@ fun VerticalScrollableBox(
 ) {
     content.invoke(this)
 }
+
+@Preview
+@Composable
+fun VerticalScrollableBoxPreview() = VerticalScrollableBox()

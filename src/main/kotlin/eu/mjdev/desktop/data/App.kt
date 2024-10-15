@@ -168,6 +168,7 @@ class App(
     }
 
     companion object {
+        val Test = App(DesktopFile.Test)
         val Empty: App = App()
 
         fun List<String>?.ifEmptyCategories(block: () -> List<String>) = this?.filter { s ->

@@ -1,14 +1,13 @@
 package eu.mjdev.desktop.components.draggable
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -28,8 +27,8 @@ fun DraggableView(
     dragBackgroundColor: Color = Color.White.copy(alpha = 0.3f),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     zIndex: Float = Float.MIN_VALUE,
-    onDragStart:()->Unit={},
-    onDragEnd:()->Unit={},
+    onDragStart: () -> Unit = {},
+    onDragEnd: () -> Unit = {},
     onTap: () -> Unit = {},
     onDoubleTap: () -> Unit = {},
     onClick: () -> Unit = {},
@@ -83,3 +82,7 @@ fun DraggableView(
         }
     )
 }
+
+@Preview
+@Composable
+fun DraggableViewPreview() = DraggableView()
