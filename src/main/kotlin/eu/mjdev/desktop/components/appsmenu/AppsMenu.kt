@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +35,7 @@ import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberComputed
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Compose.removeLast
+import eu.mjdev.desktop.extensions.Custom.flowBlock
 import eu.mjdev.desktop.extensions.Custom.trimIsNotEmpty
 import eu.mjdev.desktop.extensions.Modifier.dropShadow
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
@@ -65,7 +69,7 @@ fun AppsMenu(
     onUserAvatarClick: () -> Unit = {}
 ) = withDesktopScope {
     var category by rememberState("")
-    val appCategories by appCategories.collectAsState(emptyList())
+    val appCategories by flowBlock(emptyList()) { appCategories }
     val items by rememberComputed(searchTextState.value, category) {
         when {
             // todo fuzzy sort

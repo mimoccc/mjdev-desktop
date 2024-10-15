@@ -91,6 +91,9 @@ class Shell(
     companion object {
 
         const val CMD_NMCLI = "nmcli"
+        val CMD_NMCLI_RESCAN = arrayOf("dev", "wifi", "rescan")
+        val CMD_NMCLI_GET_NETWORKS = arrayOf("-t", "-f", "ALL", "dev", "wifi")
+
         const val CMD_ENV = "env"
         const val CMD_DEX = "dex"
 

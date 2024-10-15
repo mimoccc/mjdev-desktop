@@ -89,7 +89,6 @@ fun ComposeWebView(
             webViewState.webSettings.apply {
                 isJavaScriptEnabled = true
                 with(desktopWebSettings) {
-//                offScreenRendering = true
                     transparent = true
                     this.disablePopupWindows = disablePopupWindows
                 }

@@ -10,6 +10,9 @@ package eu.mjdev.desktop.managers.processes
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.extensions.Custom.orElse
 import eu.mjdev.desktop.provider.DesktopProvider
@@ -17,22 +20,25 @@ import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import kotlinx.coroutines.*
 import kotlin.jvm.optionals.getOrNull
 
+// todo dbus
 @Suppress("unused")
 class ProcessManager(
-    val delay: Long = 1000L
-) : ArrayList<ProcessManager.ProcessWrapper>(), AutoCloseable {
+    private val checkDelay: Long = 1000L
+) : AutoCloseable {
+    val size: Int get() = processes.size
     private val scope = CoroutineScope(Dispatchers.IO)
     private val listeners = mutableListOf<ProcessListener>()
     private var job: Job? = null
+    private val processes = mutableStateListOf<ProcessWrapper>()
 
     init {
         job = scope.launch(Dispatchers.IO) {
             while (isActive) {
                 ProcessHandle.allProcesses().toList().filterNotNull().let { phList ->
                     phList.forEach { ph ->
-                        if (!containsProcess(ph)) {
+                        if (!processes.containsProcess(ph)) {
                             ProcessWrapper(ph).also { pw ->
-                                add(pw)
+                                processes.add(pw)
                             }
                             listeners.filterIsInstance<ProcessAddListener>().forEach { l ->
                                 l.onProcessAdded(ph)
@@ -41,13 +47,13 @@ class ProcessManager(
                     }
                     cleanup()
                 }
-                delay(delay)
+                delay(checkDelay)
             }
         }
     }
 
     private fun cleanup() {
-        iterator().apply {
+        processes.iterator().apply {
             while (hasNext()) {
                 val pw = next()
                 if (pw.processHandle?.isAlive != true) {
@@ -58,22 +64,13 @@ class ProcessManager(
                 }
             }
         }
-
     }
 
-    fun addOnAddListener(listener: ProcessAddListener) {
+    fun addListener(listener: ProcessListener) {
         listeners.add(listener)
     }
 
-    fun addOnRemoveListener(listener: ProcessRemoveListener) {
-        listeners.add(listener)
-    }
-
-    fun removeOnAddListener(listener: ProcessAddListener) {
-        listeners.remove(listener)
-    }
-
-    fun removeOnRemoveListener(listener: ProcessRemoveListener) {
+    fun removeListener(listener: ProcessListener) {
         listeners.remove(listener)
     }
 
@@ -86,7 +83,7 @@ class ProcessManager(
         val appCmd = app?.cmd
         val appName = app?.name
         val appFullName = app?.fullAppName
-        any { pw ->
+        processes.any { pw ->
             (appName != null && pw.command.contains(appName)) ||
                     (appCmd != null && pw.command.contains(appCmd)) ||
                     (appFullName != null && pw.command.contains(appFullName)) ||
@@ -98,15 +95,24 @@ class ProcessManager(
     }.getOrNull() ?: false
 
     companion object {
-        fun ArrayList<ProcessWrapper>.containsProcess(ph: ProcessHandle) = ph.pid().let { pid ->
+        fun SnapshotStateList<ProcessWrapper>.containsProcess(
+            ph: ProcessHandle
+        ) = ph.pid().let { pid ->
             any { p -> p.pid == pid }
         }
 
-        fun ArrayList<ProcessWrapper>.containsProcess(ph: ProcessWrapper) = any { p -> p.pid == ph.pid }
+        fun SnapshotStateList<ProcessWrapper>.containsProcess(
+            ph: ProcessWrapper
+        ) = any { p -> p.pid == ph.pid }
+
+        @Composable
+        fun rememberProcessManager(
+            checkDelay: Long = 1000L
+        ) = remember { ProcessManager(checkDelay) }
 
         @Composable
         fun processManagerListener(
-            onChanged: ProcessManager.(processHandle: ProcessHandle?) -> Unit,
+            onChanged: ProcessManager.(processHandle: ProcessHandle?) -> Unit = {},
         ) = processManagerListener(onChanged, onChanged)
 
         @Composable
@@ -115,7 +121,7 @@ class ProcessManager(
             onRemove: ProcessManager.(processHandle: ProcessHandle?) -> Unit,
             api: DesktopProvider = LocalDesktop.current,
             processManger: ProcessManager = api.processManager
-        ) {
+        ): ProcessManager {
             val addListener = object : ProcessAddListener {
                 override fun onProcessAdded(processHandle: ProcessHandle?) {
                     onAdd.invoke(processManger, processHandle)
@@ -127,13 +133,14 @@ class ProcessManager(
                 }
             }
             DisposableEffect(Unit) {
-                processManger.addOnAddListener(addListener)
-                processManger.addOnRemoveListener(removeListener)
+                processManger.addListener(addListener)
+                processManger.addListener(removeListener)
                 onDispose {
-                    processManger.removeOnAddListener(addListener)
-                    processManger.removeOnRemoveListener(removeListener)
+                    processManger.removeListener(addListener)
+                    processManger.removeListener(removeListener)
                 }
             }
+            return processManger
         }
     }
 

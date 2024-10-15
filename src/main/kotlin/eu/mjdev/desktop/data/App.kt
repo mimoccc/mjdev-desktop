@@ -1,11 +1,10 @@
 package eu.mjdev.desktop.data
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.helpers.system.Shell
-import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -179,28 +178,6 @@ class App(
                 list.isEmpty() -> block()
                 else -> list
             }
-        }
-
-        @Composable
-        fun rememberRunningIndicator(
-            app: App?,
-            api: DesktopProvider = LocalDesktop.current
-        ) = remember(
-            app,
-            app?.isFavorite,
-            app?.isRunning,
-            app?.isStarting
-        ) {
-            RunningAppIndicator(api, app)
-        }
-
-        // todo
-        class RunningAppIndicator(
-            val api: DesktopProvider,
-            val app: App?
-        ) : State<Boolean> {
-            override val value: Boolean
-                get() = app?.isRunning == true || api.processManager.hasAppProcess(app)
         }
     }
 }

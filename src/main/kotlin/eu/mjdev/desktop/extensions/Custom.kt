@@ -1,27 +1,30 @@
 package eu.mjdev.desktop.extensions
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.NativePaint
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import com.google.gson.Gson
 import eu.mjdev.desktop.data.DesktopFile
+import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Locale.toLocale
 import eu.mjdev.desktop.helpers.streams.ResourceStream
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import org.jetbrains.skia.FilterBlurMode.NORMAL
+import org.jetbrains.skia.MaskFilter.Companion.makeBlur
 import java.io.BufferedReader
 import java.io.File
 import java.text.DateFormat
 import java.util.*
 import java.util.Locale
+import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.optionals.getOrNull
 
 @Suppress("MemberVisibilityCanBePrivate", "FunctionName", "unused")
@@ -169,10 +172,14 @@ object Custom {
 
     fun ParsedBoolean(
         value: String?,
-        defaultValue: Boolean = false
+        defaultValue: Boolean = false,
     ) = value.orEmpty().trim().lowercase().let { b ->
         when (b) {
             "true" -> true
+            "ano" -> true
+            "yes" -> true
+            "enabled" -> true
+            "*" -> true
             "1" -> true
             else -> defaultValue
         }
@@ -183,17 +190,61 @@ object Custom {
         defaultValue: String = ""
     ) = value?.toString() ?: defaultValue
 
+    @Composable
     fun <T> flowBlock(
-        block: suspend () -> T
-    ): Flow<T> = flow {
-        emit(block())
+        initial: T,
+        delay: Long = 0L,
+        coroutineContext: CoroutineContext = Dispatchers.IO,
+        onError: (Throwable) -> Unit = { e -> e.printStackTrace() },
+        block: suspend () -> T,
+    ): MutableState<T> {
+        val result = remember { mutableStateOf(initial) }
+        var state by rememberState(0L)
+        LaunchedEffect(state) {
+            flow {
+                emit(block())
+            }.catch { t ->
+                onError(t)
+            }.flowOn(coroutineContext).collect { r ->
+                result.value = r
+            }
+            if (delay > 0L) {
+                delay(delay)
+                state = System.currentTimeMillis()
+            }
+        }
+        return result
+    }
+
+    // todo move to uiState
+    @Composable
+    fun <T> flowBlock(
+        initial: T,
+        key: Any,
+        coroutineContext: CoroutineContext = Dispatchers.IO,
+        onError: (Throwable) -> Unit = { e -> e.printStackTrace() },
+        block: suspend () -> T,
+    ): MutableState<T> {
+        println("flow block called")
+        val result = remember { mutableStateOf(initial) }
+        LaunchedEffect(key) {
+            println("launching for new key")
+            flow {
+                emit(block())
+            }.catch { t ->
+                onError(t)
+            }.flowOn(coroutineContext).collect { r ->
+                println("got new result")
+                result.value = r
+            }
+        }
+        return result
     }
 
     fun NativePaint.setMaskFilter(
         blurRadius: Float
     ) {
-        this.maskFilter =
-            org.jetbrains.skia.MaskFilter.makeBlur(org.jetbrains.skia.FilterBlurMode.NORMAL, blurRadius / 2, true)
+        maskFilter = makeBlur(NORMAL, blurRadius / 2, true)
     }
 
     val dateFlow

@@ -119,6 +119,12 @@ open class DesktopScope(
     val backgrounds
         get() = currentUser.backgrounds
 
+    val wifiConnections
+        get() = connectionManager.wifiConnections
+
+    val processManager
+        get() = api.processManager
+
     companion object {
         @Composable
         fun withDesktopScope(

@@ -8,14 +8,10 @@
 
 package eu.mjdev.desktop.managers.apps
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.extensions.Custom.desktopFiles
 import eu.mjdev.desktop.extensions.Custom.dirsOnly
-import eu.mjdev.desktop.extensions.Custom.flowBlock
 import eu.mjdev.desktop.extensions.Custom.get
 import eu.mjdev.desktop.extensions.Custom.jsonToList
 import eu.mjdev.desktop.extensions.Custom.lines
@@ -23,11 +19,7 @@ import eu.mjdev.desktop.extensions.Custom.text
 import eu.mjdev.desktop.extensions.Custom.textAsLocale
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.DesktopProvider
-import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import java.io.File
 import java.util.*
 
@@ -60,18 +52,6 @@ class AppsManager(
         const val FILE_NAME_MIME_APPS_LIST = "mimeapps.list"
         const val FILE_NAME_USER_DIRS = "user-dirs.dirs"
         const val FILE_NAME_USER_DIRS_LOCALE = "user-dirs.locale"
-
-        // todo
-        @Composable
-        fun rememberFavoriteApps(
-            api: DesktopProvider = LocalDesktop.current,
-            appsManager: AppsManager = api.appsManager,
-        ): State<List<App>> {
-//            var processes by mutableStateOf(0)
-//            processManagerListener { processes = size }
-            return appsManager.favoriteApps.collectAsState(emptyList())
-            // todo
-        }
     }
 
     private val rootDir = File(DIR_NAME_ROOT)
@@ -149,18 +129,17 @@ class AppsManager(
 //        backgroundFilesDir.filesOnly.sortedByName()
 //    }
 
-    val appCategories = flowBlock {
-        allApps.asSequence().flatMap { app ->
+    val appCategories
+        get() = allApps.asSequence().flatMap { app ->
             app.categories.map { c -> provideCategory(c) }
         }.distinct().sorted().map { c ->
             Category(c)
         }.sortedByDescending { c ->
             c.priority
         }.toList()
-    }.flowOn(Dispatchers.IO)
 
-    val favoriteApps: Flow<List<App>> = flowBlock {
-        Shell.executeAndRead(
+    val favoriteApps: List<App>
+        get() = Shell.executeAndRead(
             "gsettings",
             "get",
             "org.gnome.shell",
@@ -172,7 +151,6 @@ class AppsManager(
                 App(deskFile)
             }
         }.toList()
-    }.flowOn(Dispatchers.IO)
 
     // todo languages
     fun provideCategory(name: String): String {

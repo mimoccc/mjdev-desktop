@@ -110,37 +110,36 @@ allprojects {
         implementation(libs.qrose)
         // tts
         implementation(libs.tts)
+        // webview
+        implementation(libs.compose.webview)
+        // javascript
+        implementation(libs.mozilla.rhino)
         // dbus
-//        implementation(libs.dbus.java.core)
-//        implementation(libs.dbus.java.transport.native.unixsocket)
-        // wayland
-//        implementation("org.freedesktop:wayland-client:1.5.1")
+        implementation(libs.dbus.java.core)
+        implementation(libs.dbus.java.transport.native.unixsocket)
+ // testing yet :
         // gettext
         implementation("org.gnu.gettext:libintl:0.18.3")
+        // custom components
+        implementation("com.composables:core:1.12.0")
+        // events
+        implementation("org.rationalityfrontline:kevent:2.3.1")
+        // wayland
+//        implementation("org.freedesktop:wayland-client:1.5.1")
         // paths
 //        implementation("me.sujanpoudel.multiplatform.utils:multiplatform-paths:0.2.2")
         // files
 //        implementation("io.github.vinceglb:filekit-core:0.8.2")
         // files with composable utilities
 //        implementation("io.github.vinceglb:filekit-compose:0.8.2")
-        // testing yet
-        // anim
-//        implementation("org.jetbrains.compose.animation:animation:1.7.0-alpha03")
-//        implementation("org.jetbrains.compose.animation:animation-graphics:1.7.0-alpha03")
 //        // images metadata
 //        implementation("com.ashampoo:kim:0.18.4")
-        // connectivity
-        implementation("dev.tmapps:konnection:1.4.1")
-        // web
-        implementation("io.github.kevinnzou:compose-webview-multiplatform:1.9.40-alpha01")
         // bottom sheet flexible
 //        implementation("com.github.skydoves:flexible-bottomsheet-material3:0.1.5")
         // stt
 //        implementation("com.alphacephei:vosk:0.3.32+")
         // fs watcher
 //        implementation("io.github.irgaly.kfswatch:kfswatch:1.3.0")
-        // custom components
-        implementation("com.composables:core:1.12.0")
         // lib-app-indicator
 //        implementation("org.purejava:libappindicator-gtk3-java-full:1.4.1")
         // internationalization
@@ -176,12 +175,8 @@ allprojects {
 //        implementation("com.github.moaxcp.x11:x11-client:0.18.2")
         // jwm
 //        implementation("io.github.humbleui:jwm:0.4.8")
-
         // hid
 //        implementation('org.hid4java:hid4java')
-        // javascript
-        // implementation(libs.mozilla.rhino)
-//        implementation ("androidx.compose.ui:ui-text-google-fonts:1.6.8")
     }
 }
 

@@ -30,7 +30,7 @@ import eu.mjdev.desktop.components.desktoppanel.applets.DesktopMenuIcon
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelDateTime
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelFavoriteApps
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelLanguage
-import eu.mjdev.desktop.components.sliding.SlidingMenu
+import eu.mjdev.desktop.components.sliding.SlidingPanel
 import eu.mjdev.desktop.components.tooltip.Tooltip
 import eu.mjdev.desktop.components.tooltip.TooltipState
 import eu.mjdev.desktop.components.tooltip.rememberTooltipState
@@ -103,7 +103,7 @@ fun DesktopPanel(
         exitAnimation = exitAnimation,
         onFocusChange = onFocusChange
     ) {
-        SlidingMenu(
+        SlidingPanel(
             modifier = Modifier.fillMaxWidth(),
             orientation = Vertical,
             state = panelState,

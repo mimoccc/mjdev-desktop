@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SupervisedUserCircle
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.*
@@ -40,9 +39,9 @@ fun ImageAny(
     onLoading: () -> Unit = {},
     onFail: (error: Throwable) -> Unit = {}
 ) = withDesktopScope {
-    val image = flowBlock {
+    val image = flowBlock(null) {
         (src as? ImagesProvider).let { provider -> provider?.getOne() ?: src }
-    }.collectAsState(null)
+    }
     // todo from mime
     val isGif = image.value.toString().trim().endsWith(".gif")
     // todo from mime

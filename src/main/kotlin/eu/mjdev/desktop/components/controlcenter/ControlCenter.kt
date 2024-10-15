@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.blur.BlurPanel
 import eu.mjdev.desktop.components.controlcenter.base.PageHeader
-import eu.mjdev.desktop.components.sliding.SlidingMenu
+import eu.mjdev.desktop.components.sliding.SlidingPanel
 import eu.mjdev.desktop.extensions.Compose.onLeftClick
 import eu.mjdev.desktop.extensions.Compose.onMousePress
 import eu.mjdev.desktop.extensions.Compose.onRightClick
@@ -86,7 +86,7 @@ fun ControlCenter(
         exitAnimation = exitAnimation,
         onFocusChange = onFocusChange
     ) {
-        SlidingMenu(
+        SlidingPanel(
             modifier = Modifier.fillMaxHeight(),
             orientation = Horizontal,
             state = controlCenterState,

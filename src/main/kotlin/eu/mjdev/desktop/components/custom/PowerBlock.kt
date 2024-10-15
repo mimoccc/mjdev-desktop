@@ -62,7 +62,7 @@ fun PowerBlock(
                     .size(64.dp)
                     .clipCircle()
                     .circleBorder(2.dp, textColor.alpha(0.5f))
-                    .circleShadow(4.dp, shadowColor),
+                    .circleShadow(4.dp, Color.Black),
                 contentPadding = PaddingValues(1.dp),
                 onClick = onPowerButtonClick,
                 colors = ButtonDefaults.transparent(),

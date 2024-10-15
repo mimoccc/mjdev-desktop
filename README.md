@@ -48,3 +48,38 @@ Build on compose kotlin and jvm.
 
 - import to intellij idea
 - click run or build (or select from run dialog what you want to do)
+
+# USed libraries
+
+- [Jetbrains Compose Desktop] (https://github.com/JetBrains/compose-multiplatform)
+  Main library for to made app
+- [Ini4J] (https://github.com/facebookarchive/ini4j)
+  Parse Desktop Files
+- [OkHttp] (https://github.com/square/okhttp)
+  For images & for future use (weather/ external apis)
+- [Coil] (https://github.com/coil-kt/coil)
+  Image loader
+- [Coroutines Swing] (https://github.com/Kotlin/kotlinx.coroutines)
+  Coroutines in JVM
+- [Google Gson] (https://github.com/google/gson)
+  JSON Parser
+- [FuzzyWuzzy] (https://github.com/xdrop/fuzzywuzzy)
+  Fuzzy search
+- [Thechance101 Chart] (https://github.com/TheChance101/AAY-chart)
+  Compose charts
+- [Shreyaspatil Generative AI] (https://github.com/PatilShreyas/generative-ai-kmp/)
+  AI support
+- [jna] (https://github.com/java-native-access/jna)
+  Load external libraries, for X11/Wayland
+- [Alexzhirkevich Grose] (https://github.com/alexzhirkevich/qrose)
+  QR code & Bar code (easy connect pc & mobile / Wifi share)
+- [Marc Apps TTS] (https://github.com/Marc-JB/TextToSpeechKt)
+  TTS support
+- [Hypfvieh DBus] (https://github.com/hypfvieh/dbus-java)
+  DBus support
+- [Kevinnzou Compose Webview] (https://github.com/KevinnZou/compose-webview-multiplatform)
+  Widgets with web view
+- [Mozilla Rhino] (https://github.com/mozilla/rhino)
+  Custom scripting & widgets code
+- [Bytedeco FFMpeg] (https://github.com/bytedeco/javacv)
+  Video wallpapers & widgets
