@@ -11,6 +11,11 @@ open class DesktopScope(
     val isDebug
         get() = api.isDebug
 
+    var isFirstStart = api.isFirstStart
+
+    val appArgs
+        get() = api.appArgs
+
     val scope
         get() = api.scope
 
@@ -124,6 +129,8 @@ open class DesktopScope(
 
     val processManager
         get() = api.processManager
+
+    fun dispose() = api.dispose()
 
     companion object {
         @Composable

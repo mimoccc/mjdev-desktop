@@ -110,3 +110,7 @@ fun WifiRow(
 fun WifiSettingsPagePreview() = preview {
     WifiSettingsPage().render()
 }
+
+// net devices  : ls /sys/class/net
+// connect gui  : nmtui
+// eth settings : iwconfig

@@ -97,7 +97,7 @@ object Custom {
 
     fun File.listDesktopFiles(
         ext: String = DesktopFile.EXTENSION
-    ): List<DesktopFile> = listFiles(ext) { f -> DesktopFile(f) }
+    ): List<DesktopFile> = if (exists()) listFiles(ext) { f -> DesktopFile(f) } else emptyList()
 
     inline fun <reified T : Any> MutableList<T>.addIfNotExists(
         element: T,
@@ -129,7 +129,7 @@ object Custom {
         get() = if (exists()) readTextAsLocale() else Locale.ENGLISH
 
     val File.desktopFiles: List<DesktopFile>
-        get() = listDesktopFiles()
+        get() = if (exists()) listDesktopFiles() else emptyList()
 
 //    inline fun <T, K> distinctList(
 //        vararg lists: List<T>,

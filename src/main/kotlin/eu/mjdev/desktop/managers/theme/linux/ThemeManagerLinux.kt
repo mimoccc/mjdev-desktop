@@ -42,6 +42,13 @@ class ThemeManagerLinux(
     private val systemGtk3CssFile = systemGtk3ThemeDir["gtk.css"]
     private val systemGtk4CssFile = systemGtk4ThemeDir["gtk.css"]
 
+    override fun clearSystemTheme() {
+        println("Deleting : file:///${systemGtk3CssFile.absolutePath}")
+        systemGtk3CssFile.delete()
+        println("Deleting : file:///${systemGtk4CssFile.absolutePath}")
+        systemGtk4CssFile.delete()
+    }
+
     override fun createFromPalette() {
         createDesktopFile()
         createCssFile(gtk3CssFile)
@@ -65,7 +72,7 @@ class ThemeManagerLinux(
                 MetacityTheme = THEME_ADWAITA_DARK
                 IconTheme = THEME_ADWAITA_DARK
                 CursorTheme = THEME_CURSOR_BLOOM
-                ButtonLayout = "close,minimize,maximize:"
+                ButtonLayout = "minimize,maximize,close:"
                 UseOverlayScrollbars = true
             }
             write()
@@ -247,12 +254,12 @@ class ThemeManagerLinux(
                 border-top-left-radius: 8px;
                 border: 2px solid ${bgColor.hexRgb};
             	border-top: none;
-                position: relative;
+                /* position: relative; */
                 box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
             }
             
             window:before, window:after {
-                position:absolute;
+                /* position:absolute; */
                 z-index: -1;
                 box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
                 top: 0;

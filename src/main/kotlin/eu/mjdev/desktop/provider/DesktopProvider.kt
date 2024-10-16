@@ -1,13 +1,13 @@
 package eu.mjdev.desktop.provider
 
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import eu.mjdev.desktop.components.controlcenter.pages.*
 import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
+import eu.mjdev.desktop.helpers.application.ApplicationScope
 import eu.mjdev.desktop.helpers.internal.Palette
 import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.managers.apps.AppsManager
@@ -31,17 +31,16 @@ import java.awt.Toolkit
 import java.io.File
 import java.net.URI
 import kotlin.coroutines.CoroutineContext
-import kotlin.system.exitProcess
 
 @Suppress("unused", "MemberVisibilityCanBePrivate", "SameParameterValue", "RedundantSuspendModifier")
 class DesktopProvider(
+    val application: ApplicationScope? = null,
     val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
     val args: List<String> = emptyList(),
     val imageLoader: ImageLoader? = null,
-    val isDebug: Boolean = true,
-    val isFirstStart: Boolean = true, // todo
-    val isInstalled: Boolean = false, // todo
 ) : AutoCloseable {
+    var isFirstStart: Boolean = true // todo
+    var isInstalled: Boolean = false // todo
     val osManager by lazy { osManager(this) }
     val toolkit: Toolkit by lazy { Toolkit.getDefaultToolkit() }
     val kcefHelper by lazy { kcefManager(this) }
@@ -60,6 +59,10 @@ class DesktopProvider(
     //    val windowsManager by lazy { WindowsManager(this) }
     //    val dbus: DBus by lazy { DBus() }
 
+    val appArgs
+        get() = application?.args ?: emptyList()
+    val isDebug: Boolean
+        get() = false // todo
     val homeDir
         get() = currentUser.homeDir
     val allUsers
@@ -129,7 +132,9 @@ class DesktopProvider(
 //    }
 
     override fun close() {
-        processManager.close()
+        println("Cleaning up resources.")
+        processManager.dispose()
+        palette.dispose()
 //        runCatching {
 //            mounts.dispose()
 //        }
@@ -140,6 +145,8 @@ class DesktopProvider(
 //            windowsManager.dispose()
 //        }
     }
+
+    fun dispose() = close()
 
     fun runAsync(
         context: CoroutineContext = Dispatchers.IO,
@@ -215,8 +222,8 @@ class DesktopProvider(
         Shell.executeAndRead("/usr/bin/loginctl", "lock-sessions")
     }
 
-    suspend fun logOut() {
-        exitProcess(0)
+    suspend fun logOut() = runAsync {
+        application?.exitApplication()
     }
 
     suspend fun suspend() {
@@ -254,23 +261,28 @@ class DesktopProvider(
         )
 
         val LocalDesktop = staticCompositionLocalOf {
-            println("default empty desktop provider created")
+            println("Default empty desktop provider created.")
             DesktopProvider()
         }
 
+        const val APP_PARAM_DEBUG = "--debug"
+
+        // todo application
         @Composable
         fun rememberDesktopProvider(
+            application: ApplicationScope?,
             scope: CoroutineScope = rememberCoroutineScope(),
             imageLoader: ImageLoader = asyncImageLoader(),
-            isDebug: Boolean = LocalInspectionMode.current,
+//            isDebug: Boolean = LocalInspectionMode.current,
             args: List<String> = emptyList(),
         ) = remember {
             println("default initialized desktop provider created")
             DesktopProvider(
+                application = application,
                 scope = scope,
                 imageLoader = imageLoader,
                 args = args,
-                isDebug = isDebug || args.contains("-d")
+//                isDebug = isDebug || args.contains(APP_PARAM_DEBUG)
             )
         }
     }

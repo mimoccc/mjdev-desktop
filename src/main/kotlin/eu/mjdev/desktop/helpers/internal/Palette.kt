@@ -88,6 +88,11 @@ class Palette(
         createFromPalette()
     }
 
-    fun createFromPalette() =
-        api.themeManager.createFromPalette()
+    fun dispose() {
+        clearSystemTheme()
+    }
+
+    fun createFromPalette() = api.themeManager.createFromPalette()
+
+    fun clearSystemTheme() = api.themeManager.clearSystemTheme()
 }

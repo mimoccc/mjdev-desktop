@@ -11,7 +11,7 @@ package eu.mjdev.desktop.helpers.application.l10n
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.PlatformLocalization
 
-fun translationFor(localeTag: String) = when(localeTag) {
+fun translationFor(localeTag: String) = when (localeTag) {
     "" -> Translations.en()
     "en_AU" -> Translations.enAU()
     "en_CA" -> Translations.enCA()
@@ -20,6 +20,7 @@ fun translationFor(localeTag: String) = when(localeTag) {
     else -> null
 }
 
+// todo i18n
 @Composable
 fun defaultPlatformLocalization(): PlatformLocalization {
     val copy = getString(Strings.Copy)

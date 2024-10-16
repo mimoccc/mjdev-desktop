@@ -78,6 +78,8 @@ class ProcessManager(
         job?.cancel()
     }
 
+    fun dispose() = close()
+
     // todo : something raises error
     fun hasAppProcess(app: App?): Boolean = runCatching {
         val appCmd = app?.cmd

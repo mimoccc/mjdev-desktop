@@ -8,7 +8,10 @@
 
 package eu.mjdev.desktop.helpers.application
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Composition
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Recomposer
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.configureSwingGlobalsForCompose
 import androidx.compose.ui.platform.LocalDensity
@@ -42,6 +45,7 @@ fun application(
         }
     }
     if (exitProcessOnExit) {
+        println("Exiting application.")
         exitProcess(0)
     }
 }
@@ -76,7 +80,10 @@ suspend fun awaitApplication(
                                 LocalDensity provides GlobalDensity,
                                 LocalLayoutDirection provides GlobalLayoutDirection,
                                 LocalLocalization providesDefault defaultPlatformLocalization(),
-                                LocalDesktop provides rememberDesktopProvider()
+                                LocalDesktop provides rememberDesktopProvider(
+                                    application = applicationScope,
+                                    args = args
+                                )
                             ) {
                                 applicationScope.content()
                             }

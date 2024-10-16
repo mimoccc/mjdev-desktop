@@ -14,6 +14,7 @@ import eu.mjdev.desktop.components.info.InfoWindow
 import eu.mjdev.desktop.components.installer.Installer
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.preview
+import eu.mjdev.desktop.helpers.system.Shell
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 import eu.mjdev.desktop.windows.DesktopWindow
@@ -71,8 +72,20 @@ fun MainWindow() = withDesktopScope {
         )
     }
     DisposableEffect(Unit) {
+        println("App started with args: $appArgs")
+        println("First start : $isFirstStart")
+        println("Debug mode : $isDebug")
+        Shell {
+            if (!isDebug) {
+                println("Starting autostart apps")
+                autoStartApps()
+            } else {
+                println("Starting autostart apps omitted in debug mode.")
+            }
+        }
         onDispose {
-            api.close()
+            dispose()
+            println("App ended.")
         }
     }
 }

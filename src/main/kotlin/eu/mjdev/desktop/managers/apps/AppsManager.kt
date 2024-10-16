@@ -115,7 +115,8 @@ class AppsManager(
         (allAppsDesktopFilesLocal +
                 allAppsDesktopFilesShared +
                 allAppsDesktopFilesFlatPack +
-                allAppsDesktopFilesSnap).distinctBy { it.file.name }
+                allAppsDesktopFilesSnap
+                ).distinctBy { it.file.name }
     }
 
     val currentLocale: Locale

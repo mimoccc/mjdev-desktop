@@ -9,7 +9,10 @@
 package eu.mjdev.desktop.helpers.application
 
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.mutableStateOf
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.helpers.application.block.SCOPED_BLOCK
 import eu.mjdev.desktop.helpers.application.block.invokeAllOnce
@@ -32,8 +35,6 @@ open class ApplicationScope(
         set(value) {
             isOpenState.value = value
         }
-
-    val isDebug get() = args.contains("--debug")
 
     fun dispatchStart() = CoroutineScope(Dispatchers.IO).launch {
         sessionStartHandlers.invokeAllOnce(this@ApplicationScope)

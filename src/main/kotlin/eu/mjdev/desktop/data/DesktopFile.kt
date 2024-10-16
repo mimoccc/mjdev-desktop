@@ -12,7 +12,7 @@ import java.io.File
 @Suppress("unused", "MemberVisibilityCanBePrivate", "ConstPropertyName", "PropertyName")
 class DesktopFile(
     var file: File = File(""),
-    val correctDir: File = File("/tmp/.corrected-desktop-files/"),
+    val correctDir: File = File("/var/tmp/mjdev-desktop/corrected-desktop-files/"),
     val correctedFile: File = File(correctDir, file.name),
     var fileData: String = (if (correctedFile.exists()) correctedFile else file).text,
     private var content: DesktopFileParser = (runCatching {
@@ -47,6 +47,7 @@ class DesktopFile(
         get() = correctedFile.exists()
 
     init {
+        correctDir.mkdirs()
         if (isApp && !isCorrect) {
             runCatching {
                 correctedFile.let { f ->
@@ -103,13 +104,18 @@ class DesktopFile(
     }
 
     fun writeTo(f: File) {
+        println("Writing: file:///${f.absolutePath}")
         if (!f.parentFile.exists()) {
             f.parentFile.mkdirs()
         }
         if (f.exists()) {
             f.delete()
         }
-        f.createNewFile()
+        if (f.parentFile.exists()) {
+            f.createNewFile()
+        } else {
+            println("Cant store file: ${f.absolutePath}")
+        }
         content.store(f)
     }
 

@@ -17,9 +17,6 @@ import coil3.compose.AsyncImage
 import eu.mjdev.desktop.components.video.VideoView
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
 import eu.mjdev.desktop.extensions.Compose.preview
-import eu.mjdev.desktop.extensions.Custom.flowBlock
-import eu.mjdev.desktop.helpers.internal.ImagesProvider
-import eu.mjdev.desktop.helpers.internal.ImagesProvider.Companion.getOne
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import org.jetbrains.skia.Bitmap
 import java.io.File
@@ -40,17 +37,14 @@ fun ImageAny(
     onLoading: () -> Unit = {},
     onFail: (error: Throwable) -> Unit = {}
 ) = withDesktopScope {
-    val image = flowBlock(null) {
-        (src as? ImagesProvider).let { provider -> provider?.getOne() ?: src }
-    }
     // todo from mime
-    val isGif = image.value.toString().trim().endsWith(".gif")
+    val isGif = src.toString().trim().endsWith(".gif")
     // todo from mime
-    val isVideo = image.value.toString().trim().let {
+    val isVideo = src.toString().trim().let {
         it.endsWith(".mp4") || it.endsWith(".mpg")
     }
     when {
-        image.value == null -> ComposeImage(
+        src == null -> ComposeImage(
             modifier = modifier,
             imageVector = Icons.Default.BrokenImage,
             alignment = alignment,
@@ -60,13 +54,13 @@ fun ImageAny(
             contentScale = contentScale
         )
 
-        image.value is Color -> Box(
-            modifier = modifier.background(image.value as Color)
+        src is Color -> Box(
+            modifier = modifier.background(src)
         )
 
-        image.value is Painter -> ComposeImage(
+        src is Painter -> ComposeImage(
             modifier = modifier,
-            painter = image.value as Painter,
+            painter = src,
             alignment = alignment,
             alpha = alpha,
             contentDescription = contentDescription,
@@ -74,9 +68,9 @@ fun ImageAny(
             contentScale = contentScale
         )
 
-        image.value is Bitmap -> ComposeImage(
+        src is Bitmap -> ComposeImage(
             modifier = modifier,
-            bitmap = (image.value as Bitmap).asComposeImageBitmap(),
+            bitmap = src.asComposeImageBitmap(),
             alignment = alignment,
             alpha = alpha,
             contentDescription = contentDescription,
@@ -84,9 +78,9 @@ fun ImageAny(
             contentScale = contentScale
         )
 
-        image.value is ImageBitmap -> ComposeImage(
+        src is ImageBitmap -> ComposeImage(
             modifier = modifier,
-            bitmap = image.value as ImageBitmap,
+            bitmap = src,
             alignment = alignment,
             alpha = alpha,
             contentDescription = contentDescription,
@@ -94,9 +88,9 @@ fun ImageAny(
             contentScale = contentScale
         )
 
-        image.value is ImageVector -> ComposeImage(
+        src is ImageVector -> ComposeImage(
             modifier = modifier,
-            imageVector = image.value as ImageVector,
+            imageVector = src,
             alignment = alignment,
             alpha = alpha,
             contentDescription = contentDescription,
@@ -107,16 +101,16 @@ fun ImageAny(
         isGif -> GifView(
             modifier = modifier,
             src = when {
-                image.value is File -> (image.value as File).absolutePath
-                else -> image.value.toString()
+                src is File -> src.absolutePath
+                else -> src.toString()
             }
         )
 
         isVideo -> VideoView(
             modifier = modifier,
             src = when {
-                image.value is File -> (image.value as File).absolutePath
-                else -> image.value.toString()
+                src is File -> src.absolutePath
+                else -> src.toString()
             },
             alignment = alignment,
             alpha = alpha,
@@ -127,7 +121,7 @@ fun ImageAny(
 
         else -> AsyncImage(
             modifier = modifier,
-            model = image.value,
+            model = src,
             contentDescription = contentDescription,
             contentScale = contentScale,
             filterQuality = filterQuality,

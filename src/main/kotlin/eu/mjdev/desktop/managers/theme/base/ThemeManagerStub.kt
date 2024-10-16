@@ -17,4 +17,8 @@ open class ThemeManagerStub(
     open fun createFromPalette() {
         // no op
     }
+
+    open fun clearSystemTheme() {
+        // no op
+    }
 }
