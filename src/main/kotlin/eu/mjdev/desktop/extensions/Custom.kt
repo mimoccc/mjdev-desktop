@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import me.xdrop.fuzzywuzzy.FuzzySearch
 import org.jetbrains.skia.FilterBlurMode.NORMAL
 import org.jetbrains.skia.MaskFilter.Companion.makeBlur
 import java.io.BufferedReader
@@ -243,6 +244,17 @@ object Custom {
         blurRadius: Float
     ) {
         maskFilter = makeBlur(NORMAL, blurRadius / 2, true)
+    }
+
+    fun <E> List<E>.sortByRelevance(
+        value: String,
+        block: E.() -> String = { toString() }
+    ): List<E> = map { e ->
+        Pair(FuzzySearch.ratio(block(e), value), e)
+    }.sortedByDescending { p ->
+        p.first
+    }.map { p ->
+        p.second
     }
 
     val dateFlow

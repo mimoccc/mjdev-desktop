@@ -37,6 +37,7 @@ import eu.mjdev.desktop.extensions.Compose.rememberComputed
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Compose.removeLast
 import eu.mjdev.desktop.extensions.Custom.flowBlock
+import eu.mjdev.desktop.extensions.Custom.sortByRelevance
 import eu.mjdev.desktop.extensions.Custom.trimIsNotEmpty
 import eu.mjdev.desktop.extensions.Modifier.dropShadow
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
@@ -74,10 +75,10 @@ fun AppsMenu(
     val appCategories by flowBlock(emptyList()) { appCategories }
     val items by rememberComputed(searchTextState.value, category) {
         when {
-            // todo fuzzy sort
+            // todo fuzzy sort, simlify
             searchTextState.trimIsNotEmpty() -> allApps.filter { app ->
                 app.desktopData.contains(searchTextState.value, ignoreCase = true)
-            }
+            }.sortByRelevance(searchTextState.value) { name }
 
             category.isNotEmpty() -> allApps.filter { app ->
                 app.categories.contains(category)
