@@ -18,9 +18,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.components.appbar.AppBar
-import eu.mjdev.desktop.components.controlcenter.pages.MainSettingsPage
+import eu.mjdev.desktop.components.controlcenter.pages.WifiSettingsPage
 import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.components.text.TextAny
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
 import eu.mjdev.desktop.extensions.Modifier.clipCircle
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
@@ -28,7 +29,7 @@ import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 @Composable
 fun PageHeader(
     modifier: Modifier = Modifier,
-    page: ControlCenterPage = MainSettingsPage(),
+    page: ControlCenterPage,
     contentPadding: PaddingValues = PaddingValues(8.dp),
     iconSize: Dp = 64.dp,
     actions: @Composable RowScope.() -> Unit = {},
@@ -68,4 +69,8 @@ fun PageHeader(
 
 @Preview
 @Composable
-fun PageHeaderPreview() = PageHeader()
+fun PageHeaderPreview() = preview {
+    PageHeader(
+        page = WifiSettingsPage()
+    )
+}

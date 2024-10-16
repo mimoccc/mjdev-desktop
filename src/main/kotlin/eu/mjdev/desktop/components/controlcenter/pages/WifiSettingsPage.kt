@@ -21,7 +21,7 @@ import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import eu.mjdev.desktop.components.icon.WifiLevelIcon
 import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.data.WifiInfo
-import eu.mjdev.desktop.extensions.ColorUtils.alpha
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Custom.flowBlock
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
@@ -107,4 +107,6 @@ fun WifiRow(
 
 @Preview
 @Composable
-fun WifiSettingsPagePreview() = WifiSettingsPage().render()
+fun WifiSettingsPagePreview() = preview {
+    WifiSettingsPage().render()
+}

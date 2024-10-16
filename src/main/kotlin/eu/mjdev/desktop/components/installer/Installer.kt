@@ -16,6 +16,7 @@ import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.background.BackgroundImage
 import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 
@@ -57,4 +58,6 @@ fun Installer(
 
 @Preview
 @Composable
-fun InfoWindowPreview() = Installer()
+fun InfoWindowPreview() = preview {
+    Installer()
+}

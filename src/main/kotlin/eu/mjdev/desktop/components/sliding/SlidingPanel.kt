@@ -14,6 +14,7 @@ import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.onMouseEnter
 import eu.mjdev.desktop.extensions.Compose.onMouseLeave
+import eu.mjdev.desktop.extensions.Compose.preview
 
 // todo remove, move to chrome window
 @Suppress("FunctionName")
@@ -53,4 +54,6 @@ fun SlidingPanel(
 
 @Preview
 @Composable
-fun SlidingMenuPreview() = SlidingPanel()
+fun SlidingMenuPreview() = preview {
+    SlidingPanel()
+}

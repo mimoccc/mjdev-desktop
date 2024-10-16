@@ -21,16 +21,19 @@ import eu.mjdev.desktop.components.card.PhotoCard
 import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.components.immersivelist.ImmersiveList
 import eu.mjdev.desktop.components.immersivelist.base.ImmersiveInnerList
+import eu.mjdev.desktop.data.App
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberDerivedState
 import eu.mjdev.desktop.extensions.Compose.rememberFocusRequester
 import eu.mjdev.desktop.helpers.bitmap.Bitmap
 import kotlinx.coroutines.delay
 import java.io.File
 
+// todo
 @Composable
 fun Gallery(
     modifier: Modifier = Modifier,
-    list: List<Any?> = listOf(Unit),
+    list: List<Any?> = listOf(),
     index: Int = 0,
     delayedHide: Long = 5000,
     controlsState: MutableState<Boolean> = remember { mutableStateOf(true) },
@@ -56,18 +59,18 @@ fun Gallery(
     ) -> Unit = { _, _, _ -> },
 ) {
     val initialized = remember(list, index) { mutableStateOf(false) }
-//    val nextItem: () -> Unit = {
-//        if (currentItemIndex.intValue < (list.size - 1)) {
-//            currentItemIndex.intValue += 1
-//        }
-//        controlsState.value = true
-//    }
-//    val prevItem: () -> Unit = {
-//        if (currentItemIndex.intValue > 0) {
-//            currentItemIndex.intValue -= 1
-//        }
-//        controlsState.value = true
-//    }
+    val nextItem: () -> Unit = {
+        if (currentItemIndex.intValue < (list.size - 1)) {
+            currentItemIndex.intValue += 1
+        }
+        controlsState.value = true
+    }
+    val prevItem: () -> Unit = {
+        if (currentItemIndex.intValue > 0) {
+            currentItemIndex.intValue -= 1
+        }
+        controlsState.value = true
+    }
     val itemState = rememberDerivedState(0, currentItemIndex.intValue) {
         list[currentItemIndex.intValue]
     }
@@ -196,4 +199,8 @@ val contentScaleSaver = Saver<MutableState<ContentScale>, String>(
 
 @Preview
 @Composable
-fun GalleryPreview() = Gallery()
+fun GalleryPreview() = preview {
+    Gallery(
+        list = listOf(App.Test, App.Test, App.Test),
+    )
+}

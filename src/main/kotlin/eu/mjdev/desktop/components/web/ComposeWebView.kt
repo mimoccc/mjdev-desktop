@@ -21,6 +21,7 @@ import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.WebViewState
 import eu.mjdev.desktop.components.draggable.DraggableView
 import eu.mjdev.desktop.extensions.Compose.DarkBlue
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 // todo improve
@@ -97,6 +98,9 @@ fun ComposeWebView(
     }
 }
 
+// todo
 @Preview
 @Composable
-fun ComposeWebViewPreview() = ComposeWebView()
+fun ComposeWebViewPreview() = preview {
+    ComposeWebView()
+}

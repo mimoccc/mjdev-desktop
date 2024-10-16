@@ -20,7 +20,9 @@ import eu.mjdev.desktop.components.custom.PowerBlock
 import eu.mjdev.desktop.components.user.UserAvatar
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.ColorUtils.darker
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.runAsync
+import eu.mjdev.desktop.helpers.compose.Orientation
 import eu.mjdev.desktop.helpers.shape.BarShape
 
 @Suppress("FunctionName")
@@ -73,10 +75,10 @@ fun MainSettingsPage() = ControlCenterPage(
                     avatarSize = 96.dp,
                     titleTextSize = 20.sp,
                     detailTextSize = 16.sp,
-                    titleHorizontalAlignment = Alignment.CenterHorizontally,
                     onUserAvatarClick = {
                         // todo
-                    }
+                    },
+                    orientation = Orientation.Horizontal
                 )
             }
             Divider(
@@ -126,7 +128,6 @@ fun MainSettingsPage() = ControlCenterPage(
                     .align(Alignment.BottomCenter)
             ) {
                 PowerBlock(
-                    backgroundColor = backgroundColor,
                     shadowColor = borderColor.alpha(0.3f),
                     onPowerButtonClick = {
                         // todo : dialog
@@ -142,4 +143,6 @@ fun MainSettingsPage() = ControlCenterPage(
 
 @Preview
 @Composable
-fun MainSettingsPagePreview() = MainSettingsPage().render()
+fun MainSettingsPagePreview() = preview {
+    MainSettingsPage().render()
+}

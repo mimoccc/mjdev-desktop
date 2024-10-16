@@ -29,10 +29,14 @@ import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
 import eu.mjdev.desktop.extensions.Modifier.clipCircle
+import eu.mjdev.desktop.extensions.Modifier.conditional
+import eu.mjdev.desktop.helpers.compose.Orientation
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
+// todo move back orientation for greeter
 @Suppress("FunctionName")
 @Composable
 fun UserAvatar(
@@ -40,36 +44,46 @@ fun UserAvatar(
     avatarSize: Dp = 64.dp,
     titleTextSize: TextUnit = 16.sp,
     detailTextSize: TextUnit = 14.sp,
+    cicleBorder: Dp = 4.dp,
     iconVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     titleVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     actionsVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    titleHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
     iconPadding: PaddingValues = PaddingValues(),
     titlePadding: PaddingValues = PaddingValues(),
     actionsPadding: PaddingValues = PaddingValues(),
+    orientation: Orientation = Orientation.Horizontal,
+    textAlign: TextAlign = TextAlign.Start,
     onUserAvatarClick: () -> Unit = {},
-    actions: @Composable RowScope.() -> Unit = {},
+    actions: @Composable() (RowScope.() -> Unit) = {},
 ) = withDesktopScope {
     val content: @Composable () -> Unit = {
         AppBar(
             iconVerticalAlignment = iconVerticalAlignment,
             titleVerticalAlignment = titleVerticalAlignment,
             actionsVerticalAlignment = actionsVerticalAlignment,
+            titleHorizontalArrangement = if (orientation == Orientation.Horizontal) Arrangement.Start
+            else Arrangement.Center,
+            iconHorizontalArrangement = if (orientation == Orientation.Horizontal) Arrangement.Start
+            else Arrangement.Center,
+            actionsHorizontalArrangement = if (orientation == Orientation.Horizontal) Arrangement.Start
+            else Arrangement.Center,
+            orientation = orientation,
             contentAlignment = Alignment.Bottom,
             iconPadding = iconPadding,
             titlePadding = titlePadding,
             actionsPadding = actionsPadding,
+            fillCenter = orientation == Orientation.Horizontal,
             icon = {
                 TransparentButton(
                     modifier = Modifier
-                        .size(avatarSize)
+                        .size(avatarSize + cicleBorder)
                         .clipCircle(),
                     onClick = onUserAvatarClick,
                 ) {
                     ImageAny(
                         modifier = Modifier
                             .size(avatarSize)
-                            .circleBorder(2.dp, textColor.alpha(0.5f)),
+                            .circleBorder(cicleBorder, textColor.alpha(0.5f)),
                         src = api.currentUser.picture,
                         colorFilter = if (api.currentUser.picture is ImageVector) ColorFilter.tint(iconsTintColor)
                         else null,
@@ -80,22 +94,28 @@ fun UserAvatar(
             title = {
                 Column(
                     modifier = Modifier.padding(start = 8.dp)
-                        .fillMaxWidth()
+                        .conditional(orientation == Orientation.Horizontal) {
+                            fillMaxWidth()
+                        }
+                        .conditional(orientation == Orientation.Vertical) {
+                            wrapContentSize()
+                        }
                         .padding(top = 8.dp),
                     verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = titleHorizontalAlignment
                 ) {
                     TextAny(
+                        modifier = Modifier.fillMaxWidth(),
                         text = api.currentUser.userName,
                         color = textColor,
-                        textAlign = TextAlign.Start,
+                        textAlign = textAlign,
                         fontWeight = FontWeight.Bold,
                         fontSize = titleTextSize
                     )
                     TextAny(
+                        modifier = Modifier.fillMaxWidth(),
                         text = api.machineName,
                         color = textColor,
-                        textAlign = TextAlign.Start,
+                        textAlign = textAlign,
                         fontWeight = FontWeight.Medium,
                         fontSize = detailTextSize
                     )
@@ -109,34 +129,45 @@ fun UserAvatar(
             .wrapContentWidth()
             .padding(16.dp)
     ) {
-//        when (orientation) {
-//            Orientation.Vertical -> Column(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .align(Alignment.Center),
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//                content = { content(orientation) }
-//            )
+        when (orientation) {
+            Orientation.Vertical -> Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                content = { content() }
+            )
 
-//            Orientation.Horizontal ->
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.TopCenter),
-            horizontalArrangement = Arrangement.Start,
-            content = { content() }
-        )
+            Orientation.Horizontal -> Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center),
+                horizontalArrangement = Arrangement.Center,
+                content = { content() }
+            )
+        }
     }
 }
-//}
 
 @Preview
 @Composable
-fun UserAvatarPreview() {
-    Column {
-        UserAvatar(
-            modifier = Modifier.fillMaxWidth()
-                .background(Color.SuperDarkGray),
-        )
-    }
+fun UserAvatarHorizontalFillPreview() = preview {
+    UserAvatar(
+        modifier = Modifier.fillMaxWidth()
+            .wrapContentHeight()
+            .background(Color.SuperDarkGray),
+        orientation = Orientation.Horizontal,
+    )
+}
+
+@Preview
+@Composable
+fun UserAvatarVerticalPreview() = preview {
+    UserAvatar(
+        modifier = Modifier.fillMaxWidth()
+            .wrapContentHeight()
+            .background(Color.SuperDarkGray),
+        orientation = Orientation.Vertical,
+        textAlign = TextAlign.Center,
+    )
 }

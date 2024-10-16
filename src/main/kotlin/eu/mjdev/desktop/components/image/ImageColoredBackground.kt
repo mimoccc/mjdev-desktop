@@ -22,6 +22,7 @@ import eu.mjdev.desktop.extensions.BitmapUtils.cut
 import eu.mjdev.desktop.extensions.BitmapUtils.topMostColor
 import eu.mjdev.desktop.extensions.ColorUtils.nonAlphaValue
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Image.loadPicture
 import eu.mjdev.desktop.extensions.Modifier.conditional
 
@@ -74,6 +75,9 @@ fun ImageColoredBackground(
     }
 }
 
+// todo
 @Preview
 @Composable
-fun ImageColoredBackgroundPreview() = ImageColoredBackground()
+fun ImageColoredBackgroundPreview() = preview {
+    ImageColoredBackground()
+}

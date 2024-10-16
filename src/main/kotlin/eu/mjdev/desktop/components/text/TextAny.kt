@@ -1,6 +1,8 @@
 package eu.mjdev.desktop.components.text
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -15,6 +17,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.data.App
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.textFrom
 
 // todo weight does not work when selectable enabled
@@ -75,4 +80,9 @@ fun TextAny(
 
 @Preview
 @Composable
-fun TextAnyPreview() = TextAny()
+fun TextAnyPreview() = preview {
+    TextAny(
+        modifier = Modifier.height(48.dp).background(Color.White),
+        text = App.Test
+    )
+}

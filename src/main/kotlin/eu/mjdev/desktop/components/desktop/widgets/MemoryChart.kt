@@ -10,6 +10,7 @@ import com.aay.compose.baseComponents.model.LegendPosition
 import com.aay.compose.donutChart.model.PieChartData
 import eu.mjdev.desktop.components.charts.DonutChart
 import eu.mjdev.desktop.components.draggable.DraggableView
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.helpers.system.MemInfo
 import eu.mjdev.desktop.helpers.system.MemInfo.Companion.toReadable
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
@@ -60,4 +61,6 @@ fun MemoryChart(
 
 @Preview
 @Composable
-fun MemoryChartPreview() = MemoryChart()
+fun MemoryChartPreview() = preview {
+    MemoryChart()
+}

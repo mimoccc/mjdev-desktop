@@ -10,12 +10,14 @@ package eu.mjdev.desktop.components.progress
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun DashedProgressIndicator(
@@ -48,4 +50,8 @@ fun DashedProgressIndicator(
 
 @Preview
 @Composable
-fun DashedProgressIndicatorPreview() = DashedProgressIndicator()
+fun DashedProgressIndicatorPreview() = preview {
+    DashedProgressIndicator(
+        modifier = Modifier.fillMaxWidth()
+    )
+}

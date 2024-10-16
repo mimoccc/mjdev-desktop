@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.SettingsEthernet
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPage
+import eu.mjdev.desktop.extensions.Compose.preview
 
 @Suppress("FunctionName")
 fun EthSettingsPage() = ControlCenterPage(
@@ -22,4 +23,6 @@ fun EthSettingsPage() = ControlCenterPage(
 
 @Preview
 @Composable
-fun EthSettingsPagePreview() =  EthSettingsPage().render()
+fun EthSettingsPagePreview() = preview {
+    EthSettingsPage().render()
+}

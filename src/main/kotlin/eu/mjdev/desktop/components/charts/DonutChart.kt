@@ -10,6 +10,7 @@ import androidx.compose.ui.text.TextStyle
 import com.aay.compose.baseComponents.model.LegendPosition
 import com.aay.compose.donutChart.DonutChart
 import com.aay.compose.donutChart.model.PieChartData
+import eu.mjdev.desktop.extensions.Compose.preview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
@@ -64,13 +65,22 @@ fun DonutChart(
     }
 }
 
+// todo
 @Preview
 @Composable
-fun DonutChartPreview() = DonutChart(
-    dataHandler = {
-        listOf(
-            PieChartData(0.4, Color.Blue, "test1"),
-            PieChartData(0.4, Color.Gray, "test1")
-        )
-    }
-)
+fun DonutChartPreview() = preview(480) {
+    DonutChart(
+        textColor = Color.White,
+        outerCircularColor = Color.White,
+        innerCircularColor = Color.White,
+        ratioLineColor = Color.White,
+        title = "Donut Chart",
+        legendPosition = LegendPosition.BOTTOM,
+        dataHandler = {
+            listOf(
+                PieChartData(24.0, Color.Blue, "test1"),
+                PieChartData(32.0, Color.Gray, "test2")
+            )
+        }
+    )
+}

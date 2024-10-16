@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import eu.mjdev.desktop.components.immersivelist.base.ImmersiveListBackgroundScope
 import eu.mjdev.desktop.components.immersivelist.base.ImmersiveListScope
 import eu.mjdev.desktop.extensions.Compose.bringIntoViewIfChildrenAreFocused
+import eu.mjdev.desktop.extensions.Compose.preview
 
 @Suppress("IllegalExperimentalApiUsage")
 @OptIn(ExperimentalComposeUiApi::class)
@@ -50,6 +51,9 @@ fun ImmersiveList(
     }
 }
 
+// todo
 @Preview
 @Composable
-fun ImmersiveListPreview() = ImmersiveList()
+fun ImmersiveListPreview() = preview {
+    ImmersiveList()
+}

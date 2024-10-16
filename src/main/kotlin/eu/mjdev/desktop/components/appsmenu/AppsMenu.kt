@@ -31,6 +31,7 @@ import eu.mjdev.desktop.extensions.Compose.clear
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.extensions.Compose.onMouseEnter
 import eu.mjdev.desktop.extensions.Compose.plus
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberComputed
 import eu.mjdev.desktop.extensions.Compose.rememberState
@@ -40,6 +41,7 @@ import eu.mjdev.desktop.extensions.Custom.trimIsNotEmpty
 import eu.mjdev.desktop.extensions.Modifier.dropShadow
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
+import eu.mjdev.desktop.helpers.compose.Orientation
 import eu.mjdev.desktop.helpers.compose.rememberForeverLazyListState
 import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.globalKeyEventHandler
 import eu.mjdev.desktop.helpers.shape.BarShape
@@ -188,11 +190,12 @@ fun AppsMenu(
                                 )
                         )
                         UserAvatar(
+                            avatarSize = 64.dp,
+                            orientation = Orientation.Horizontal,
                             titleVerticalAlignment = Alignment.Bottom,
                             iconPadding = PaddingValues(bottom = 16.dp),
                             titlePadding = PaddingValues(top = 24.dp, start = 20.dp),
-                            avatarSize = 64.dp,
-                            onUserAvatarClick = onUserAvatarClick
+                            onUserAvatarClick = onUserAvatarClick,
                         )
                     }
                     Divider(
@@ -267,4 +270,6 @@ fun AppsMenu(
 
 @Preview
 @Composable
-fun AppsMenuPreview() = AppsMenu()
+fun AppsMenuPreview() = preview {
+    AppsMenu()
+}

@@ -1,6 +1,7 @@
 package eu.mjdev.desktop.components.text
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.textFrom
 
 @Composable
@@ -36,8 +38,7 @@ fun AutoHideEmptyText(
     minLines: Int = 1,
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current
-) {
-    val textAny = textFrom(text)
+) = textFrom(text).also { textAny ->
     if (textAny.isNotEmpty()) {
         TextAny(
             text = text,
@@ -63,4 +64,18 @@ fun AutoHideEmptyText(
 
 @Preview
 @Composable
-fun AutoHideEmptyTextPreview() = AutoHideEmptyText()
+fun AutoHideEmptyTextPreview() = preview {
+    AutoHideEmptyText(
+        modifier = Modifier.background(Color.White),
+        text = "test"
+    )
+}
+
+@Preview
+@Composable
+fun AutoHideEmptyTextEmptyPreview() = preview {
+    AutoHideEmptyText(
+        modifier = Modifier.background(Color.White),
+        text = ""
+    )
+}

@@ -13,9 +13,16 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.card.base.*
+import eu.mjdev.desktop.components.image.ImageAny
+import eu.mjdev.desktop.components.surface.base.Glow
+import eu.mjdev.desktop.components.text.TextAny
+import eu.mjdev.desktop.extensions.Compose.preview
+import eu.mjdev.desktop.icons.Icons
 
-@Suppress("unused")
+// todo
 @Composable
 fun ClassicCard(
     onClick: () -> Unit = {},
@@ -43,12 +50,48 @@ fun ClassicCard(
     border = border,
     glow = glow
 ) {
-    Column(modifier = Modifier.padding(contentPadding)) {
-        Box(contentAlignment = CardDefaults.ContentImageAlignment, content = image)
-        Column { CardContent(title = title, subtitle = subtitle, description = description) }
+    Column(
+        modifier = Modifier.padding(contentPadding)
+    ) {
+        Box(
+            contentAlignment = CardDefaults.ContentImageAlignment,
+            content = image
+        )
+        Column {
+            CardContent(
+                title = title,
+                subtitle = subtitle,
+                description = description
+            )
+        }
     }
 }
 
 @Preview
 @Composable
-fun ClassicCardPreview() = ClassicCard()
+fun ClassicCardPreview() = preview {
+    ClassicCard(
+        colors = CardDefaults.colors(
+            containerColor = Color.White
+        ),
+        border = CardDefaults.border(2.dp),
+        glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
+        contentPadding = PaddingValues(8.dp),
+        scale = CardDefaults.scale(1f),
+        image = {
+            ImageAny(
+                src = Icons.User,
+                contentDescription = ""
+            )
+        },
+        title = {
+            TextAny("title")
+        },
+        subtitle = {
+            TextAny("subtitle")
+        },
+        description = {
+            TextAny("description")
+        }
+    )
+}

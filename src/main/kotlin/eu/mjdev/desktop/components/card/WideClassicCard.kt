@@ -13,7 +13,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.card.base.*
+import eu.mjdev.desktop.components.image.ImageAny
+import eu.mjdev.desktop.components.surface.base.Glow
+import eu.mjdev.desktop.components.text.TextAny
+import eu.mjdev.desktop.extensions.Compose.preview
+import eu.mjdev.desktop.icons.Icons
 
 @Suppress("unused")
 @Composable
@@ -32,25 +39,48 @@ fun WideClassicCard(
     glow: CardGlow = CardDefaults.glow(),
     contentPadding: PaddingValues = PaddingValues(),
     interactionSource: MutableInteractionSource? = null
+) = Card(
+    onClick = onClick,
+    onLongClick = onLongClick,
+    modifier = modifier,
+    interactionSource = interactionSource,
+    shape = shape,
+    colors = colors,
+    scale = scale,
+    border = border,
+    glow = glow
 ) {
-    Card(
-        onClick = onClick,
-        onLongClick = onLongClick,
-        modifier = modifier,
-        interactionSource = interactionSource,
-        shape = shape,
-        colors = colors,
-        scale = scale,
-        border = border,
-        glow = glow
-    ) {
-        Row(modifier = Modifier.padding(contentPadding)) {
-            Box(contentAlignment = CardDefaults.ContentImageAlignment, content = image)
-            Column { CardContent(title = title, subtitle = subtitle, description = description) }
-        }
+    Row(modifier = Modifier.padding(contentPadding)) {
+        Box(contentAlignment = CardDefaults.ContentImageAlignment, content = image)
+        Column { CardContent(title = title, subtitle = subtitle, description = description) }
     }
 }
 
 @Preview
 @Composable
-fun WideClassicCardPreview() = WideClassicCard()
+fun WideClassicCardPreview() = preview {
+    WideClassicCard(
+        colors = CardDefaults.colors(
+            containerColor = Color.White
+        ),
+        border = CardDefaults.border(),
+        glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
+        contentPadding = PaddingValues(8.dp),
+        scale = CardDefaults.scale(1f),
+        image = {
+            ImageAny(
+                src = Icons.User,
+                contentDescription = ""
+            )
+        },
+        title = {
+            TextAny("title")
+        },
+        subtitle = {
+            TextAny("subtitle")
+        },
+        description = {
+            TextAny("description")
+        }
+    )
+}

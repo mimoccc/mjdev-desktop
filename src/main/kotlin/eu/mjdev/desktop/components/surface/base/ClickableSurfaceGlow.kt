@@ -11,11 +11,10 @@ package eu.mjdev.desktop.components.surface.base
 import androidx.compose.runtime.Immutable
 
 @Immutable
-class ClickableSurfaceGlow
-internal constructor(
-    internal val glow: Glow,
-    internal val focusedGlow: Glow,
-    internal val pressedGlow: Glow
+class ClickableSurfaceGlow(
+    val glow: Glow,
+    val focusedGlow: Glow,
+    val pressedGlow: Glow
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

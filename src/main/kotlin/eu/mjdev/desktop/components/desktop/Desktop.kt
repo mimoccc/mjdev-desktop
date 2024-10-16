@@ -12,6 +12,7 @@ import eu.mjdev.desktop.components.desktop.widgets.MemoryChart
 import eu.mjdev.desktop.components.file.FolderView
 import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
@@ -56,4 +57,6 @@ fun Desktop(
 
 @Preview
 @Composable
-fun DesktopPreview() = Desktop()
+fun DesktopPreview() = preview {
+    Desktop()
+}

@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 // todo
@@ -31,4 +32,6 @@ fun DesktopPanelTray(
 
 @Preview
 @Composable
-fun DesktopPanelTrayPreview() = DesktopPanelTray()
+fun DesktopPanelTrayPreview() = preview {
+    DesktopPanelTray()
+}

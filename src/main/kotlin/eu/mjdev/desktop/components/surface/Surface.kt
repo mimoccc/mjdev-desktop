@@ -18,6 +18,10 @@ import androidx.compose.foundation.interaction.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.material.LocalContentColor
+//import androidx.compose.material3.LocalAbsoluteTonalElevation
+//import androidx.compose.material3.LocalContentColor
+//import androidx.compose.material3.MaterialTheme
+//import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.surface.base.*
 import eu.mjdev.desktop.extensions.Compose.onMouseLongPress
 import eu.mjdev.desktop.extensions.Compose.onMousePress
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Modifier.conditional
 import eu.mjdev.desktop.helpers.compose.surfaceBorder
 import eu.mjdev.desktop.helpers.compose.zIndex
@@ -208,6 +213,9 @@ internal const val EnabledContentAlpha = 1f
 private const val FocusedZIndex = 0.5f
 private const val NonFocusedZIndex = 0f
 
+// todo
 @Preview
 @Composable
-fun SurfacePreview() = Surface()
+fun SurfacePreview() = preview {
+    Surface()
+}

@@ -2,6 +2,7 @@ package eu.mjdev.desktop.components.file
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -21,6 +22,7 @@ import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.data.DesktopFolderItem
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import java.io.File
 import kotlin.math.max
@@ -140,6 +142,11 @@ private fun rememberFiles(
     }
 }
 
+//todo
 @Preview
 @Composable
-fun FolderViewPreview() = FolderView()
+fun FolderViewPreview() = preview {
+    FolderView(
+        modifier = Modifier.fillMaxSize()
+    )
+}

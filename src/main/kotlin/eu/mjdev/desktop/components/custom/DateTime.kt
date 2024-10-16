@@ -12,6 +12,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import eu.mjdev.desktop.extensions.Compose.preview
+import eu.mjdev.desktop.extensions.Compose.size
 
 @Composable
 fun DateTime(
@@ -48,6 +50,11 @@ fun DateTime(
     )
 }
 
+// todo
 @Preview
 @Composable
-fun DateTimePreview() = DateTime()
+fun DateTimePreview() = preview {
+    DateTime(
+        modifier = Modifier.size(320, 200)
+    )
+}

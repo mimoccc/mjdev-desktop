@@ -16,14 +16,17 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.icons.Icons
 
+// todo check colors
 @Suppress("FunctionName")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -31,6 +34,8 @@ fun PasswordTextView(
     modifier: Modifier = Modifier,
     password: MutableState<String> = rememberSaveable { mutableStateOf("") },
     passwordVisible: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) },
+    backgroundColor: Color = Color.White.copy(0.5f),
+    textColor: Color = Color.Black,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable () -> Unit = {},
     shape: Shape = RoundedCornerShape(8.dp),
@@ -66,7 +71,9 @@ fun PasswordTextView(
         label = label,
         singleLine = true,
         shape = shape,
-        colors = colors,
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = backgroundColor,
+        ),
         placeholder = placeholder,
         visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -95,4 +102,8 @@ fun PasswordTextView(
 
 @Preview
 @Composable
-fun PasswordTextViewPreview() = PasswordTextView()
+fun PasswordTextViewPreview() = preview {
+    PasswordTextView(
+        password = mutableStateOf("test")
+    )
+}

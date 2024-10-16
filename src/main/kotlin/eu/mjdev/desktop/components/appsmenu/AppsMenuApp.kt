@@ -15,9 +15,11 @@ import androidx.compose.ui.unit.*
 import eu.mjdev.desktop.components.fonticon.FontIcon
 import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.data.App
+import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.onLeftClick
 import eu.mjdev.desktop.extensions.Compose.onMousePress
 import eu.mjdev.desktop.extensions.Compose.onRightClick
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
 import eu.mjdev.desktop.helpers.shape.DottedShape
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
@@ -93,12 +95,14 @@ fun AppsMenuApp(
 
 @Preview
 @Composable
-fun AppsMenuAppPreview() = AppsMenuApp(
-    modifier = Modifier.padding(8.dp)
-        .background(
-            Color.Gray,
-            RoundedCornerShape(16.dp)
-        )
-        .padding(8.dp),
-    app = App.Test
-)
+fun AppsMenuAppPreview() = preview {
+    AppsMenuApp(
+        modifier = Modifier.padding(8.dp)
+            .background(
+                Color.SuperDarkGray,
+                RoundedCornerShape(16.dp)
+            )
+            .padding(8.dp),
+        app = App.Test
+    )
+}

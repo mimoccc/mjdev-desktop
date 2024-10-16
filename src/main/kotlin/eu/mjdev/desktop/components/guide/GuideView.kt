@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.extensions.Compose.preview
 import kotlin.math.max
 
 @Composable
@@ -57,4 +58,10 @@ fun GuideLines(
 
 @Preview
 @Composable
-fun GuideLinesPreview() = GuideLines(modifier = Modifier.fillMaxSize())
+fun GuideLinesPreview() = preview(320, 320) {
+    GuideLines(
+        modifier = Modifier.fillMaxSize(),
+        cellSize = DpSize(32.dp, 32.dp),
+        color = Color.White
+    )
+}

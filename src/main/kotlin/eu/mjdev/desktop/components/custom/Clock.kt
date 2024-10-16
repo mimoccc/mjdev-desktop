@@ -17,8 +17,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.components.text.TextWithShadow
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Compose.runAsync
+import eu.mjdev.desktop.extensions.Compose.size
 import eu.mjdev.desktop.extensions.Custom.ParsedList
 import eu.mjdev.desktop.extensions.Custom.dateFlow
 import eu.mjdev.desktop.extensions.Custom.timeFlow
@@ -92,6 +94,11 @@ fun Clock(
     }
 }
 
+// todo
 @Preview
 @Composable
-fun ClockPreview() = Clock()
+fun ClockPreview() = preview {
+    Clock(
+        modifier = Modifier.size(320, 200)
+    )
+}

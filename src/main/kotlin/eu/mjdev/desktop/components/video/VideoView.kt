@@ -9,8 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import eu.mjdev.desktop.components.video.base.VideoPlayerFFMpeg
+import eu.mjdev.desktop.extensions.Compose.preview
 import java.io.File
 
+// todo
 @Suppress("UNUSED_PARAMETER", "FunctionName")
 @Preview
 @Composable
@@ -37,6 +39,9 @@ fun VideoView(
     )
 }
 
+// todo
 @Preview
 @Composable
-fun VideoViewPreview() = VideoView()
+fun VideoViewPreview() = preview {
+    VideoView()
+}

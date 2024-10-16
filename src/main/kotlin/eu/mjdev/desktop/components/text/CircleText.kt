@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Modifier.clipCircle
 
 @Suppress("unused", "FunctionName")
@@ -59,4 +60,6 @@ fun CircleText(
 
 @Preview
 @Composable
-fun CircleTextPreview() = CircleText()
+fun CircleTextPreview() = preview {
+    CircleText()
+}

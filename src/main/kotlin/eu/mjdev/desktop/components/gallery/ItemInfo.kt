@@ -16,12 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import eu.mjdev.desktop.components.text.AutoHideEmptyText
+import eu.mjdev.desktop.data.ItemWithDate
+import eu.mjdev.desktop.data.ItemWithTitle
 import eu.mjdev.desktop.extensions.ColorUtils.createVerticalColorBrush
 import eu.mjdev.desktop.extensions.ColorUtils.invert
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.helpers.compose.Gravity
 
 // todo
-@Suppress("UNUSED_PARAMETER")
 @Composable
 fun ItemInfo(
     modifier: Modifier = Modifier,
@@ -30,10 +32,10 @@ fun ItemInfo(
     backgroundColor: Color = Color.Transparent,
 //    metadataRetriever: MetadataRetriever = rememberMetaDataRetriever(),
     titleFromItem: () -> Any? = {
-//        (src as? ItemWithTitle<*>)?.title
+        (src as? ItemWithTitle)?.title
     },
     dateFromItem: () -> Any? = {
-//        (src as? ItemWithDate)?.date ?: "-"
+        (src as? ItemWithDate)?.date?.toString() ?: "-"
     },
     detailsFromItem: () -> Any? = {
 //        metadataRetriever.getInfo(src)
@@ -83,4 +85,6 @@ fun ItemInfo(
 
 @Preview
 @Composable
-fun ItemInfoPreview() = ItemInfo()
+fun ItemInfoPreview() = preview {
+    ItemInfo()
+}

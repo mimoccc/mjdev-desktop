@@ -20,6 +20,7 @@ import eu.mjdev.desktop.extensions.Compose.color
 import eu.mjdev.desktop.extensions.Compose.noElevation
 import eu.mjdev.desktop.extensions.Compose.onMouseEnter
 import eu.mjdev.desktop.extensions.Compose.onMouseLeave
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
@@ -64,6 +65,9 @@ fun DesktopPanelDateTime(
     }
 }
 
+// todo
 @Preview
 @Composable
-fun DesktopPanelDateTimePreview() = DesktopPanelDateTime()
+fun DesktopPanelDateTimePreview() = preview {
+    DesktopPanelDateTime()
+}

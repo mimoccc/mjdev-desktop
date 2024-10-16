@@ -49,7 +49,7 @@ Build on compose kotlin and jvm.
 - import to intellij idea
 - click run or build (or select from run dialog what you want to do)
 
-# USed libraries
+# used libraries
 
 - [Jetbrains Compose Desktop] (https://github.com/JetBrains/compose-multiplatform)
   Main library for to made app

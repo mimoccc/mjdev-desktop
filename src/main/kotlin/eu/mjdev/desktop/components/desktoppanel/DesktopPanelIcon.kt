@@ -23,6 +23,7 @@ import eu.mjdev.desktop.extensions.Compose.onMouseEnter
 import eu.mjdev.desktop.extensions.Compose.onMouseLeave
 import eu.mjdev.desktop.extensions.Compose.onMousePress
 import eu.mjdev.desktop.extensions.Compose.onRightClick
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
@@ -102,4 +103,8 @@ fun DesktopPanelIcon(
 
 @Preview
 @Composable
-fun DesktopPanelIconPreview() = DesktopPanelIcon()
+fun DesktopPanelIconPreview() = preview {
+    DesktopPanelIcon(
+        app = App.Test
+    )
+}

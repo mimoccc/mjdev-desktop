@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Modifier.conditional
 
@@ -85,4 +86,6 @@ fun DraggableView(
 
 @Preview
 @Composable
-fun DraggableViewPreview() = DraggableView()
+fun DraggableViewPreview() = preview {
+    DraggableView()
+}

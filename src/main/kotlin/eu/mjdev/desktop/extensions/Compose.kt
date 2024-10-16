@@ -5,9 +5,10 @@ package eu.mjdev.desktop.extensions
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.relocation.BringIntoViewResponder
 import androidx.compose.foundation.relocation.bringIntoViewResponder
@@ -40,6 +41,8 @@ import coil3.compose.LocalPlatformContext
 import coil3.memory.MemoryCache
 import coil3.request.CachePolicy
 import coil3.svg.SvgDecoder
+import eu.mjdev.desktop.components.guide.GuideLines
+import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.helpers.compose.FocusHelper
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
@@ -48,7 +51,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.reflect.Modifier.isStatic
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KFunction
+import kotlin.reflect.jvm.javaMethod
+import kotlin.reflect.jvm.kotlinFunction
 
 object Compose {
 
@@ -473,6 +480,114 @@ object Compose {
             println("drag ammount : $dragAmount")
             state.dispatchRawDelta(-dragAmount)
         }
+    }
+
+    fun getFunctionFromFile(
+        fileName: String,
+        funcName: String
+    ): KFunction<*>? {
+        val selfRef = ::getFunctionFromFile
+        val currentClass = selfRef.javaMethod?.declaringClass
+        val classDefiningFunctions = currentClass?.classLoader?.loadClass("${fileName}Kt")
+        val javaMethod = classDefiningFunctions?.methods?.find {
+            it.name == funcName && isStatic(it.modifiers)
+        }
+        return javaMethod?.kotlinFunction
+    }
+
+    fun Modifier.size(width: Int, height: Int) = size(width.dp, height.dp)
+
+    fun Modifier.size(value: Int) = size(value.dp, value.dp)
+
+    @Composable
+    fun preview(
+        isDark: Boolean = true,
+        showGuide: Boolean = true,
+        guideStepY: Dp = 8.dp,
+        guideStepX: Dp = 8.dp,
+        guideAlpha: Float = 0.3f,
+        backgroundColor: Color = if (isDark) Color.SuperDarkGray else Color.White,
+        guideLinesColor: Color = if (isDark) Color.White else Color.SuperDarkGray,
+        gravity: Alignment = Alignment.Center,
+        padding: PaddingValues = PaddingValues(16.dp),
+        content: @Composable BoxScope.() -> Unit = {}
+    ) = BoxWithConstraints(
+        modifier = Modifier.fillMaxSize()
+            .background(backgroundColor),
+        contentAlignment = gravity,
+    ) {
+        GuideLines(
+            modifier = Modifier.fillMaxSize(),
+            color = guideLinesColor.alpha(guideAlpha),
+            cellSize = DpSize(guideStepX, guideStepY),
+            visible = showGuide
+        )
+        Box(
+            modifier = Modifier.padding(padding)
+        ) {
+            content()
+        }
+    }
+
+    @Composable
+    fun preview(
+        width: Int,
+        height: Int,
+        isDark: Boolean = true,
+        showGuide: Boolean = true,
+        guideStepY: Dp = 8.dp,
+        guideStepX: Dp = 8.dp,
+        guideAlpha: Float = 0.3f,
+        backgroundColor: Color = if (isDark) Color.SuperDarkGray else Color.White,
+        guideLinesColor: Color = if (isDark) Color.White else Color.SuperDarkGray,
+        gravity: Alignment = Alignment.Center,
+        padding: PaddingValues = PaddingValues(16.dp),
+        content: @Composable BoxScope.() -> Unit = {}
+    ) = preview(
+        isDark = isDark,
+        showGuide = showGuide,
+        guideStepY = guideStepY,
+        guideStepX = guideStepX,
+        guideAlpha = guideAlpha,
+        backgroundColor = backgroundColor,
+        guideLinesColor = guideLinesColor,
+        gravity = gravity,
+        padding = padding
+    ) {
+        Box(
+            modifier = Modifier.size(width, height),
+            content = content
+        )
+    }
+
+    @Composable
+    fun preview(
+        size: Int,
+        isDark: Boolean = true,
+        showGuide: Boolean = true,
+        guideStepY: Dp = 8.dp,
+        guideStepX: Dp = 8.dp,
+        guideAlpha: Float = 0.3f,
+        backgroundColor: Color = if (isDark) Color.SuperDarkGray else Color.White,
+        guideLinesColor: Color = if (isDark) Color.White else Color.SuperDarkGray,
+        gravity: Alignment = Alignment.Center,
+        padding: PaddingValues = PaddingValues(16.dp),
+        content: @Composable BoxScope.() -> Unit = {}
+    ) = preview(
+        isDark = isDark,
+        showGuide = showGuide,
+        guideStepY = guideStepY,
+        guideStepX = guideStepX,
+        guideAlpha = guideAlpha,
+        backgroundColor = backgroundColor,
+        guideLinesColor = guideLinesColor,
+        gravity = gravity,
+        padding = padding
+    ) {
+        Box(
+            modifier = Modifier.size(size, size),
+            content = content
+        )
     }
 
 //    @Composable

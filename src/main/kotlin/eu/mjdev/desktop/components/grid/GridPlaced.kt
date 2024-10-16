@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.Constraints
 import eu.mjdev.desktop.components.grid.base.*
 import eu.mjdev.desktop.components.grid.base.Measure.calculateCellPlaces
 import eu.mjdev.desktop.components.grid.base.Measure.measure
+import eu.mjdev.desktop.extensions.Compose.preview
 import kotlin.math.min
 
 @Composable
@@ -51,4 +52,6 @@ fun GridPlaced(
 
 @Preview
 @Composable
-fun GridPlacedPreview() = GridPlaced()
+fun GridPlacedPreview() = preview {
+    GridPlaced()
+}

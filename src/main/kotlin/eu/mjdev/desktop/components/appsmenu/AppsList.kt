@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.Category
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
+import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.helpers.compose.rememberForeverLazyListState
 import eu.mjdev.desktop.provider.DesktopScope
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
@@ -76,14 +78,9 @@ fun AppsList(
 
 @Preview
 @Composable
-fun AppsListPreview() {
+fun AppsListPreview() = preview(320, 640) {
     AppsList(
-        modifier = Modifier.padding(8.dp)
-            .background(
-                Color.Gray,
-                RoundedCornerShape(16.dp)
-            )
-            .padding(8.dp),
+        modifier = Modifier.background(Color.SuperDarkGray, RoundedCornerShape(16.dp)).padding(8.dp),
         items = listOf(App.Test, App.Test, App.Test)
     )
 }

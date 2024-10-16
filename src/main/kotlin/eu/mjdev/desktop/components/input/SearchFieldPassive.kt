@@ -25,6 +25,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import eu.mjdev.desktop.extensions.ColorUtils.alpha
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.icons.Icons
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -33,6 +35,7 @@ fun SearchFieldPassive(
     modifier: Modifier = Modifier,
     textState: MutableState<String> = mutableStateOf(""),
     textColor: Color = Color.White,
+    backgroundColor: Color = Color.White.alpha(0.2f),
     textStyle: TextStyle = TextStyle.Default,
     textSize: TextUnit = 18.sp,
     onClearClick: () -> Unit = {}
@@ -44,7 +47,7 @@ fun SearchFieldPassive(
     textStyle = textStyle,
     textSize = textSize,
     colors = TextFieldDefaults.outlinedTextFieldColors(
-        backgroundColor = Color.Transparent,
+        backgroundColor = backgroundColor,
         textColor = textColor,
         disabledTextColor = textColor,
         cursorColor = Color.Transparent,
@@ -70,4 +73,8 @@ fun SearchFieldPassive(
 
 @Preview
 @Composable
-fun SearchFieldPassivePreview() = SearchFieldPassive()
+fun SearchFieldPassivePreview() = preview {
+    SearchFieldPassive(
+        textState = mutableStateOf("test")
+    )
+}

@@ -20,16 +20,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.isDebugInspectorInfoEnabled
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.blur.BlurPanel
-import eu.mjdev.desktop.components.controlcenter.base.PageHeader
 import eu.mjdev.desktop.components.sliding.SlidingPanel
 import eu.mjdev.desktop.extensions.Compose.onLeftClick
 import eu.mjdev.desktop.extensions.Compose.onMousePress
 import eu.mjdev.desktop.extensions.Compose.onRightClick
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.extensions.Compose.rememberComputed
 import eu.mjdev.desktop.extensions.Compose.rememberState
@@ -46,7 +47,7 @@ import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindow
 @Composable
 fun ControlCenter(
     pagerState: MutableState<Int> = rememberState(0),
-    controlCenterState: ChromeWindowState = rememberChromeWindowState(),
+    controlCenterState: ChromeWindowState = rememberChromeWindowState(visible = isDebugInspectorInfoEnabled),
     enterAnimation: EnterTransition = ControlCenterEnterAnimation,
     exitAnimation: ExitTransition = ControlCenterExitAnimation,
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
@@ -184,7 +185,6 @@ fun ControlCenter(
                                         modifier = Modifier.width(controlCenterExpandedWidth),
                                     ) {
                                         val page = pagesFiltered.value[pagerState.value]
-                                        PageHeader(page = page)
                                         Box(modifier = Modifier.weight(1f)) {
                                             page.render()
                                         }
@@ -210,6 +210,9 @@ fun ControlCenter(
     }
 }
 
+// todo
 @Preview
 @Composable
-fun ControlCenterPreview() = ControlCenter()
+fun ControlCenterPreview() = preview {
+    ControlCenter()
+}

@@ -26,6 +26,7 @@ import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPageScope.Companion.remember
 import eu.mjdev.desktop.components.input.SelectableOutlineEditText
 import eu.mjdev.desktop.components.text.TextAny
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Compose.scrollWithAnimToLast
 import eu.mjdev.desktop.extensions.Compose.verticalTouchScrollable
@@ -204,4 +205,6 @@ fun TextBlock(
 
 @Preview
 @Composable
-fun AIPagePreview() = AIPage().render()
+fun AIPagePreview() = preview {
+    AIPage().render()
+}

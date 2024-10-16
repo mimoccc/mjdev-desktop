@@ -1,7 +1,7 @@
 package eu.mjdev.desktop.components.controlcenter.base
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -26,9 +26,10 @@ class ControlCenterPage(
     fun render() = withControlCenterPageScope(
         cache = cache
     ) {
-        Row(
+        Column(
             modifier = Modifier.fillMaxSize()
         ) {
+            PageHeader(page = this@ControlCenterPage)
             Box(
                 modifier = Modifier.weight(1f),
             ) {

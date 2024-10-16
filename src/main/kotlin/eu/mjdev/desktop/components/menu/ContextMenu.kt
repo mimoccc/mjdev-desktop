@@ -6,13 +6,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CursorDropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.menu.base.ContextMenuState
 import eu.mjdev.desktop.components.menu.base.ContextMenuState.Companion.rememberContextMenuState
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
+import eu.mjdev.desktop.extensions.Compose.preview
 
 // todo
 @Suppress("unused", "FunctionName")
@@ -58,6 +60,9 @@ fun ContextMenu(
     }
 }
 
+// todo
 @Preview
 @Composable
-fun ContextMenuPreview() = ContextMenu()
+fun ContextMenuPreview() = preview {
+    ContextMenu()
+}

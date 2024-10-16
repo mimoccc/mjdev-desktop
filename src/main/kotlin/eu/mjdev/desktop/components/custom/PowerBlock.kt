@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.noElevation
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.transparent
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
 import eu.mjdev.desktop.extensions.Modifier.circleShadow
@@ -28,14 +29,14 @@ import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Composable
 fun PowerBlock(
-    backgroundColor: Color = Color.Transparent,
+    modifier: Modifier = Modifier,
     shadowColor: Color = Color.Black.copy(alpha = 0.3f),
     bottomBoxHeight: Dp = 128.dp,
     iconHeight: Dp = 64.dp,
     onPowerButtonClick: () -> Unit = {}
 ) = withDesktopScope {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         BoxWithConstraints(
             modifier = Modifier
@@ -53,7 +54,7 @@ fun PowerBlock(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(iconHeight)
-                    .rectShadow(color = shadowColor)
+                    .rectShadow(color = shadowColor, shape = shape)
                     .background(backgroundColor, shape)
             )
             Button(
@@ -62,7 +63,7 @@ fun PowerBlock(
                     .size(64.dp)
                     .clipCircle()
                     .circleBorder(2.dp, textColor.alpha(0.5f))
-                    .circleShadow(4.dp, Color.Black),
+                    .circleShadow(4.dp, shadowColor),
                 contentPadding = PaddingValues(1.dp),
                 onClick = onPowerButtonClick,
                 colors = ButtonDefaults.transparent(),
@@ -85,4 +86,6 @@ fun PowerBlock(
 
 @Preview
 @Composable
-fun PowerBlockPreview() = PowerBlock()
+fun PowerBlockPreview() = preview {
+    PowerBlock()
+}

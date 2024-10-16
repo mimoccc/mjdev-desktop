@@ -22,6 +22,7 @@ import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.data.TooltipData
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import kotlinx.coroutines.delay
 
@@ -101,4 +102,10 @@ fun rememberTooltipState() = remember { TooltipState() }
 
 @Preview
 @Composable
-fun TooltipPreview() = Tooltip()
+fun TooltipPreview() = preview {
+    Tooltip(
+        tooltipState = rememberTooltipState().apply {
+            value = "test tooltip"
+        }
+    )
+}

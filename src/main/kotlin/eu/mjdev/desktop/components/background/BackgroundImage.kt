@@ -13,6 +13,7 @@ import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.Crossfade
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.helpers.internal.Queue
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import kotlinx.coroutines.Dispatchers
@@ -70,4 +71,6 @@ fun BackgroundImage(
 
 @Preview
 @Composable
-fun BackgroundImagePreview() = BackgroundImage()
+fun BackgroundImagePreview() = preview {
+    BackgroundImage()
+}

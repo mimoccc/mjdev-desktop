@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanelIcon
 import eu.mjdev.desktop.data.App
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Custom.flowBlock
-import eu.mjdev.desktop.managers.processes.ProcessManager.Companion.rememberProcessManager
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("FunctionName")
@@ -67,6 +67,9 @@ fun DesktopPanelFavoriteApps(
     }
 }
 
+// todo
 @Preview
 @Composable
-fun DesktopPanelFavoriteAppsPreview() = DesktopPanelFavoriteApps()
+fun DesktopPanelFavoriteAppsPreview() = preview {
+    DesktopPanelFavoriteApps()
+}

@@ -13,6 +13,7 @@ import eu.mjdev.desktop.components.greeter.Greeter
 import eu.mjdev.desktop.components.info.InfoWindow
 import eu.mjdev.desktop.components.installer.Installer
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 import eu.mjdev.desktop.windows.DesktopWindow
@@ -76,6 +77,9 @@ fun MainWindow() = withDesktopScope {
     }
 }
 
+// todo
 @Preview
 @Composable
-fun MainWindowPreview() = MainWindow()
+fun MainWindowPreview() = preview {
+    MainWindow()
+}

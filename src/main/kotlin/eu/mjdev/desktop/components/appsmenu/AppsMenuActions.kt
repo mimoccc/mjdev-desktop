@@ -9,14 +9,20 @@
 package eu.mjdev.desktop.components.appsmenu
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.icon.ShapedIcon
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
+import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.runAsync
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
 import eu.mjdev.desktop.icons.Icons
@@ -24,7 +30,7 @@ import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import kotlinx.coroutines.Dispatchers
 
 @Composable
-fun AppActions(
+fun AppsMenuActions(
     // todo theme
     iconRestart: ImageVector = Icons.RestartComputer,
     // todo theme
@@ -84,4 +90,8 @@ fun AppActions(
 
 @Preview
 @Composable
-fun AppActionsPreview() = AppActions()
+fun AppsMenuActionsPreview() = preview {
+    AppsMenuActions(
+        modifier = Modifier.background(Color.SuperDarkGray, RoundedCornerShape(16.dp)).padding(8.dp),
+    )
+}

@@ -4,6 +4,7 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanelText
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 
 @Suppress("FunctionName")
@@ -24,4 +25,6 @@ fun DesktopPanelLanguage(
 
 @Preview
 @Composable
-fun DesktopPanelLanguagePreview() = DesktopPanelLanguage()
+fun DesktopPanelLanguagePreview() = preview {
+    DesktopPanelLanguage()
+}

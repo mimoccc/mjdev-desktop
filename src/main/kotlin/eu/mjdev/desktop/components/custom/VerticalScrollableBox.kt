@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import eu.mjdev.desktop.extensions.Compose.isLandscapeMode
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.verticalTouchScrollable
 
 @Composable
@@ -36,4 +37,6 @@ fun VerticalScrollableBox(
 
 @Preview
 @Composable
-fun VerticalScrollableBoxPreview() = VerticalScrollableBox()
+fun VerticalScrollableBoxPreview() = preview {
+    VerticalScrollableBox()
+}

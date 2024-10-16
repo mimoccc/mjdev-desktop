@@ -4,6 +4,7 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
@@ -14,10 +15,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.card.base.CardDefaults
+import eu.mjdev.desktop.components.card.base.CardDefaults.HorizontalImageAspectRatio
 import eu.mjdev.desktop.components.card.base.CardScale
 import eu.mjdev.desktop.components.image.ImageAny
 import eu.mjdev.desktop.components.image.PhotoImage
 import eu.mjdev.desktop.extensions.Compose.isFocused
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberFocusRequester
 import eu.mjdev.desktop.extensions.Compose.rememberFocusState
 import eu.mjdev.desktop.helpers.compose.FocusHelper
@@ -64,38 +67,44 @@ fun PhotoCard(
     titlePadding: PaddingValues = PaddingValues(8.dp),
     onFocus: ((item: Any?, fromUser: Boolean) -> Unit)? = null,
     onClick: ((item: Any?) -> Unit)? = null,
-) {
-    ItemCard(
-        item = item,
-        modifier = modifier,
-        contentScale = contentScale,
-        textColor = textColor,
-        focusState = focusState,
-        focusRequester = focusRequester,
-        focused = focused,
-        aspectRatio = aspectRatio,
-        cardWidth = cardWidth,
-        scale = scale,
-        imageRenderer = imageRenderer,
-        titlePadding = titlePadding,
-        onFocus = onFocus,
-        onClick = onClick,
-        showTitle = showTitle
-    )
-}
+) = ItemCard(
+    item = item,
+    modifier = modifier,
+    contentScale = contentScale,
+    textColor = textColor,
+    focusState = focusState,
+    focusRequester = focusRequester,
+    focused = focused,
+    aspectRatio = aspectRatio,
+    cardWidth = cardWidth,
+    scale = scale,
+    imageRenderer = imageRenderer,
+    titlePadding = titlePadding,
+    onFocus = onFocus,
+    onClick = onClick,
+    showTitle = showTitle
+)
 
 @Composable
 fun computeCardWidth(
     api: DesktopProvider = LocalDesktop.current,
     ratio: Float = 2.5f
-): Dp =
-//    LocalConfiguration.current.let { config ->
-//    if (config.orientation == Configuration.ORIENTATION_PORTRAIT)
-    api.containerSize.width / ratio
-//    else
-//        config.screenHeightDp / ratio
-//}.dp
+): Dp {
+    return if (api.containerSize.let { it.height > it.width }) api.containerSize.width / ratio
+    else api.containerSize.height / ratio
+}
 
 @Preview
 @Composable
-fun PhotoCardPreview() = PhotoCard()
+fun PhotoCardPreview() = preview {
+    PhotoCard(
+        item = "test",
+        modifier = Modifier.size(200.dp, 128.dp),
+        scale = CardDefaults.scale(1f),
+        contentScale = ContentScale.Crop,
+        textColor = Color.Black,
+        showTitle = true,
+        focused = true,
+        aspectRatio = HorizontalImageAspectRatio,
+    )
+}

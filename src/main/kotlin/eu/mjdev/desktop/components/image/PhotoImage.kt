@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.extensions.Compose.preview
 
 // todo
 @Composable
@@ -127,4 +128,6 @@ fun PhotoImage(
 
 @Preview
 @Composable
-fun PhotoImagePreview() = PhotoImage()
+fun PhotoImagePreview() = preview {
+    PhotoImage()
+}

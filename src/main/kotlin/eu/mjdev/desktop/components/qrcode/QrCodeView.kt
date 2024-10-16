@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
+import eu.mjdev.desktop.extensions.Compose.preview
 import io.github.alexzhirkevich.qrose.options.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 
@@ -58,4 +59,6 @@ fun QrCodeView(
 
 @Preview
 @Composable
-fun QrCodeViewPreview() = QrCodeView()
+fun QrCodeViewPreview() = preview(320, 320) {
+    QrCodeView()
+}

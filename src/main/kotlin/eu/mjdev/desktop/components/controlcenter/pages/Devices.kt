@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.MobileFriendly
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import eu.mjdev.desktop.components.controlcenter.base.ControlCenterPage
+import eu.mjdev.desktop.extensions.Compose.preview
 
 @Suppress("FunctionName")
 fun DevicesPage() = ControlCenterPage(
@@ -23,4 +24,6 @@ fun DevicesPage() = ControlCenterPage(
 
 @Preview
 @Composable
-fun DevicesPagePreview() =  DevicesPage().render()
+fun DevicesPagePreview() = preview {
+    DevicesPage().render()
+}

@@ -1,6 +1,8 @@
 package eu.mjdev.desktop.components.text
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,6 +17,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import eu.mjdev.desktop.data.App
+import eu.mjdev.desktop.extensions.Compose.preview
 
 @Suppress("FunctionName")
 @Composable
@@ -54,4 +58,9 @@ fun TextWithShadow(
 
 @Preview
 @Composable
-fun TextWithShadowPreview() = TextWithShadow()
+fun TextWithShadowPreview() = preview {
+    TextWithShadow(
+        modifier = Modifier.height(48.dp).background(Color.White),
+        text = App.Test
+    )
+}

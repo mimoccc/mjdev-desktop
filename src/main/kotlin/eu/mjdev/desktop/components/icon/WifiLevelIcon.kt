@@ -14,10 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import eu.mjdev.desktop.components.image.ImageAny
+import com.composables.core.Icon
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberComputed
 import eu.mjdev.desktop.icons.Icons
 import eu.mjdev.desktop.icons.wifi.level.*
@@ -25,7 +25,7 @@ import eu.mjdev.desktop.icons.wifi.level.*
 @Composable
 fun WifiLevelIcon(
     modifier: Modifier = Modifier,
-    level: Int = 55,
+    level: Int,
     color: Color = Color.Black,
     iconSize: DpSize = DpSize(24.dp, 24.dp)
 ) {
@@ -39,13 +39,19 @@ fun WifiLevelIcon(
             else -> Icons.Wifi_Level_0
         }
     }
-    ImageAny(
+    Icon(
         modifier = modifier.size(iconSize),
-        src = levelIcon,
-        colorFilter = ColorFilter.tint(color)
+        imageVector = levelIcon,
+        contentDescription = "",
+        tint = color
     )
 }
 
 @Preview
 @Composable
-fun WifiLevelIconPreview() = WifiLevelIcon()
+fun WifiLevelIconPreview() = preview {
+    WifiLevelIcon(
+        level = 55,
+        color = Color.White
+    )
+}

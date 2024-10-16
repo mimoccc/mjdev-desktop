@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.unit.IntSize
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.helpers.gif.GifDecoder
 import kotlinx.coroutines.delay
 import java.awt.image.BufferedImage
@@ -47,6 +48,9 @@ fun GifView(
     }
 }
 
+// todo
 @Preview
 @Composable
-fun GifViewPreview() = GifView()
+fun GifViewPreview() = preview {
+    GifView()
+}

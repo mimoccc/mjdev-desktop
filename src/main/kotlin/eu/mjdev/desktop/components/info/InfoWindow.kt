@@ -11,13 +11,13 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.background.BackgroundImage
 import eu.mjdev.desktop.components.button.ButtonPrimary
 import eu.mjdev.desktop.components.sliding.base.VisibilityState
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
-import eu.mjdev.desktop.components.text.TextAny
+import eu.mjdev.desktop.components.text.AutoResizeText
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 
@@ -45,12 +45,12 @@ fun InfoWindow(
                 BackgroundImage(
                     modifier = Modifier.fillMaxSize()
                 )
-                TextAny(
-                    modifier = Modifier.padding(bottom = 128.dp, start = 16.dp),
+                AutoResizeText(
+                    modifier = Modifier.padding(bottom = 128.dp, start = 16.dp)
+                        .height(32.dp),
                     text = "Welcome to mjdev desktop",
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 48.sp
                 )
                 Box(
                     modifier = Modifier.fillMaxWidth()
@@ -78,4 +78,6 @@ fun InfoWindow(
 
 @Preview
 @Composable
-fun InfoWindowPreview() = InfoWindow()
+fun InfoWindowPreview() = preview {
+    InfoWindow()
+}

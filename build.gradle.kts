@@ -68,7 +68,7 @@ allprojects {
     dependencies {
         api(fileTree("src/main/libs") { include("*.jar") })
         // reflection
-//        implementation(kotlin("reflect"))
+        implementation(kotlin("reflect"))
         // coroutines
         runtimeOnly(libs.kotlinx.coroutines.swing)
         // compose desktop

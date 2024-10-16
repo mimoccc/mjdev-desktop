@@ -14,12 +14,14 @@ import eu.mjdev.desktop.components.draggable.DraggableView
 import eu.mjdev.desktop.components.fonticon.FontIcon
 import eu.mjdev.desktop.components.text.TextWithShadow
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Custom.plus
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
+import eu.mjdev.desktop.extensions.Modifier.circleShadow
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import java.io.File
 
-@Suppress("FunctionName")
+@Suppress("FunctionName", "UNNECESSARY_SAFE_CALL")
 @Composable
 fun FolderIcon(
     path: File = File("/"),
@@ -32,7 +34,13 @@ fun FolderIcon(
     onContextMenuClick: () -> Unit = {},
     onClick: () -> Unit = {},
 ) = withDesktopScope {
-    val iconName = remember(path) { path.extension.ifEmpty { "folder" } } // todo mime type
+    val iconName = remember(path) {
+        when {
+            path.absolutePath?.contentEquals("/") == true -> "root"
+            path.absolutePath?.contentEquals("~") == true -> "home"
+            else -> path.extension.ifEmpty { "folder" }
+        }
+    } // todo from mime type
     val iconId: Int = remember(path) { iconSet.iconForName(iconName) ?: "?".toInt() }
     val computedSize = remember(path) { iconSize + 2.dp }
     DraggableView(
@@ -49,6 +57,7 @@ fun FolderIcon(
             Box(
                 modifier = Modifier.size(computedSize)
                     .circleBorder(2.dp, textColor)
+                    .circleShadow(4.dp)
             ) {
                 FontIcon(
                     iconId = iconId,
@@ -64,7 +73,7 @@ fun FolderIcon(
             TextWithShadow(
                 modifier = Modifier.width(computedSize.width)
                     .padding(start = 4.dp),
-                text = (customName ?: path.name).orEmpty(),
+                text = (customName ?: path.name).orEmpty().ifEmpty { iconName },
                 color = textColor,
                 fontWeight = FontWeight.Bold,
                 overflow = Ellipsis,
@@ -78,4 +87,6 @@ fun FolderIcon(
 
 @Preview
 @Composable
-fun FolderIconPreview() = FolderIcon()
+fun FolderIconPreview() = preview {
+    FolderIcon()
+}

@@ -105,13 +105,13 @@ object CardDefaults {
             ),
             shape = RoundedCornerShape(roundCornerSize)
         ),
-    pressedBorder = Border(
-        border = BorderStroke(
-            width = width,
-            color = colorPressed
-        ),
-        shape = RoundedCornerShape(roundCornerSize)
-    )
+        pressedBorder = Border(
+            border = BorderStroke(
+                width = width,
+                color = colorPressed
+            ),
+            shape = RoundedCornerShape(roundCornerSize)
+        )
     )
 
     @Composable
@@ -146,6 +146,25 @@ object CardDefaults {
         border: Border = Border.None,
         focusedBorder: Border = Border(
             border = BorderStroke(width = 3.dp, color = Color.White), // todo theme
+            shape = ContainerShape
+        ),
+        pressedBorder: Border = focusedBorder
+    ) = CardBorder(
+        border = border,
+        focusedBorder = focusedBorder,
+        pressedBorder = pressedBorder
+    )
+
+    @ReadOnlyComposable
+    @Composable
+    fun border(
+        borderWidth: Dp,
+        borderColor: Color = Color.Black,
+        border: Border = Border(
+            border = BorderStroke(width = borderWidth, color = borderColor)
+        ),
+        focusedBorder: Border = Border(
+            border = BorderStroke(width = borderWidth + 2.dp, color = borderColor), // todo theme
             shape = ContainerShape
         ),
         pressedBorder: Border = focusedBorder

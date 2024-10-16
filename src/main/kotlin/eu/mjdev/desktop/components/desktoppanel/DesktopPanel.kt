@@ -38,6 +38,7 @@ import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.ColorUtils.lighter
 import eu.mjdev.desktop.extensions.Compose.height
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Modifier.topShadow
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelEnterAnimation
@@ -229,6 +230,9 @@ fun DesktopPanel(
     }
 }
 
+// todo
 @Preview
 @Composable
-fun DesktopPanelPreview() = DesktopPanel()
+fun DesktopPanelPreview() = preview {
+    DesktopPanel()
+}

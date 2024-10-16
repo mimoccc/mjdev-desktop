@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.desktoppanel.DesktopPanelIcon
+import eu.mjdev.desktop.extensions.Compose.preview
 
 @Suppress("FunctionName")
 @Composable
@@ -42,4 +43,6 @@ fun DesktopMenuIcon(
 
 @Preview
 @Composable
-fun DesktopMenuIconPreview() = DesktopMenuIcon()
+fun DesktopMenuIconPreview() = preview {
+    DesktopMenuIcon()
+}

@@ -4,7 +4,7 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.SupervisedUserCircle
+import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,6 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import eu.mjdev.desktop.components.video.VideoView
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Custom.flowBlock
 import eu.mjdev.desktop.helpers.internal.ImagesProvider
 import eu.mjdev.desktop.helpers.internal.ImagesProvider.Companion.getOne
@@ -27,7 +28,7 @@ import androidx.compose.foundation.Image as ComposeImage
 @Suppress("FunctionName", "UNUSED_PARAMETER")
 @Composable
 fun ImageAny(
-    src: Any? = Icons.Filled.SupervisedUserCircle,
+    src: Any? = null,
     contentDescription: String? = "",
     modifier: Modifier = Modifier,
     alignment: Alignment = Alignment.Center,
@@ -49,8 +50,14 @@ fun ImageAny(
         it.endsWith(".mp4") || it.endsWith(".mpg")
     }
     when {
-        image.value == null -> Box(
-            modifier = modifier
+        image.value == null -> ComposeImage(
+            modifier = modifier,
+            imageVector = Icons.Default.BrokenImage,
+            alignment = alignment,
+            alpha = alpha,
+            contentDescription = contentDescription,
+            colorFilter = colorFilter,
+            contentScale = contentScale
         )
 
         image.value is Color -> Box(
@@ -137,4 +144,6 @@ fun ImageAny(
 
 @Preview
 @Composable
-fun ImageAnyPreview() = ImageAny()
+fun ImageAnyPreview() = preview {
+    ImageAny()
+}

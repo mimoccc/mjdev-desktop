@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import eu.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun BrushedLayout(
@@ -21,16 +22,17 @@ fun BrushedLayout(
     alpha: Float = 1f,
     colorStart: Color = Color.Black.copy(alpha = if (alpha.isNaN()) 1f else alpha),
     colorEnd: Color = Color.Transparent,
-) {
-    val brush = Brush.radialGradient(listOf(colorStart, colorEnd))
-    Canvas(
-        modifier = modifier,
-        onDraw = {
-            drawRect(brush)
-        }
-    )
-}
+    brush: Brush = Brush.radialGradient(listOf(colorStart, colorEnd))
+) = Canvas(
+    modifier = modifier,
+    onDraw = {
+        drawRect(brush)
+    }
+)
 
+// todo
 @Preview
 @Composable
-fun BrushedLayoutPreview() = BrushedLayout()
+fun BrushedLayoutPreview() = preview(320) {
+    BrushedLayout()
+}

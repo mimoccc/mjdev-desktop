@@ -27,18 +27,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import eu.mjdev.desktop.components.card.base.*
+import eu.mjdev.desktop.components.card.base.CardDefaults.HorizontalImageAspectRatio
 import eu.mjdev.desktop.components.card.base.CardDefaults.colorFocusBorder
 import eu.mjdev.desktop.components.card.base.CardDefaults.colorFocusGlow
 import eu.mjdev.desktop.components.image.ImageAny
+import eu.mjdev.desktop.components.surface.base.Glow
 import eu.mjdev.desktop.components.text.AutoHideEmptyText
 import eu.mjdev.desktop.components.text.TextAny
 import eu.mjdev.desktop.extensions.Compose.focusState
 import eu.mjdev.desktop.extensions.Compose.isFocused
+import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberFocusRequester
 import eu.mjdev.desktop.extensions.Compose.rememberFocusState
 import eu.mjdev.desktop.extensions.Compose.requestFocusOnTouch
 import eu.mjdev.desktop.helpers.compose.FocusHelper
 
+// todo
 @Composable
 fun FocusableCard(
     item: Any? = null,
@@ -92,26 +96,23 @@ fun FocusableCard(
     colors = colors,
     border = border,
     glow = glow,
-    modifier = modifier
-        .size(
-            width = cardWidth,
-            height = cardWidth / aspectRatio
-        )
-        .focusState(focusState)
-        .onFocusChanged { state ->
-            onFocusChange(state)
-        }
-        .requestFocusOnTouch(focusRequester) {
-            if (focusState.isFocused) onClick?.invoke(item)
-        },
+    modifier = modifier.size(
+        width = cardWidth,
+        height = cardWidth / aspectRatio
+    ).focusState(
+        focusState
+    ).onFocusChanged { state ->
+        onFocusChange(state)
+    }.requestFocusOnTouch(focusRequester) {
+        if (focusState.isFocused) onClick?.invoke(item)
+    },
     image = {
         imageRenderer()
     },
     title = {
         if (showTitle) {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
                     .background(
                         if (focusState.isFocused) textBackgroundSelected
                         else textBackgroundUnselected,
@@ -131,8 +132,7 @@ fun FocusableCard(
     subtitle = {
         if (showTitle) {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
                     .background(
                         if (focusState.isFocused)
                             textBackgroundSelected
@@ -161,4 +161,20 @@ fun FocusableCard(
 
 @Preview
 @Composable
-fun FocusableCardPreview() = FocusableCard()
+fun FocusableCardPreview() = preview {
+    FocusableCard(
+        item = "test",
+        modifier = Modifier.size(200.dp, 128.dp),
+        colors = CardDefaults.colors(
+            containerColor = Color.White
+        ),
+        border = CardDefaults.border(),
+        glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
+        scale = CardDefaults.scale(1f),
+        contentScale = ContentScale.Crop,
+        textColor = Color.Black,
+        showTitle = true,
+        focused = true,
+        aspectRatio = HorizontalImageAspectRatio,
+    )
+}

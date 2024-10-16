@@ -15,6 +15,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.TextUnit
+import eu.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun SelectableOutlineEditText(
@@ -110,4 +111,8 @@ fun SelectableOutlineEditText(
 
 @Preview
 @Composable
-fun SelectableOutlineEditTextPreview() = SelectableOutlineEditText()
+fun SelectableOutlineEditTextPreview() = preview {
+    SelectableOutlineEditText(
+        value = "test"
+    )
+}
