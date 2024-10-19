@@ -80,7 +80,7 @@ fun ControlCenter(
         size
     ) {
         MouseRange(
-            x = containerSize.width - size.width,
+            x = containerSize.width - controlCenterDividerWidth,
             y = 0.dp,
             width = size.width,
             height = containerSize.height

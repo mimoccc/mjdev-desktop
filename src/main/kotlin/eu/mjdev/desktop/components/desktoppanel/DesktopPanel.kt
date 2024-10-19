@@ -104,7 +104,7 @@ fun DesktopPanel(
     ) {
         MouseRange(
             x = 0.dp,
-            y = containerSize.height - size.height,
+            y = containerSize.height - controlCenterDividerWidth,
             width = containerSize.width,
             height = size.height
         )
