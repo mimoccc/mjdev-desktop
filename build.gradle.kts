@@ -128,6 +128,8 @@ allprojects {
         implementation("com.composables:core:1.12.0")
         // events
         implementation("org.rationalityfrontline:kevent:2.3.1")
+        // components
+        implementation("com.composables:core:1.17.1")
         // wayland
 //        implementation("org.freedesktop:wayland-client:1.5.1")
         // paths

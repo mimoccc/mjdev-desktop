@@ -17,7 +17,6 @@ import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Custom.plus
 import eu.mjdev.desktop.extensions.Modifier.circleBorder
-import eu.mjdev.desktop.extensions.Modifier.circleShadow
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import java.io.File
 
@@ -57,7 +56,6 @@ fun FolderIcon(
             Box(
                 modifier = Modifier.size(computedSize)
                     .circleBorder(2.dp, textColor)
-                    .circleShadow(4.dp)
             ) {
                 FontIcon(
                     iconId = iconId,

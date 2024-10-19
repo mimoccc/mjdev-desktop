@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import eu.mjdev.desktop.components.video.base.VideoPlayerFFMpeg
 import eu.mjdev.desktop.extensions.Compose.preview
+import eu.mjdev.desktop.log.Log
 import java.io.File
 
 // todo
@@ -24,7 +25,7 @@ fun VideoView(
     contentDescription: String? = "",
     colorFilter: ColorFilter? = null,
     contentScale: ContentScale = ContentScale.Crop,
-    onFail: (Throwable) -> Unit = { e -> e.printStackTrace() }
+    onFail: (Throwable) -> Unit = { e -> Log.e(e) }
 ) = Box(
     modifier = modifier
 ) {

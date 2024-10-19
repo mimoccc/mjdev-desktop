@@ -10,6 +10,7 @@ import java.io.IOException
 import java.net.Socket
 import java.util.*
 
+@Suppress("MemberVisibilityCanBePrivate")
 internal class AdbConnection(
     adbReader: AdbReader,
     private val adbWriter: AdbWriter,

@@ -6,16 +6,12 @@
  *  w: https://mjdev.org
  */
 
-package eu.mjdev.desktop.helpers.internal
+package eu.mjdev.desktop.helpers.keyevents
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.input.key.Key
 import eu.mjdev.desktop.extensions.Custom.isPrintable
-import java.awt.AWTEvent
-import java.awt.Toolkit
-import java.awt.event.AWTEventListener
-import java.awt.event.KeyEvent.VK_TAB
+import eu.mjdev.desktop.log.Log
+import java.awt.event.KeyEvent.VK_WINDOWS
 import java.awt.event.KeyEvent as AwtKeyEvent
 
 @Suppress("CanBeParameter", "unused", "MemberVisibilityCanBePrivate")
@@ -26,7 +22,11 @@ class KeyEventHandler(
     private val listeners = mutableListOf<KeyEventListener>()
 
     fun addListener(key: Key?, block: (Char) -> Boolean) {
-        listeners.add(KeyEventListener(key, block))
+        listeners.add(KeyEventListenerCompose(key, block))
+    }
+
+    fun addListener(key: Int, block: (Int) -> Boolean) {
+        listeners.add(KeyEventListenerAwt(key, block))
     }
 
     init {
@@ -40,10 +40,11 @@ class KeyEventHandler(
         val code = event.keyCode
         val char = parseCharacter(event)
         val isKeyUp = event.id == AwtKeyEvent.KEY_RELEASED
+        Log.i("Got key: $code")
         when {
             isKeyUp && char.isPrintable -> {
                 var consumed = false
-                listeners.filter { l ->
+                listeners.filterIsInstance<KeyEventListenerCompose>().filter { l ->
                     l.key == null
                 }.forEach { l ->
                     consumed = consumed || l.block(char)
@@ -54,9 +55,17 @@ class KeyEventHandler(
             isKeyUp -> {
                 var consumed = false
                 listeners.filter { l ->
-                    l.key?.keyCode?.toInt() == code
+                    when (l) {
+                        is KeyEventListenerCompose -> l.key?.keyCode?.toInt() == code
+                        is KeyEventListenerAwt -> l.key == code
+                        else -> false
+                    }
                 }.forEach { l ->
-                    consumed = consumed || l.block(char)
+                    consumed = consumed || when (l) {
+                        is KeyEventListenerCompose -> l.block(char)
+                        is KeyEventListenerAwt -> l.block(code)
+                        else -> false
+                    }
                 }
                 if (consumed) event.consume()
             }
@@ -75,47 +84,5 @@ class KeyEventHandler(
     fun onEnter(block: (Char) -> Boolean) = addListener(Key.Enter, block)
     fun onBack(block: (Char) -> Boolean) = addListener(Key.Back, block)
     fun onBackSpace(block: (Char) -> Boolean) = addListener(Key.Backspace, block)
-
-    class KeyEventListener(val key: Key?, val block: (Char) -> Boolean)
-
-    class GlobalKeyListener(
-        val onKey: (event: AwtKeyEvent) -> Unit
-    ) : AWTEventListener {
-        init {
-            Toolkit.getDefaultToolkit().addAWTEventListener(this, AWTEvent.KEY_EVENT_MASK)
-        }
-
-        fun dispose() {
-            Toolkit.getDefaultToolkit().removeAWTEventListener(this)
-        }
-
-        override fun eventDispatched(event: AWTEvent?) {
-            (event as? AwtKeyEvent)?.also { kev ->
-                val notConsumed = !kev.isConsumed
-                val isAlt = kev.isAltDown
-                val keyCode = kev.keyCode
-                val isAltTab = (isAlt && keyCode == VK_TAB)
-                if (isAltTab) return
-                if (notConsumed) onKey(kev)
-            }
-        }
-    }
-
-    companion object {
-        @Composable
-        fun globalKeyEventHandler(
-            isEnabled: () -> Boolean = { true },
-            block: KeyEventHandler.() -> Unit,
-        ) {
-            DisposableEffect(Unit) {
-                val handler = KeyEventHandler(isEnabled, block)
-                val globalHandler = GlobalKeyListener { event ->
-                    handler.onEvent(event)
-                }
-                onDispose {
-                    globalHandler.dispose()
-                }
-            }
-        }
-    }
+    fun onMenuKey(block: (Int) -> Boolean) = addListener(VK_WINDOWS, block)
 }

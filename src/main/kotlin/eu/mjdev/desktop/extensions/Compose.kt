@@ -33,6 +33,7 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.*
 import coil3.ImageLoader
@@ -44,6 +45,7 @@ import coil3.svg.SvgDecoder
 import eu.mjdev.desktop.components.guide.GuideLines
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.helpers.compose.FocusHelper
+import eu.mjdev.desktop.log.Log
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.provider.DesktopScope
@@ -92,6 +94,10 @@ object Compose {
     }
 
     val Color.hexRgba get() = rgbaToHex()
+
+    val isDesign
+        @Composable
+        get() = LocalInspectionMode.current
 
     val PaddingValues.width: Dp
         get() = calculateLeftPadding(LayoutDirection.Ltr) + calculateRightPadding(LayoutDirection.Ltr)
@@ -300,7 +306,7 @@ object Compose {
                         }
                     }
                 } catch (e: Throwable) {
-                    e.printStackTrace()
+                    Log.e(e)
                 }
             }
         )
@@ -477,7 +483,7 @@ object Compose {
         state: LazyListState
     ) = this then pointerInput(Unit) {
         detectVerticalDragGestures { _, dragAmount ->
-            println("drag ammount : $dragAmount")
+            Log.i("drag ammount : $dragAmount")
             state.dispatchRawDelta(-dragAmount)
         }
     }
@@ -596,15 +602,5 @@ object Compose {
 //        scope: CoroutineScope = rememberCoroutineScope(),
 //        block: suspend () -> Unit
 //    ) = scope.launch(context) { block() }
-
-//    Toolkit.getDefaultToolkit().addAWTEventListener({ event ->
-//        }, AWTEvent.MOUSE_EVENT_MASK or AWTEvent.FOCUS_EVENT_MASK
-//    )
-
-//    Toolkit.getDefaultToolkit().addAWTEventListener(object:AWTEventListener {
-//        override fun eventDispatched(event: AWTEvent?) {
-//            println(event)
-//        }
-//    }, AWTEvent.WINDOW_EVENT_MASK)
 
 }

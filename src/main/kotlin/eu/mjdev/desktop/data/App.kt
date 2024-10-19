@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import eu.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
 import eu.mjdev.desktop.helpers.system.Shell
+import eu.mjdev.desktop.log.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -76,19 +77,19 @@ class App(
         scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     ) = scope.launch(Dispatchers.IO) {
         runCatching {
-            println("Starting app: $name [$windowClass].")
-            println("dex -w ${desktopFile.absolutePath}")
+            Log.i("Starting app: $name [$windowClass].")
+            Log.i("dex -w ${desktopFile.absolutePath}")
             triggerStart()
             Shell {
                 startApp(
                     app = this@App,
                     onStarted = {
-                        println("App started app: $name [$windowClass].")
-                        println("Desktop File:")
+                        Log.i("App started app: $name [$windowClass].")
+                        Log.i("Desktop File:")
                         triggerStarted()
                     },
                     onStopped = { e ->
-                        println("App stopped: $name [$windowClass].")
+                        Log.i("App stopped: $name [$windowClass].")
                         triggerStop(e)
                     }
                 )

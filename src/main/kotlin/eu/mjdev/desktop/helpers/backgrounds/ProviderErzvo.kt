@@ -8,7 +8,7 @@
 
 package eu.mjdev.desktop.helpers.backgrounds
 
-import eu.mjdev.desktop.helpers.internal.ImagesProvider
+import eu.mjdev.desktop.helpers.compose.ImagesProvider
 
 // todo
 @Suppress("unused")

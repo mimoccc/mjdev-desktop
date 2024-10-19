@@ -10,21 +10,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import eu.mjdev.desktop.components.desktop.widgets.MemoryChart
 import eu.mjdev.desktop.components.file.FolderView
-import eu.mjdev.desktop.components.sliding.base.VisibilityState
-import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
+import eu.mjdev.desktop.windows.ChromeWindowState
+import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
 @Suppress("FunctionName")
 @Preview
 @Composable
 fun Desktop(
     modifier: Modifier = Modifier,
-    panelState: VisibilityState = rememberVisibilityState(),
+    panelState: ChromeWindowState = rememberChromeWindowState(),
 ) = withDesktopScope {
-    val bottomPadding by rememberCalculated(panelState.enabled) {
-        if (panelState.enabled) 0.dp else max(0.dp, panelState.bounds.height)
+    val bottomPadding by rememberCalculated(panelState.enabled, panelState.height) {
+        if (panelState.enabled) 0.dp else max(0.dp, panelState.height)
     }
     BoxWithConstraints(
         modifier = modifier.padding(16.dp)

@@ -9,6 +9,7 @@
 package eu.mjdev.desktop.managers.kcef.linux
 
 import dev.datlag.kcef.KCEF
+import eu.mjdev.desktop.log.Log
 import eu.mjdev.desktop.managers.kcef.base.KCEFManagerStub
 import eu.mjdev.desktop.provider.DesktopProvider
 import kotlinx.coroutines.CoroutineScope
@@ -25,24 +26,28 @@ class KCEFManagerLinux(
     override fun init() {
         scope.launch(Dispatchers.IO) {
             if (!initialized.value && !restartRequired.value) {
-                KCEF.init(builder = {
-                    installDir(File("/tmp/kcef-bundle"))
-                    progress {
-                        onDownloading {
-                            downloading.value = max(it, 0F).toInt()
+                KCEF.init(
+                    builder = {
+                        installDir(File("/tmp/kcef-bundle"))
+                        progress {
+                            onDownloading {
+                                downloading.value = max(it, 0F).toInt()
+                            }
+                            onInitialized {
+                                initialized.value = true
+                            }
                         }
-                        onInitialized {
-                            initialized.value = true
+                        settings {
+                            cachePath = File("cache").absolutePath
                         }
+                    },
+                    onError = { e ->
+                        if (e != null) Log.e(e)
+                    },
+                    onRestartRequired = {
+                        restartRequired.value = true
                     }
-                    settings {
-                        cachePath = File("cache").absolutePath
-                    }
-                }, onError = { err ->
-                    err?.printStackTrace()
-                }, onRestartRequired = {
-                    restartRequired.value = true
-                })
+                )
             }
         }
     }

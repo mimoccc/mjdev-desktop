@@ -38,11 +38,11 @@ class WindowsManager(
 //        get() = environment["WAYLAND_DISPLAY"]
 //    val WlRegistryEvents = object : WlRegistryEvents {
 //        override fun global(emitter: WlRegistryProxy?, name: Int, interface_: String, version: Int) {
-//            println("Got global event: $name")
+//            Log.i("Got global event: $name")
 //        }
 //
 //        override fun globalRemove(emitter: WlRegistryProxy?, name: Int) {
-//            println("Got global remove event: $name")
+//            Log.i("Got global remove event: $name")
 //        }
 //    }
 //    val display: WlDisplayProxy by lazy { WlDisplayProxy.connect(currentDisplay) }
@@ -62,8 +62,8 @@ class WindowsManager(
     }
 
 //    init {
-//        println("Current display : $currentDisplay")
-//        println("Registry : ${registry.id}")
+//        Log.i("Current display : $currentDisplay")
+//        Log.i("Registry : ${registry.id}")
 //    }
 
     fun dispose() {
@@ -72,7 +72,7 @@ class WindowsManager(
     }
 
 //    fun findWindows(app: App): List<SystemWindow> = windows.filter { w ->
-//        println("w: (${w.id},${w.windowClass}, ${w.command})")
+//        Log.i("w: (${w.id},${w.windowClass}, ${w.command})")
 //        w.windowClass.isNotEmpty()
 //    }.filter { w ->
 //        w.windowClass.trim().contains(app.windowClass, true) ||
@@ -80,7 +80,7 @@ class WindowsManager(
 //                w.command.trim().contains(app.fullAppName, true) ||
 //                w.command.trim().contentEquals(app.cmd, true)
 //    }.apply {
-//        println("app[${app.windowClass}] : ${count()}")
+//        Log.i("app[${app.windowClass}] : ${count()}")
 //    }
 
     fun hasWindow(app: App): Boolean =

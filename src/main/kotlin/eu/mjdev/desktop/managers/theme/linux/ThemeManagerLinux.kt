@@ -17,6 +17,7 @@ import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.hexRgb
 import eu.mjdev.desktop.extensions.Custom.get
 import eu.mjdev.desktop.helpers.system.Shell
+import eu.mjdev.desktop.log.Log
 import eu.mjdev.desktop.managers.theme.base.ThemeManagerStub
 import eu.mjdev.desktop.provider.DesktopProvider
 import java.io.File
@@ -43,9 +44,9 @@ class ThemeManagerLinux(
     private val systemGtk4CssFile = systemGtk4ThemeDir["gtk.css"]
 
     override fun clearSystemTheme() {
-        println("Deleting : file:///${systemGtk3CssFile.absolutePath}")
+        Log.i("Deleting : file:///${systemGtk3CssFile.absolutePath}")
         systemGtk3CssFile.delete()
-        println("Deleting : file:///${systemGtk4CssFile.absolutePath}")
+        Log.i("Deleting : file:///${systemGtk4CssFile.absolutePath}")
         systemGtk4CssFile.delete()
     }
 

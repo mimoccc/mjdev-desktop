@@ -6,6 +6,7 @@ import okio.Source
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 
+@Suppress("MemberVisibilityCanBePrivate")
 class AdbSyncStream(
     private val stream: IAdbStream
 ) : AutoCloseable {
@@ -76,15 +77,15 @@ class AdbSyncStream(
     }
 
     companion object {
-        internal const val LIST = "LIST"
-        internal const val RECV = "RECV"
-        internal const val SEND = "SEND"
-        internal const val STAT = "STAT"
-        internal const val DATA = "DATA"
-        internal const val DONE = "DONE"
-        internal const val OKAY = "OKAY"
-        internal const val QUIT = "QUIT"
-        internal const val FAIL = "FAIL"
+        const val LIST = "LIST"
+        const val RECV = "RECV"
+        const val SEND = "SEND"
+        const val STAT = "STAT"
+        const val DATA = "DATA"
+        const val DONE = "DONE"
+        const val OKAY = "OKAY"
+        const val QUIT = "QUIT"
+        const val FAIL = "FAIL"
 
         val SYNC_IDS = setOf(LIST, RECV, SEND, STAT, DATA, DONE, OKAY, QUIT, FAIL)
     }

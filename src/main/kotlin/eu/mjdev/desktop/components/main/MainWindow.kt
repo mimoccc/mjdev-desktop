@@ -15,6 +15,7 @@ import eu.mjdev.desktop.components.installer.Installer
 import eu.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.helpers.system.Shell
+import eu.mjdev.desktop.log.Log
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 import eu.mjdev.desktop.windows.DesktopWindow
@@ -22,11 +23,17 @@ import eu.mjdev.desktop.windows.DesktopWindow
 // todo focus manager
 @Composable
 fun MainWindow() = withDesktopScope {
-    val controlCenterState = rememberChromeWindowState()
-    val panelState = rememberChromeWindowState(visible = true, enabled = panelAutoHideEnabled)
+    val controlCenterState = rememberChromeWindowState(
+//        hideDelay = controlPanelHideDelay
+    )
+    val panelState = rememberChromeWindowState(
+        visible = true,
+        enabled = panelAutoHideEnabled,
+        hideDelay = panelHideDelay
+    )
     val menuState = rememberChromeWindowState()
-    val installWindowSate = rememberVisibilityState()
-    val infoWindowSate = rememberVisibilityState(false) //(api.isFirstStart || api.isDebug) // todo
+    val installWindowState = rememberVisibilityState()
+    val infoWindowState = rememberVisibilityState(false) //(api.isFirstStart || api.isDebug) // todo
     DesktopWindow(
         panelState = panelState,
         controlCenterState = controlCenterState,
@@ -39,53 +46,57 @@ fun MainWindow() = withDesktopScope {
         DesktopPanel(
             panelState = panelState,
             menuState = menuState,
-            onMenuIconClicked = { if (!menuState.isVisible) menuState.show() },
-            onFocusChange = { focus ->
-                if (panelState.enabled && !focus && !menuState.isVisible) panelState.hide()
+            onMenuIconClicked = { menuState.toggle() },
+            onFocusChange = { focused ->
+                if (panelState.enabled && menuState.isNotVisible && !focused) {
+                    panelState.hide()
+                }
             }
         )
         AppsMenu(
             menuState = menuState,
             panelState = panelState,
-            onFocusChange = { focus ->
-                if (!focus) {
+            onFocusChange = { focused ->
+                if (!focused) {
                     menuState.hide()
                 }
             }
         )
         ControlCenter(
             controlCenterState = controlCenterState,
-            onFocusChange = { focus ->
-                if (!focus) controlCenterState.hide()
+            onFocusChange = { focused ->
+                if (!focused) {
+                    controlCenterState.hide()
+                }
             }
         )
         Greeter()
         InfoWindow(
-            state = infoWindowSate,
+            state = infoWindowState,
             showInstallWindow = {
-                infoWindowSate.hide()
-                installWindowSate.show()
+                infoWindowState.hide()
+                installWindowState.show()
             }
         )
         Installer(
-            state = installWindowSate
+            state = installWindowState
         )
     }
     DisposableEffect(Unit) {
-        println("App started with args: $appArgs")
-        println("First start : $isFirstStart")
-        println("Debug mode : $isDebug")
+        Log.i("App started with args: $appArgs")
+        Log.i("First start : $isFirstStart")
+        Log.i("Debug mode : $isDebug")
         Shell {
             if (!isDebug) {
-                println("Starting autostart apps")
+                Log.i("Starting autostart apps")
                 autoStartApps()
             } else {
-                println("Starting autostart apps omitted in debug mode.")
+                Log.i("Starting autostart apps omitted in debug mode.")
             }
         }
         onDispose {
             dispose()
-            println("App ended.")
+            Log.i("App ended.")
         }
     }
 }

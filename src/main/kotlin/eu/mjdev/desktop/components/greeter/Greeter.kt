@@ -19,6 +19,7 @@ import eu.mjdev.desktop.components.input.PasswordTextView
 import eu.mjdev.desktop.components.user.UserAvatar
 import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.ColorUtils.alpha
+import eu.mjdev.desktop.extensions.Compose.isDesign
 import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Compose.runAsync
@@ -33,7 +34,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun Greeter() = withDesktopScope {
     val user: User by rememberState(api.currentUser)
     var isUserLoggedIn by rememberState(user.isLoggedIn)
-    var passwordVisible by rememberState(isDebug)
+    var passwordVisible by rememberState(isDesign)
     val onDone: (password: String) -> Unit = { password ->
         runAsync {
             user.login(api, password).collectLatest { logState ->

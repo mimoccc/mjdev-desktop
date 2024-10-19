@@ -1,7 +1,7 @@
 package eu.mjdev.desktop.helpers.adb.forwarding
 
 import eu.mjdev.desktop.helpers.adb.IAdb
-import eu.mjdev.desktop.helpers.adb.helpers.log
+import eu.mjdev.desktop.log.Log
 import okio.*
 import java.io.IOException
 import java.io.InterruptedIOException
@@ -34,7 +34,8 @@ internal class TcpForwarder(
             } catch (_: SocketException) {
                 // Do nothing
             } catch (e: IOException) {
-                log { "could not start TCP port forwarding: ${e.message}" }
+                Log.e("could not start TCP port forwarding: ${e.message}")
+                Log.e(e)
             } finally {
                 moveToState(State.STOPPED)
             }

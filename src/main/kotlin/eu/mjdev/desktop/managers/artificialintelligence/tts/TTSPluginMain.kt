@@ -8,6 +8,7 @@
 
 package eu.mjdev.desktop.managers.artificialintelligence.tts
 
+import eu.mjdev.desktop.log.Log
 import eu.mjdev.desktop.managers.artificialintelligence.tts.base.TTSPlugin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +26,7 @@ class TTSPluginMain(
     }
 
     override fun talk(text: String, clearQueue: Boolean) {
-        println("talking: $text")
+        Log.i("talking: $text")
         scope.launch(Dispatchers.IO) {
             textToSpeech.await()?.say(text, clearQueue)
         }

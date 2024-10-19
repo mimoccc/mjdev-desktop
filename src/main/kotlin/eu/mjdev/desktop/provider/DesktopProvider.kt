@@ -7,9 +7,11 @@ import coil3.ImageLoader
 import eu.mjdev.desktop.components.controlcenter.pages.*
 import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.Compose.asyncImageLoader
+import eu.mjdev.desktop.extensions.Compose.isDesign
 import eu.mjdev.desktop.helpers.application.ApplicationScope
-import eu.mjdev.desktop.helpers.internal.Palette
+import eu.mjdev.desktop.helpers.palette.Palette
 import eu.mjdev.desktop.helpers.system.Shell
+import eu.mjdev.desktop.log.Log
 import eu.mjdev.desktop.managers.apps.AppsManager
 import eu.mjdev.desktop.managers.artificialintelligence.AIManager
 import eu.mjdev.desktop.managers.artificialintelligence.AIManager.Companion.aiManager
@@ -38,6 +40,7 @@ class DesktopProvider(
     val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
     val args: List<String> = emptyList(),
     val imageLoader: ImageLoader? = null,
+    val isInDesign: Boolean = false
 ) : AutoCloseable {
     var isFirstStart: Boolean = true // todo
     var isInstalled: Boolean = false // todo
@@ -62,7 +65,7 @@ class DesktopProvider(
     val appArgs
         get() = application?.args ?: emptyList()
     val isDebug: Boolean
-        get() = false // todo
+        get() = args.contains(APP_PARAM_DEBUG) || isInDesign
     val homeDir
         get() = currentUser.homeDir
     val allUsers
@@ -80,11 +83,11 @@ class DesktopProvider(
 //    val adbHandler = adbDevicesHandler(
 //        coroutineScope = scope,
 //        onAdded = { device ->
-//            println("Device discovered : $device")
+//            Log.i("Device discovered : $device")
 //            // when device connected
 //        },
 //        onRemoved = { device ->
-//            println("Device removed : $device")
+//            Log.i("Device removed : $device")
 //            // when device removed
 //        }
 //    )
@@ -120,6 +123,7 @@ class DesktopProvider(
         get() = graphicsDevice.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.TRANSLUCENT)
 
 //    init {
+//        Log.i("Got app args: $args")
 //        runCatching {
 //            windowsManager.init()
 //        }
@@ -132,7 +136,7 @@ class DesktopProvider(
 //    }
 
     override fun close() {
-        println("Cleaning up resources.")
+        Log.i("Cleaning up resources.")
         processManager.dispose()
         palette.dispose()
 //        runCatching {
@@ -261,7 +265,7 @@ class DesktopProvider(
         )
 
         val LocalDesktop = staticCompositionLocalOf {
-            println("Default empty desktop provider created.")
+            Log.i("Default empty desktop provider created.")
             DesktopProvider()
         }
 
@@ -273,16 +277,16 @@ class DesktopProvider(
             application: ApplicationScope?,
             scope: CoroutineScope = rememberCoroutineScope(),
             imageLoader: ImageLoader = asyncImageLoader(),
-//            isDebug: Boolean = LocalInspectionMode.current,
             args: List<String> = emptyList(),
+            isInDesign: Boolean = isDesign
         ) = remember {
-            println("default initialized desktop provider created")
+            Log.i("default initialized desktop provider created")
             DesktopProvider(
                 application = application,
                 scope = scope,
                 imageLoader = imageLoader,
                 args = args,
-//                isDebug = isDebug || args.contains(APP_PARAM_DEBUG)
+                isInDesign = isInDesign
             )
         }
     }

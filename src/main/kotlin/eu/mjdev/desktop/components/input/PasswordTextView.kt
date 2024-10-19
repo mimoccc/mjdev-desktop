@@ -35,7 +35,6 @@ fun PasswordTextView(
     password: MutableState<String> = rememberSaveable { mutableStateOf("") },
     passwordVisible: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) },
     backgroundColor: Color = Color.White.copy(0.5f),
-    textColor: Color = Color.Black,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable () -> Unit = {},
     shape: Shape = RoundedCornerShape(8.dp),

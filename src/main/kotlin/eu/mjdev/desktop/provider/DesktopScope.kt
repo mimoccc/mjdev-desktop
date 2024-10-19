@@ -118,8 +118,21 @@ open class DesktopScope(
     val appMenuMinHeight = theme.appMenuMinHeight
     val menuPadding = theme.appMenuOuterPadding
 
+    val panelHideDelay
+        get() = theme.panelHideDelay
     val panelAutoHideEnabled
         get() = theme.panelHideDelay > 0L
+    val panelDividerWidth
+        get() = theme.panelDividerWidth
+
+    val controlPanelHideDelay
+        get() = theme.controlPanelHideDelay
+    val controlCenterBackgroundAlpha
+        get() = theme.controlCenterBackgroundAlpha
+    val controlCenterDividerWidth
+        get() = theme.controlCenterDividerWidth
+    val controlCenterIconSize
+        get() = theme.controlCenterIconSize
 
     val backgrounds
         get() = currentUser.backgrounds

@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.helpers.adb.helpers
 
+@Suppress("MemberVisibilityCanBePrivate")
 class AdbShellResponse(
     val output: String,
     val errorOutput: String,

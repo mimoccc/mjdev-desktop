@@ -9,7 +9,7 @@ import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.fonts.MaterialIconFont
 import eu.mjdev.desktop.fonts.MaterialSymbolsSharp
 
-// todo all customizable
+// todo all components customizable
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class Theme(
     backgroundColor: Color,
@@ -103,10 +103,10 @@ class Theme(
             panelLocation = PanelLocation.Bottom,
             panelDividerWidth = 16.dp,
             panelContentPadding = 4.dp,
-            panelHideDelay = 0L,
+            panelHideDelay = 2000L,
 
             controlCenterLocation = ControlCenterLocation.Right,
-            controlPanelHideDelay = 5000L,
+            controlPanelHideDelay = 2000L,
             controlCenterExpandedWidthPercent = 25,
             controlCenterDividerColor = Color.SuperDarkGray,
             controlCenterDividerWidth = 4.dp,

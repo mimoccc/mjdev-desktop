@@ -1,11 +1,12 @@
 package eu.mjdev.desktop.helpers.adb
 
+import eu.mjdev.desktop.log.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 class AdbDiscover(
     coroutineScope: CoroutineScope? = null,
     discoverDelay: Long = 1000L,
@@ -30,7 +31,7 @@ class AdbDiscover(
                         onAdded(d)
                     }
                 }.onFailure { e ->
-                    println("Error : ${e.message}")
+                    Log.e(e)
                 }
                 delay(discoverDelay)
             }

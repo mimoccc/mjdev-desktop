@@ -11,7 +11,7 @@ package eu.mjdev.desktop.helpers.backgrounds
 import eu.mjdev.desktop.data.User
 import eu.mjdev.desktop.extensions.Custom.get
 import eu.mjdev.desktop.extensions.Custom.listFilesOnly
-import eu.mjdev.desktop.helpers.internal.ImagesProvider
+import eu.mjdev.desktop.helpers.compose.ImagesProvider
 import eu.mjdev.desktop.managers.apps.AppsManager.Companion.DIR_NAME_BACKGROUNDS
 import eu.mjdev.desktop.managers.apps.AppsManager.Companion.DIR_NAME_DOT_LOCAL
 import eu.mjdev.desktop.managers.apps.AppsManager.Companion.DIR_NAME_SHARE

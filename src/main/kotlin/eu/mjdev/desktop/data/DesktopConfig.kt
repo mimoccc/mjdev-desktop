@@ -1,10 +1,8 @@
 package eu.mjdev.desktop.data
 
 import androidx.compose.ui.graphics.Color
-import eu.mjdev.desktop.helpers.backgrounds.ProviderErzvo
 import eu.mjdev.desktop.helpers.backgrounds.ProviderLocal
-import eu.mjdev.desktop.helpers.backgrounds.ProviderSmug
-import eu.mjdev.desktop.helpers.internal.ImagesProvider
+import eu.mjdev.desktop.helpers.compose.ImagesProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -22,6 +22,7 @@ import eu.mjdev.desktop.helpers.application.base.GlobalLayoutDirection
 import eu.mjdev.desktop.helpers.application.base.GlobalSnapshotManager
 import eu.mjdev.desktop.helpers.application.base.YieldFrameClock
 import eu.mjdev.desktop.helpers.application.l10n.defaultPlatformLocalization
+import eu.mjdev.desktop.log.Log
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.rememberDesktopProvider
 import kotlinx.coroutines.launch
@@ -45,7 +46,7 @@ fun application(
         }
     }
     if (exitProcessOnExit) {
-        println("Exiting application.")
+        Log.i("Exiting application.")
         exitProcess(0)
     }
 }

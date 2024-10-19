@@ -17,7 +17,7 @@ class HackedContentPane(
 
     fun repaintBlur() {
 //        if (window != null && window.width > 0 && window.height > 0) {
-//            println("creating blur image")
+//            Log.i("creating blur image")
 //            BufferedImage(
 //                window.width,
 //                window.height,
@@ -43,9 +43,9 @@ class HackedContentPane(
 //        }
 //
 //        override fun paintComponent(g: Graphics?) {
-//            println("paint called")
+//            Log.i("paint called")
 //            if (window != null && blurImage != null && width > 1 && height > 1) {
-//                println("painting blur")
+//                Log.i("painting blur")
 //                g?.color = Color.WHITE
 //                g?.fillRect(0,0,window!!.width, window!!.height)
 //                g?.drawImage(blurImage, 0, 0, window!!.width, window!!.height, null)

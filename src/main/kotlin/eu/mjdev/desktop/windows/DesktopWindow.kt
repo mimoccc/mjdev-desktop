@@ -26,32 +26,21 @@ fun DesktopWindow(
     content: @Composable BoxScope.() -> Unit = {}
 ) = withDesktopScope {
     FullScreenWindow(
-//    onOpened = {
-//        println("Window opened $window")
-//        window?.toBack()
-//    },
+        name = "DesktopWindow",
+        alwaysOnBottom = true,
+        onOpened = {
+            window?.toBack()
+            window?.isFocusable = false
+        },
         onFocusChange = { focus ->
-//        RuntimeException("Focus change: $it").printStackTrace()
-            // todo better solution
-//        val focusOwner = window?.mostRecentFocusOwner
             if (focus) {
                 window?.toBack()
+                window?.isFocusable = false
             }
-//        focusOwner?.requestFocus()
         }
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
-//            .background(backgroundColor)
-//            .pointerInput(Unit) {
-//                awaitPointerEventScope {
-//                    while (true) {
-//                        awaitPointerEvent(pass = PointerEventPass.Initial)
-//                            .changes
-//                            .forEach(PointerInputChange::consume)
-//                    }
-//                }
-//            }
         ) {
             BackgroundImage(
                 modifier = Modifier
@@ -74,10 +63,6 @@ fun DesktopWindow(
                     }
                 }
             )
-//        WidgetsPanel(
-//            modifier = Modifier
-//                .fillMaxSize()
-//        )
             content()
         }
 //    ContextMenu(

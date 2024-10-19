@@ -9,6 +9,7 @@
 package eu.mjdev.desktop.managers.artificialintelligence.actions
 
 import eu.mjdev.desktop.extensions.Custom.addIfNotExists
+import eu.mjdev.desktop.log.Log
 import eu.mjdev.desktop.managers.artificialintelligence.actions.base.Action
 import eu.mjdev.desktop.managers.artificialintelligence.actions.base.ActionException
 import eu.mjdev.desktop.managers.artificialintelligence.actions.base.ActionException.ActionFail
@@ -62,7 +63,7 @@ class ActionsProvider(
                 a.text.contentEquals(t, true) || a.history.contains(t)
             }
             if (action != null) {
-                println("got action ${action}, relevance: exact.")
+                Log.i("got action ${action}, relevance: exact.")
             } else {
                 val fuzzy: Pair<Int, Action>? = map { a ->
                     Pair(FuzzySearch.ratio(a.text, t), a)
@@ -71,7 +72,7 @@ class ActionsProvider(
                 }?.let { p -> if (p.first > 70) p else null }
                 action = fuzzy?.second
                 if (action != null) {
-                    println("got action ${fuzzy?.second}, relevance: ${fuzzy?.first}.")
+                    Log.i("got action ${fuzzy?.second}, relevance: ${fuzzy?.first}.")
                 }
             }
             if (action != null) {

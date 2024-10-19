@@ -8,6 +8,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.unit.IntSize
+import eu.mjdev.desktop.log.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlin.math.min
@@ -20,6 +21,7 @@ class FFmpegVideoPlayerState {
         internal set
     var progress: Float by mutableStateOf(0f)
         internal set
+
     @Suppress("RedundantSetter")
     private var aspectRatio: Float by mutableStateOf(1f)
         private set
@@ -27,7 +29,6 @@ class FFmpegVideoPlayerState {
         internal set
     var decodedFPS: Float by mutableStateOf(0f)
         internal set
-
     var frameGrabber: KFrameGrabber? by mutableStateOf(null)
         private set
 
@@ -85,8 +86,8 @@ fun VideoPlayerFFMpeg(
         state.open(file)
         val stream = state.streams().first()
         val codec = state.codec(stream)
-        println("Codec: ${codec.name}")
-        codec.hwDecoder.forEach { println("   Decoder: ${it.name}") }
+        Log.i("Codec: ${codec.name}")
+        codec.hwDecoder.forEach { Log.i("   Decoder: ${it.name}") }
         val scale = 1
         val targetSize = IntSize(stream.width / scale, stream.height / scale)
         state.play(stream, codec.hwDecoder.firstOrNull(), targetSize) // Hw accel
@@ -137,7 +138,7 @@ fun VideoPlayerFFMpeg(
                 scale = min(scaleH, scaleW),
                 pivot = Offset.Zero
             ) {
-                println("$image")
+                Log.i("$image")
                 drawImage(image)
             }
         })

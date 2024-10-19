@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package eu.mjdev.desktop.windows
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
@@ -12,6 +14,7 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
+import eu.mjdev.desktop.log.Log
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 import eu.mjdev.desktop.windows.blur.WindowBlurManager.Companion.windowBlur
 import java.awt.*
@@ -24,19 +27,8 @@ import kotlin.math.roundToInt
 @Preview
 @Composable
 fun Window(
-    onCreate: (window: ComposeWindow) -> Unit = {},
-    onOpen: (window: ComposeWindow) -> Unit = {},
-    onClosing: (window: ComposeWindow) -> Unit = {},
-    onClosed: (window: ComposeWindow) -> Unit = {},
-    onActivated: (window: ComposeWindow) -> Unit = {},
-    onDeactivated: (window: ComposeWindow) -> Unit = {},
-    onIconified: (window: ComposeWindow) -> Unit = {},
-    onDeIconified: (window: ComposeWindow) -> Unit = {},
-    onGainFocus: (window: ComposeWindow) -> Unit = {},
-    onLostFocus: (window: ComposeWindow) -> Unit = {},
-    onStateChanged: (window: ComposeWindow) -> Unit = {},
+    name: String? = null,
     onCloseRequest: () -> Unit,
-    state: ChromeWindowState = rememberChromeWindowState(),
     visible: Boolean = true,
     title: String = "",
     icon: Painter? = null,
@@ -49,12 +41,25 @@ fun Window(
     alwaysOnBottom: Boolean = false,
     closeAction: Int = JFrame.DO_NOTHING_ON_CLOSE,
     blurEnabled: Boolean = false, // todo
-    focusHelper: WindowFocusHelper,
-    stateHelper: WindowStateHelper,
+    focusHelper: WindowFocusListener,
+    stateHelper: WindowStateListener,
+    state: ChromeWindowState = rememberChromeWindowState(),
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
     onKeyEvent: (KeyEvent) -> Boolean = { false },
+    onCreated: (window: ComposeWindow) -> Unit = {},
+    onOpened: (window: ComposeWindow) -> Unit = {},
+    onClosing: (window: ComposeWindow) -> Unit = {},
+    onClosed: (window: ComposeWindow) -> Unit = {},
+    onActivated: (window: ComposeWindow) -> Unit = {},
+    onDeactivated: (window: ComposeWindow) -> Unit = {},
+    onIconified: (window: ComposeWindow) -> Unit = {},
+    onDeIconified: (window: ComposeWindow) -> Unit = {},
+    onGainFocus: (window: ComposeWindow) -> Unit = {},
+    onLostFocus: (window: ComposeWindow) -> Unit = {},
+    onStateChanged: (window: ComposeWindow) -> Unit = {},
     content: @Composable FrameWindowScope.() -> Unit
 ) {
+    val currentName by rememberUpdatedState(name ?: "-")
     val currentState by rememberUpdatedState(state)
     val currentTitle by rememberUpdatedState(title)
     val currentIcon by rememberUpdatedState(icon)
@@ -96,13 +101,15 @@ fun Window(
             ComposeWindow(
                 graphicsConfiguration = WindowLocationTracker.lastActiveGraphicsConfiguration
             ).apply {
+                val window = this
+                state.window = window
                 defaultCloseOperation = closeAction
                 listeners.windowListenerRef.registerWithAndSet(
                     this,
                     WindowEventsAdapter(
                         this,
                         currentOnCloseRequest,
-                        onOpen,
+                        onOpened,
                         onClosing,
                         onClosed,
                         onActivated,
@@ -123,7 +130,18 @@ fun Window(
                 listeners.componentListenerRef.registerWithAndSet(
                     this,
                     object : ComponentAdapter() {
+//                        override fun componentShown(e: ComponentEvent?) {
+//                            super.componentShown(e)
+//                        }
+
+//                        override fun componentHidden(e: ComponentEvent?) {
+//                            super.componentHidden(e)
+//                        }
+
                         override fun componentResized(e: ComponentEvent) {
+                            if (currentState.window == null) {
+                                currentState.window = window
+                            }
                             currentState.placement = placement
                             currentState.size = DpSize(width.dp, height.dp)
                             appliedState.placement = currentState.placement
@@ -131,19 +149,22 @@ fun Window(
                         }
 
                         override fun componentMoved(e: ComponentEvent) {
+                            if (currentState.window == null) {
+                                currentState.window = window
+                            }
                             currentState.position = WindowPosition(x.dp, y.dp)
                             appliedState.position = currentState.position
                         }
                     }
                 )
-                onCreate(this)
-                WindowLocationTracker.onWindowCreated(this)
+                WindowLocationTracker.onWindowCreated(window)
+                onCreated(window)
             }
         },
-        dispose = {
-            WindowLocationTracker.onWindowDisposed(it)
-            listeners.removeFromAndClear(it)
-            it.dispose()
+        dispose = { window ->
+            WindowLocationTracker.onWindowDisposed(window)
+            listeners.removeFromAndClear(window)
+            window.dispose()
         },
         update = { window ->
             updater.update {
@@ -153,6 +174,7 @@ fun Window(
                 set(currentTransparent, window::isTransparent::set)
                 set(currentResizable, window::setResizable)
                 set(currentEnabled, window::setEnabled)
+                set(currentName, window::setName)
                 if (currentAlwaysOnBottom) {
                     set(false, window::setFocusableWindowState)
                     set(false, window::setAlwaysOnTop)
@@ -170,7 +192,6 @@ fun Window(
                 window.setPositionSafely(
                     state.position,
                     state.placement,
-                    platformDefaultPosition = { WindowLocationTracker.getCascadeLocationFor(window) }
                 )
                 appliedState.position = state.position
             }
@@ -192,7 +213,7 @@ fun Window(
     )
 }
 
-internal fun Window.align(alignment: Alignment) {
+fun Window.align(alignment: Alignment) {
     val screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(graphicsConfiguration)
     val screenBounds = graphicsConfiguration.bounds
     val size = IntSize(size.width, size.height)
@@ -201,36 +222,57 @@ internal fun Window.align(alignment: Alignment) {
         screenBounds.height - screenInsets.top - screenInsets.bottom
     )
     val location = alignment.align(size, screenSize, LayoutDirection.Ltr)
-
-    setLocation(
-        screenBounds.x + screenInsets.left + location.x,
-        screenBounds.y + screenInsets.top + location.y
-    )
+    val x = screenBounds.x + screenInsets.left + location.x
+    val y = screenBounds.y + screenInsets.top + location.y
+    Log.i("Window location (aligned) set to : ($x, $y)")
+    setLocation(x, y)
 }
 
-internal fun Window.setPositionImpl(
+fun Window.setPositionImpl(
     position: WindowPosition,
     platformDefaultPosition: () -> Point
 ) = when (position) {
-    WindowPosition.PlatformDefault -> location = platformDefaultPosition()
-    is WindowPosition.Aligned -> align(position.alignment)
-    is WindowPosition.Absolute -> setLocation(
-        position.x.value.roundToInt(),
-        position.y.value.roundToInt()
-    )
+    WindowPosition.PlatformDefault -> {
+        val loc = platformDefaultPosition()
+        Log.i("Window location (platform) set to : (${loc.x}, ${loc.y})")
+        location = loc
+    }
+
+    is WindowPosition.Aligned -> {
+        align(position.alignment)
+    }
+
+    is WindowPosition.Absolute -> {
+        Log.i("Window location (absolute) set to : $position")
+        if ((position.x != Dp.Unspecified) && (position.y != Dp.Unspecified)) {
+            val x = position.x.value.roundToInt()
+            val y = position.y.value.roundToInt()
+            Log.i("Window location (absolute) set to : ($x,$y)")
+            setLocation(x, y)
+        } else {
+            Log.i("Window location unknown, omitted.")
+        }
+    }
 }
 
-internal fun Window.setPositionSafely(
+fun Window.setPositionSafely(
     position: WindowPosition,
     placement: WindowPlacement,
-    platformDefaultPosition: () -> Point
+    platformDefaultPosition: () -> Point = { WindowLocationTracker.getCascadeLocationFor(this) }
 ) {
     if (!isVisible || (placement == WindowPlacement.Floating)) {
         setPositionImpl(position, platformDefaultPosition)
     }
 }
 
-private fun Window.setSizeImpl(size: DpSize) {
+fun Window.setPosition(
+    position: WindowPosition,
+    placement: WindowPlacement,
+) = setPositionSafely(position, placement) {
+    WindowLocationTracker.getCascadeLocationFor(this)
+}
+
+fun Window.setSizeImpl(size: DpSize) {
     val availableSize by lazy {
         val screenBounds = graphicsConfiguration.bounds
         val screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(graphicsConfiguration)
@@ -262,20 +304,25 @@ private fun Window.setSizeImpl(size: DpSize) {
         preferredSize = Dimension(width, height)
         pack()
     }
-    setSize(
-        if (isWidthSpecified) width else computedPreferredSize!!.width,
-        if (isHeightSpecified) height else computedPreferredSize!!.height,
-    )
+    val finalWidth = if (isWidthSpecified) width else computedPreferredSize!!.width
+    val finalHeight = if (isHeightSpecified) height else computedPreferredSize!!.height
+    Log.i("Window $name size set to : $finalWidth x  $finalHeight.")
+    setSize(finalWidth, finalHeight)
     revalidate()
 }
 
-internal fun Window.setSizeSafely(size: DpSize, placement: WindowPlacement) {
+fun Window.setSizeSafely(size: DpSize, placement: WindowPlacement) {
     if (!isVisible || (placement == WindowPlacement.Floating)) {
         setSizeImpl(size)
     }
 }
 
-internal class ListenerOnWindowRef<T>(
+fun Window.setSize(
+    size: DpSize,
+    placement: WindowPlacement
+) = setSizeSafely(size, placement)
+
+class ListenerOnWindowRef<T>(
     private val register: Window.(T) -> Unit,
     private val unregister: Window.(T) -> Unit
 ) {
@@ -294,38 +341,45 @@ internal class ListenerOnWindowRef<T>(
     }
 }
 
-internal fun windowStateListenerRef() = ListenerOnWindowRef<WindowStateListener>(
+// todo move?
+fun windowStateListenerRef() = ListenerOnWindowRef<java.awt.event.WindowStateListener>(
     register = Window::addWindowStateListener,
     unregister = Window::removeWindowStateListener
 )
 
-internal fun windowListenerRef() = ListenerOnWindowRef<WindowListener>(
+// todo move?
+fun windowListenerRef() = ListenerOnWindowRef<WindowListener>(
     register = Window::addWindowListener,
     unregister = Window::removeWindowListener
 )
 
-internal fun componentListenerRef() = ListenerOnWindowRef<ComponentListener>(
+// todo move?
+fun componentListenerRef() = ListenerOnWindowRef<ComponentListener>(
     register = Component::addComponentListener,
     unregister = Component::removeComponentListener
 )
 
-internal val GraphicsConfiguration.density: Density
+// todo move?
+val GraphicsConfiguration.density: Density
     get() = Density(
         defaultTransform.scaleX.toFloat(),
         fontScale = 1f
     )
 
-internal val Locale.layoutDirection: LayoutDirection
+// todo move?
+val Locale.layoutDirection: LayoutDirection
     get() = ComponentOrientation.getOrientation(this).layoutDirection
 
-internal val ComponentOrientation.layoutDirection: LayoutDirection
+// todo move?
+val ComponentOrientation.layoutDirection: LayoutDirection
     get() = when {
         isLeftToRight -> LayoutDirection.Ltr
         isHorizontal -> LayoutDirection.Rtl
         else -> LayoutDirection.Ltr
     }
 
-internal fun layoutDirectionFor(component: Component): LayoutDirection {
+// todo move?
+fun layoutDirectionFor(component: Component): LayoutDirection {
     val orientation = component.componentOrientation
     return if (orientation != ComponentOrientation.UNKNOWN) {
         orientation.layoutDirection
@@ -334,8 +388,10 @@ internal fun layoutDirectionFor(component: Component): LayoutDirection {
     }
 }
 
+// todo move?
 val Component.density: Density get() = graphicsConfiguration.density
 
+// todo move?
 fun Window.setIcon(painter: Painter?) {
     setIconImage(
         painter?.toAwtImage(
@@ -346,6 +402,7 @@ fun Window.setIcon(painter: Painter?) {
     )
 }
 
+// todo move?
 fun Frame.setUndecoratedSafely(value: Boolean) {
     if (this.isUndecorated != value) {
         this.isUndecorated = value
@@ -394,12 +451,14 @@ fun Window(
     )
 }
 
+// todo move?
 val LayoutDirection.componentOrientation: ComponentOrientation
     get() = when (this) {
         LayoutDirection.Ltr -> ComponentOrientation.LEFT_TO_RIGHT
         LayoutDirection.Rtl -> ComponentOrientation.RIGHT_TO_LEFT
     }
 
+// todo move?
 class WindowEventsAdapter(
     val window: ComposeWindow,
     val currentOnCloseRequest: () -> Unit,

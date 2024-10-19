@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.helpers.adb.helpers
 
+import eu.mjdev.desktop.log.Log
 import okio.Source
 import okio.buffer
 
@@ -19,7 +20,7 @@ internal class AdbReader(
                 val magic = readIntLe()
                 val payload = readByteArray(payloadLength.toLong())
                 return AdbMessage(command, arg0, arg1, payloadLength, checksum, magic, payload).also {
-                    log { "(${Thread.currentThread().name}) < $it" }
+                    Log.i("(${Thread.currentThread().name}) < $it")
                 }
             }
         }

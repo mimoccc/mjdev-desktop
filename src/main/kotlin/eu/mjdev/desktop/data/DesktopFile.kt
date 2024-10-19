@@ -5,6 +5,7 @@ import eu.mjdev.desktop.extensions.Custom.ParsedList
 import eu.mjdev.desktop.extensions.Custom.ParsedString
 import eu.mjdev.desktop.extensions.Custom.text
 import eu.mjdev.desktop.helpers.desktopparser.DesktopFileParser
+import eu.mjdev.desktop.log.Log
 import org.ini4j.Ini
 import org.ini4j.Profile.Section
 import java.io.File
@@ -18,7 +19,7 @@ class DesktopFile(
     private var content: DesktopFileParser = (runCatching {
         DesktopFileParser(fileData)
     }.onFailure { e ->
-        e.printStackTrace()
+        Log.e(e)
     }.getOrNull() ?: DesktopFileParser())
 ) {
     var fileName: String = if (correctedFile.exists()) correctedFile.name else file.name
@@ -59,7 +60,7 @@ class DesktopFile(
                     content = DesktopFileParser(fileData)
                 }
             }.onFailure { e ->
-                e.printStackTrace()
+                Log.e(e)
             }
         }
     }
@@ -104,7 +105,7 @@ class DesktopFile(
     }
 
     fun writeTo(f: File) {
-        println("Writing: file:///${f.absolutePath}")
+        Log.i("Writing: file:///${f.absolutePath}")
         if (!f.parentFile.exists()) {
             f.parentFile.mkdirs()
         }
@@ -114,7 +115,7 @@ class DesktopFile(
         if (f.parentFile.exists()) {
             f.createNewFile()
         } else {
-            println("Cant store file: ${f.absolutePath}")
+            Log.i("Cant store file: ${f.absolutePath}")
         }
         content.store(f)
     }

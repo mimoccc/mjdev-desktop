@@ -14,7 +14,8 @@ import eu.mjdev.desktop.extensions.Compose.Crossfade
 import eu.mjdev.desktop.extensions.Compose.SuperDarkGray
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
 import eu.mjdev.desktop.extensions.Compose.preview
-import eu.mjdev.desktop.helpers.internal.Queue
+import eu.mjdev.desktop.helpers.generic.Queue
+import eu.mjdev.desktop.log.Log
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -26,7 +27,7 @@ fun BackgroundImage(
     modifier: Modifier = Modifier,
     fadeInDuration: Long = 3000L,
     fadeOutDuration: Long = 5000L,
-    onError: (Throwable) -> Unit = { e -> e.printStackTrace() },
+    onError: (Throwable) -> Unit = { e -> Log.e(e) },
     onChange: (bck: Any?) -> Unit = {}
 ) = withDesktopScope {
     val switchDelay = theme.backgroundRotationDelay

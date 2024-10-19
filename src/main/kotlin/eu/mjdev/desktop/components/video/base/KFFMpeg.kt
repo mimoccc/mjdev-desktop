@@ -2,6 +2,7 @@ package eu.mjdev.desktop.components.video.base
 
 import androidx.compose.ui.graphics.asComposeImageBitmap
 import androidx.compose.ui.unit.IntSize
+import eu.mjdev.desktop.log.Log
 import org.bytedeco.ffmpeg.avcodec.AVCodecContext
 import org.bytedeco.ffmpeg.avcodec.AVCodecHWConfig
 import org.bytedeco.ffmpeg.avcodec.AVCodecParameters
@@ -103,7 +104,7 @@ class KAVFormatContext {
 
     fun findVideoStreams(): List<KVideoStream> = (0 until fmtCtx.nb_streams()).mapNotNull { i ->
         val type = KAVMediaType.fromId(fmtCtx.streams(i).codecpar().codec_type())
-        println("Stream: $i type: $type")
+        Log.i("Stream: $i type: $type")
         if (type == KAVMediaType.VIDEO) {
             val stream = fmtCtx.streams(i)
             val width = stream.codecpar().width()
@@ -254,10 +255,10 @@ class KFrameGrabber(
             avformat.av_seek_frame(fmtCtx, stream, 120, avformat.AVSEEK_FLAG_BACKWARD)
         }*/
         val timeDiff = currentImageTS - ts
-        //println("pts: ${hwFrame.pts()} td: $timeDiff")
+        Log.i("pts: ${hwFrame.pts()} td: $timeDiff")
         if (timeDiff.absoluteValue > 500) {
             val seekPts = ts * timeBaseDen / timeBaseNum / 1000L
-//            println("Time diff: $timeDiff seek to $seekPts ${hwFrame.pts()}")
+            Log.i("Time diff: $timeDiff seek to $seekPts ${hwFrame.pts()}")
             avformat.av_seek_frame(fmtCtx, stream.index(), seekPts, avformat.AVSEEK_FLAG_BACKWARD)
         } else if (timeDiff in 11..499) {
             return
@@ -273,8 +274,8 @@ class KFrameGrabber(
             val r2 = avcodec.avcodec_receive_frame(codecCtx, hwFrame)
             decodedFrameCounter++
             if (r2 < 0) {
-                println("ret1 $r1 ret2 $r2")
-                println("Frame skipped!")
+                Log.i("ret1 $r1 ret2 $r2")
+                Log.i("Frame skipped!")
             }
             val frameTime = hwFrame.pts() * 1000L * timeBaseNum / timeBaseDen
             currentImageTS = frameTime
@@ -291,17 +292,16 @@ class KFrameGrabber(
         } else {
             hwFrame
         }
-        //val frameFormat = avutil.av_get_pix_fmt_name(hwFrame.format()).getString(Charset.defaultCharset())
-        //val srcFormat = avutil.av_get_pix_fmt_name(srcFrame.format()).getString(Charset.defaultCharset())
-        //println("hwFormat: $frameFormat -> $srcFormat")
-        //println("Frame: ${hwFrame.best_effort_timestamp()} format: ${frame.format()} (hw:${hwFrame.format()})")
-
+        val frameFormat = avutil.av_get_pix_fmt_name(hwFrame.format()).getString(Charset.defaultCharset())
+        val srcFormat = avutil.av_get_pix_fmt_name(srcFrame.format()).getString(Charset.defaultCharset())
+        Log.i("hwFormat: $frameFormat -> $srcFormat")
+        Log.i("Frame: ${hwFrame.best_effort_timestamp()} format: ${frame.format()} (hw:${hwFrame.format()})")
         val swsCtx = swscale.sws_getContext(
             codecCtx.width(), codecCtx.height(), srcFrame.format(), //Src size, format
             targetWidth, targetHeight, dstFormat, //Dst size, format
             swscale.SWS_BILINEAR, null, null, null as DoublePointer?
         )
-        //println("Frame format: ${frame.format()}")
+        Log.i("Frame format: ${frame.format()}")
         errCheck(
             swscale.sws_scale(
                 swsCtx, srcFrame.data(), srcFrame.linesize(),

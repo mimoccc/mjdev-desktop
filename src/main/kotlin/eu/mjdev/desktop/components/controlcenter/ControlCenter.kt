@@ -13,15 +13,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.isDebugInspectorInfoEnabled
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
@@ -37,7 +35,9 @@ import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Compose.runAsync
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
-import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.globalKeyEventHandler
+import eu.mjdev.desktop.helpers.keyevents.GlobalKeyListener.Companion.globalKeyEventHandler
+import eu.mjdev.desktop.helpers.mouseevents.GlobalMouseListener.Companion.globalMouseEventHandler
+import eu.mjdev.desktop.helpers.mouseevents.MouseRange
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
 import eu.mjdev.desktop.windows.ChromeWindowState
@@ -47,31 +47,45 @@ import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindow
 @Composable
 fun ControlCenter(
     pagerState: MutableState<Int> = rememberState(0),
-    controlCenterState: ChromeWindowState = rememberChromeWindowState(visible = isDebugInspectorInfoEnabled),
     enterAnimation: EnterTransition = ControlCenterEnterAnimation,
     exitAnimation: ExitTransition = ControlCenterExitAnimation,
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
-    onContextMenuClick: () -> Unit = {}
+    onContextMenuClick: () -> Unit = {},
+    controlCenterState: ChromeWindowState = rememberChromeWindowState(),
 ) = withDesktopScope {
-    // todo remove those
-    val backgroundAlpha by remember { theme.controlCenterBackgroundAlphaState }
-    val controlCenterExpandedWidth: Dp by rememberComputed {
+    val controlCenterExpandedWidth by rememberComputed(
+        theme.controlCenterExpandedWidth,
+        containerSize.width
+    ) {
         (containerSize.width / 100f) * theme.controlCenterExpandedWidth
     }
-    val controlCenterDividerWidth by remember { theme.controlCenterDividerWidthState }
-    val controlCenterIconSize by remember { theme.controlCenterIconSizeState }
-    //
-    val pagesFiltered =
-        rememberCalculated(controlCenterPages) { controlCenterPages.filter { p -> p.condition.invoke(api) } }
-    val position by rememberCalculated { WindowPosition.Aligned(Alignment.TopEnd) }
-    val size by rememberCalculated {
+    val pagesFiltered by rememberCalculated(controlCenterPages) {
+        controlCenterPages.filter { p -> p.condition.invoke(api) }
+    }
+    val size by rememberCalculated(controlCenterState.isVisible) {
         if (controlCenterState.isVisible) {
             DpSize(controlCenterExpandedWidth, containerSize.height)
         } else {
             DpSize(controlCenterDividerWidth, containerSize.height)
         }
     }
-    val windowState: ChromeWindowState = rememberChromeWindowState(position = position, size = size)
+    val position by rememberComputed(size) {
+        WindowPosition.Absolute(
+            containerSize.width - size.width,
+            0.dp
+        )
+    }
+    val mouseRange by rememberCalculated(
+        containerSize,
+        size
+    ) {
+        MouseRange(
+            x = containerSize.width - size.width,
+            y = 0.dp,
+            width = size.width,
+            height = containerSize.height
+        )
+    }
     globalKeyEventHandler(
         isEnabled = { controlCenterState.isVisible && controlCenterState.enabled }
     ) {
@@ -80,27 +94,44 @@ fun ControlCenter(
             true
         }
     }
+    globalMouseEventHandler {
+        onPointerEnter(mouseRange) {
+            runAsync {
+                println("Pointer enter control center.")
+                controlCenterState.showOrFocus()
+            }
+        }
+    }
     ChromeWindow(
+        name = "ControlCenter",
         visible = true,
-        windowState = windowState,
+        windowState = controlCenterState,
         enterAnimation = enterAnimation,
         exitAnimation = exitAnimation,
-        onFocusChange = onFocusChange
+        onFocusChange = onFocusChange,
+        position = position,
+        size = size,
+        onCreated = {
+            controlCenterState.size = size
+            controlCenterState.position = position
+        }
     ) {
         SlidingPanel(
             modifier = Modifier.fillMaxHeight(),
             orientation = Horizontal,
             state = controlCenterState,
             onPointerEnter = {
-                controlCenterState.show()
-                windowState.requestFocus()
+                runAsync {
+                    controlCenterState.show()
+                    controlCenterState.requestFocus()
+                }
             }
         ) { isVisible ->
             if (!isVisible) {
                 Divider(
                     modifier = Modifier.fillMaxHeight()
                         .width(controlCenterDividerWidth),
-                    color = Color.Transparent,
+                    color = if (isDebug) Color.Red else Color.Transparent,
                     thickness = controlCenterDividerWidth
                 )
             } else {
@@ -112,7 +143,7 @@ fun ControlCenter(
                     modifier = Modifier.fillMaxHeight()
                         .wrapContentSize()
                         .background(
-                            backgroundColor.copy(alpha = backgroundAlpha)
+                            backgroundColor.copy(alpha = controlCenterBackgroundAlpha)
                         ),
                 ) {
                     Row(
@@ -129,14 +160,13 @@ fun ControlCenter(
                                 verticalArrangement = Arrangement.Top,
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                itemsIndexed(pagesFiltered.value) { idx, page ->
-                                    val isSelected = (pagerState.value == idx)
+                                itemsIndexed(pagesFiltered) { idx, page ->
                                     Icon(
                                         modifier = Modifier
                                             .padding(vertical = 8.dp)
                                             .size(controlCenterIconSize)
                                             .background(
-                                                color = if (isSelected) iconsTintColor else borderColor,
+                                                color = if (pagerState.value == idx) iconsTintColor else borderColor,
                                                 shape = RoundedCornerShape(8.dp)
                                             )
                                             .pointerInput(Unit) {
@@ -161,7 +191,7 @@ fun ControlCenter(
                                             },
                                         imageVector = page.icon,
                                         contentDescription = "",
-                                        tint = if (isSelected) backgroundColor else textColor
+                                        tint = if (pagerState.value == idx) backgroundColor else textColor
                                     )
                                 }
                             }
@@ -184,7 +214,7 @@ fun ControlCenter(
                                     Column(
                                         modifier = Modifier.width(controlCenterExpandedWidth),
                                     ) {
-                                        val page = pagesFiltered.value[pagerState.value]
+                                        val page = pagesFiltered[pagerState.value]
                                         Box(modifier = Modifier.weight(1f)) {
                                             page.render()
                                         }
@@ -207,6 +237,9 @@ fun ControlCenter(
                 }
             }
         }
+    }
+    LaunchedEffect(position, size) {
+        controlCenterState.size = size
     }
 }
 

@@ -10,6 +10,7 @@ import eu.mjdev.desktop.data.DesktopFile
 import eu.mjdev.desktop.extensions.Compose.rememberState
 import eu.mjdev.desktop.extensions.Locale.toLocale
 import eu.mjdev.desktop.helpers.streams.ResourceStream
+import eu.mjdev.desktop.log.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
@@ -197,7 +198,7 @@ object Custom {
         initial: T,
         delay: Long = 0L,
         coroutineContext: CoroutineContext = Dispatchers.IO,
-        onError: (Throwable) -> Unit = { e -> e.printStackTrace() },
+        onError: (Throwable) -> Unit = { e -> Log.e(e) },
         block: suspend () -> T,
     ): MutableState<T> {
         val result = remember { mutableStateOf(initial) }
@@ -224,7 +225,7 @@ object Custom {
         initial: T,
         key: Any,
         coroutineContext: CoroutineContext = Dispatchers.IO,
-        onError: (Throwable) -> Unit = { e -> e.printStackTrace() },
+        onError: (Throwable) -> Unit = { e -> Log.e(e) },
         block: suspend () -> T,
     ): MutableState<T> {
         val result = remember { mutableStateOf(initial) }

@@ -8,15 +8,18 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.provider.DesktopProvider
 import eu.mjdev.desktop.provider.DesktopProvider.Companion.LocalDesktop
+import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
 @Suppress("FunctionName")
 @Preview
 @Composable
 fun FullScreenWindow(
+    name: String? = null,
     api: DesktopProvider = LocalDesktop.current,
     enabled: Boolean = true,
     focusable: Boolean = true,
+    alwaysOnBottom: Boolean = false,
     onOpened: ChromeWindowState.() -> Unit = {},
     onCloseRequest: () -> Unit = {},
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
@@ -26,23 +29,26 @@ fun FullScreenWindow(
         size = api.containerSize,
         position = WindowPosition.Aligned(Alignment.Center)
     ),
-    onCreate: ChromeWindowState.() -> Unit = {},
-    onFocusChange: ChromeWindowState.(Boolean) -> Unit = {
-    },
+    onCreated: ChromeWindowState.() -> Unit = {},
+    onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     content: @Composable () -> Unit = {}
-) = ChromeWindow(
-    windowState = windowState,
-    enabled = enabled,
-    resizable = false,
-    transparent = true,
-    focusable = focusable,
-    visible = true,
-    alwaysOnTop = false,
-    onPreviewKeyEvent = onPreviewKeyEvent,
-    onKeyEvent = onKeyEvent,
-    onCloseRequest = onCloseRequest,
-    onCreate = onCreate,
-    onOpened = onOpened,
-    onFocusChange = onFocusChange,
-    content = content
-)
+) = withDesktopScope {
+    ChromeWindow(
+        name = name ?: "FullScreenWindow",
+        visible = true,
+        enabled = enabled,
+        resizable = false,
+        transparent = true,
+        focusable = focusable,
+        alwaysOnTop = false,
+        alwaysOnBottom = alwaysOnBottom,
+        onPreviewKeyEvent = onPreviewKeyEvent,
+        onKeyEvent = onKeyEvent,
+        onCloseRequest = onCloseRequest,
+        onCreated = onCreated,
+        onOpened = onOpened,
+        onFocusChange = onFocusChange,
+        windowState = windowState,
+        content = content
+    )
+}

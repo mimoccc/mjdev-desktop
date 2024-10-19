@@ -32,7 +32,7 @@ class DBusManager {
 //    val currentColorScheme get() = settingsInterface.Read("org.freedesktop.appearance", "color-scheme")
 //
 //    init {
-//        println(recursiveVariantValue(currentColorScheme))
+//        Log.i(recursiveVariantValue(currentColorScheme))
 //    }
 //
 //    fun recursiveVariantValue(variant: Variant<*>): Any {

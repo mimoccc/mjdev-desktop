@@ -12,14 +12,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
@@ -39,11 +38,15 @@ import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.ColorUtils.lighter
 import eu.mjdev.desktop.extensions.Compose.height
 import eu.mjdev.desktop.extensions.Compose.preview
-import eu.mjdev.desktop.extensions.Compose.rememberState
+import eu.mjdev.desktop.extensions.Compose.rememberCalculated
+import eu.mjdev.desktop.extensions.Compose.rememberComputed
+import eu.mjdev.desktop.extensions.Compose.runAsync
 import eu.mjdev.desktop.extensions.Modifier.topShadow
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.DesktopPanelExitAnimation
-import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.globalKeyEventHandler
+import eu.mjdev.desktop.helpers.keyevents.GlobalKeyListener.Companion.globalKeyEventHandler
+import eu.mjdev.desktop.helpers.mouseevents.GlobalMouseListener.Companion.globalMouseEventHandler
+import eu.mjdev.desktop.helpers.mouseevents.MouseRange
 import eu.mjdev.desktop.provider.DesktopScope
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
 import eu.mjdev.desktop.windows.ChromeWindow
@@ -63,7 +66,6 @@ fun DesktopPanel(
     tooltipState: TooltipState = rememberTooltipState(),
     enterAnimation: EnterTransition = DesktopPanelEnterAnimation,
     exitAnimation: ExitTransition = DesktopPanelExitAnimation,
-    position: WindowPosition.Aligned = WindowPosition.Aligned(Alignment.BottomCenter),
     onMenuIconClicked: () -> Unit = {},
     onMenuIconContextMenuClicked: () -> Unit = {},
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
@@ -74,20 +76,39 @@ fun DesktopPanel(
     onLanguageClick: () -> Unit = {},
     onClockClick: () -> Unit = {}
 ) = withDesktopScope {
-    val panelDividerWidth by rememberState(theme.panelDividerWidth)
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
         if (visible) {
-            iconSize.height + iconOuterPadding.height + tooltipState.tooltipHeight +
-                    theme.panelContentPadding.times(2) + 8.dp
+            iconSize.height +
+                    iconOuterPadding.height +
+                    tooltipState.tooltipHeight +
+                    theme.panelContentPadding.times(2) +
+                    8.dp
         } else panelDividerWidth
     }
-    val panelSize = remember(panelState.isVisible, panelState.enabled) {
-        DpSize(containerSize.width, panelHeight(panelState.isVisible))
+    val size by rememberComputed(panelState.isVisible, panelState.enabled) {
+        DpSize(
+            containerSize.width,
+            panelHeight(panelState.isVisible)
+        )
     }
-    val windowState: ChromeWindowState = rememberChromeWindowState(
-        position = position, size = panelSize
-    )
-    panelState.updateSize(panelSize - DpSize(0.dp, tooltipState.tooltipHeight))
+    val position by rememberComputed(size) {
+        WindowPosition.Absolute(
+            9.dp,
+            containerSize.height - size.height
+        )
+    }
+    val mouseRange by rememberCalculated(
+        containerSize,
+        size,
+        position
+    ) {
+        MouseRange(
+            x = 0.dp,
+            y = containerSize.height - size.height,
+            width = containerSize.width,
+            height = size.height
+        )
+    }
     globalKeyEventHandler(
         isEnabled = { panelState.isVisible && panelState.enabled }
     ) {
@@ -95,37 +116,57 @@ fun DesktopPanel(
             panelState.hide()
             true
         }
+        onMenuKey {
+            panelState.show()
+            false
+        }
+    }
+    globalMouseEventHandler {
+        onPointerEnter(mouseRange) {
+            runAsync {
+                println("Pointer enter desktop panel.")
+                if (menuState.isNotVisible) {
+                    panelState.showOrFocus()
+                }
+            }
+        }
     }
     ChromeWindow(
-        windowState = windowState,
+        name = "DesktopPanel",
         visible = true,
-        alwaysOnTop = panelState.enabled,
+        position = position,
+        size = size,
         enterAnimation = enterAnimation,
         exitAnimation = exitAnimation,
-        onFocusChange = onFocusChange
+        onFocusChange = onFocusChange,
+        windowState = panelState,
+        onCreated = {
+            panelState.position = position
+            panelState.size = size
+        }
     ) {
         SlidingPanel(
             modifier = Modifier.fillMaxWidth(),
             orientation = Vertical,
             state = panelState,
             onPointerEnter = {
-                panelState.show()
-                if (!menuState.isVisible) {
-                    windowState.requestFocus()
-                }
-            },
-            onPointerLeave = {
-                if (!menuState.isVisible) {
-                    panelState.hide()
+                runAsync {
+                    panelState.show()
+                    if (menuState.isVisible) {
+                        menuState.requestFocus()
+                    } else {
+                        panelState.requestFocus()
+                    }
                 }
             }) { isVisible ->
-            Divider(
-                modifier = Modifier.fillMaxWidth()
-                    .height(panelDividerWidth),
-                color = Color.Transparent,
-                thickness = panelDividerWidth
-            )
-            if (isVisible) {
+            if (!isVisible) {
+                Divider(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(panelDividerWidth),
+                    color = if (isDebug) Color.Red else Color.Transparent,
+                    thickness = panelDividerWidth
+                )
+            } else {
                 TooltipArea(
                     modifier = Modifier.fillMaxWidth()
                         .wrapContentHeight(),
@@ -147,7 +188,7 @@ fun DesktopPanel(
                         BlurPanel(
                             modifier = Modifier.fillMaxWidth()
                                 .wrapContentHeight()
-                                .clip(RoundedCornerShape(panelSize.height.div(2)))
+                                .clip(RoundedCornerShape(size.height.div(2)))
                         ) {
                             Column(
                                 modifier = Modifier.fillMaxWidth()
@@ -161,7 +202,7 @@ fun DesktopPanel(
                                             )
                                         )
                                     )
-                                    .clip(RoundedCornerShape(panelSize.height.div(2)))
+                                    .clip(RoundedCornerShape(size.height.div(2)))
                                     .topShadow(
                                         color = borderColor.alpha(0.3f),
                                         blur = 4.dp
@@ -169,7 +210,7 @@ fun DesktopPanel(
                                         start = 4.dp,
                                         end = 4.dp,
                                         bottom = 4.dp
-                                    ).onPlaced(panelState::onPlaced),
+                                    ),
                             ) {
                                 Divider(
                                     modifier = Modifier.fillMaxWidth()
@@ -227,6 +268,10 @@ fun DesktopPanel(
                 }
             }
         }
+    }
+    LaunchedEffect(size, position) {
+        panelState.tooltipHeight = tooltipState.tooltipHeight
+        panelState.size = size
     }
 }
 

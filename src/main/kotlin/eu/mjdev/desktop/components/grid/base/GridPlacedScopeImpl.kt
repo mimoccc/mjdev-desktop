@@ -17,6 +17,7 @@ import eu.mjdev.desktop.components.grid.base.GridPlacedSpanAnchor.Companion.bott
 import eu.mjdev.desktop.components.grid.base.GridPlacedSpanAnchor.Companion.leftBound
 import eu.mjdev.desktop.components.grid.base.GridPlacedSpanAnchor.Companion.rightBound
 import eu.mjdev.desktop.components.grid.base.GridPlacedSpanAnchor.Companion.topBound
+import eu.mjdev.desktop.log.Log
 
 class GridPlacedScopeImpl(
     private val cells: GridPlacedCells,
@@ -120,7 +121,7 @@ class GridPlacedScopeImpl(
     }
 
     private fun onSkipped(row: Int?, column: Int?, rowSpan: Int, columnSpan: Int) {
-        println(
+        Log.i(
             """
                 Skipped position: [${row}x$column], span size: [${rowSpan}x$columnSpan]
                 Grid size: [${cells.rowCount}x${cells.columnCount}]

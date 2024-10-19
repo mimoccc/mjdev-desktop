@@ -1,5 +1,6 @@
 package eu.mjdev.desktop.helpers.adb.helpers
 
+import eu.mjdev.desktop.log.Log
 import okio.Sink
 import okio.buffer
 import java.nio.ByteBuffer
@@ -55,7 +56,7 @@ internal class AdbWriter(sink: Sink) : AutoCloseable {
         offset: Int,
         length: Int
     ) {
-        log {
+        Log.i(
             "(${Thread.currentThread().name}) > ${
                 AdbMessage(
                     command,
@@ -67,7 +68,7 @@ internal class AdbWriter(sink: Sink) : AutoCloseable {
                     payload ?: ByteArray(0)
                 )
             }"
-        }
+        )
         synchronized(bufferedSink) {
             bufferedSink.apply {
                 writeIntLe(command)

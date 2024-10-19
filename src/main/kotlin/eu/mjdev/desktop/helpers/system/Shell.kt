@@ -4,6 +4,7 @@ import eu.mjdev.desktop.data.App
 import eu.mjdev.desktop.extensions.Custom.consoleOutput
 import eu.mjdev.desktop.helpers.exception.ErrorException.Companion.error
 import eu.mjdev.desktop.helpers.exception.SuccessException.Companion.success
+import eu.mjdev.desktop.log.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,9 +55,8 @@ class Shell(
     }.also { processBuilder ->
         runCatching {
             processBuilder.start()
-
         }.onFailure { e ->
-            e.printStackTrace()
+            Log.e(e)
         }
     }
 
@@ -100,7 +100,7 @@ class Shell(
         fun executeAndRead(
             cmd: String,
             vararg args: String,
-            onError: (Throwable) -> Unit = { e -> e.printStackTrace() }
+            onError: (Throwable) -> Unit = { e -> Log.e(e) }
         ): String = runCatching {
             Runtime.getRuntime().exec(arrayOf(cmd) + args).apply {
                 waitFor()
@@ -108,13 +108,13 @@ class Shell(
                 onError(e)
             }
         }.onFailure { e ->
-            e.printStackTrace()
+            onError(e)
         }.getOrNull()?.inputReader()?.readText().orEmpty()
 
         fun executeAndReadLines(
             cmd: String,
             vararg args: String,
-            onError: (Throwable) -> Unit = { e -> e.printStackTrace() }
+            onError: (Throwable) -> Unit = { e -> Log.e(e) }
         ): List<String> = runCatching {
             Runtime.getRuntime().exec(arrayOf(cmd) + args).apply {
                 waitFor()
@@ -144,5 +144,3 @@ class Shell(
         }
     }
 }
-
-

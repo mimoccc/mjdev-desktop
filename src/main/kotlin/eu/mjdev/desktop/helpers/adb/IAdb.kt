@@ -214,8 +214,8 @@ interface IAdb : AutoCloseable {
     }
 
     @Throws(IOException::class)
-    fun unroot() {
-        val response = restartAdb(this, "unroot:")
+    fun unRoot() {
+        val response = restartAdb(this, "unRoot:")
         if (!response.startsWith("restarting") && !response.contains("not running as root")) {
             throw IOException("Failed to restart adb as root: $response")
         }

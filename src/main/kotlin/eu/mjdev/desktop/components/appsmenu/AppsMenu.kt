@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
 import eu.mjdev.desktop.components.blur.BlurPanel
@@ -29,7 +29,6 @@ import eu.mjdev.desktop.extensions.ColorUtils.alpha
 import eu.mjdev.desktop.extensions.ColorUtils.darker
 import eu.mjdev.desktop.extensions.Compose.clear
 import eu.mjdev.desktop.extensions.Compose.launchedEffect
-import eu.mjdev.desktop.extensions.Compose.onMouseEnter
 import eu.mjdev.desktop.extensions.Compose.plus
 import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberCalculated
@@ -44,7 +43,7 @@ import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import eu.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
 import eu.mjdev.desktop.helpers.compose.Orientation
 import eu.mjdev.desktop.helpers.compose.rememberForeverLazyListState
-import eu.mjdev.desktop.helpers.internal.KeyEventHandler.Companion.globalKeyEventHandler
+import eu.mjdev.desktop.helpers.keyevents.GlobalKeyListener.Companion.globalKeyEventHandler
 import eu.mjdev.desktop.helpers.shape.BarShape
 import eu.mjdev.desktop.provider.DesktopScope
 import eu.mjdev.desktop.provider.DesktopScope.Companion.withDesktopScope
@@ -89,16 +88,31 @@ fun AppsMenu(
             else -> appCategories
         }
     }
-    val position by rememberCalculated {
+    val position by rememberCalculated(
+        containerSize.height,
+        panelState.x,
+        panelState.height,
+        appMenuMinHeight
+    ) {
         WindowPosition.Absolute(
-            panelState.bounds.x,
-            containerSize.height - (panelState.bounds.height + appMenuMinHeight)
+            panelState.x,
+            containerSize.height - (panelState.height + appMenuMinHeight - panelState.tooltipHeight)
         )
     }
-    val windowState: ChromeWindowState = rememberChromeWindowState(position = position)
+    val size by rememberComputed(
+        appMenuMinWidth,
+        appMenuMinHeight,
+        containerSize
+    ) {
+        DpSize(appMenuMinWidth, appMenuMinHeight)
+    }
     globalKeyEventHandler(
         isEnabled = { menuState.isVisible && menuState.enabled }
     ) {
+        onMenuKey {
+            panelState.show()
+            false
+        }
         onEscape {
             menuState.hide()
             true
@@ -121,10 +135,13 @@ fun AppsMenu(
         }
     }
     ChromeWindow(
+        name = "AppsMenu",
         visible = menuState.isVisible,
+        size = size,
+        position = position,
         enterAnimation = enterAnimation,
         exitAnimation = exitAnimation,
-        windowState = windowState,
+        windowState = menuState,
         onFocusChange = onFocusChange
     ) {
         Box(
@@ -142,10 +159,6 @@ fun AppsMenu(
                     4.dp,
                     0.dp
                 )
-                .onPlaced(menuState::onPlaced)
-                .onMouseEnter {
-                    windowState.requestFocus()
-                }
         ) {
             BlurPanel(
                 modifier = Modifier.fillMaxSize()
@@ -265,6 +278,7 @@ fun AppsMenu(
             if (!menuState.isVisible) {
                 category = ""
             }
+            menuState.position = position
         }
     }
 }

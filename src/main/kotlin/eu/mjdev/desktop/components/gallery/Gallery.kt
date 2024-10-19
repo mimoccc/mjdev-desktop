@@ -26,6 +26,7 @@ import eu.mjdev.desktop.extensions.Compose.preview
 import eu.mjdev.desktop.extensions.Compose.rememberDerivedState
 import eu.mjdev.desktop.extensions.Compose.rememberFocusRequester
 import eu.mjdev.desktop.helpers.bitmap.Bitmap
+import eu.mjdev.desktop.log.Log
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -59,18 +60,18 @@ fun Gallery(
     ) -> Unit = { _, _, _ -> },
 ) {
     val initialized = remember(list, index) { mutableStateOf(false) }
-    val nextItem: () -> Unit = {
-        if (currentItemIndex.intValue < (list.size - 1)) {
-            currentItemIndex.intValue += 1
-        }
-        controlsState.value = true
-    }
-    val prevItem: () -> Unit = {
-        if (currentItemIndex.intValue > 0) {
-            currentItemIndex.intValue -= 1
-        }
-        controlsState.value = true
-    }
+//    val nextItem: () -> Unit = {
+//        if (currentItemIndex.intValue < (list.size - 1)) {
+//            currentItemIndex.intValue += 1
+//        }
+//        controlsState.value = true
+//    }
+//    val prevItem: () -> Unit = {
+//        if (currentItemIndex.intValue > 0) {
+//            currentItemIndex.intValue -= 1
+//        }
+//        controlsState.value = true
+//    }
     val itemState = rememberDerivedState(0, currentItemIndex.intValue) {
         list[currentItemIndex.intValue]
     }
@@ -146,7 +147,7 @@ fun Gallery(
                                 try {
                                     fr.requestFocus()
                                 } catch (e: Exception) {
-                                    e.printStackTrace()
+                                    Log.e(e)
                                 }
                             }
                         }
