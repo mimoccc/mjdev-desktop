@@ -1,30 +1,26 @@
-repositories {
-    google()
-    mavenCentral()
-    gradlePluginPortal()
-}
-
 plugins {
     `kotlin-dsl`
-//    java
-//    `java-gradle-plugin`
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
-//    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
     implementation(gradleApi())
     implementation(gradleKotlinDsl())
 //    implementation(libs.gradle)
 //    implementation(libs.gradle.api)
+//    implementation(libs.gradle.kotlin.plugin)
 }
 
-//gradlePlugin {
-//    plugins {
-//        register("DesktopPlugin") {
-//            id = "DesktopPlugin"
-//            displayName = "DesktopPlugin"
-//            description = "Common application plugin to handle all stuffs needed."
-//            implementationClass = "org.mjdev.gradle.plugin.DesktopPlugin"
-//        }
-//    }
-//}
+gradlePlugin {
+    plugins {
+        register("MultiPlatformPlugin") {
+            id = "MultiPlatformPlugin"
+            displayName = "MultiPlatformPlugin"
+            description = "Common library plugin to handle all stuffs needed."
+            implementationClass = "org.mjdev.gradle.plugins.MultiPlatformPlugin"
+        }
+    }
+}

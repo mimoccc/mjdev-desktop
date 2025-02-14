@@ -1,9 +1,8 @@
 # Mjdev Desktop
 
 An kotlin compose desktop environment like DDE Desktop.
-New desktop environment with many functio
-nality i miss in another desktops.
-Build on compose kotlin and jvm.
+New desktop environment with many functionality i miss in another desktops.
+Build on compose kotlin and jvm, multiplatform, for android, web & desktop.
 
 (Currently only linux os is supported as main target)
 
