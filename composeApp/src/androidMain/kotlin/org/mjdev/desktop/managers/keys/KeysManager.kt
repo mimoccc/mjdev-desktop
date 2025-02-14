@@ -1,0 +1,11 @@
+package org.mjdev.desktop.managers.keys
+
+import org.mjdev.desktop.helpers.streams.ResourceStream
+
+class KeysManager {
+
+    fun loadKey(key: String): String = runCatching {
+        ResourceStream("keys/$key.key").string
+    }.getOrNull().orEmpty()
+
+}

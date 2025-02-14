@@ -1,0 +1,24 @@
+package org.mjdev.desktop.extensions
+
+import androidx.compose.ui.graphics.ImageBitmap
+import org.mjdev.desktop.interfaces.IDesktopContext
+
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+actual object ImageBitmapExt {
+
+    actual fun ImageBitmap.cut(
+        x: Int,
+        y: Int,
+        width: Int,
+        height: Int
+    ): ImageBitmap {
+        TODO("Not yet implemented")
+    }
+
+    actual suspend fun IDesktopContext.loadPicture(
+        src: Any?
+    ): ImageBitmap? {
+        TODO("Not yet implemented")
+    }
+
+}
