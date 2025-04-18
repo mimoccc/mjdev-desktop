@@ -15,7 +15,7 @@ android-min-sdk = "24"
 android-target-sdk = "35"
 # lib versions
 gradle = "8.9.1"
-gradle-kotlinter = "4.3.0"
+#gradle-kotlinter = "4.3.0"
 androidx-activity-compose = "1.10.1"
 androidx-lifecycle = "2.8.4"
 androidx-ui-tooling = "1.7.8"
@@ -28,28 +28,29 @@ gettext-lib = "1.11.0"
 google-gson = "2.13.0"
 charts = "Beta-0.0.5"
 human-readable = "1.11.0"
-i18n4k-core = "0.9.0"
+#i18n4k-core = "0.9.0"
 ini4j = "0.5.4"
 jetlime = "3.0.1"
 kotlin = "2.1.20"
 kotlinx-coroutines = "1.10.2"
 kotlinx-date-time = "0.6.2"
-logback = "1.5.7"
+#logback = "1.5.7"
 okhttp3 = "4.12.0"
 okio = "3.11.0"
 qrose = "1.0.1"
 tts = "3.0.0-beta.1"
 ychat = "1.4.1"
-generativeai = "0.9.0"
+#generativeai = "0.9.0"
 alert-kmp = "2.0.0"
-emoji2 = "1.5.0"
+#emoji2 = "1.5.0"
+accompanist-permissions = "0.37.2"
 
 [libraries]
 # gradle
-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
-gradle-api = { module = "com.android.tools.build:gradle-api", version.ref = "gradle" }
-gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-gradle-kotlinter = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "gradle-kotlinter" }
+#gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+#gradle-api = { module = "com.android.tools.build:gradle-api", version.ref = "gradle" }
+#gradle-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+#gradle-kotlinter = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "gradle-kotlinter" }
 # androidx
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
@@ -91,12 +92,13 @@ ini4j = { module = "org.ini4j:ini4j", version.ref = "ini4j" }
 tts = { module = "nl.marc-apps:tts", version.ref = "tts" }
 # ai
 google-generative-ai = { module = "dev.shreyaspatil.generativeai:generativeai-google-jvm", version.ref = "generative-ai" }
-generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
+#generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
 # strings
 human-readable = { module = "nl.jacobras:Human-Readable", version.ref = "human-readable" }
 # alerts
 alert-kmp = { module = "io.github.khubaibkhan4:alert-kmp", version.ref="alert-kmp" }
-androidx-emoji2 = { group = "androidx.emoji2", name = "emoji2", version.ref = "emoji2" }
+#androidx-emoji2 = { group = "androidx.emoji2", name = "emoji2", version.ref = "emoji2" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }

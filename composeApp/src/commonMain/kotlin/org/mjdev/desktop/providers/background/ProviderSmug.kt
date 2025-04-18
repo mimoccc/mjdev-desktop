@@ -15,6 +15,7 @@ import org.mjdev.desktop.helpers.compose.ImagesProvider
 class ProviderSmug(
     private val loadCount: Int = 10
 ) : ImagesProvider {
+    // error 521 HTTP
     private val list = listOf(
         "https://wallpapersmug.com/u/c78d6a/rainy-night-of-city-dark.jpeg",
         "https://wallpapersmug.com/u/db1982/vegeta-artwork.jpg",

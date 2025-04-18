@@ -1,6 +1,8 @@
-package org.mjdev.desktop
+package org.mjdev.desktop.activity
 
+import android.graphics.Color
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -15,50 +17,63 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.core.provider.FontRequest
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-import androidx.emoji2.text.EmojiCompat
-import androidx.emoji2.text.FontRequestEmojiCompatConfig
-import org.mjdev.desktop.context.DesktopContext.Companion.rememberDesktopContext
+import androidx.core.view.WindowInsetsControllerCompat
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import org.mjdev.desktop.MainView
+import org.mjdev.desktop.context.DesktopContext
 import org.mjdev.desktop.context.LocalDesktopContext
+import org.mjdev.desktop.helpers.permission.rememberPermissionManager
 import org.mjdev.desktop.helpers.theme.DesktopTheme
+import org.mjdev.desktop.helpers.WakeLockHelper
 
 class MainActivity : ComponentActivity() {
+    val wakeLockHelper by lazy { WakeLockHelper(this) }
+
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun onBackPressed() {
+        // Disable back button
+    }
+
+    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        initEmojiCompat()
+        wakeLockHelper.acquireWakeLock()
         installSplashScreen()
+        setKeepScreenOn()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.dark(
-                android.graphics.Color.TRANSPARENT,
+            statusBarStyle = SystemBarStyle.Companion.dark(
+                Color.TRANSPARENT,
             ),
-            navigationBarStyle = SystemBarStyle.dark(
-                android.graphics.Color.TRANSPARENT,
+            navigationBarStyle = SystemBarStyle.Companion.dark(
+                Color.TRANSPARENT,
             )
         )
         WindowCompat.getInsetsController(window, window.decorView).apply {
             hide(WindowInsetsCompat.Type.statusBars())
             hide(WindowInsetsCompat.Type.navigationBars())
-            systemBarsBehavior = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
         setContent {
+            val permissionManager = rememberPermissionManager()
             CompositionLocalProvider(
-                LocalDesktopContext provides rememberDesktopContext(baseContext)
+                LocalDesktopContext provides DesktopContext.Companion.rememberDesktopContext(
+                    baseContext
+                )
             ) {
                 DesktopTheme {
                     Scaffold(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.Companion.fillMaxSize()
                     ) { paddingValues ->
                         Box(
-                            modifier = Modifier
+                            modifier = Modifier.Companion
                                 .fillMaxSize()
                                 .padding(paddingValues)
                                 .consumeWindowInsets(paddingValues)
                                 .windowInsetsPadding(
-                                    WindowInsets.safeDrawing
+                                    WindowInsets.Companion.safeDrawing
                                 )
                         ) {
                             MainView()
@@ -69,16 +84,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun initEmojiCompat() {
-        EmojiCompat.init(
-            FontRequestEmojiCompatConfig(
-                this, FontRequest(
-                    "com.google.android.gms.fonts",
-                    "com.google.android.gms",
-                    "Noto Color Emoji Compat",
-                    emptyList()
-                )
-            )
-        )
+    override fun onDestroy() {
+        super.onDestroy()
+        resetKeepScreenOn()
+        wakeLockHelper.releaseWakeLock()
+    }
+
+    private fun ComponentActivity.setKeepScreenOn() {
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+
+    private fun ComponentActivity.resetKeepScreenOn() {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 }

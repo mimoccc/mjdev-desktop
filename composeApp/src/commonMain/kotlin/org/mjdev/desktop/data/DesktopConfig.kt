@@ -55,7 +55,7 @@ class DesktopConfig(
 
         private val DEFAULT = DesktopConfig {
 //            addBackground(ProviderSmug())
-//            addBackground(ProviderErzvo())
+            addBackground(ProviderErzvo())
         }
 
         // todo load from user settings

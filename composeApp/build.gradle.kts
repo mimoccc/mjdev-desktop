@@ -125,8 +125,8 @@ kotlin {
                 implementation(libs.androidx.core.splashscreen)
                 // charts
                 implementation(libs.charts)
-                // emoji
-                implementation(libs.androidx.emoji2)
+                // permissions
+                implementation(libs.accompanist.permissions)
             }
         }
         // wasm dependencies

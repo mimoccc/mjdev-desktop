@@ -37,21 +37,25 @@ class AppsManager(
         (context as? DesktopContext)?.context
     }
     private val userManger by lazy {
-        androidContext?.getSystemService(Context.USER_SERVICE) as UserManager
+        runCatching {
+            androidContext?.getSystemService(Context.USER_SERVICE) as UserManager
+        }.getOrNull()
     }
     private val launcherApps by lazy {
-        androidContext?.getSystemService(LauncherApps::class.java)
+        runCatching {
+            androidContext?.getSystemService(LauncherApps::class.java)
+        }.getOrNull()
     }
 
-    val userHandles: List<UserHandle>
-        get() = userManger.getUserProfiles()
+    val userHandles: List<UserHandle>?
+        get() = userManger?.getUserProfiles()
 
     override val currentLocale: ILocale
         get() = Locale.getDefault().toILocale()
 
     private val allAppsState = mutableStateListFlow {
         mutableListOf<App>().apply {
-            userHandles.forEach { handle ->
+            userHandles?.forEach { handle ->
                 launcherApps?.getActivityList(null, handle)?.map { aInfo ->
                     App(androidContext, aInfo)
                 }?.also { apps ->
@@ -65,14 +69,6 @@ class AppsManager(
         get() = runBlocking {
             allAppsState.firstOrNull() ?: emptyList()
         }
-
-    val backgrounds by lazy {
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-            .absolutePath
-            .toPath()
-            .filesOnly
-            .sortedByName()
-    }
 
     override val categories
         get() = allApps.asSequence().flatMap { app ->
