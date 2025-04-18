@@ -27,7 +27,7 @@ class Queue<E>(
             }
         }
 
-//        source.isEmpty() -> throw (IllegalStateException("Source is empty."))
+        source.isEmpty() -> throw (IllegalStateException("Source is empty."))
 
         else -> {
             currentIndex = 0
@@ -45,10 +45,10 @@ class Queue<E>(
                 }
             }
 
-//            source.isEmpty() -> {
-//                Log.e("No background, empty list.")
-//                null
-//            }
+            source.isEmpty() -> {
+                Log.e("No background, empty list.")
+                null
+            }
 
             else -> {
                 currentIndex = 0

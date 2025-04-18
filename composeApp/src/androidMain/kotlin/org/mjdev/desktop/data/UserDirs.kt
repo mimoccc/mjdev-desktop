@@ -1,6 +1,7 @@
 package org.mjdev.desktop.data
 
 import okio.Path
+import org.mjdev.desktop.extensions.PathExt.mkdirs
 import org.mjdev.desktop.interfaces.IUserDirs
 
 @Suppress("unused")
@@ -11,6 +12,18 @@ class UserDirs(
     operator fun get(
         name: String
     ): Path = homeDirectory.resolve(name)
+
+    init {
+        runCatching { desktopDirectory.mkdirs() }
+        runCatching { downloadDirectory.mkdirs() }
+        runCatching { templatesDirectory.mkdirs() }
+        runCatching { publicShareDirectory.mkdirs() }
+        runCatching { documentsDirectory.mkdirs() }
+        runCatching { musicDirectory.mkdirs() }
+        runCatching { picturesDirectory.mkdirs() }
+        runCatching { videosDirectory.mkdirs() }
+        runCatching { backgroundsDirectory.mkdirs() }
+    }
 
     override val desktopDirectory: Path
         get() = this[IUserDirs.DESKTOP_DIR]
