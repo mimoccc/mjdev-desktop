@@ -1,3 +1,5 @@
 package org.mjdev.desktop.helpers.system.meminfo
 
-actual fun MemInfo(): MemInfoStub  = MemInfoAndroid()
+import org.mjdev.desktop.interfaces.IDesktopContext
+
+actual fun MemInfo(context: IDesktopContext): MemInfoStub  = MemInfoAndroid(context)

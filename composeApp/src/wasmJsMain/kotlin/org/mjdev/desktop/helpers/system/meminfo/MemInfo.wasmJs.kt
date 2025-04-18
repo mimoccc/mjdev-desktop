@@ -1,3 +1,7 @@
 package org.mjdev.desktop.helpers.system.meminfo
 
-actual fun MemInfo(): MemInfoStub = MemInfoStub()
+import org.mjdev.desktop.interfaces.IDesktopContext
+
+actual fun MemInfo(
+    context: IDesktopContext
+): MemInfoStub = MemInfoStub(context)

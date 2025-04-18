@@ -45,7 +45,7 @@ fun MemoryChart(
             legendPosition = legendPosition
         ) {
             // todo
-            MemInfo().let { mem ->
+            MemInfo(context).let { mem ->
                 val secondValue = mem.free
                 val firstValue = mem.used
                 val secondTitle = freeTitle.plus(": ").plus(mem.free.toMemorySizeReadable())

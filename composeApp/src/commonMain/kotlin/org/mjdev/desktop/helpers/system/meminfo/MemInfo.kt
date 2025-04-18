@@ -1,3 +1,7 @@
 package org.mjdev.desktop.helpers.system.meminfo
 
-expect fun MemInfo() : MemInfoStub
+import org.mjdev.desktop.interfaces.IDesktopContext
+
+expect fun MemInfo(
+    context: IDesktopContext
+) : MemInfoStub
