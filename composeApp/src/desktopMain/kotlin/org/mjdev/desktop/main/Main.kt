@@ -1,11 +1,12 @@
-package org.mjdev.desktop
+package org.mjdev.desktop.main
 
 import Notify
 import org.mjdev.desktop.components.main.MainWindow
+import org.mjdev.desktop.helpers.application.application
 
 fun main(
     args: Array<String>
-) = org.mjdev.desktop.helpers.application.application(
+) = application(
     args = args.toList(),
     exitProcessOnExit = true
 ) {

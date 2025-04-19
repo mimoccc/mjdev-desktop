@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.conditional
@@ -54,66 +55,71 @@ fun AppBar(
     icon: @Composable RowScope.() -> Unit = {},
     title: @Composable RowScope.() -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
-) = when (orientation) {
-    Orientation.Horizontal -> Row(
-        modifier = modifier.wrapContentHeight()
-            .padding(contentPadding),
-        verticalAlignment = contentAlignment,
-    ) {
-        Row(
-            modifier = Modifier.wrapContentHeight()
-                .padding(iconPadding),
-            verticalAlignment = iconVerticalAlignment,
-            horizontalArrangement = iconHorizontalArrangement,
-            content = icon
-        )
-        Row(
-            modifier = Modifier
-                .conditional(fillCenter) {
-                    weight(1f)
-                }
-                .wrapContentHeight()
-                .padding(titlePadding),
-            verticalAlignment = titleVerticalAlignment,
-            horizontalArrangement = titleHorizontalArrangement,
-            content = title
-        )
-        Row(
-            modifier = Modifier.wrapContentHeight()
-                .padding(actionsPadding),
-            verticalAlignment = actionsVerticalAlignment,
-            horizontalArrangement = actionsHorizontalArrangement,
-            content = actions
-        )
+) {
+    debugInspectorInfo {
+        println("Recomposition AppBar")
     }
+    when (orientation) {
+        Orientation.Horizontal -> Row(
+            modifier = modifier.wrapContentHeight()
+                .padding(contentPadding),
+            verticalAlignment = contentAlignment,
+        ) {
+            Row(
+                modifier = Modifier.wrapContentHeight()
+                    .padding(iconPadding),
+                verticalAlignment = iconVerticalAlignment,
+                horizontalArrangement = iconHorizontalArrangement,
+                content = icon
+            )
+            Row(
+                modifier = Modifier
+                    .conditional(fillCenter) {
+                        weight(1f)
+                    }
+                    .wrapContentHeight()
+                    .padding(titlePadding),
+                verticalAlignment = titleVerticalAlignment,
+                horizontalArrangement = titleHorizontalArrangement,
+                content = title
+            )
+            Row(
+                modifier = Modifier.wrapContentHeight()
+                    .padding(actionsPadding),
+                verticalAlignment = actionsVerticalAlignment,
+                horizontalArrangement = actionsHorizontalArrangement,
+                content = actions
+            )
+        }
 
-    Orientation.Vertical -> Column(
-        modifier = modifier
-            .width(IntrinsicSize.Min)
-            .padding(contentPadding),
-    ) {
-        Row(
-            modifier = Modifier.width(IntrinsicSize.Min)
-                .padding(iconPadding),
-            verticalAlignment = iconVerticalAlignment,
-            content = icon
-        )
-        Row(
-            modifier = Modifier
-                .conditional(fillCenter) {
-                    weight(1f)
-                }
-                .wrapContentHeight()
-                .padding(titlePadding),
-            verticalAlignment = titleVerticalAlignment,
-            content = title
-        )
-        Row(
-            modifier = Modifier.width(IntrinsicSize.Min)
-                .padding(actionsPadding),
-            verticalAlignment = actionsVerticalAlignment,
-            content = actions
-        )
+        Orientation.Vertical -> Column(
+            modifier = modifier
+                .width(IntrinsicSize.Min)
+                .padding(contentPadding),
+        ) {
+            Row(
+                modifier = Modifier.width(IntrinsicSize.Min)
+                    .padding(iconPadding),
+                verticalAlignment = iconVerticalAlignment,
+                content = icon
+            )
+            Row(
+                modifier = Modifier
+                    .conditional(fillCenter) {
+                        weight(1f)
+                    }
+                    .wrapContentHeight()
+                    .padding(titlePadding),
+                verticalAlignment = titleVerticalAlignment,
+                content = title
+            )
+            Row(
+                modifier = Modifier.width(IntrinsicSize.Min)
+                    .padding(actionsPadding),
+                verticalAlignment = actionsVerticalAlignment,
+                content = actions
+            )
+        }
     }
 }
 

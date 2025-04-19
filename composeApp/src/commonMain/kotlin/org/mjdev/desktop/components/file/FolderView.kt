@@ -1,14 +1,17 @@
 package org.mjdev.desktop.components.file
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -28,6 +31,7 @@ import org.mjdev.desktop.extensions.PathExt.isDirectory
 import org.mjdev.desktop.extensions.PathExt.listFiles
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
+import org.mjdev.desktop.extensions.Modifier.clipCircle
 import kotlin.math.max
 
 // todo orientation
@@ -79,7 +83,8 @@ fun FolderView(
                 files.forEach { file ->
                     item {
                         FolderIcon(
-                            modifier = Modifier.padding(iconSpacing),
+                            modifier = Modifier
+                                .padding(iconSpacing),
                             path = file.path,
                             customName = file.customName,
                             iconSize = iconSize,
