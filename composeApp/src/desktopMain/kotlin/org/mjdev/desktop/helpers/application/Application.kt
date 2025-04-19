@@ -41,6 +41,7 @@ import kotlin.system.exitProcess
 fun application(
     args: List<String> = emptyList(),
     exitProcessOnExit: Boolean = true,
+    onExit: () -> Unit = {},
     content: @Composable ApplicationScope.() -> Unit
 ) {
     if (System.getProperty("compose.application.configure.swing.globals") == "true") {
@@ -54,6 +55,7 @@ fun application(
     }
     if (exitProcessOnExit) {
         Log.i("Exiting application.")
+        onExit()
         exitProcess(0)
     }
 }

@@ -8,6 +8,6 @@ actual fun MemInfo(
     context: IDesktopContext
 ): MemInfoStub = when (hostOs) {
     // todo other platforms
-    OS.Linux -> MemInfoLinux()
-    else -> MemInfoStub()
+    OS.Linux -> MemInfoLinux(context)
+    else -> MemInfoStub(context)
 }
