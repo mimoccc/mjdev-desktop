@@ -296,4 +296,30 @@ object Compose {
     }
 
     fun Modifier.greyScale(): Modifier = this then GreyScaleModifier()
+
+//    @Composable
+//    fun DisableBackHandler(
+//        isDisabled: Boolean,
+//        content: @Composable () -> Unit,
+//    ) {
+//        CompositionLocalProvider(
+//            values = LocalOnBackPressedDispatcherOwner.current?.let { parentDispatcherOwner ->
+//                arrayOf(
+//                    LocalOnBackPressedDispatcherOwner provides if (isDisabled) {
+//                        DummyOnBackPressedDispatcherOwner(parentDispatcherOwner.lifecycle)
+//                    } else {
+//                        parentDispatcherOwner
+//                    },
+//                )
+//            } ?: arrayOf(),
+//            content = content,
+//        )
+//    }
+
+//    private class DummyOnBackPressedDispatcherOwner(
+//        override val lifecycle: Lifecycle,
+//    ) : OnBackPressedDispatcherOwner {
+//        override val onBackPressedDispatcher: OnBackPressedDispatcher
+//            get() = OnBackPressedDispatcher()
+//    }
 }

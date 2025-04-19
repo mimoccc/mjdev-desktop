@@ -92,7 +92,7 @@ class DesktopContext(
 
     // todo state
     override val currentUser: IUser
-        get() = allUsers.firstOrNull { u -> u.isLoggedIn } ?: User.Nobody
+        get() = allUsers.firstOrNull { u -> u.isLoggedIn } ?: User.DEFAULT
     override val theme: ITheme
         get() = currentUser.theme
     override val containerSize: DpSize

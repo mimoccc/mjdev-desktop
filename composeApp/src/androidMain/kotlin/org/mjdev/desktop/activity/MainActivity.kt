@@ -2,9 +2,11 @@ package org.mjdev.desktop.activity
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
@@ -56,6 +58,9 @@ class MainActivity : ComponentActivity() {
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
         setContent {
+            BackHandler(true) {
+                Log.d(TAG, "OnBackPressed")
+            }
             rememberPermissionManager()
             CompositionLocalProvider(
                 LocalDesktopContext provides rememberDesktopContext(baseContext)
@@ -77,6 +82,10 @@ class MainActivity : ComponentActivity() {
 
     private fun ComponentActivity.resetKeepScreenOn() {
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+
+    companion object {
+        private val TAG = MainActivity::class.simpleName
     }
 }
 

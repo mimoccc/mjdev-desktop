@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.sp
 import org.mjdev.desktop.components.text.TextWithShadow
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.size
-import org.mjdev.desktop.extensions.Custom.dateFlow
-import org.mjdev.desktop.extensions.Custom.timeFlow
+import org.mjdev.desktop.extensions.CustomExt.dateFlow
+import org.mjdev.desktop.extensions.CustomExt.timeFlow
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.LaunchedEffect.runAsync

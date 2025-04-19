@@ -159,6 +159,6 @@ fun DesktopPanelWindow(
 // todo
 @Preview
 @Composable
-fun DesktopPanelPreview() = preview {
+fun DesktopPanelWindowPreview() = preview {
     DesktopPanelWindow()
 }

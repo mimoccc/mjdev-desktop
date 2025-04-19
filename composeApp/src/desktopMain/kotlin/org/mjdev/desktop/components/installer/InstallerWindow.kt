@@ -30,6 +30,6 @@ fun InstallerWindow(
 @Suppress("unused")
 @Preview
 @Composable
-fun InfoWindowPreview() = preview {
+fun InstallerWindowPreview() = preview {
     InstallerWindow()
 }

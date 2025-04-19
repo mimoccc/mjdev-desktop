@@ -10,7 +10,7 @@ import kotlinx.datetime.toLocalDate
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.toLocalTime
 
-object Custom {
+object CustomExt {
 
     val dateFlow
         @Composable
