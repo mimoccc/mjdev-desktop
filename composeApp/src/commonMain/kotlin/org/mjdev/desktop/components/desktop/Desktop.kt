@@ -31,7 +31,7 @@ fun Desktop(
     onTooltip: (item: Any?) -> Unit = {},
     onLeftMouseClick: () -> Unit = {},
     onRightMouseClick: () -> Unit = {},
-// todo
+    // todo
     widgets: @Composable () -> Unit = {},
 ) = withDesktopContext {
     TooltipArea(

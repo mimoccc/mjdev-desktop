@@ -1,4 +1,4 @@
-package org.mjdev.desktop
+package org.mjdev.desktop.main
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
@@ -29,6 +29,7 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 import org.mjdev.desktop.components.desktop.widgets.MemoryChart
+import org.mjdev.desktop.extensions.Compose.greyScale
 
 @SuppressLint("ComposableNaming")
 @Composable
@@ -59,7 +60,8 @@ fun MainView() = withDesktopContext {
     }
     // todo not showing nothing
     Box(
-        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
         // todo, something prevent preview
         if (!isDesign) {

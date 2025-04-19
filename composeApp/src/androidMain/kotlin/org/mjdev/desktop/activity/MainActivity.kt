@@ -22,7 +22,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import org.mjdev.desktop.MainView
+import org.mjdev.desktop.main.MainView
 import org.mjdev.desktop.context.DesktopContext
 import org.mjdev.desktop.context.LocalDesktopContext
 import org.mjdev.desktop.helpers.permission.rememberPermissionManager
