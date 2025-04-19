@@ -15,7 +15,8 @@ plugins {
 kotlin {
     jvm("desktop")
     wasmJs {
-        moduleName = "composeApp"
+        outputModuleName = "composeApp"
+//        moduleName = "composeApp"
         browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
@@ -58,6 +59,7 @@ kotlin {
                 implementation(libs.androidx.lifecycle.runtime.compose)
                 // date time
                 implementation(libs.kotlinx.datetime)
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
                 // images
                 implementation(libs.coil.compose)
                 implementation(libs.coil.svg)
