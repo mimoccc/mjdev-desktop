@@ -32,6 +32,7 @@ import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.interfaces.IApp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DesktopPanelIcon(
@@ -110,8 +111,7 @@ fun DesktopPanelIcon(
     }
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun DesktopPanelIconPreview() = preview {
     DesktopPanelIcon(

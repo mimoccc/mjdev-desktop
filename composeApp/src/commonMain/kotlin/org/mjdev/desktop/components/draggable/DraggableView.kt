@@ -21,6 +21,7 @@ import androidx.compose.ui.zIndex
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.conditional
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -87,8 +88,7 @@ fun DraggableView(
     )
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun DraggableViewPreview() = preview {
     DraggableView()

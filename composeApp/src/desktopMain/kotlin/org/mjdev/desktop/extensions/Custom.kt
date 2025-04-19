@@ -104,40 +104,6 @@ object Custom {
         maskFilter = makeBlur(NORMAL, blurRadius / 2, true)
     }
 
-    val dateFlow
-        @Composable
-        get() = channelFlow {
-            launch {
-                var date = "1.1.1970"
-                do {
-                    DateFormat.getDateInstance().format(Date()).also { t ->
-                        if (date != t) {
-                            date = t
-                            send(date)
-                        }
-                    }
-                    delay(5000L)
-                } while (true)
-            }
-        }.collectAsState(initial = "")
-
-    val timeFlow
-        @Composable
-        get() = channelFlow {
-            launch {
-                var time = "00:00:00"
-                do {
-                    DateFormat.getTimeInstance().format(Date()).also { t ->
-                        if (time != t) {
-                            time = t
-                            send(time)
-                        }
-                    }
-                    delay(200L)
-                } while (true)
-            }
-        }.collectAsState(initial = "")
-
     fun loadKey(key: String): String = runCatching {
         ResourceStream("keys/$key.key").string
     }.getOrNull().orEmpty()

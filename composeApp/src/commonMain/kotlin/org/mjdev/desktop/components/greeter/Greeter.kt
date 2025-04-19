@@ -20,6 +20,8 @@ import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.helpers.compose.Orientation
 import org.mjdev.desktop.interfaces.IUser
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun Greeter(
@@ -56,7 +58,7 @@ fun Greeter(
 //                            unfocusedBorderColor = iconsTintColor
 //                        ),
                     onDone = { password ->
-                        if(user != null) {
+                        if (user != null) {
                             onLogin(user!!, password)
                         }
                     }
@@ -64,4 +66,10 @@ fun Greeter(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun GreeterPreview() = preview(320, 320) {
+    Greeter()
 }

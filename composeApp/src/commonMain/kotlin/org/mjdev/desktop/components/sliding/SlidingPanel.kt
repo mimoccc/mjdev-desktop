@@ -20,6 +20,7 @@ import org.mjdev.desktop.extensions.Modifier.onMouseEnter
 import org.mjdev.desktop.extensions.Modifier.onMouseLeave
 import org.mjdev.desktop.helpers.animation.Animations.DefaultEnterAnimation
 import org.mjdev.desktop.helpers.animation.Animations.DefaultExitAnimation
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo remove, move to chrome window
 @Suppress("FunctionName")
@@ -76,8 +77,7 @@ fun SlidingPanel(
     )
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun SlidingMenuPreview() = preview {
     SlidingPanel()

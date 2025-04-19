@@ -31,6 +31,7 @@ import org.mjdev.desktop.extensions.Modifier.onLeftClick
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.extensions.Modifier.onRightClick
 import org.mjdev.desktop.helpers.shape.DottedShape
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("UNUSED_PARAMETER")
 @Composable
@@ -90,8 +91,7 @@ fun AppsMenuCategory(
     }
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun AppsMenuCategoryPreview() = preview {
     AppsMenuCategory(

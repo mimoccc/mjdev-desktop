@@ -20,6 +20,7 @@ import org.mjdev.desktop.components.surface.base.Glow
 import org.mjdev.desktop.components.text.TextAny
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.user.AccountCircle
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("unused")
 @Composable
@@ -49,13 +50,24 @@ fun WideClassicCard(
     border = border,
     glow = glow
 ) {
-    Row(modifier = Modifier.padding(contentPadding)) {
-        Box(contentAlignment = CardDefaults.ContentImageAlignment, content = image)
-        Column { CardContent(title = title, subtitle = subtitle, description = description) }
+    Row(
+        modifier = Modifier.padding(contentPadding)
+    ) {
+        Box(
+            contentAlignment = CardDefaults.ContentImageAlignment,
+            content = image
+        )
+        Column {
+            CardContent(
+                title = title,
+                subtitle = subtitle,
+                description = description
+            )
+        }
     }
 }
 
-//@Preview
+@Preview
 @Composable
 fun WideClassicCardPreview() = preview {
     WideClassicCard(
@@ -63,7 +75,9 @@ fun WideClassicCardPreview() = preview {
             containerColor = Color.White
         ),
         border = CardDefaults.border(),
-        glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
+        glow = CardDefaults.glow(
+            glow = Glow(Color.Green, 4.dp)
+        ),
         contentPadding = PaddingValues(8.dp),
         scale = CardDefaults.scale(1f),
         image = {

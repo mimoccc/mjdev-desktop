@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.extensions.MutableStateExt.toggle
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ExpandableListItem(
@@ -28,3 +29,5 @@ fun ExpandableListItem(
 ) {
     content(expanded)
 }
+
+// todo preview

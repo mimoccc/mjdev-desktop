@@ -10,6 +10,8 @@ package org.mjdev.desktop.components.surface.base
 
 import androidx.compose.runtime.Immutable
 
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
 @Immutable
 class ClickableSurfaceGlow(
     val glow: Glow,

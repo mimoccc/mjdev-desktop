@@ -29,6 +29,7 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.circleBorder
 import org.mjdev.desktop.extensions.Modifier.clipCircle
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PageHeader(
@@ -71,8 +72,7 @@ fun PageHeader(
     }
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun PageHeaderPreview() = preview {
     PageHeader(

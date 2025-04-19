@@ -22,6 +22,7 @@ import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.helpers.compose.Orientation
 import org.mjdev.desktop.helpers.shape.BarShape
 import org.mjdev.desktop.icons.settings.SettingsHome
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 fun MainSettingsPage() = ControlCenterPage(
@@ -139,8 +140,7 @@ fun MainSettingsPage() = ControlCenterPage(
     }
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun MainSettingsPagePreview() = preview {
     MainSettingsPage().render()

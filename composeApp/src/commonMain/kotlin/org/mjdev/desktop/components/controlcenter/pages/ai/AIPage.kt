@@ -41,6 +41,7 @@ import org.mjdev.desktop.extensions.Modifier.clipCircle
 import org.mjdev.desktop.helpers.compose.rememberForeverLazyListState
 import org.mjdev.desktop.icons.chat.Chat
 import org.mjdev.desktop.icons.system.ContentCopy
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 fun AIPage() = ControlCenterPage(
@@ -192,8 +193,7 @@ fun TextBlock(
     }
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun AIPagePreview() = preview {
     AIPage().render()

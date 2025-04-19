@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.mjdev.desktop.extensions.Compose.preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -54,12 +55,11 @@ fun TextWithShadow(
     maxLines = maxLines
 )
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun TextWithShadowPreview() = preview {
     TextWithShadow(
         modifier = Modifier.height(48.dp).background(Color.White),
-        text = "Tset" // App.Test
+        text = "...Test..." // App.Test
     )
 }

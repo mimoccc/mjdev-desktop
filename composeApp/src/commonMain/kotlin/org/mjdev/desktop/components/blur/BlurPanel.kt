@@ -32,6 +32,7 @@ import org.mjdev.desktop.composeapp.generated.resources.blur4
 import org.mjdev.desktop.extensions.Colors.alpha
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo real blur
 @Composable
@@ -78,8 +79,7 @@ fun BlurPanel(
     }
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun BlurPanelPreview() = preview(480, 800) {
     BlurPanel()

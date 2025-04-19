@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo
 @Composable
@@ -29,8 +30,7 @@ fun DesktopPanelTray(
     )
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun DesktopPanelTrayPreview() = preview {
     DesktopPanelTray()

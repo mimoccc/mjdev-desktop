@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.settings.SettingsEthernet
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 fun EthSettingsPage() = ControlCenterPage(
@@ -22,8 +23,7 @@ fun EthSettingsPage() = ControlCenterPage(
     )
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun EthSettingsPagePreview() = preview {
     EthSettingsPage().render()

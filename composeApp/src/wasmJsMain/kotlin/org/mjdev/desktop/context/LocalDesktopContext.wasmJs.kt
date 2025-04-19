@@ -5,5 +5,5 @@ import androidx.compose.runtime.compositionLocalOf
 import org.mjdev.desktop.interfaces.IDesktopContext
 
 actual val LocalDesktopContext: ProvidableCompositionLocal<IDesktopContext> = compositionLocalOf {
-    EmptyDesktopContext()
+    DesktopContext()
 }

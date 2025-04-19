@@ -7,9 +7,9 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.application)
-    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
-    MultiPlatformPlugin
+//    MultiPlatformPlugin
 }
 
 kotlin {
@@ -17,12 +17,15 @@ kotlin {
     wasmJs {
         moduleName = "composeApp"
         browser {
+            val rootDirPath = project.rootDir.path
+            val projectDirPath = project.projectDir.path
             commonWebpackConfig {
                 outputFileName = "composeApp.js"
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
                     static = (static ?: mutableListOf()).apply {
                         // Serve sources to debug inside browser
-                        add(project.projectDir.path)
+                        add(rootDirPath)
+                        add(projectDirPath)
                     }
                 }
             }
@@ -40,6 +43,8 @@ kotlin {
             dependencies {
                 // reflection
                 implementation(kotlin("reflect"))
+                // preview
+                implementation(compose.components.uiToolingPreview)
                 // base
                 implementation(projects.shared)
                 implementation(compose.runtime)
@@ -51,8 +56,6 @@ kotlin {
                 implementation(compose.components.resources)
                 implementation(libs.androidx.lifecycle.viewmodel)
                 implementation(libs.androidx.lifecycle.runtime.compose)
-                // network client/s
-//                implementation(libs.bundles.ktor.common)
                 // date time
                 implementation(libs.kotlinx.datetime)
                 // images
@@ -105,7 +108,10 @@ kotlin {
                 implementation(libs.alert.kmp)
                 // tor
                 // implementation("io.matthewnelson.kmp-tor:runtime:2.1.0")
+                // files
                 implementation("com.squareup.okio:okio:3.10.2")
+                // ai
+//                implementation(libs.generativeai)
             }
         }
         // android dependencies
@@ -114,7 +120,7 @@ kotlin {
                 // reflection
                 implementation(kotlin("reflect"))
                 // preview
-                implementation(compose.preview)
+                implementation(compose.components.uiToolingPreview)
                 // activity
                 implementation(libs.androidx.activity.compose)
                 // network client
@@ -123,8 +129,6 @@ kotlin {
                 implementation(libs.coil.okhttp)
                 // splash
                 implementation(libs.androidx.core.splashscreen)
-                // charts
-                implementation(libs.charts)
                 // permissions
                 implementation(libs.accompanist.permissions)
             }
@@ -132,10 +136,10 @@ kotlin {
         // wasm dependencies
         wasmJsMain {
             dependencies {
-//                implementation(libs.coil.ktor.wasm.js)
-                // charts
-//                implementation(libs.charts)
-//                implementation("com.squareup.okio:okio-nodefilesystem:3.10.2")
+                // reflection
+                implementation(kotlin("reflect"))
+                // preview
+                implementation(compose.components.uiToolingPreview)
             }
         }
         // desktop dependencies
@@ -144,26 +148,21 @@ kotlin {
             // reflection
             implementation(kotlin("reflect"))
             // preview
-            implementation(compose.preview)
+            implementation(compose.components.uiToolingPreview)
             // desktop
             implementation(compose.desktop.currentOs)
             // coroutines
             implementation(libs.kotlinx.coroutines.swing)
-            // network
-//            implementation(libs.ktor.client.java)
+            // okhttp
             implementation(libs.okhttp3.client)
-//            implementation(libs.coil.ktor)
+            // images okhttp
             implementation(libs.coil.okhttp)
-            // charts
-//            implementation(libs.charts)
             // gemini ai
             implementation(libs.google.generative.ai)
             // chatgpt
             implementation(libs.ychat)
             // desktop files
             implementation(libs.ini4j)
-            // charts
-            implementation(libs.charts)
         }
     }
 }
@@ -205,18 +204,13 @@ android {
     }
 }
 
-//dependencies {
-//    implementation(libs.generativeai)
-//}
-
-
 // desktop app config
 compose {
     desktop {
         group = libs.versions.app.pkg.name.get()
         version = libs.versions.app.pkg.version.get()
         application {
-            mainClass = "org.mjdev.desktop.MainKt"
+            mainClass = "org.mjdev.desktop.main.MainKt"
             nativeDistributions {
                 packageName = libs.versions.app.name.get()
                 packageVersion = libs.versions.app.pkg.version.get()

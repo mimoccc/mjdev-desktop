@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.settings.SettingsSound
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 fun SoundSettingsPage() = ControlCenterPage(
@@ -19,8 +20,7 @@ fun SoundSettingsPage() = ControlCenterPage(
     )
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun SoundSettingsPagePreview() = preview {
     SoundSettingsPage().render()

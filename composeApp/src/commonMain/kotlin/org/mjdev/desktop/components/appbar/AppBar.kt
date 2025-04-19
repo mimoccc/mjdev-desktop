@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.conditional
 import org.mjdev.desktop.helpers.compose.Orientation
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo alignment scopes
 @Composable
@@ -123,9 +124,7 @@ fun AppBar(
     }
 }
 
-// todo
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun AppBarHorizontalPreview() = preview {
     AppBar(
@@ -154,9 +153,7 @@ fun AppBarHorizontalPreview() = preview {
     )
 }
 
-// todo
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun AppBarHorizontalFillPreview() = preview {
     AppBar(
@@ -186,9 +183,7 @@ fun AppBarHorizontalFillPreview() = preview {
     )
 }
 
-// todo
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun AppBarVerticalPreview() = preview {
     AppBar(
@@ -216,9 +211,7 @@ fun AppBarVerticalPreview() = preview {
     )
 }
 
-// todo
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun AppBarVerticalFillPreview() = preview {
     AppBar(

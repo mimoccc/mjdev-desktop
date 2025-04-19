@@ -45,6 +45,7 @@ import org.mjdev.desktop.extensions.Modifier.circleBorder
 import org.mjdev.desktop.extensions.Modifier.clipCircle
 import org.mjdev.desktop.extensions.Modifier.conditional
 import org.mjdev.desktop.helpers.compose.Orientation
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo move back orientation for greeter
 @Suppress("FunctionName", "UNUSED_PARAMETER")
@@ -160,8 +161,7 @@ fun UserAvatar(
     }
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun UserAvatarHorizontalFillPreview() = preview {
     UserAvatar(
@@ -172,8 +172,7 @@ fun UserAvatarHorizontalFillPreview() = preview {
     )
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun UserAvatarVerticalPreview() = preview {
     UserAvatar(

@@ -24,6 +24,7 @@ import org.mjdev.desktop.icons.wifi.level.Wifi_Level_2
 import org.mjdev.desktop.icons.wifi.level.Wifi_Level_3
 import org.mjdev.desktop.icons.wifi.level.Wifi_Level_4
 import org.mjdev.desktop.icons.wifi.level.Wifi_Level_5
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun WifiLevelIcon(
@@ -50,8 +51,7 @@ fun WifiLevelIcon(
     )
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun WifiLevelIconPreview() = preview {
     WifiLevelIcon(

@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.components.text.TextAny
 import org.mjdev.desktop.extensions.Compose.preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun MeasureUnconstrainedView(
@@ -33,8 +34,7 @@ fun MeasureUnconstrainedView(
     }
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun MeasureUnconstrainedViewPreview() = preview {
     MeasureUnconstrainedView({

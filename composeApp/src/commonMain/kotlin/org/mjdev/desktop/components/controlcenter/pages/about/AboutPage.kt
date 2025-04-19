@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.custom.Mjdev
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 fun AboutPage() = ControlCenterPage(
@@ -19,8 +20,7 @@ fun AboutPage() = ControlCenterPage(
     )
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun AboutPagePreview() = preview {
     AboutPage().render()

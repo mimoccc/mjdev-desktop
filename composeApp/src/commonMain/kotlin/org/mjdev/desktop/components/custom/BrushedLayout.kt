@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import org.mjdev.desktop.extensions.Compose.preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun BrushedLayout(
@@ -29,9 +30,7 @@ fun BrushedLayout(
     }
 )
 
-// todo
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun BrushedLayoutPreview() = preview(320) {
     BrushedLayout()

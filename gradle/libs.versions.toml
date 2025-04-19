@@ -26,7 +26,7 @@ core-splash-screen = "1.0.1"
 generative-ai = "0.9.0-1.1.0"
 gettext-lib = "1.11.0"
 google-gson = "2.13.0"
-charts = "Beta-0.0.5"
+charts = "1.1.0"
 human-readable = "1.11.0"
 #i18n4k-core = "0.9.0"
 ini4j = "0.5.4"
@@ -40,7 +40,7 @@ okio = "3.11.0"
 qrose = "1.0.1"
 tts = "3.0.0-beta.1"
 ychat = "1.4.1"
-#generativeai = "0.9.0"
+generativeai = "0.9.0"
 alert-kmp = "2.0.0"
 #emoji2 = "1.5.0"
 accompanist-permissions = "0.37.2"
@@ -92,7 +92,7 @@ ini4j = { module = "org.ini4j:ini4j", version.ref = "ini4j" }
 tts = { module = "nl.marc-apps:tts", version.ref = "tts" }
 # ai
 google-generative-ai = { module = "dev.shreyaspatil.generativeai:generativeai-google-jvm", version.ref = "generative-ai" }
-#generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
+generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
 # strings
 human-readable = { module = "nl.jacobras:Human-Readable", version.ref = "human-readable" }
 # alerts
@@ -104,7 +104,7 @@ accompanist-permissions = { module = "com.google.accompanist:accompanist-permiss
 android-application = { id = "com.android.application", version.ref = "gradle" }
 android-library = { id = "com.android.library", version.ref = "gradle" }
 app-icon-generator = { id = "io.github.qamarelsafadi.kmp.app.icon.generator", version.ref = "app-icon" }
-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

@@ -22,6 +22,8 @@ import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.remem
 import org.mjdev.desktop.components.text.AutoResizeText
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun Info(
@@ -71,4 +73,10 @@ fun Info(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun InfoPreview() = preview(320, 320) {
+    Info()
 }

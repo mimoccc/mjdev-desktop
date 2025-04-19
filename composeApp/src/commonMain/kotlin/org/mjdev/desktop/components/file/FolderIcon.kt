@@ -28,6 +28,7 @@ import org.mjdev.desktop.extensions.PathExt.cwd
 import org.mjdev.desktop.extensions.PathExt.extension
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.DpSizeExt.plus
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName", "UNNECESSARY_SAFE_CALL")
 @Composable
@@ -92,8 +93,7 @@ fun FolderIcon(
     }
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun FolderIconPreview() = preview {
     FolderIcon()

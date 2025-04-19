@@ -1,6 +1,5 @@
-package org.mjdev.desktop.main
+package org.mjdev.desktop
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -11,14 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import org.mjdev.desktop.components.appsmenu.AppsMenu
 import org.mjdev.desktop.components.appsmenu.AppsMenuState.Companion.rememberAppsMenuState
 import org.mjdev.desktop.components.controlcenter.ControlCenter
 import org.mjdev.desktop.components.desktop.Desktop
+import org.mjdev.desktop.components.desktop.widgets.MemoryChart
 import org.mjdev.desktop.components.desktoppanel.DesktopPanel
 import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import org.mjdev.desktop.components.tooltip.TooltipState
@@ -28,11 +26,37 @@ import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
-import org.mjdev.desktop.components.desktop.widgets.MemoryChart
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
-@SuppressLint("ComposableNaming")
 @Composable
 fun MainView() = withDesktopContext {
+//    Box(
+//        modifier = Modifier.fillMaxSize(),
+//        contentAlignment = Alignment.Center
+//    ) {
+//        BackgroundImage(
+//            modifier = Modifier.fillMaxSize(),
+//            switchDelay = theme.backgroundRotationDelay,
+//            images = backgrounds,
+//            onChange = { src ->
+//                palette.apply {
+//                    update(src)
+//                }.also { p ->
+//                    context.currentUser.theme.backgroundColor = p.backgroundColor
+//                }
+//            }
+//        )
+//        Box(
+//            modifier = Modifier.size(256.dp, 256.dp),
+//            contentAlignment = Alignment.Center
+//        ) {
+//            Column {
+//                QrCodeView(
+//                    modifier = Modifier.fillMaxSize()
+//                )
+//            }
+//        }
+//    }
     val tooltipState: TooltipState = rememberTooltipState()
     val appsMenuState = rememberAppsMenuState(
         visible = isDesign
@@ -119,8 +143,7 @@ fun MainView() = withDesktopContext {
     }
 }
 
-@Suppress("PreviewDeviceShouldUseNewSpec")
-@Preview(device = Devices.TABLET)
+@Preview
 @Composable
 fun MainViewPreview() = preview {
     MainView()

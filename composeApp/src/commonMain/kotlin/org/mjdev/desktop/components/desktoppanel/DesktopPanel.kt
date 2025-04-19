@@ -47,6 +47,8 @@ import org.mjdev.desktop.extensions.PaddingValues.height
 import org.mjdev.desktop.helpers.animation.Animations.DesktopPanelEnterAnimation
 import org.mjdev.desktop.helpers.animation.Animations.DesktopPanelExitAnimation
 import org.mjdev.desktop.interfaces.IApp
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun DesktopPanel(
@@ -204,4 +206,12 @@ fun DesktopPanel(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun DesktopPanelPreview() = preview {
+    DesktopPanel(
+        panelState = rememberVisibilityState(true)
+    )
 }

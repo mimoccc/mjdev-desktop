@@ -26,6 +26,7 @@ import org.mjdev.desktop.extensions.Colors.alpha
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.icons.text.Clear
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("UNUSED_PARAMETER")
 @Composable
@@ -70,8 +71,7 @@ fun SearchFieldPassive(
     }
 )
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun SearchFieldPassivePreview() = preview {
     SearchFieldPassive(

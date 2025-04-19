@@ -27,6 +27,7 @@ import org.mjdev.desktop.extensions.Modifier.circleBorder
 import org.mjdev.desktop.icons.system.Logout
 import org.mjdev.desktop.icons.system.PowerOff
 import org.mjdev.desktop.icons.system.RestartAlt
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("UNUSED_PARAMETER")
 @Composable
@@ -89,11 +90,12 @@ fun AppsMenuActions(
     }
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun AppsMenuActionsPreview() = preview {
     AppsMenuActions(
-        modifier = Modifier.background(Color.SuperDarkGray, RoundedCornerShape(16.dp)).padding(8.dp),
+        modifier = Modifier
+            .background(Color.SuperDarkGray, RoundedCornerShape(16.dp))
+            .padding(8.dp),
     )
 }

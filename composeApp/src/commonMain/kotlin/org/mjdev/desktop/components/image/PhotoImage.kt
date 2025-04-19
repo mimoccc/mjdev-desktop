@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.image.BrokenImage
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo
 @Composable
@@ -124,7 +125,7 @@ fun PhotoImage(
     }
 }
 
-//@Preview
+@Preview
 @Composable
 fun PhotoImagePreview() = preview {
     PhotoImage()

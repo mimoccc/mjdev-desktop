@@ -28,6 +28,7 @@ import org.mjdev.desktop.context.DesktopContextScope
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.interfaces.IApp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppsList(
@@ -79,12 +80,16 @@ fun AppsList(
     }
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun AppsListPreview() = preview(320, 640) {
     AppsList(
-        modifier = Modifier.background(Color.SuperDarkGray, RoundedCornerShape(16.dp)).padding(8.dp),
+        modifier = Modifier
+            .background(
+                Color.SuperDarkGray,
+                RoundedCornerShape(16.dp)
+            )
+            .padding(8.dp),
         items = listOf(
 //            App.Test,
 //            App.Test,

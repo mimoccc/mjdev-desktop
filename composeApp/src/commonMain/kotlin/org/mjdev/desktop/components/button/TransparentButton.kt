@@ -21,6 +21,7 @@ import org.mjdev.desktop.extensions.ButtonDefaults.noElevation
 import org.mjdev.desktop.extensions.ButtonDefaults.transparent
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.user.AccountCircle
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TransparentButton(
@@ -36,8 +37,7 @@ fun TransparentButton(
     content = content
 )
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun TransparentButtonPreview() = preview {
     TransparentButton {

@@ -12,6 +12,7 @@ class WakeLockHelper(
     private val powerManager
         get() = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
 
+    @Suppress("DEPRECATION")
     @SuppressLint("WakelockTimeout")
     fun acquireWakeLock() {
         wakeLock = powerManager?.newWakeLock(

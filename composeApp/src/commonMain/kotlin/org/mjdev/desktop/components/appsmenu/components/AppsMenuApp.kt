@@ -32,6 +32,7 @@ import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.extensions.Modifier.onRightClick
 import org.mjdev.desktop.helpers.shape.DottedShape
 import org.mjdev.desktop.interfaces.IApp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName", "UNUSED_PARAMETER")
 @Composable
@@ -103,8 +104,7 @@ fun AppsMenuApp(
     }
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun AppsMenuAppPreview() = preview {
     AppsMenuApp(

@@ -14,6 +14,7 @@ import org.mjdev.desktop.components.grid.base.Measure.calculateCellPlaces
 import org.mjdev.desktop.components.grid.base.Measure.measure
 import org.mjdev.desktop.extensions.Compose.preview
 import kotlin.math.min
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun GridPlaced(
@@ -54,8 +55,7 @@ fun GridPlaced(
     }
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun GridPlacedPreview() = preview {
     GridPlaced()

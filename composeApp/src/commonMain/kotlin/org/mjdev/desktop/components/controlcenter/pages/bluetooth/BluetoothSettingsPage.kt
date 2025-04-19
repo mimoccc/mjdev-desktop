@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.network.Bluetooth
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 fun BluetoothSettingsPage() = ControlCenterPage(
@@ -22,8 +23,7 @@ fun BluetoothSettingsPage() = ControlCenterPage(
     )
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun BluetoothSettingsPagePreview() = preview {
     BluetoothSettingsPage().render()

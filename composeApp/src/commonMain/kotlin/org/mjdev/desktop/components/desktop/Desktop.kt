@@ -22,6 +22,7 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.onLeftClick
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.extensions.Modifier.onRightClick
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName", "UNUSED_PARAMETER")
 @Composable
@@ -91,8 +92,7 @@ fun Desktop(
 }
 
 // todo
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun DesktopPreview() = preview {
     Desktop()

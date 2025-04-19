@@ -21,6 +21,7 @@ import io.github.alexzhirkevich.qrose.options.roundCorners
 import io.github.alexzhirkevich.qrose.options.solid
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import org.mjdev.desktop.extensions.Compose.preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo : params
 @Suppress("unused", "FunctionName")
@@ -64,8 +65,7 @@ fun QrCodeView(
     }
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun QrCodeViewPreview() = preview(320, 320) {
     QrCodeView()

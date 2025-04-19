@@ -20,6 +20,7 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.helpers.image.ImageLoader.asyncImageLoader
 import org.mjdev.desktop.icons.image.BrokenImage
 import androidx.compose.foundation.Image as ComposeImage
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName", "UNUSED_PARAMETER")
 @Composable
@@ -140,7 +141,7 @@ fun ImageAny(
     }
 }
 
-//@Preview
+@Preview
 @Composable
 fun ImageAnyPreview() = preview {
     ImageAny()

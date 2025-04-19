@@ -21,6 +21,7 @@ import org.mjdev.desktop.data.TooltipData
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.interfaces.IApp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -90,8 +91,7 @@ class TooltipState(
 @Composable
 fun rememberTooltipState() = remember { TooltipState() }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun TooltipPreview() = preview {
     Tooltip(

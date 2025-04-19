@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onPlaced
 import org.mjdev.desktop.components.sliding.base.VisibilityState
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ChromeWindow(
@@ -28,3 +29,5 @@ fun ChromeWindow(
     modifier = modifier.onPlaced { coordinates -> onPlaced(coordinates) },
     content = { content() }
 )
+
+// todo preview

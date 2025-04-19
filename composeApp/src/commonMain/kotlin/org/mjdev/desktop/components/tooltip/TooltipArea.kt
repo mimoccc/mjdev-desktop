@@ -25,6 +25,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.mjdev.desktop.extensions.Modifier.onPointerEvent
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 val PointerEvent.position get() = changes.first().position
 
@@ -109,3 +110,5 @@ fun TooltipArea(
         }
     }
 }
+
+// todo preview

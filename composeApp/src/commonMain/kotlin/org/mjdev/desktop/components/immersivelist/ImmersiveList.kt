@@ -17,6 +17,7 @@ import org.mjdev.desktop.components.immersivelist.base.ImmersiveListBackgroundSc
 import org.mjdev.desktop.components.immersivelist.base.ImmersiveListScope
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.FocusState.bringIntoViewIfChildrenAreFocused
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("IllegalExperimentalApiUsage")
 @OptIn(ExperimentalComposeUiApi::class)
@@ -56,8 +57,7 @@ fun ImmersiveList(
 }
 
 // todo
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun ImmersiveListPreview() = preview {
     ImmersiveList()

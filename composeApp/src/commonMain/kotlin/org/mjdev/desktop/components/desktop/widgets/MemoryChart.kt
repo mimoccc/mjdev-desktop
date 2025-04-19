@@ -13,6 +13,7 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.DoubleExt.toMemorySizeReadable
 import org.mjdev.desktop.helpers.system.meminfo.MemInfo
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -59,8 +60,8 @@ fun MemoryChart(
     }
 }
 
-//@Preview
-@Suppress("unused")
+// todo
+@Preview
 @Composable
 fun MemoryChartPreview() = preview {
     MemoryChart()

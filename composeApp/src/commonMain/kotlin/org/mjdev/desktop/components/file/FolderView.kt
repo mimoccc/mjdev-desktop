@@ -33,6 +33,7 @@ import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContex
 import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.extensions.Modifier.clipCircle
 import kotlin.math.max
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo orientation
 @Suppress("FunctionName")
@@ -143,9 +144,8 @@ private fun rememberFiles(
     }
 }
 
-//todo
-//@Preview
-@Suppress("unused")
+// todo
+@Preview
 @Composable
 fun FolderViewPreview() = preview {
     FolderView(

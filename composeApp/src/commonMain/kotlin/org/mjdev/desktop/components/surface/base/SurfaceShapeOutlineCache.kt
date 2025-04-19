@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 internal class SurfaceShapeOutlineCache(
     private var shape: Shape,

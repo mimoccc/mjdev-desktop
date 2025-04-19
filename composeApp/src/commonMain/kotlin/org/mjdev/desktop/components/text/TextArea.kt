@@ -20,6 +20,7 @@ import org.mjdev.desktop.icons.system.ContentCopy
 import org.mjdev.desktop.icons.text.Send
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Modifier.onMousePress
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TextArea(
@@ -82,3 +83,5 @@ fun TextArea(
         }
     )
 }
+
+// todo preview

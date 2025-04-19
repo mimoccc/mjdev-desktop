@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import org.mjdev.desktop.extensions.Compose.isLandscapeMode
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Compose.verticalTouchScrollable
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun VerticalScrollableBox(
@@ -34,8 +35,7 @@ fun VerticalScrollableBox(
     content.invoke(this)
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun VerticalScrollableBoxPreview() = preview {
     VerticalScrollableBox()

@@ -17,6 +17,7 @@ import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContex
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.LaunchedEffect.flowBlock
 import org.mjdev.desktop.interfaces.IApp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -63,8 +64,7 @@ fun DesktopPanelFavoriteApps(
 }
 
 // todo
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun DesktopPanelFavoriteAppsPreview() = preview {
     DesktopPanelFavoriteApps()

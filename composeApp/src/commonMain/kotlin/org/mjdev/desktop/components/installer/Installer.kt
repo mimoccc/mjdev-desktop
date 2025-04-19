@@ -15,6 +15,8 @@ import org.mjdev.desktop.components.sliding.base.VisibilityState
 import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun Installer(
@@ -47,4 +49,10 @@ fun Installer(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun InstallerPreview() = preview(320, 320) {
+    Installer()
 }

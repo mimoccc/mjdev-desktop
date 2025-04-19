@@ -17,13 +17,14 @@ import androidx.compose.ui.unit.sp
 import org.mjdev.desktop.components.text.TextWithShadow
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.size
-//import org.mjdev.desktop.extensions.Custom.dateFlow
-//import org.mjdev.desktop.extensions.Custom.timeFlow
+import org.mjdev.desktop.extensions.Custom.dateFlow
+import org.mjdev.desktop.extensions.Custom.timeFlow
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.helpers.parsers.Parsers.ParsedList
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo remove params
 @OptIn(ExperimentalFoundationApi::class)
@@ -41,7 +42,7 @@ fun Clock(
     talkEveryHour: Boolean = true,
     talkOnClick: Boolean = true
 ) = withDesktopContext {
-    val time = "time" //timeFlow.value // todo
+    val time = timeFlow.value
     var lastTalk by rememberState("")
     val talk: () -> Unit = {
         runAsync {
@@ -72,7 +73,7 @@ fun Clock(
                 singleLine = true
             )
             if (showDate) TextWithShadow(
-                text = "date", // dateFlow.value, // todo
+                text = dateFlow.value,
                 textAlign = TextAlign.Center,
                 fontWeight = dateTextWeight,
                 fontSize = dateTextSize,
@@ -93,9 +94,7 @@ fun Clock(
     }
 }
 
-// todo
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun ClockPreview() = preview {
     Clock(

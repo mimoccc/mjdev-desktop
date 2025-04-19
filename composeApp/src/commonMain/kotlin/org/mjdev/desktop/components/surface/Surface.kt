@@ -53,6 +53,7 @@ import org.mjdev.desktop.extensions.Modifier.onMouseLongPress
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.helpers.compose.surfaceBorder
 import org.mjdev.desktop.helpers.compose.zIndex
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("SameParameterValue")
 @Composable
@@ -229,9 +230,7 @@ internal const val EnabledContentAlpha = 1f
 private const val FocusedZIndex = 0.5f
 private const val NonFocusedZIndex = 0f
 
-// todo
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun SurfacePreview() = preview {
     Surface()

@@ -19,6 +19,7 @@ import org.mjdev.desktop.extensions.Modifier.onRightClick
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.icons.user.AccountCircle
 import org.mjdev.desktop.extensions.PaddingValues.size
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("UNUSED_PARAMETER")
 @Composable
@@ -67,8 +68,7 @@ fun ShapedIcon(
     }
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun ShapedIconPreview() = preview {
     ShapedIcon()

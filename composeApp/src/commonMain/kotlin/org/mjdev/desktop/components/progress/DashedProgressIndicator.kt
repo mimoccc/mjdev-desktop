@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.extensions.Compose.preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DashedProgressIndicator(
@@ -47,8 +48,7 @@ fun DashedProgressIndicator(
     }
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun DashedProgressIndicatorPreview() = preview {
     DashedProgressIndicator(

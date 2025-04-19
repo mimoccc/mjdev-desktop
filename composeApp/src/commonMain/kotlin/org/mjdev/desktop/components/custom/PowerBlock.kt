@@ -31,6 +31,7 @@ import org.mjdev.desktop.extensions.Modifier.clipCircle
 //import org.mjdev.desktop.extensions.rectShadow
 import org.mjdev.desktop.helpers.shape.BarShape
 import org.mjdev.desktop.icons.system.PowerOff
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PowerBlock(
@@ -89,8 +90,7 @@ fun PowerBlock(
     }
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun PowerBlockPreview() = preview {
     PowerBlock()

@@ -13,6 +13,7 @@ import org.mjdev.desktop.extensions.Compose.preview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import org.mjdev.desktop.extensions.System.currentTimeMillis
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -65,9 +66,7 @@ fun DonutChart(
     }
 }
 
-// todo
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun DonutChartPreview() = preview(480) {
     DonutChart(

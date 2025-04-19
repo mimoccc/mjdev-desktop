@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.extensions.Compose.preview
 import kotlin.math.max
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @UiComposable
@@ -57,9 +58,7 @@ fun GuideLines(
     }
 }
 
-// todo
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun GuideLinesPreview() = preview(320, 320) {
     GuideLines(

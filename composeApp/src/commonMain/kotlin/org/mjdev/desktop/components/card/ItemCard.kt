@@ -37,6 +37,7 @@ import org.mjdev.desktop.extensions.FocusState.rememberFocusRequester
 import org.mjdev.desktop.extensions.FocusState.rememberFocusState
 import org.mjdev.desktop.helpers.compose.FocusHelper
 import org.mjdev.desktop.icons.image.BrokenImage
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo calculate
 @Composable
@@ -101,8 +102,7 @@ fun ItemCard(
     placeholder = placeholder
 )
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun ItemCardPreview() = preview {
     ItemCard(

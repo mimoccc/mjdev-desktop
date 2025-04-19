@@ -17,6 +17,7 @@ import org.mjdev.desktop.components.text.AutoResizeText
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.interfaces.IFont
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -93,11 +94,13 @@ fun FontIcon(
     )
 }
 
-//@Preview
+@Preview
 @Composable
 fun FontIconPreview() = preview {
     Column {
         FontIcon(iconId = 0)
         FontIcon(iconName = "")
+        FontIcon(iconName = "tv")
+        FontIcon(iconName = "browser")
     }
 }

@@ -19,6 +19,7 @@ import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
 
 import org.mjdev.desktop.icons.settings.SettingsWifi
 import org.mjdev.desktop.log.Log
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 fun WifiSettingsPage() = ControlCenterPage(
@@ -75,8 +76,7 @@ fun WifiSettingsPage() = ControlCenterPage(
     }
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun WifiSettingsPagePreview() = preview {
     WifiSettingsPage().render()

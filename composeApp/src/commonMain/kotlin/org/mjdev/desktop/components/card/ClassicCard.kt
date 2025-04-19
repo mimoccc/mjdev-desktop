@@ -20,6 +20,7 @@ import org.mjdev.desktop.components.surface.base.Glow
 import org.mjdev.desktop.components.text.TextAny
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.user.AccountCircle
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo
 @Composable
@@ -66,11 +67,11 @@ fun ClassicCard(
     }
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun ClassicCardPreview() = preview {
     ClassicCard(
+        modifier = Modifier.size(320.dp, 200.dp),
         colors = CardDefaults.colors(
             containerColor = Color.White
         ),

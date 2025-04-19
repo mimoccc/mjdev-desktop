@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import org.mjdev.desktop.components.text.TextAny
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ButtonPrimary(
@@ -31,8 +32,7 @@ fun ButtonPrimary(
     }
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun ButtonPrimaryPreview() = preview {
     ButtonPrimary()

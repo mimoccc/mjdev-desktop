@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -20,8 +21,7 @@ fun DesktopPanelLanguage(
     )
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun DesktopPanelLanguagePreview() = preview {
     DesktopPanelLanguage()

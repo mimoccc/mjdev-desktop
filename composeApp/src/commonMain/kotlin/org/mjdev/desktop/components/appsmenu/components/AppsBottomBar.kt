@@ -21,6 +21,7 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.MutableStateExt.clear
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.icons.arrow.ArrowBack
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -73,8 +74,7 @@ fun AppsBottomBar(
     )
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun AppsBottomBarPreview() = preview {
     AppsBottomBar(

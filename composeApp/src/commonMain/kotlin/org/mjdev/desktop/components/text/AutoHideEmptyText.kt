@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Text.textFrom
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AutoHideEmptyText(
@@ -61,8 +62,7 @@ fun AutoHideEmptyText(
     }
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun AutoHideEmptyTextPreview() = preview {
     AutoHideEmptyText(
@@ -71,8 +71,7 @@ fun AutoHideEmptyTextPreview() = preview {
     )
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun AutoHideEmptyTextEmptyPreview() = preview {
     AutoHideEmptyText(

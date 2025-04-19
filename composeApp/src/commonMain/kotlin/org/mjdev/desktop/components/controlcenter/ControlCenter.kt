@@ -44,6 +44,8 @@ import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
 import org.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun ControlCenter(
@@ -188,4 +190,12 @@ fun ControlCenter(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun ControlCenterPreview() = preview {
+    ControlCenter(
+        controlCenterState = rememberVisibilityState(true)
+    )
 }

@@ -12,6 +12,7 @@ import org.mjdev.desktop.components.controlcenter.base.ControlCenterPageScope.Co
 import org.mjdev.desktop.interfaces.IControlCenterPageDataSaver
 import org.mjdev.desktop.interfaces.IDesktopContext
 import org.mjdev.desktop.interfaces.IPage
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("MemberVisibilityCanBePrivate")
 class ControlCenterPage(

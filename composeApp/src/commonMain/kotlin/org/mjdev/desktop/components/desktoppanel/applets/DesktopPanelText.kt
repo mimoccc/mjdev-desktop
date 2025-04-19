@@ -20,6 +20,7 @@ import org.mjdev.desktop.extensions.Modifier.onMouseEnter
 import org.mjdev.desktop.extensions.Modifier.onMouseLeave
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DesktopPanelText(
@@ -58,8 +59,7 @@ fun DesktopPanelText(
     }
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun DesktopPanelTextPreview() = preview {
     DesktopPanelText()

@@ -30,6 +30,7 @@ import org.mjdev.desktop.components.card.base.CardShape
 import org.mjdev.desktop.components.surface.Surface
 import org.mjdev.desktop.components.surface.base.Glow
 import org.mjdev.desktop.extensions.Compose.preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo, card like in android tv
 @Composable
@@ -58,8 +59,7 @@ fun Card(
     Column(content = content)
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun CardPreview() = preview {
     Card(

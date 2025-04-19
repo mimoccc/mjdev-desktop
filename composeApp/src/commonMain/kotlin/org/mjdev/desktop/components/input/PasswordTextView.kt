@@ -24,6 +24,7 @@ import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.icons.text.Send
 import org.mjdev.desktop.icons.visibility.VisibilityOff
 import org.mjdev.desktop.icons.visibility.VisibilityOn
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo check colors
 @Suppress("FunctionName")
@@ -106,8 +107,7 @@ fun PasswordTextView(
     )
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun PasswordTextViewPreview() = preview {
     PasswordTextView(

@@ -49,6 +49,7 @@ import org.mjdev.desktop.extensions.FocusState.rememberFocusState
 import org.mjdev.desktop.extensions.FocusState.requestFocusOnTouch
 import org.mjdev.desktop.helpers.compose.FocusHelper
 import org.mjdev.desktop.icons.image.BrokenImage
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo calculate
 @Composable
@@ -167,8 +168,7 @@ fun FocusableCard(
     },
 )
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun FocusableCardPreview() = preview {
     FocusableCard(

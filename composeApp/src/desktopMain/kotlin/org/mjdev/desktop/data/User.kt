@@ -54,7 +54,8 @@ class User(
 //    ): Flow<Boolean> = flow { context.login(userName, password) }
 
     companion object {
-        val Nobody = User(":x:-1:-1:::")
+        val NOBODY = User(":x:-1:-1:::")
+        val DEFAULT = NOBODY
 
         fun isLoggedIn(
             uname: String

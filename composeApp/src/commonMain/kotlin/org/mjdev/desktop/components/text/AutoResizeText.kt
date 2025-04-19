@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.mjdev.desktop.extensions.Compose.preview
 import kotlin.math.min
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo may be need refactor
 @Suppress("FunctionName")
@@ -41,12 +42,11 @@ fun AutoResizeText(
     )
 }
 
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun AutoResizeTextPreview() = preview {
     AutoResizeText(
-        modifier = Modifier.height(48.dp).background(Color.White),
-        text = "test"
+        modifier = Modifier.background(Color.White),
+        text = "i",
     )
 }

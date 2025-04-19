@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Text.textFrom
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo weight does not work when selectable enabled
 @Suppress("FunctionName")
@@ -75,9 +76,7 @@ fun TextAny(
     }
 }
 
-
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun TextAnyPreview() = preview {
     TextAny(

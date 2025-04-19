@@ -15,41 +15,40 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.Scaffold
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import org.mjdev.desktop.main.MainView
-import org.mjdev.desktop.context.DesktopContext
+import org.mjdev.desktop.context.DesktopContext.Companion.rememberDesktopContext
 import org.mjdev.desktop.context.LocalDesktopContext
+import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.helpers.permission.rememberPermissionManager
 import org.mjdev.desktop.helpers.theme.DesktopTheme
 import org.mjdev.desktop.helpers.WakeLockHelper
 
+@OptIn(ExperimentalPermissionsApi::class)
 class MainActivity : ComponentActivity() {
     val wakeLockHelper by lazy { WakeLockHelper(this) }
 
-    @Suppress("OVERRIDE_DEPRECATION")
-    override fun onBackPressed() {
-        // Disable back button
-    }
+//    @Suppress("OVERRIDE_DEPRECATION")
+//    override fun onBackPressed() {
+//        // Disable back button
+//    }
 
-    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         wakeLockHelper.acquireWakeLock()
         installSplashScreen()
         setKeepScreenOn()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.Companion.dark(
-                Color.TRANSPARENT,
-            ),
-            navigationBarStyle = SystemBarStyle.Companion.dark(
-                Color.TRANSPARENT,
-            )
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT)
         )
         WindowCompat.getInsetsController(window, window.decorView).apply {
             hide(WindowInsetsCompat.Type.statusBars())
@@ -59,27 +58,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             rememberPermissionManager()
             CompositionLocalProvider(
-                LocalDesktopContext provides DesktopContext.Companion.rememberDesktopContext(
-                    baseContext
-                )
+                LocalDesktopContext provides rememberDesktopContext(baseContext)
             ) {
-                DesktopTheme {
-                    Scaffold(
-                        modifier = Modifier.Companion.fillMaxSize()
-                    ) { paddingValues ->
-                        Box(
-                            modifier = Modifier.Companion
-                                .fillMaxSize()
-                                .padding(paddingValues)
-                                .consumeWindowInsets(paddingValues)
-                                .windowInsetsPadding(
-                                    WindowInsets.Companion.safeDrawing
-                                )
-                        ) {
-                            MainView()
-                        }
-                    }
-                }
+                ActivityMain()
             }
         }
     }
@@ -97,4 +78,32 @@ class MainActivity : ComponentActivity() {
     private fun ComponentActivity.resetKeepScreenOn() {
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun ActivityMain() {
+    DesktopTheme {
+        Scaffold(
+            modifier = Modifier.fillMaxSize()
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .consumeWindowInsets(paddingValues)
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing
+                    )
+            ) {
+                MainView()
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun MainActivityPreview() = preview {
+    ActivityMain()
 }

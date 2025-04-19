@@ -22,11 +22,12 @@ import org.mjdev.desktop.components.text.KeyValueText
 import org.mjdev.desktop.components.text.TextAny
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.data.WifiNetwork
-
-// todo preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
 
 @Suppress("UNUSED_PARAMETER")
 @Composable
@@ -34,9 +35,9 @@ fun WifiRow(
     modifier: Modifier = Modifier,
     idx: Int = 0,
     item: WifiNetwork,
-    expandedState: MutableState<Boolean>,
+    expandedState: MutableState<Boolean> = mutableStateOf(false),
     isConnecting: Boolean = false,
-    connect: suspend () -> Unit
+    connect: suspend () -> Unit = {}
 ) = withDesktopContext {
     Column(
         modifier = modifier,
@@ -152,4 +153,22 @@ fun WifiRow(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun WifiRowPreview1() = preview {
+    WifiRow(
+        item = WifiNetwork(),
+        expandedState = mutableStateOf(false)
+    )
+}
+
+@Preview
+@Composable
+fun WifiRowPreview2() = preview {
+    WifiRow(
+        item = WifiNetwork(),
+        expandedState = mutableStateOf(true)
+    )
 }

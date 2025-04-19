@@ -27,6 +27,7 @@ import org.mjdev.desktop.extensions.LaunchedEffect.launchedEffect
 import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
 import org.mjdev.desktop.helpers.generic.Queue
 import kotlin.math.min
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -98,7 +99,7 @@ fun BackgroundImage(
 }
 
 @Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun BackgroundImagePreview() = preview {
     BackgroundImage()

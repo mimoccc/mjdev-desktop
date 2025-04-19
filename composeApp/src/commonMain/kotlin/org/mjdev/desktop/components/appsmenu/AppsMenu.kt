@@ -56,6 +56,7 @@ import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import org.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
 import org.mjdev.desktop.interfaces.IApp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -267,8 +268,7 @@ class AppsMenuState(
     }
 }
 
-@Suppress("unused")
-//@Preview
+@Preview
 @Composable
 fun AppsMenuPreview() = preview {
     AppsMenu()

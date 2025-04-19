@@ -13,6 +13,7 @@ import org.mjdev.desktop.components.menu.base.ContextMenuState
 import org.mjdev.desktop.components.menu.base.ContextMenuState.Companion.rememberContextMenuState
 import org.mjdev.desktop.extensions.Colors.SuperDarkGray
 import org.mjdev.desktop.extensions.Compose.preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo
 @Suppress("unused", "FunctionName")
@@ -58,9 +59,7 @@ fun ContextMenu(
     }
 }
 
-// todo
-//@Preview
-@Suppress("unused")
+@Preview
 @Composable
 fun ContextMenuPreview() = preview {
     ContextMenu()

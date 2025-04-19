@@ -1,7 +1,6 @@
 package org.mjdev.desktop.extensions
 
 object DoubleExt {
-
     fun Double.toMemorySizeReadable(): String {
         val bytes = toLong()
         return when {
@@ -15,5 +14,10 @@ object DoubleExt {
             else -> "%.1f EB".format((bytes shr 20).toDouble() / (0x1 shl 40))
         }
     }
+
+    // todo
+    fun String.format(
+        dbl: Double
+    ): String = "not yet implemented"
 
 }

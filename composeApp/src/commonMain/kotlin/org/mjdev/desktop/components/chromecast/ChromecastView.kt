@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-//import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo
 @Composable
@@ -16,7 +16,7 @@ fun ChromecastView(
     }
 }
 
-//@Preview(name = "ChromecastView")
+@Preview
 @Composable
 private fun PreviewChromecastView() {
     ChromecastView()
