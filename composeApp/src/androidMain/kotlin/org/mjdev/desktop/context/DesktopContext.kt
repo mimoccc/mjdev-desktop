@@ -75,7 +75,9 @@ class DesktopContext(
         } ?: DpSize(1024.dp, 640.dp)
 
     val allUsers
-        get() = User.allUsers(this)
+        get() = runCatching {
+            User.allUsers(this)
+        }.getOrNull() ?: emptyList<User>()
 
     override suspend fun logOut() {
     }

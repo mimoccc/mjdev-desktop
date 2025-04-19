@@ -29,7 +29,6 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 import org.mjdev.desktop.components.desktop.widgets.MemoryChart
-import org.mjdev.desktop.extensions.Compose.greyScale
 
 @SuppressLint("ComposableNaming")
 @Composable

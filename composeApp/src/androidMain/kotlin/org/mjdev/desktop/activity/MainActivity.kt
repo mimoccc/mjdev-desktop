@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
         setContent {
-            val permissionManager = rememberPermissionManager()
+            rememberPermissionManager()
             CompositionLocalProvider(
                 LocalDesktopContext provides DesktopContext.Companion.rememberDesktopContext(
                     baseContext

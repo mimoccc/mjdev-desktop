@@ -281,19 +281,14 @@ object Compose {
 
     class GreyScaleModifier : DrawModifier {
         override fun ContentDrawScope.draw() {
-            val saturationMatrix = ColorMatrix().apply { setToSaturation(0.3f) }
+            val saturationMatrix = ColorMatrix().apply { setToSaturation(0f) }
             val saturationFilter = ColorFilter.colorMatrix(saturationMatrix)
             val paint = Paint().apply {
                 colorFilter = saturationFilter
             }
             drawIntoCanvas { canvas ->
-                canvas.saveLayer(Rect(
-                    0f,
-                    0f,
-                    size.width,
-                    size.height),
-                    paint
-                )
+                val bounds = Rect(0f, 0f, size.width, size.height)
+                canvas.saveLayer(bounds, paint)
                 drawContent()
                 canvas.restore()
             }
