@@ -43,7 +43,7 @@ fun MainSettingsPage() = ControlCenterPage(
                 contentAlignment = Alignment.BottomStart
             ) {
                 val shape = BarShape(
-                    offset = 68f,
+                    offset = 80.dp,
                     circleRadius = 52.dp,
                     cornerRadius = 0.dp,
                     circleGap = 4.dp,

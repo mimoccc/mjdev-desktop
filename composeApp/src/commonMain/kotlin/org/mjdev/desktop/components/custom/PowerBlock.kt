@@ -51,7 +51,7 @@ fun PowerBlock(
             contentAlignment = Alignment.BottomCenter
         ) {
             val shape = BarShape(
-                offset = (minWidth / 2).value,
+                offset = (minWidth / 2),
                 circleRadius = 24.dp,
                 cornerRadius = 4.dp,
                 circleGap = 8.dp,

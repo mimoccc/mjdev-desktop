@@ -26,9 +26,13 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import org.mjdev.desktop.activity.MainActivity.Companion.TAG
 import org.mjdev.desktop.main.MainView
 import org.mjdev.desktop.context.DesktopContext.Companion.rememberDesktopContext
 import org.mjdev.desktop.context.LocalDesktopContext
+import org.mjdev.desktop.extensions.Compose.applyTransform
+import org.mjdev.desktop.extensions.Compose.dither
+import org.mjdev.desktop.extensions.Compose.grayScale
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.helpers.permission.rememberPermissionManager
 import org.mjdev.desktop.helpers.theme.DesktopTheme
@@ -58,9 +62,7 @@ class MainActivity : ComponentActivity() {
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
         setContent {
-            BackHandler(true) {
-                Log.d(TAG, "OnBackPressed")
-            }
+            onBackPress()
             rememberPermissionManager()
             CompositionLocalProvider(
                 LocalDesktopContext provides rememberDesktopContext(baseContext)
@@ -85,9 +87,16 @@ class MainActivity : ComponentActivity() {
     }
 
     companion object {
-        private val TAG = MainActivity::class.simpleName
+        val TAG = MainActivity::class.simpleName
     }
 }
+
+@Composable
+fun onBackPress(
+    action: () -> Unit = {
+        Log.d(TAG, "OnBackPressed")
+    }
+) = BackHandler(true, action)
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -101,9 +110,7 @@ private fun ActivityMain() {
                     .fillMaxSize()
                     .padding(paddingValues)
                     .consumeWindowInsets(paddingValues)
-                    .windowInsetsPadding(
-                        WindowInsets.safeDrawing
-                    )
+                    .windowInsetsPadding(WindowInsets.safeDrawing)
             ) {
                 MainView()
             }

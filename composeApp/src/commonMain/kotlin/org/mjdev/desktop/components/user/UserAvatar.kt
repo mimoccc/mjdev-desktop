@@ -47,7 +47,6 @@ import org.mjdev.desktop.extensions.Modifier.conditional
 import org.mjdev.desktop.helpers.compose.Orientation
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-// todo move back orientation for greeter
 @Suppress("FunctionName", "UNUSED_PARAMETER")
 @Composable
 fun UserAvatar(

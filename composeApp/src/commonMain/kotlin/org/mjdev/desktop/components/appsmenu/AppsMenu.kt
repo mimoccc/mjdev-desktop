@@ -96,7 +96,7 @@ fun AppsMenu(
     SlidingPanel(
         modifier = modifier
             .size(
-                appMenuMinWidth ,
+                appMenuMinWidth,
                 appMenuMinHeight
             )
 //            .widthIn(
@@ -134,10 +134,10 @@ fun AppsMenu(
                     contentAlignment = Alignment.BottomStart
                 ) {
                     val shape = BarShape(
-                        offset = 52f,
-                        circleRadius = 24.dp,
+                        offset = 50.dp,
+                        circleRadius = 32.dp,
                         cornerRadius = 4.dp,
-                        circleGap = 8.dp,
+                        circleGap = 4.dp,
                     )
                     val brush = Brush.horizontalGradient(
                         listOf(
@@ -161,8 +161,13 @@ fun AppsMenu(
                         avatarSize = 64.dp,
                         orientation = Orientation.Horizontal,
                         titleVerticalAlignment = Alignment.Bottom,
-                        iconPadding = PaddingValues(bottom = 16.dp),
-                        titlePadding = PaddingValues(top = 24.dp, start = 20.dp),
+                        iconPadding = PaddingValues(
+                            bottom = 16.dp
+                        ),
+                        titlePadding = PaddingValues(
+                            top = 24.dp,
+                            start = 20.dp
+                        ),
                         onUserAvatarClick = onUserAvatarClick,
                         onTooltip = onTooltip
                     )
@@ -271,5 +276,8 @@ class AppsMenuState(
 @Preview
 @Composable
 fun AppsMenuPreview() = preview {
-    AppsMenu()
+    AppsMenu(
+        appsMenuState = rememberAppsMenuState(true),
+        panelState = rememberVisibilityState(true)
+    )
 }

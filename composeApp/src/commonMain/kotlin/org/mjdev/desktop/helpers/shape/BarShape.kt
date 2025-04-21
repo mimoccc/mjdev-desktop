@@ -20,10 +20,10 @@ import androidx.compose.ui.unit.dp
 
 // todo : shadow
 class BarShape(
-    private val offset: Float,
+    private val offset: Dp,
     private val circleRadius: Dp,
     private val cornerRadius: Dp,
-    private val circleGap: Dp = 5.dp,
+    private val circleGap: Dp = 4.dp,
 ) : Shape {
     override fun createOutline(
         size: Size, layoutDirection: LayoutDirection, density: Density
@@ -32,16 +32,16 @@ class BarShape(
     }
 
     private fun getPath(size: Size, density: Density): Path {
-        val cutoutCenterX = offset
-        val cutoutRadius = density.run { (circleRadius + circleGap).toPx() }
-        val cornerRadiusPx = density.run { cornerRadius.toPx() }
+        val cutoutCenterX: Float = offset.value
+        val cutoutRadius : Float = density.run { (circleRadius + circleGap).toPx() }
+        val cornerRadiusPx: Float = density.run { cornerRadius.toPx() }
         val cornerDiameter = cornerRadiusPx * 2
         return Path().apply {
-            val cutoutEdgeOffset = cutoutRadius * 2.5f
-            val cutoutLeftX = cutoutCenterX - cutoutEdgeOffset
-            val cutoutRightX = cutoutCenterX + cutoutEdgeOffset
+            val cutoutEdgeOffset: Float = cutoutRadius * 2.5f
+            val cutoutLeftX : Float = cutoutCenterX - cutoutEdgeOffset
+            val cutoutRightX : Float = cutoutCenterX + cutoutEdgeOffset
             moveTo(x = 0F, y = size.height)
-            if (cutoutLeftX > 0) {
+            if (cutoutLeftX > 0f) {
                 val realLeftCornerDiameter = if (cutoutLeftX >= cornerRadiusPx) {
                     cornerDiameter
                 } else {
@@ -49,8 +49,14 @@ class BarShape(
                 }
                 arcTo(
                     rect = Rect(
-                        left = 0f, top = 0f, right = realLeftCornerDiameter, bottom = realLeftCornerDiameter
-                    ), startAngleDegrees = 180.0f, sweepAngleDegrees = 90.0f, forceMoveTo = false
+                        left = 0f,
+                        top = 0f,
+                        right = realLeftCornerDiameter,
+                        bottom = realLeftCornerDiameter
+                    ),
+                    startAngleDegrees = 180.0f,
+                    sweepAngleDegrees = 90.0f,
+                    forceMoveTo = false
                 )
             }
             lineTo(cutoutLeftX, 0f)
@@ -82,7 +88,10 @@ class BarShape(
                         top = 0f,
                         right = size.width,
                         bottom = realRightCornerDiameter
-                    ), startAngleDegrees = -90.0f, sweepAngleDegrees = 90.0f, forceMoveTo = false
+                    ),
+                    startAngleDegrees = -90.0f,
+                    sweepAngleDegrees = 90.0f,
+                    forceMoveTo = false
                 )
             }
             lineTo(x = size.width, y = size.height)

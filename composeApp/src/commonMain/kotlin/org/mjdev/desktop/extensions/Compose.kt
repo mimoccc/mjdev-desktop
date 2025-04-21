@@ -25,10 +25,13 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.DrawModifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.input.pointer.pointerInput
@@ -48,6 +51,9 @@ import org.mjdev.desktop.helpers.fuzzywuzzy.FuzzySearch
 import org.mjdev.desktop.interfaces.IDesktopContext
 import kotlin.coroutines.CoroutineContext
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.IntSize
+import kotlin.text.toInt
 
 object Compose {
 
@@ -279,47 +285,99 @@ object Compose {
         )
     }
 
-    class GreyScaleModifier : DrawModifier {
-        override fun ContentDrawScope.draw() {
-            val saturationMatrix = ColorMatrix().apply { setToSaturation(0f) }
-            val saturationFilter = ColorFilter.colorMatrix(saturationMatrix)
-            val paint = Paint().apply {
-                colorFilter = saturationFilter
-            }
-            drawIntoCanvas { canvas ->
-                val bounds = Rect(0f, 0f, size.width, size.height)
-                canvas.saveLayer(bounds, paint)
-                drawContent()
-                canvas.restore()
-            }
+//    class GreyScaleModifier : DrawModifier {
+//        override fun ContentDrawScope.draw() {
+//            val saturationFilter = ColorMatrix().apply {
+//                setToSaturation(0f)
+//            }.let { cm ->
+//                ColorFilter.colorMatrix(cm)
+//            }
+//            val paint = Paint().apply {
+//                colorFilter = saturationFilter
+//            }
+//            drawIntoCanvas { canvas ->
+//                val bounds = Rect(0f, 0f, size.width, size.height)
+//                canvas.saveLayer(bounds, paint)
+//                drawContent()
+//                canvas.restore()
+//            }
+//        }
+//    }
+
+//    fun Modifier.greyScale(): Modifier = this then GreyScaleModifier()
+
+    fun Modifier.grayScale(): Modifier = this then drawWithContent {
+        val saturationFilter = ColorMatrix().apply {
+            setToSaturation(0f)
+        }.let { cm ->
+            ColorFilter.colorMatrix(cm)
+        }
+        val paint = Paint().apply {
+            colorFilter = saturationFilter
+        }
+        drawIntoCanvas { canvas ->
+            val bounds = Rect(0f, 0f, size.width, size.height)
+            canvas.saveLayer(bounds, paint)
+            drawContent()
+            canvas.restore()
         }
     }
 
-    fun Modifier.greyScale(): Modifier = this then GreyScaleModifier()
+    // todo
+    fun Modifier.applyTransform(
+        transform : (bitmap:ImageBitmap) -> ImageBitmap = { bitmap -> bitmap }
+    ): Modifier = this then drawWithContent {
+        val paint = Paint()
+        val size = IntSize(size.width.toInt(), size.height.toInt())
+        var bitmap = ImageBitmap(size.width, size.height)
+        drawIntoCanvas { canvas ->
+            canvas.drawImage(bitmap, Offset.Zero, paint)
+        }
+        bitmap = transform(bitmap)
+        drawIntoCanvas { canvas ->
+            canvas.drawImage(bitmap, Offset.Zero, paint)
+        }
+    }
 
-//    @Composable
-//    fun DisableBackHandler(
-//        isDisabled: Boolean,
-//        content: @Composable () -> Unit,
-//    ) {
-//        CompositionLocalProvider(
-//            values = LocalOnBackPressedDispatcherOwner.current?.let { parentDispatcherOwner ->
-//                arrayOf(
-//                    LocalOnBackPressedDispatcherOwner provides if (isDisabled) {
-//                        DummyOnBackPressedDispatcherOwner(parentDispatcherOwner.lifecycle)
-//                    } else {
-//                        parentDispatcherOwner
-//                    },
-//                )
-//            } ?: arrayOf(),
-//            content = content,
-//        )
-//    }
-
-//    private class DummyOnBackPressedDispatcherOwner(
-//        override val lifecycle: Lifecycle,
-//    ) : OnBackPressedDispatcherOwner {
-//        override val onBackPressedDispatcher: OnBackPressedDispatcher
-//            get() = OnBackPressedDispatcher()
-//    }
+    // todo
+    fun Modifier.dither(): Modifier = this then drawWithContent {
+        val paint = Paint()
+        val size = IntSize(size.width.toInt(), size.height.toInt())
+        val bitmap = ImageBitmap(size.width, size.height)
+        val pixels = IntArray(size.width * size.height)
+        val bayerMatrix = arrayOf(
+            arrayOf(0, 128, 32, 160),
+            arrayOf(192, 64, 224, 96),
+            arrayOf(48, 176, 16, 144),
+            arrayOf(240, 112, 208, 80)
+        )
+        drawIntoCanvas { canvas ->
+            canvas.drawImage(bitmap, Offset.Zero, paint)
+        }
+        bitmap.readPixels(pixels)
+        val ditheredPixels = pixels.mapIndexed { index, pixel ->
+            val x = index % size.width
+            val y = index / size.width
+            val color = Color(pixel)
+            val intensity = (color.red * 255).toInt()
+            val threshold = bayerMatrix[y % 4][x % 4]
+            if (intensity > threshold) Color.White else Color.Black
+        }.toTypedArray()
+        drawIntoCanvas { canvas ->
+            for (y in 0 until size.height) {
+                for (x in 0 until size.width) {
+                    paint.color = ditheredPixels[y * size.width + x]
+                    canvas.drawRect(
+                        Rect(
+                            x.toFloat(),
+                            y.toFloat(),
+                            (x + 1).toFloat(),
+                            (y + 1).toFloat()
+                        ),
+                        paint
+                    )
+                }
+            }
+        }
+    }
 }
