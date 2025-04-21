@@ -6,4 +6,21 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.app.icon.generator) apply false
+    alias(libs.plugins.qodana)
+    alias(libs.plugins.kover)
+    alias(libs.plugins.changelog)
+}
+dependencies {
+    kover(project(":composeApp"))
+    kover(project(":shared"))
+}
+
+kover {
+    reports {
+        total {
+            xml {
+                onCheck = true
+            }
+        }
+    }
 }

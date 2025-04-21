@@ -44,6 +44,10 @@ generativeai = "0.9.0"
 alert-kmp = "2.0.0"
 #emoji2 = "1.5.0"
 accompanist-permissions = "0.37.2"
+kover = "0.9.1"
+qodana = "2024.3.4"
+intelliJPlatform = "2.5.0"
+changelog = "2.2.1"
 
 [libraries]
 # gradle
@@ -108,3 +112,7 @@ compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-p
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+qodana = { id = "org.jetbrains.qodana", version.ref = "qodana" }
+intellij-platform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
+changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
