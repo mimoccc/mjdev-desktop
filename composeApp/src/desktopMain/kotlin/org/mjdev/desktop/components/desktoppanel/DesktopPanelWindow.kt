@@ -45,7 +45,6 @@ fun DesktopPanelWindow(
     },
     onAppContextMenuClick: (IApp) -> Unit = {},
     onLanguageClick: () -> Unit = {},
-    onClockClick: () -> Unit = {},
     onTooltip: (item: Any?) -> Unit = {},
 ) = withDesktopContext {
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
@@ -137,7 +136,6 @@ fun DesktopPanelWindow(
             onAppClick = onAppClick,
             onAppContextMenuClick = onAppContextMenuClick,
             onLanguageClick = onLanguageClick,
-            onClockClick = onClockClick,
             onTooltip = onTooltip,
             onFocusChange = { focused ->
                 if (focused) {

@@ -12,7 +12,7 @@ import org.mjdev.desktop.interfaces.ILocale
 import org.mjdev.desktop.interfaces.IPalette
 import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
-import org.mjdev.desktop.managers.ai.IAiManager
+import org.mjdev.desktop.managers.ai.base.IAiManager
 import org.mjdev.desktop.managers.apps.IAppsManager
 import org.mjdev.desktop.managers.base.IDelegate
 import org.mjdev.desktop.managers.connectivity.IConnectivityManager

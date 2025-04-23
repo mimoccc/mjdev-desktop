@@ -6,7 +6,7 @@
  *  w: https://mjdev.org
  */
 
-package org.mjdev.desktop.managers.ai.plugins
+package org.mjdev.desktop.managers.ai.plugins.base
 
 interface AIPlugin {
     suspend fun ask(question: String): String

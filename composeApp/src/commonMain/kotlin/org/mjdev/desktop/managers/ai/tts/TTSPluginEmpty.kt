@@ -1,11 +1,13 @@
-package org.mjdev.desktop.managers.ai.tts.base
+package org.mjdev.desktop.managers.ai.tts
 
 import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.managers.ai.tts.base.TTSPlugin
 
 @Suppress("UNUSED_PARAMETER")
 class TTSPluginEmpty(
-    context: IDesktopContext
+    context: IDesktopContext,
 ) : TTSPlugin {
+    override val isPresent: Boolean = true
     override fun talk(text: String, clearQueue: Boolean) {
     }
 }

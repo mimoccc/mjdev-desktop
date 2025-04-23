@@ -119,7 +119,6 @@ fun MainView() = withDesktopContext {
     }
 }
 
-@Suppress("PreviewDeviceShouldUseNewSpec")
 @Preview(device = Devices.TABLET)
 @Composable
 fun MainViewPreview() = preview {

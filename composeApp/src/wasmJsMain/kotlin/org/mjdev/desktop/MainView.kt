@@ -110,11 +110,16 @@ fun MainView() = withDesktopContext {
 //                contextMenuState.show()
                 })
         }
-        DesktopPanel(panelState = panelState, onTooltip = onTooltip, onMenuIconClicked = {
-            runAsync {
-                appsMenuState.show()
-            }
-        })
+        DesktopPanel(
+            panelState = panelState,
+            onTooltip = onTooltip,
+            onMenuIconClicked = {
+                runAsync {
+                    appsMenuState.show()
+                }
+            },
+            onTimeDateClick = onTimeDateClick
+        )
         ControlCenter(
             modifier = Modifier
                 .fillMaxHeight()

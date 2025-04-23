@@ -8,23 +8,26 @@
 
 package org.mjdev.desktop.managers.ai.tts
 
+import kotlinx.coroutines.Deferred
 import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.ai.tts.base.TTSPlugin
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import nl.marc_apps.tts.TextToSpeechEngine
 import nl.marc_apps.tts.TextToSpeechFactory
-import nl.marc_apps.tts.experimental.ExperimentalDesktopTarget
+import nl.marc_apps.tts.TextToSpeechInstance
 import org.mjdev.desktop.interfaces.IDesktopContext
 
-@Suppress("unused")
-class TTSPluginMain(
-    val context: IDesktopContext
+open class TTSPluginMain(
+    val context: IDesktopContext,
+    val instantiate: suspend IDesktopContext.() -> TextToSpeechInstance? = { null }
 ) : TTSPlugin {
-    @OptIn(ExperimentalDesktopTarget::class)
-    private val textToSpeech = context.scope.async {
-        TextToSpeechFactory().createOrNull()
+    // todo
+    override val isPresent: Boolean = true
+
+    val textToSpeech: Deferred<TextToSpeechInstance?> = context.scope.async {
+        runCatching { instantiate(context) }.getOrNull()
     }
 
     override fun talk(text: String, clearQueue: Boolean) {

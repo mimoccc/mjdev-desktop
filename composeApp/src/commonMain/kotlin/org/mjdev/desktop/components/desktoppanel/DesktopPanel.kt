@@ -65,7 +65,6 @@ fun DesktopPanel(
     onAppClick: DesktopContextScope.(IApp) -> Unit = {},
     onAppContextMenuClick: (IApp) -> Unit = {},
     onLanguageClick: () -> Unit = {},
-    onClockClick: () -> Unit = {},
     onTooltip: (item: Any?) -> Unit = {},
 ) = withDesktopContext {
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
@@ -195,7 +194,9 @@ fun DesktopPanel(
                                         )
                                         DesktopPanelDateTime(
                                             onTooltip = onTooltip,
-                                            onClick = onClockClick
+                                            onClick = {
+                                                ai.ask("Whats current time?")
+                                            }
                                         )
                                     }
                                 }

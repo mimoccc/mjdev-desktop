@@ -9,5 +9,7 @@
 package org.mjdev.desktop.managers.ai.tts.base
 
 interface TTSPlugin {
+    val isPresent: Boolean
+
     fun talk(text: String, clearQueue: Boolean = false)
 }

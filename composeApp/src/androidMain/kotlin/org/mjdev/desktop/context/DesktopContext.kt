@@ -26,25 +26,27 @@ import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
 import org.mjdev.desktop.managers.language.Translator
 import org.mjdev.desktop.log.Log
-import org.mjdev.desktop.managers.ai.IAiManager
+import org.mjdev.desktop.managers.ai.AiManager
+import org.mjdev.desktop.managers.ai.base.IAiManager
 import org.mjdev.desktop.managers.os.IOSManager
 import org.mjdev.desktop.managers.theme.IThemeManager
 import org.mjdev.desktop.managers.translations.ITranslator
-import org.mjdev.desktop.managers.ai.AIManager.Companion.AiManager
 import org.mjdev.desktop.managers.ai.plugins.AiPluginGemini
 import org.mjdev.desktop.managers.ai.stt.STTPluginEmpty
-import org.mjdev.desktop.managers.ai.tts.TTSPluginMain
+import org.mjdev.desktop.managers.ai.tts.TTSPluginAndroid
 import org.mjdev.desktop.managers.base.IDelegate
 import org.mjdev.desktop.managers.connectivity.ConnectivityManager
 import org.mjdev.desktop.managers.os.OsManager
 import org.mjdev.desktop.managers.processes.ProcessManager
 import kotlin.reflect.KClass
 import org.mjdev.desktop.managers.apps.AppsManager
+import org.mjdev.desktop.managers.keys.IKeyManager
+import org.mjdev.desktop.managers.keys.KeysManager
 import org.mjdev.desktop.managers.palette.Palette
 import org.mjdev.desktop.managers.theme.ThemeManager
 import kotlin.reflect.full.companionObject
 
-@Suppress("unused")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class DesktopContext(
     val context: Context? = null,
     override val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
@@ -77,7 +79,7 @@ class DesktopContext(
     val allUsers
         get() = runCatching {
             User.allUsers(this)
-        }.getOrNull() ?: emptyList<User>()
+        }.getOrNull() ?: emptyList()
 
     override suspend fun logOut() {
     }
@@ -110,16 +112,18 @@ class DesktopContext(
         IPalette::class -> Palette(this)
         ITranslator::class -> Translator(this)
         IConnectivityManager::class -> ConnectivityManager(this)
-        IAiManager::class -> AiManager(this).apply {
+        IAiManager::class -> AiManager(
+            context = this,
             // todo user can configure
-            pluginAI = AiPluginGemini(this@DesktopContext)
-            pluginTTS = TTSPluginMain(this@DesktopContext)
+            pluginAI = AiPluginGemini(this@DesktopContext),
+            pluginTTS = TTSPluginAndroid(this@DesktopContext),
             pluginSTT = STTPluginEmpty(this@DesktopContext)
-        }
+        )
 
         IAppsManager::class -> AppsManager(this)
         IThemeManager::class -> ThemeManager(this)
         IProcessManager::class -> ProcessManager(this)
+        IKeyManager::class -> KeysManager(this)
         else -> cls.companionObject?.members?.first {
             it.name == "EMPTY"
         }?.call() as IDelegate

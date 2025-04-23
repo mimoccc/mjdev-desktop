@@ -68,7 +68,7 @@ fun AIPage() = ControlCenterPage(
                     .let { resx ->
                         questionsList.replaceLast(Pair(what, resx))
                         scrollState.scrollWithAnimToLast(scope)
-                        context.ai.talk(resx)
+                        context.ai.say(resx)
                     }
             }
         }

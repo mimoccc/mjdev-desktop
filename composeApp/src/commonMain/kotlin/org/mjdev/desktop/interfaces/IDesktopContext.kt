@@ -16,7 +16,7 @@ import org.mjdev.desktop.components.controlcenter.pages.sound.SoundSettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.theme.ThemeSettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.wifi.WifiSettingsPage
 import org.mjdev.desktop.data.Category
-import org.mjdev.desktop.managers.ai.IAiManager
+import org.mjdev.desktop.managers.ai.base.IAiManager
 import org.mjdev.desktop.managers.apps.IAppsManager
 import org.mjdev.desktop.managers.connectivity.IConnectivityManager
 import org.mjdev.desktop.managers.os.IOSManager

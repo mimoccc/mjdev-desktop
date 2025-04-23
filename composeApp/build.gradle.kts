@@ -136,6 +136,8 @@ kotlin {
                 implementation(libs.androidx.core.splashscreen)
                 // permissions
                 implementation(libs.accompanist.permissions)
+                // ai gemini
+                implementation(libs.sh.google.generative.ai)
             }
         }
         // wasm dependencies
@@ -145,6 +147,8 @@ kotlin {
                 implementation(kotlin("reflect"))
                 // preview
                 implementation(compose.components.uiToolingPreview)
+                // ai gemini
+                implementation(libs.sh.google.generative.ai)
             }
         }
         // desktop dependencies
@@ -162,8 +166,8 @@ kotlin {
             implementation(libs.okhttp3.client)
             // images okhttp
             implementation(libs.coil.okhttp)
-            // gemini ai
-            implementation(libs.google.generative.ai)
+            // ai gemini
+            implementation(libs.sh.google.generative.ai)
             // chatgpt
             implementation(libs.ychat)
             // desktop files

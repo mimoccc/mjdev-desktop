@@ -58,8 +58,8 @@ open class DesktopContextScope(
     val iconSet
         get() = currentUser.theme.iconSet
 
-//    val ai
-//        get() = context.ai
+    val ai
+        get() = context.ai
 
 //    val adb
 //        get() = api.adbHandler

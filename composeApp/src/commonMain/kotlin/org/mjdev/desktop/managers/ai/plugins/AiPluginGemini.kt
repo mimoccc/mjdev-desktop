@@ -13,14 +13,14 @@ import dev.shreyaspatil.ai.client.generativeai.type.content
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import org.mjdev.desktop.interfaces.IDesktopContext
-import org.mjdev.desktop.managers.ai.AIPlugin
+import org.mjdev.desktop.managers.ai.plugins.base.AIPlugin
 
 /*
 * Gemini key : https://makersuite.google.com/app/apikey
 * */
 class AiPluginGemini(
     private val context: IDesktopContext,
-    private val aiModel: Model = Model.Gemini1_5Pro,
+    private val aiModel: GeminiModel = GeminiModel.Gemini1_5Pro,
     private val scope: CoroutineScope = context.scope
 ) : AIPlugin {
     private val key = context.keysManager.loadKey("gemini")
@@ -51,7 +51,7 @@ class AiPluginGemini(
     }.await()
 
     @Suppress("EnumEntryName")
-    enum class Model(val model: String) {
+    enum class GeminiModel(val model: String) {
         Gemini1_5Pro("gemini-1.5-pro-latest")
     }
 }

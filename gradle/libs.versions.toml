@@ -40,7 +40,7 @@ okio = "3.11.0"
 qrose = "1.0.1"
 tts = "3.0.0"
 ychat = "1.4.1"
-#generativeai = "0.9.0"
+#google-generative-ai = "0.9.0"
 alert-kmp = "2.0.0"
 #emoji2 = "1.5.0"
 accompanist-permissions = "0.37.2"
@@ -98,8 +98,8 @@ ini4j = { module = "org.ini4j:ini4j", version.ref = "ini4j" }
 # tts
 tts = { module = "nl.marc-apps:tts", version.ref = "tts" }
 # ai
-google-generative-ai = { module = "dev.shreyaspatil.generativeai:generativeai-google-jvm", version.ref = "generative-ai" }
-#generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
+sh-google-generative-ai = { module = "dev.shreyaspatil.generativeai:generativeai-google-jvm", version.ref = "generative-ai" }
+#google-generative-ai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "google-generative-ai" }
 # strings
 human-readable = { module = "nl.jacobras:Human-Readable", version.ref = "human-readable" }
 # alerts

@@ -17,10 +17,19 @@ import org.mjdev.desktop.helpers.image.ImageLoader.asyncImageLoader
 import org.mjdev.desktop.interfaces.IApp
 import org.mjdev.desktop.interfaces.IDesktopContext
 import org.mjdev.desktop.interfaces.ILocale
+import org.mjdev.desktop.interfaces.IPalette
 import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
 import org.mjdev.desktop.log.Log
+import org.mjdev.desktop.managers.ai.AiManager
+import org.mjdev.desktop.managers.ai.base.IAiManager
+import org.mjdev.desktop.managers.ai.stt.STTPluginEmpty
 import org.mjdev.desktop.managers.base.IDelegate
+import org.mjdev.desktop.managers.os.IOSManager
+import org.mjdev.desktop.managers.os.OsManager
+import org.mjdev.desktop.managers.palette.Palette
+import org.mjdev.desktop.managers.ai.plugins.AiPluginGemini
+import org.mjdev.desktop.managers.ai.tts.TTSPluginEmpty
 import kotlin.reflect.KClass
 
 @Suppress("unused")
@@ -76,26 +85,24 @@ class DesktopContext(
     override fun dispose() {
     }
 
-    override fun createManager(cls: KClass<*>): IDelegate?  = null
-
-//    override fun createManager(cls: KClass<*>): IDelegate = when (cls) {
-//        IOSManager::class -> OsManager(this)
-//        IPalette::class -> Palette(this)
+    override fun createManager(cls: KClass<*>): IDelegate? = when (cls) {
+        IOSManager::class -> OsManager(this)
+        IPalette::class -> Palette(this)
 //        ITranslator::class -> Translator(this)
 //        IConnectivityManager::class -> ConnectivityManager(this)
-//        IAiManager::class -> AiManager(this).apply {
-//             todo user can configure
-//            pluginAI = AiPluginGemini(this@DesktopContext)
-//            pluginTTS = TTSPluginMain(this@DesktopContext)
-//            pluginSTT = STTPluginEmpty(this@DesktopContext)
-//        }
+        IAiManager::class -> AiManager(
+            context = this,
+            //  todo user can configure
+            pluginAI = AiPluginGemini(this@DesktopContext),
+            pluginTTS = TTSPluginEmpty(this@DesktopContext),
+            pluginSTT = STTPluginEmpty(this@DesktopContext)
+        )
 //        IAppsManager::class -> AppsManager(this)
 //        IThemeManager::class -> ThemeManager(this)
 //        IProcessManager::class -> ProcessManager(this)
-//        else -> cls.companionObject?.members?.first {
-//            it.name == "EMPTY"
-//        }?.call()
-//    }
+//        IKeyManager::class -> KeysManager(this)
+        else -> null
+    }
 
     companion object {
         @Composable

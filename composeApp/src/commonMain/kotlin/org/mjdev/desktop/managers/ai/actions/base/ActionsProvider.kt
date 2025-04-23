@@ -6,14 +6,11 @@
  *  w: https://mjdev.org
  */
 
-package org.mjdev.desktop.managers.ai.actions
+package org.mjdev.desktop.managers.ai.actions.base
 
 import org.mjdev.desktop.log.Log
-import org.mjdev.desktop.managers.ai.actions.base.Action
-import org.mjdev.desktop.managers.ai.actions.base.ActionException
 import org.mjdev.desktop.managers.ai.actions.base.ActionException.ActionFail
 import org.mjdev.desktop.managers.ai.actions.base.ActionException.ActionSuccess
-import org.mjdev.desktop.managers.ai.actions.base.ActionProviderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.mjdev.desktop.extensions.Compose.addIfNotExists
@@ -47,13 +44,7 @@ class ActionsProvider(
         command: String,
         action: suspend ActionProviderScope.() -> ActionException,
     ) {
-        actions.add(
-            Action(
-                name = command,
-                text = command,
-                action = action
-            )
-        )
+        actions.add(Action(name = command, text = command, action = action))
     }
 
     // todo regexp
@@ -81,8 +72,10 @@ class ActionsProvider(
                 action.lastSeen = currentTimeMillis()
                 action.history.addIfNotExists(t) { t1, t2 -> t1.contentEquals(t2, true) }
                 action.action.invoke(ActionProviderScope(context)).let { r ->
-                    if (r is ActionFail) r
-                    else ActionSuccess(action.responseSuccess, r)
+                    when (r) {
+                        is ActionFail, is ActionSuccess-> r
+                        else -> ActionSuccess(action.responseSuccess, r)
+                    }
                 }
             } else {
                 ActionException.ActionNone

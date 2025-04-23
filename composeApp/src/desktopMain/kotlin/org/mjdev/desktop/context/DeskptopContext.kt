@@ -31,7 +31,11 @@ import org.mjdev.desktop.interfaces.IUser
 import org.mjdev.desktop.managers.language.Translator
 import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.ai.AiManager
-import org.mjdev.desktop.managers.ai.IAiManager
+import org.mjdev.desktop.managers.ai.base.IAiManager
+import org.mjdev.desktop.managers.ai.plugins.AiPluginGemini
+import org.mjdev.desktop.managers.ai.stt.STTPluginEmpty
+import org.mjdev.desktop.managers.ai.tts.TTSPluginDesktop
+import org.mjdev.desktop.managers.ai.tts.TTSPluginSwift
 import org.mjdev.desktop.managers.apps.IAppsManager
 import org.mjdev.desktop.managers.os.IOSManager
 import org.mjdev.desktop.managers.process.IProcessManager
@@ -48,7 +52,6 @@ import java.awt.Desktop
 import java.awt.Toolkit
 import java.io.File
 import java.net.URI
-import javax.net.ssl.KeyManager
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
@@ -204,7 +207,6 @@ class DesktopContext(
 //    override suspend fun logout() : Boolean = true // todo
 
 
-
     fun lock() = runAsync {
         Shell.executeAndRead("/usr/bin/loginctl", "lock-sessions")
     }
@@ -234,7 +236,13 @@ class DesktopContext(
         IPalette::class -> Palette(this)
         ITranslator::class -> Translator(this)
         IConnectivityManager::class -> ConnectivityManager(this)
-        IAiManager::class -> AiManager(this)
+        IAiManager::class -> AiManager(
+            context = this,
+            // todo user can configure
+            pluginAI = AiPluginGemini(this@DesktopContext),
+            pluginTTS = TTSPluginSwift(this@DesktopContext),
+            pluginSTT = STTPluginEmpty(this@DesktopContext)
+        )
         IAppsManager::class -> AppsManager(this)
         IThemeManager::class -> ThemeManager(this)
         IProcessManager::class -> ProcessManager(this)

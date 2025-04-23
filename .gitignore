@@ -27,9 +27,6 @@ packages/
 src/main/resources/dependencies/linux/usr/share/backgrounds
 /src/main/resources/dependencies/linux/usr/share/backgrounds
 /src/main/resources/dependencies/linux/usr/share/backgrounds/
-src/main/resources/keys
-/src/main/resources/keys
-/src/main/resources/keys/
 
 ### cache ###
 /cache
@@ -50,6 +47,4 @@ sources/
 /.intellijPlatform/
 
 ### no keys
-/composeApp/src/commonMain/resources/keys
-composeApp/src/commonMain/resources/keys/
-/composeApp/src/commonMain/resources/keys/
+keys/*.key

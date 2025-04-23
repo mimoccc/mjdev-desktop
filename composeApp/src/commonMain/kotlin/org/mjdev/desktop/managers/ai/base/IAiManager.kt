@@ -1,4 +1,4 @@
-package org.mjdev.desktop.managers.ai
+package org.mjdev.desktop.managers.ai.base
 
 import org.mjdev.desktop.managers.base.IDelegate
 
@@ -7,10 +7,10 @@ interface IAiManager : IDelegate {
 
     fun ask(
         question: String,
-        block: (question: String, result: String) -> Unit
+        block: IAiManager.(question: String, result: String) -> Unit = { _, r -> say(r) }
     )
 
-    fun talk(
+    fun say(
         text: String,
         clearQueue: Boolean = false
     )
@@ -18,8 +18,8 @@ interface IAiManager : IDelegate {
     companion object {
         val EMPTY = object : IAiManager {
             override val isAvailable: () -> Boolean = { false }
-            override fun ask(question: String, block: (question: String, result: String) -> Unit) {}
-            override fun talk(text: String, clearQueue: Boolean) {}
+            override fun ask(question: String, block: IAiManager.(question: String, result: String) -> Unit) {}
+            override fun say(text: String, clearQueue: Boolean) {}
         }
     }
 }
