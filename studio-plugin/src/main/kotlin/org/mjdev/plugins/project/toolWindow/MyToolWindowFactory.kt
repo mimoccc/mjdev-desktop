@@ -1,4 +1,4 @@
-package org.jetbrains.plugins.template.toolWindow
+package org.mjdev.plugins.project.toolWindow
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
@@ -13,20 +13,29 @@ import org.jetbrains.plugins.template.services.MyProjectService
 import javax.swing.JButton
 
 class MyToolWindowFactory : ToolWindowFactory {
+    val log
+        get() = thisLogger()
+
     init {
-        thisLogger()
-            .warn("Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")
+        log.warn(
+            "Don't forget to remove all non-needed sample code files with their corresponding "+
+                    "registration entries in `plugin.xml`."
+        )
     }
-    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+
+    override fun createToolWindowContent(
+        project: Project,
+        toolWindow: ToolWindow
+    ) {
         val myToolWindow = MyToolWindow(toolWindow)
-        val content = ContentFactory.getInstance().createContent(myToolWindow.getContent(), null, false)
+        val content = ContentFactory.getInstance()
+            .createContent(myToolWindow.getContent(), null, false)
         toolWindow.contentManager.addContent(content)
     }
 
     override fun shouldBeAvailable(project: Project) = true
 
     class MyToolWindow(toolWindow: ToolWindow) {
-
         private val service = toolWindow.project.service<MyProjectService>()
 
         fun getContent() = JBPanel<JBPanel<*>>().apply {

@@ -41,7 +41,7 @@ class User(
     override val config: DesktopConfig
         get() = DesktopConfig.load(this) // todo load
     override val theme: ITheme
-        get() =  ITheme.DEFAULT // Theme.load(this) // todo load
+        get() =  Theme.load(this) // todo load
     override val backgrounds
         get() = config.desktopBackgrounds
 

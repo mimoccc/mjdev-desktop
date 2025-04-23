@@ -25,9 +25,11 @@ import org.mjdev.desktop.managers.theme.IThemeManager
 import org.mjdev.desktop.managers.translations.ITranslator
 import org.mjdev.desktop.managers.base.IDelegate
 import org.mjdev.desktop.managers.base.ManagerCache
+import org.mjdev.desktop.managers.keys.IKeyManager
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
+@Suppress("LeakingThis")
 abstract class IDesktopContext : IDisposable {
     open val managersCache: ManagerCache by lazy {
         ManagerCache(this)
@@ -43,6 +45,7 @@ abstract class IDesktopContext : IDisposable {
     open val processManager: IProcessManager by this
     open val palette: IPalette by this
     open val translator: ITranslator by this
+    open val keysManager: IKeyManager by this
 
     abstract var isFirstStart: Boolean
     abstract var isInstalled: Boolean

@@ -12,7 +12,6 @@ import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
 import dev.shreyaspatil.ai.client.generativeai.type.content
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
-import org.mjdev.desktop.extensions.Custom.loadKey
 import org.mjdev.desktop.interfaces.IDesktopContext
 import org.mjdev.desktop.managers.ai.AIPlugin
 
@@ -21,13 +20,14 @@ import org.mjdev.desktop.managers.ai.AIPlugin
 * */
 class AiPluginGemini(
     private val context: IDesktopContext,
+    private val aiModel: Model = Model.Gemini1_5Pro,
     private val scope: CoroutineScope = context.scope
 ) : AIPlugin {
-    private val key = loadKey("gemini")
+    private val key = context.keysManager.loadKey("gemini")
     private val generativeModel: GenerativeModel? by lazy {
         if (key.isNotEmpty()) {
             GenerativeModel(
-                modelName = "gemini-1.5-pro-latest",
+                modelName = aiModel.model,
                 apiKey = key
             )
         } else null
@@ -49,4 +49,9 @@ class AiPluginGemini(
             error = e
         }.getOrNull() ?: error?.message ?: ""
     }.await()
+
+    @Suppress("EnumEntryName")
+    enum class Model(val model: String) {
+        Gemini1_5Pro("gemini-1.5-pro-latest")
+    }
 }

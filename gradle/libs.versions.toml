@@ -10,11 +10,11 @@ app-pkg-name = "org.mjdev.desktop"
 app-pkg-version = "1.0.2"
 app-vendor = "mjdev"
 # app specific android
-android-compile-sdk = "35"
+android-compile-sdk = "36"
 android-min-sdk = "24"
-android-target-sdk = "35"
+#android-target-sdk = "36"
 # lib versions
-gradle = "8.9.1"
+gradle = "8.9.2"
 #gradle-kotlinter = "4.3.0"
 androidx-activity-compose = "1.10.1"
 androidx-lifecycle = "2.8.4"
@@ -38,9 +38,9 @@ kotlinx-date-time = "0.6.2"
 okhttp3 = "4.12.0"
 okio = "3.11.0"
 qrose = "1.0.1"
-tts = "3.0.0-beta.1"
+tts = "3.0.0"
 ychat = "1.4.1"
-generativeai = "0.9.0"
+#generativeai = "0.9.0"
 alert-kmp = "2.0.0"
 #emoji2 = "1.5.0"
 accompanist-permissions = "0.37.2"
@@ -48,6 +48,9 @@ kover = "0.9.1"
 qodana = "2024.3.4"
 intelliJPlatform = "2.5.0"
 changelog = "2.2.1"
+gradle-ktlint="12.2.0"
+foojay-resolver-convention="0.9.0"
+manes-versions="0.52.0"
 
 [libraries]
 # gradle
@@ -96,11 +99,11 @@ ini4j = { module = "org.ini4j:ini4j", version.ref = "ini4j" }
 tts = { module = "nl.marc-apps:tts", version.ref = "tts" }
 # ai
 google-generative-ai = { module = "dev.shreyaspatil.generativeai:generativeai-google-jvm", version.ref = "generative-ai" }
-generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
+#generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
 # strings
 human-readable = { module = "nl.jacobras:Human-Readable", version.ref = "human-readable" }
 # alerts
-alert-kmp = { module = "io.github.khubaibkhan4:alert-kmp", version.ref="alert-kmp" }
+alert-kmp = { module = "io.github.khubaibkhan4:alert-kmp", version.ref = "alert-kmp" }
 #androidx-emoji2 = { group = "androidx.emoji2", name = "emoji2", version.ref = "emoji2" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
 
@@ -108,7 +111,7 @@ accompanist-permissions = { module = "com.google.accompanist:accompanist-permiss
 android-application = { id = "com.android.application", version.ref = "gradle" }
 android-library = { id = "com.android.library", version.ref = "gradle" }
 app-icon-generator = { id = "io.github.qamarelsafadi.kmp.app.icon.generator", version.ref = "app-icon" }
-compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -116,3 +119,6 @@ kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 qodana = { id = "org.jetbrains.qodana", version.ref = "qodana" }
 intellij-platform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
+gradle-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "gradle-ktlint" }
+#foojay-resolver-convention = { id ="org.gradle.toolchains.foojay-resolver-convention", version.ref = "foojay-resolver-convention" }
+manes-versions = { id = "com.github.ben-manes.versions", version.ref  = "manes-versions" }

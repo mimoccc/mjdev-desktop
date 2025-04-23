@@ -3,9 +3,14 @@ package org.mjdev.desktop.extensions
 import com.google.gson.GsonBuilder
 
 object JSonExt {
-    val gson = GsonBuilder().create()
+    val gson = GsonBuilder()
+        .disableInnerClassSerialization()
+        .disableJdkUnsafe()
+        .setLenient()
+        .setPrettyPrinting()
+        .create()
 
-    fun <T : Any> T.toJson() =
+    fun <T : Any> T.toJson(): String =
         gson.toJson(this)
 
     inline fun <reified T : Any> String.fromJson(): T =

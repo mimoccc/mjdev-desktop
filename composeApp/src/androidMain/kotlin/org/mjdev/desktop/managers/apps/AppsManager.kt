@@ -32,23 +32,18 @@ class AppsManager(
     private val scope: CoroutineScope = context.scope
 ) : IAppsManager {
     val TAG = AppsManager::class.simpleName
+    private val androidContext = (context as? DesktopContext)?.context
+    private val userManger = androidContext?.getSystemService(Context.USER_SERVICE) as UserManager
 
-    private val androidContext by lazy {
-        (context as? DesktopContext)?.context
-    }
-    private val userManger by lazy {
-        runCatching {
-            androidContext?.getSystemService(Context.USER_SERVICE) as UserManager
-        }.getOrNull()
-    }
-    private val launcherApps by lazy {
-        runCatching {
+    private val launcherApps
+        get() = runCatching {
             androidContext?.getSystemService(LauncherApps::class.java)
         }.getOrNull()
-    }
 
     val userHandles: List<UserHandle>?
-        get() = userManger?.getUserProfiles()
+        get() = runCatching {
+            userManger.getUserProfiles()
+        }.getOrNull()
 
     override val currentLocale: ILocale
         get() = Locale.getDefault().toILocale()
@@ -83,6 +78,7 @@ class AppsManager(
         get() = emptyList()
 }
 
-private fun Locale.toILocale(): ILocale = ILocale.from(displayCountry, displayLanguage)
+private fun Locale.toILocale(): ILocale =
+    ILocale.from(displayCountry, displayLanguage)
 
 

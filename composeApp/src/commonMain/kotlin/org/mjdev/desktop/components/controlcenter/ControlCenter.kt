@@ -47,6 +47,7 @@ import org.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 
+// todo : automatic history before close, one or more steps back, 1s switch
 @Composable
 fun ControlCenter(
     modifier: Modifier = Modifier,

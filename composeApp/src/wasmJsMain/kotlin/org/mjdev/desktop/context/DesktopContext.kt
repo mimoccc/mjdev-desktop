@@ -89,13 +89,12 @@ class DesktopContext(
 //            pluginTTS = TTSPluginMain(this@DesktopContext)
 //            pluginSTT = STTPluginEmpty(this@DesktopContext)
 //        }
-
 //        IAppsManager::class -> AppsManager(this)
 //        IThemeManager::class -> ThemeManager(this)
 //        IProcessManager::class -> ProcessManager(this)
 //        else -> cls.companionObject?.members?.first {
 //            it.name == "EMPTY"
-//        }?.call() as IDelegate
+//        }?.call()
 //    }
 
     companion object {

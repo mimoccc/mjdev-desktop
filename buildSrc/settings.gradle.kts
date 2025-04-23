@@ -6,6 +6,8 @@
  *  w: https://mjdev.org
  */
 
+rootProject.name = "buildSrc"
+
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {

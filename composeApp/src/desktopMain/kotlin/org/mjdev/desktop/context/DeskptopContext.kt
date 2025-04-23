@@ -30,6 +30,7 @@ import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
 import org.mjdev.desktop.managers.language.Translator
 import org.mjdev.desktop.log.Log
+import org.mjdev.desktop.managers.ai.AiManager
 import org.mjdev.desktop.managers.ai.IAiManager
 import org.mjdev.desktop.managers.apps.IAppsManager
 import org.mjdev.desktop.managers.os.IOSManager
@@ -37,11 +38,9 @@ import org.mjdev.desktop.managers.process.IProcessManager
 import org.mjdev.desktop.managers.theme.IThemeManager
 import org.mjdev.desktop.managers.translations.ITranslator
 import org.mjdev.desktop.managers.apps.AppsManager
-import org.mjdev.desktop.managers.ai.AIManager.Companion.AiManager
-import org.mjdev.desktop.managers.ai.plugins.AiPluginGemini
-import org.mjdev.desktop.managers.ai.tts.TTSPluginSwift
 import org.mjdev.desktop.managers.base.IDelegate
 import org.mjdev.desktop.managers.connectivity.ConnectivityManager
+import org.mjdev.desktop.managers.keys.IKeyManager
 import org.mjdev.desktop.managers.os.OsManager
 import org.mjdev.desktop.managers.processes.ProcessManager
 import org.mjdev.desktop.managers.theme.ThemeManager
@@ -49,9 +48,11 @@ import java.awt.Desktop
 import java.awt.Toolkit
 import java.io.File
 import java.net.URI
+import javax.net.ssl.KeyManager
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
+import org.mjdev.desktop.managers.keys.KeysManager
 
 class DesktopContext(
     val application: ApplicationScope? = null,
@@ -228,19 +229,16 @@ class DesktopContext(
         return false // todo
     }
 
-    override fun createManager(cls: KClass<*>): IDelegate = when (cls) {
+    override fun createManager(cls: KClass<*>): IDelegate? = when (cls) {
         IOSManager::class -> OsManager(this)
         IPalette::class -> Palette(this)
         ITranslator::class -> Translator(this)
         IConnectivityManager::class -> ConnectivityManager(this)
-        IAiManager::class -> AiManager(this).apply {
-            // todo user can configure
-            pluginAI = AiPluginGemini(this@DesktopContext)
-            pluginTTS = TTSPluginSwift(this@DesktopContext)
-        }
+        IAiManager::class -> AiManager(this)
         IAppsManager::class -> AppsManager(this)
         IThemeManager::class -> ThemeManager(this)
         IProcessManager::class -> ProcessManager(this)
+        IKeyManager::class -> KeysManager(this)
         else -> cls.companionObject?.members?.first { it.name == "EMPTY" }?.call() as IDelegate
     }
 

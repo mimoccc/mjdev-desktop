@@ -4,7 +4,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 
 object ProjectExt {
-    val GROUP = "mjdev"
+    const val GROUP = "mjdev"
 
     inline fun <reified T : Task> Project.registerTask(
         name: String,
