@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.changelog)
     alias(libs.plugins.qodana)
     alias(libs.plugins.kover)
+    alias(libs.plugins.gradle.ktlint)
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -17,7 +18,9 @@ version = providers.gradleProperty("pluginVersion").get()
 //kotlin {
 //    jvmToolchain(17)
 //}
+
 repositories {
+    mavenLocal()
     mavenCentral()
     intellijPlatform {
         defaultRepositories()
@@ -38,7 +41,7 @@ dependencies {
         plugins(providers.gradleProperty("platformPlugins").map {
             it.split(',')
         })
-        testFramework(TestFrameworkType.Platform)
+//        testFramework(TestFrameworkType.Platform)
     }
 }
 

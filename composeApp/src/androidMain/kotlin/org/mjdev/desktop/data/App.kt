@@ -21,7 +21,7 @@ class App(
     override val fullAppName: String = info.label.toString(),
     override val comment: String = info.applicationInfo.packageName,
     override val cmd: String = info.applicationInfo.packageName, // todo intent
-    override val fullTextString: String = info.toJson(),
+    override val fullTextString: String = "${name}|${comment}|${cmd}",
     override val categories: List<Category> = listOf(guessCategory(context, info))
 ) : IApp {
     override var isStarting: Boolean = false
@@ -33,8 +33,8 @@ class App(
             Intent.ACTION_MAIN
         ).apply {
             addCategory(Intent.CATEGORY_LAUNCHER)
-            setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
-            setComponent(info.componentName)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+            component = info.componentName
         })
     }
 

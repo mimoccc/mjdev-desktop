@@ -10,6 +10,11 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.TimeZone.Companion.currentSystemDefault
+import okio.Path
+import org.mjdev.desktop.extensions.PathExt.exists
+import org.mjdev.desktop.extensions.PathExt.text
+import org.mjdev.desktop.helpers.streams.ResourceStream
+import org.mjdev.desktop.interfaces.ILocale
 
 object CustomExt {
 
@@ -65,4 +70,40 @@ object CustomExt {
                 } while (true)
             }
         }.collectAsState(initial = "")
+
+    fun loadKey(key: String): String = runCatching {
+        ResourceStream("keys/$key.key").text
+    }.getOrNull().orEmpty()
+
+    //    inline fun <T, K> distinctList(
+//        vararg lists: List<T>,
+//        selector: (T) -> K
+//    ): List<T> = mutableListOf<T>().apply {
+//        lists.forEach { l -> addAll(l) }
+//    }.distinctBy(selector)
+
+//    fun String.notStartsWith(
+//        prefix: String,
+//        ignoreCase: Boolean = false
+//    ) = !startsWith(prefix, ignoreCase)
+
+//    fun String.trimIsEmpty() =
+//        trim().isEmpty()
+
+//    fun String.trimIsNotEmpty() =
+//        trim().isNotEmpty()
+
+//    fun State<String>.trimIsEmpty() =
+//        value.trim().isEmpty()
+
+//    fun String.trimStartsWith(
+//        prefix: String,
+//        ignoreCase: Boolean = false
+//    ) = trim().startsWith(prefix, ignoreCase)
+
+//    fun String.trimNotStartsWith(
+//        prefix: String,
+//        ignoreCase: Boolean = false
+//    ) = !trim().startsWith(prefix, ignoreCase)
+
 }

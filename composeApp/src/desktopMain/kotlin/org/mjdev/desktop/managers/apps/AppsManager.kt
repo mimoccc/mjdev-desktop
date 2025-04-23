@@ -61,7 +61,7 @@ class AppsManager(
         get() = context.currentUser
 
     private val homeDir
-        get() = currentUser?.homeDir ?: "~".toPath()
+        get() = currentUser.homeDir
 
     private val rootDir: Path = DIR_NAME_ROOT.toPath()
     private val usrDir: Path = DIR_NAME_USR.toPath()

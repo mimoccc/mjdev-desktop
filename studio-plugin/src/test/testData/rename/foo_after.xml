@@ -1,3 +1,3 @@
 <root>
-    <a2>Foo</a2>
+    <a2><caret>2>Foo</caret></a2>
 </root>

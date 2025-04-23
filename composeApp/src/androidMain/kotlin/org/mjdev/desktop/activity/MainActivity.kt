@@ -30,22 +30,15 @@ import org.mjdev.desktop.activity.MainActivity.Companion.TAG
 import org.mjdev.desktop.main.MainView
 import org.mjdev.desktop.context.DesktopContext.Companion.rememberDesktopContext
 import org.mjdev.desktop.context.LocalDesktopContext
-import org.mjdev.desktop.extensions.Compose.applyTransform
-import org.mjdev.desktop.extensions.Compose.dither
-import org.mjdev.desktop.extensions.Compose.grayScale
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.helpers.permission.rememberPermissionManager
 import org.mjdev.desktop.helpers.theme.DesktopTheme
 import org.mjdev.desktop.helpers.WakeLockHelper
+import org.mjdev.desktop.BuildConfig
 
 @OptIn(ExperimentalPermissionsApi::class)
 class MainActivity : ComponentActivity() {
-    val wakeLockHelper by lazy { WakeLockHelper(this) }
-
-//    @Suppress("OVERRIDE_DEPRECATION")
-//    override fun onBackPressed() {
-//        // Disable back button
-//    }
+    private val wakeLockHelper by lazy { WakeLockHelper(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         wakeLockHelper.acquireWakeLock()
@@ -62,7 +55,7 @@ class MainActivity : ComponentActivity() {
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
         setContent {
-            onBackPress()
+            onBackPress(!BuildConfig.DEBUG)
             rememberPermissionManager()
             CompositionLocalProvider(
                 LocalDesktopContext provides rememberDesktopContext(baseContext)
@@ -93,6 +86,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun onBackPress(
+    enabled:Boolean = true,
     action: () -> Unit = {
         Log.d(TAG, "OnBackPressed")
     }

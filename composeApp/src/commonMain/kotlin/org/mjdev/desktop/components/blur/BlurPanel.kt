@@ -27,12 +27,12 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.mjdev.desktop.components.image.ImageAny
-import org.mjdev.desktop.composeapp.generated.resources.Res
-import org.mjdev.desktop.composeapp.generated.resources.blur4
 import org.mjdev.desktop.extensions.Colors.alpha
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.resources.Res
+import org.mjdev.desktop.resources.blur4
 
 // todo real blur
 @Composable

@@ -12,9 +12,9 @@ import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
 import dev.shreyaspatil.ai.client.generativeai.type.content
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
-import org.mjdev.desktop.extensions.Custom.loadKey
 import org.mjdev.desktop.interfaces.IDesktopContext
 import org.mjdev.desktop.managers.ai.AIPlugin
+import org.mjdev.desktop.extensions.CustomExt.loadKey
 
 /*
 * Gemini key : https://makersuite.google.com/app/apikey

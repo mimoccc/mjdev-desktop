@@ -4,7 +4,7 @@ import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
-public val Send: ImageVector
+val Send: ImageVector
     get() {
         if (_send != null) {
             return _send!!

@@ -11,6 +11,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 //<editor-fold desc="plugin management">------------------------------------------------------------
 pluginManagement {
     repositories {
+        mavenLocal()
         gradlePluginPortal()
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
@@ -42,6 +43,7 @@ pluginManagement {
 //<editor-fold desc="dependency management">--------------------------------------------------------
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         gradlePluginPortal()
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")

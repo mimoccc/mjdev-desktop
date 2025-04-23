@@ -1,17 +1,21 @@
-@file:Suppress("unused")
-
-package org.mjdev.desktop.fonts
+package org.mjdev.desktop.helpers.font
 
 import androidx.compose.ui.text.font.FontFamily
-import org.mjdev.desktop.interfaces.IFont
 import org.mjdev.desktop.helpers.fuzzywuzzy.FuzzySearch
+import org.mjdev.desktop.interfaces.IFont
 
-class MaterialIconFont(
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+actual class MaterialIconFont actual constructor(
     private val ttfFileName: String,
     private val codepointsFileName: String,
-    private val fontFile: FontFile = FontFile(ttfFileName),
-    private val codePointsFile: CodePointsFile = CodePointsFile(codepointsFileName)
 ) : IFont {
+    private val fontFile: FontDescriptor by lazy {
+        FontDescriptor(ttfFileName)
+    }
+    private val codePointsFile: CodePointsFile by lazy {
+        CodePointsFile(codepointsFileName)
+    }
+
     override val fontFamily: FontFamily
         get() = fontFile.fontFamily
 
@@ -32,25 +36,4 @@ class MaterialIconFont(
             }
         } else null
     }.getOrNull()
-}
-
-val MaterialSymbolsOutlined by lazy {
-    MaterialIconFont(
-        "icons/MaterialSymbolsOutlined.ttf",
-        "icons/MaterialSymbolsOutlined.codepoints"
-    )
-}
-
-val MaterialSymbolsRounded by lazy {
-    MaterialIconFont(
-        "icons/MaterialSymbolsRounded.ttf",
-        "icons/MaterialSymbolsRounded.codepoints"
-    )
-}
-
-val MaterialSymbolsSharp by lazy {
-    MaterialIconFont(
-        "icons/MaterialSymbolsSharp.ttf",
-        "icons/MaterialSymbolsSharp.codepoints"
-    )
 }

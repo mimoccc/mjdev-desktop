@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.extensions.Colors.SuperDarkGray
-import org.mjdev.desktop.fonts.MaterialSymbolsSharp
+import org.mjdev.desktop.helpers.font.MaterialSymbolsSharp
 import org.mjdev.desktop.interfaces.IFont
 import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser

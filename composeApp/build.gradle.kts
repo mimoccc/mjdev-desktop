@@ -7,16 +7,21 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.application)
-    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
 //    MultiPlatformPlugin
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 kotlin {
     jvm("desktop")
     wasmJs {
         outputModuleName = "composeApp"
-//        moduleName = "composeApp"
         browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
@@ -175,11 +180,11 @@ android {
     compileSdk = libs.versions.android.compile.sdk.get().toInt()
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+    sourceSets["main"].resources.srcDirs("src/commonMain/composeResources")
+    sourceSets["main"].assets.srcDirs("src/commonMain/resources")
     defaultConfig {
         applicationId = "org.mjdev.desktop"
         minSdk = libs.versions.android.min.sdk.get().toInt()
-        targetSdk = libs.versions.android.target.sdk.get().toInt()
         versionCode = libs.versions.app.pkg.version.get().replace(".", "").toInt()
         versionName = libs.versions.app.pkg.version.get()
         resValue("string", "app_name", libs.versions.app.name.get())
@@ -200,11 +205,17 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     dependencies {
         debugImplementation(libs.androidx.ui.tooling)
     }
 }
+
+// remove
+//dependencies {
+//    implementation(libs.generativeai)
+//}
 
 // desktop app config
 compose {
@@ -258,5 +269,10 @@ compose {
 //                appResourcesRootDir.set(project.rootDir.resolve("resources"))
             }
         }
+    }
+    resources {
+        publicResClass = true
+        packageOfResClass = "org.mjdev.desktop.resources"
+        generateResClass = auto
     }
 }
