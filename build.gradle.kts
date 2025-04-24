@@ -7,16 +7,15 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.app.icon.generator) apply false
     // auto applied
-    alias(libs.plugins.qodana)
-    alias(libs.plugins.kover)
+//    alias(libs.plugins.qodana)
+//    alias(libs.plugins.kover)
     alias(libs.plugins.changelog)
-    alias(libs.plugins.gradle.ktlint)
+//    alias(libs.plugins.gradle.ktlint)
     alias(libs.plugins.manes.versions)
 }
 
-dependencies {
-    kover(project(":composeApp"))
-    kover(project(":shared"))
-}
+//dependencies {
+//    kover(project(":composeApp"))
+//}
 
-kover { reports { total { xml { onCheck = true } } } }
+//kover { reports { total { xml { onCheck = true } } } }

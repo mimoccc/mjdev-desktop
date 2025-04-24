@@ -75,5 +75,4 @@ dependencyResolutionManagement {
 //<editor-fold desc="includes">---------------------------------------------------------------------
 include(":studio-plugin")
 include(":composeApp")
-include(":shared")
 //</editor-fold>------------------------------------------------------------------------------------

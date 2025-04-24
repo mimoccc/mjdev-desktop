@@ -6,7 +6,7 @@ object JSonExt {
     val gson = GsonBuilder()
         .disableInnerClassSerialization()
         .disableJdkUnsafe()
-        .setLenient()
+//        .setLenient()
         .setPrettyPrinting()
         .create()
 

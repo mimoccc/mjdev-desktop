@@ -1,8 +1,15 @@
-@file:Suppress("OPT_IN_USAGE")
-
+import org.jetbrains.compose.desktop.DesktopExtension
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.compose.resources.ResourcesExtension
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithPresetFunctions
+import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithWasmPresetFunctions
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -12,15 +19,62 @@ plugins {
 //    MultiPlatformPlugin
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+
+fun NamedDomainObjectContainer<KotlinSourceSet>.getOrCreate(
+    name: String
+): KotlinSourceSet = findByName(name) ?: create(name)
+
+fun NamedDomainObjectContainer<KotlinSourceSet>.desktopMain(
+    block: KotlinSourceSet.() -> Unit = {}
+): KotlinSourceSet = getOrCreate("desktopMain").apply(block)
+
+fun KotlinTargetContainerWithPresetFunctions.desktopTarget(
+    configure: Action<KotlinJvmTarget>
+) = jvm("desktop").apply {
+    configure.execute(this)
 }
 
-kotlin {
-    jvm("desktop")
-    wasmJs {
+@OptIn(ExperimentalWasmDsl::class)
+fun KotlinTargetContainerWithWasmPresetFunctions.wasmJsTarget(
+    configure: Action<KotlinWasmJsTargetDsl>
+) = wasmJs(configure)
+
+fun Project.desktop(
+    config: DesktopExtension.() -> Unit
+) = compose.desktop(config)
+
+fun Project.composeResources(
+    config: ResourcesExtension.() -> Unit
+) = compose.resources(config)
+
+fun targets(
+    config: Action<KotlinMultiplatformExtension>
+) = kotlin(config)
+
+// todo
+@Suppress("UNUSED_PARAMETER", "UnusedReceiverParameter")
+fun Project.wasm(config: DesktopExtension.() -> Unit) {
+    // todo
+//    compose.wasmJs(config)
+}
+
+// todo
+fun Project.kotlinSourceSets(
+    config: Action<NamedDomainObjectContainer<KotlinSourceSet>>
+) = with(kotlin) {
+    sourceSets(config)
+}
+
+targets {
+    desktopTarget {
+    }
+    androidTarget {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+    }
+    wasmJsTarget {
         outputModuleName = "composeApp"
         browser {
             val rootDirPath = project.rootDir.path
@@ -38,11 +92,9 @@ kotlin {
         }
         binaries.executable()
     }
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
+}
+
+kotlin {
     sourceSets {
         // common dependencies
         commonMain {
@@ -52,7 +104,6 @@ kotlin {
                 // preview
                 implementation(compose.components.uiToolingPreview)
                 // base
-                implementation(projects.shared)
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material)
@@ -115,8 +166,6 @@ kotlin {
                 // implementation("io.matthewnelson.kmp-tor:runtime:2.1.0")
                 // files
                 implementation("com.squareup.okio:okio:3.10.2")
-                // ai
-//                implementation(libs.generativeai)
             }
         }
         // android dependencies
@@ -152,28 +201,36 @@ kotlin {
             }
         }
         // desktop dependencies
-        val desktopMain by getting
-        desktopMain.dependencies {
-            // reflection
-            implementation(kotlin("reflect"))
-            // preview
-            implementation(compose.components.uiToolingPreview)
-            // desktop
-            implementation(compose.desktop.currentOs)
-            // coroutines
-            implementation(libs.kotlinx.coroutines.swing)
-            // okhttp
-            implementation(libs.okhttp3.client)
-            // images okhttp
-            implementation(libs.coil.okhttp)
-            // ai gemini
-            implementation(libs.sh.google.generative.ai)
-            // chatgpt
-            implementation(libs.ychat)
-            // desktop files
-            implementation(libs.ini4j)
+        desktopMain {
+            dependencies {
+                // reflection
+                implementation(kotlin("reflect"))
+                // preview
+                implementation(compose.components.uiToolingPreview)
+                // desktop
+                implementation(compose.desktop.currentOs)
+                // coroutines
+                implementation(libs.kotlinx.coroutines.swing)
+                // okhttp
+                implementation(libs.okhttp3.client)
+                // images okhttp
+                implementation(libs.coil.okhttp)
+                // ai gemini
+                implementation(libs.sh.google.generative.ai)
+                // chatgpt
+                implementation(libs.ychat)
+                // desktop files
+                implementation(libs.ini4j)
+            }
         }
     }
+}
+
+// resources config
+composeResources {
+    publicResClass = true
+    packageOfResClass = "org.mjdev.desktop.resources"
+    generateResClass = auto
 }
 
 // android app config
@@ -214,24 +271,18 @@ android {
     }
 }
 
-// remove
-//dependencies {
-//    implementation(libs.generativeai)
-//}
-
 // desktop app config
-compose {
-    desktop {
-        group = libs.versions.app.pkg.name.get()
-        version = libs.versions.app.pkg.version.get()
-        application {
-            mainClass = "org.mjdev.desktop.main.MainKt"
-            nativeDistributions {
-                packageName = libs.versions.app.name.get()
-                packageVersion = libs.versions.app.pkg.version.get()
-                description = libs.versions.app.description.get()
-                copyright = libs.versions.app.copyright.get()
-                outputBaseDir.set(project.rootDir.resolve("packages"))
+desktop {
+    group = libs.versions.app.pkg.name.get()
+    version = libs.versions.app.pkg.version.get()
+    application {
+        mainClass = "org.mjdev.desktop.main.MainKt"
+        nativeDistributions {
+            packageName = libs.versions.app.name.get()
+            packageVersion = libs.versions.app.pkg.version.get()
+            description = libs.versions.app.description.get()
+            copyright = libs.versions.app.copyright.get()
+            outputBaseDir.set(project.rootDir.resolve("packages"))
 //                macOS {
 //                    iconFile.set(project.rootDir.resolve("icons").resolve("icon.icns"))
 //                }
@@ -240,7 +291,7 @@ compose {
 //                    exePackageVersion = "1.0.0"
 //                    msiPackageVersion = "1.0.0"
 //                }
-                linux {
+            linux {
 //                    iconFile.set(
 //                        project.rootDir
 //                            .resolve("composeApp")
@@ -251,30 +302,28 @@ compose {
 //                            .resolve("icon.png")
 //                    )
 //                    licenseFile.set(project.rootDir.resolve("LICENSE.txt"))
-                    appCategory = libs.versions.app.category.get()
-                    debMaintainer = libs.versions.app.maintainer.get()
-                    menuGroup = libs.versions.app.menu.group.get()
-                    vendor = libs.versions.app.vendor.get()
-                }
-                targetFormats(
-                    TargetFormat.Dmg,
-                    TargetFormat.Msi,
-                    TargetFormat.Deb,
-                    TargetFormat.Exe,
-                    TargetFormat.AppImage,
-                    TargetFormat.Pkg,
-                    TargetFormat.Rpm
-                )
-                buildTypes.release.proguard {
-                    configurationFiles.from("compose-desktop.pro")
-                }
-//                appResourcesRootDir.set(project.rootDir.resolve("resources"))
+                appCategory = libs.versions.app.category.get()
+                debMaintainer = libs.versions.app.maintainer.get()
+                menuGroup = libs.versions.app.menu.group.get()
+                vendor = libs.versions.app.vendor.get()
             }
+            targetFormats(
+                TargetFormat.Dmg,
+                TargetFormat.Msi,
+                TargetFormat.Deb,
+                TargetFormat.Exe,
+                TargetFormat.AppImage,
+                TargetFormat.Pkg,
+                TargetFormat.Rpm
+            )
+            buildTypes.release.proguard {
+                configurationFiles.from("compose-desktop.pro")
+            }
+//                appResourcesRootDir.set(project.rootDir.resolve("resources"))
         }
     }
-    resources {
-        publicResClass = true
-        packageOfResClass = "org.mjdev.desktop.resources"
-        generateResClass = auto
-    }
+}
+
+// wasm config
+wasm {
 }

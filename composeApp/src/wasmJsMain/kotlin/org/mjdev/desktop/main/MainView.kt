@@ -1,4 +1,4 @@
-package org.mjdev.desktop
+package org.mjdev.desktop.main
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -117,8 +117,7 @@ fun MainView() = withDesktopContext {
                 runAsync {
                     appsMenuState.show()
                 }
-            },
-            onTimeDateClick = onTimeDateClick
+            }
         )
         ControlCenter(
             modifier = Modifier

@@ -47,4 +47,5 @@ sources/
 /.intellijPlatform/
 
 ### no keys
-keys/*.key
+composeApp/src/commonMain/resources/keys/*.key
+/composeApp/src/commonMain/resources/keys/*.key

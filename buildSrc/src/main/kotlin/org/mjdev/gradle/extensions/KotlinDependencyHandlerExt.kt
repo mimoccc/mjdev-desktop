@@ -1,7 +1,5 @@
 package org.mjdev.gradle.extensions
 
-object KotlinDependencyHandlerExt {
-
 //    fun KotlinDependencyHandler.kapt(
 //        dependency:String
 //    ) = configurations["kapt"].dependencies.add(dependency)
@@ -11,5 +9,3 @@ object KotlinDependencyHandlerExt {
 //    ) {
 //        configurations["kapt"].dependencies.add(dependency.get())
 //    }
-
-}
