@@ -214,6 +214,11 @@ android {
     }
 }
 
+// remove
+//dependencies {
+//    implementation(libs.generativeai)
+//}
+
 // desktop app config
 compose {
     desktop {
