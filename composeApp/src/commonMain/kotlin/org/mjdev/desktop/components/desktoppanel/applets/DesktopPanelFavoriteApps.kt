@@ -33,10 +33,13 @@ fun DesktopPanelFavoriteApps(
     onAppClick: (app: IApp) -> Unit = {},
     onContextMenuClick: (app: IApp) -> Unit = {}
 ) = withDesktopContext {
-    val apps: List<IApp> by flowBlock(emptyList(), processManager.size) { appsManager.favoriteApps }
-    Box(
-        modifier = modifier
+    val apps: List<IApp> by flowBlock(
+        emptyList(),
+        processManager.size
     ) {
+        appsManager.favoriteApps
+    }
+    Box(modifier = modifier) {
         LazyRow(
             modifier = Modifier.wrapContentHeight(),
             horizontalArrangement = Arrangement.Start,
