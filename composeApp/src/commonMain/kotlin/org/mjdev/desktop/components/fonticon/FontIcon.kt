@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.mjdev.desktop.components.icon.ShapedIcon
 import org.mjdev.desktop.components.text.AutoResizeText
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
@@ -28,7 +29,7 @@ fun FontIcon(
     iconSize: DpSize = DpSize(32.dp, 32.dp),
     iconColor: Color = Color.Black,
     iconBackgroundColor: Color = Color.White,
-    innerPadding: PaddingValues = PaddingValues(4.dp),
+    innerPadding: PaddingValues = PaddingValues(2.dp),
     contentDescription: String = "",
     outerPadding: PaddingValues = PaddingValues(2.dp),
     iconShape: Shape = CircleShape,
@@ -49,7 +50,8 @@ fun FontIcon(
                 modifier = Modifier.align(Alignment.Center),
                 text = iconId.toChar().toString(),
                 color = iconColor,
-                fontFamily = (iconicFont ?: theme?.iconSet)?.fontFamily,
+                fontFamily = (iconicFont ?: theme.iconSet).fontFamily,
+                minFontSize = (iconSize.height.value * 0.7).sp
             )
         },
         onClick = onClick,

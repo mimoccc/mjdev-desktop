@@ -32,7 +32,7 @@ fun ShapedIcon(
     contentDescription: String = "",
     customContent: (@Composable BoxScope.() -> Unit)? = null,
     iconShape: Shape = CircleShape,
-    innerPadding: PaddingValues = PaddingValues(4.dp),
+    innerPadding: PaddingValues = PaddingValues(2.dp),
     outerPadding: PaddingValues = PaddingValues(2.dp),
     visible: Boolean = true,
     onRightClick: () -> Unit = {},

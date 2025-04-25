@@ -43,7 +43,7 @@ fun DesktopPanelIcon(
     iconBackgroundHover: Color = Color.White,
     iconColorRunning: Color = Color.White,
     iconSize: DpSize = DpSize(48.dp, 48.dp),
-    iconPadding: PaddingValues = PaddingValues(4.dp),
+    iconPadding: PaddingValues = PaddingValues(2.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     iconState: MutableState<Boolean> = rememberState(false),
     contentDescription: String? = null,
@@ -85,13 +85,18 @@ fun DesktopPanelIcon(
             }
     ) {
         Button(
-            modifier = Modifier.fillMaxSize().circleBorder(2.dp, textColor.alpha(0.5f)),
+            modifier = Modifier.fillMaxSize()
+                .circleBorder(
+                    2.dp,
+                    textColor.alpha(0.5f)
+                ),
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.color(background),
             elevation = ButtonDefaults.noElevation(),
             onClick = {}
         ) {
             FontIcon(
+                modifier = Modifier.fillMaxSize(),
                 iconId = materialIcon,
                 iconColor = iconColor,
                 iconBackgroundColor = if (isRunning) iconColorRunning else iconBackgroundColor,
@@ -102,7 +107,7 @@ fun DesktopPanelIcon(
         }
         if (isStarting || isRunning) {
             CircularProgressIndicator(
-                modifier = Modifier.padding(4.dp).size(iconSize),
+                modifier = Modifier.padding(4.dp).fillMaxSize(),
                 color = iconColor,
                 strokeWidth = 4.dp,
                 backgroundColor = Color.Transparent

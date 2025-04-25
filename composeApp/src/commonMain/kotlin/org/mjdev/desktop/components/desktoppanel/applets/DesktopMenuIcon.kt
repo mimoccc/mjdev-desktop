@@ -17,7 +17,7 @@ fun DesktopMenuIcon(
     iconColor: Color = Color.Black,
     iconBackgroundColor: Color = Color.White,
     iconSize: DpSize = DpSize(56.dp, 56.dp),
-    iconPadding: PaddingValues = PaddingValues(4.dp),
+    iconPadding: PaddingValues = PaddingValues(2.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     onTooltip: (item: Any?) -> Unit = {},
     onClick: () -> Unit = {},
