@@ -53,7 +53,7 @@ import org.mjdev.desktop.extensions.Compose.preview
 @Composable
 fun DesktopPanel(
     iconSize: DpSize = DpSize(56.dp, 56.dp),
-    iconPadding: PaddingValues = PaddingValues(4.dp),
+    iconPadding: PaddingValues = PaddingValues(2.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     showMenuIcon: Boolean = true,
     panelState: VisibilityState = rememberVisibilityState(),
@@ -69,7 +69,10 @@ fun DesktopPanel(
 ) = withDesktopContext {
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
         if (visible) {
-            iconSize.height + iconOuterPadding.height + theme.panelContentPadding.times(2)
+            iconSize.height +
+                    iconPadding.height.times(2) +
+                    iconOuterPadding.height.times(2) +
+                    theme.panelContentPadding.times(2)
         } else panelDividerWidth
     }
     val size by rememberComputed(
@@ -80,7 +83,10 @@ fun DesktopPanel(
     ) {
         DpSize(
             containerSize.width,
-            panelHeight(if (panelState.enabled) panelState.isVisible else true)
+            panelHeight(
+                if (panelState.enabled) panelState.isVisible
+                else true
+            )
         )
     }
     val panelShape by rememberComputed(size) {
@@ -92,7 +98,7 @@ fun DesktopPanel(
     ) {
         SlidingPanel(
             modifier = Modifier.fillMaxWidth()
-                .height(size.height), // todo centered
+                .height(size.height),
             orientation = Vertical,
             state = panelState,
             enterAnimation = enterAnimation,

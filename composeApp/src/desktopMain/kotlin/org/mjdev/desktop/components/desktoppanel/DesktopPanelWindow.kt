@@ -49,17 +49,24 @@ fun DesktopPanelWindow(
 ) = withDesktopContext {
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
         if (visible) {
-            iconSize.height + iconOuterPadding.height + theme.panelContentPadding.times(2)
+            iconSize.height +
+                    iconPadding.height.times(2) +
+                    iconOuterPadding.height.times(2) +
+                    theme.panelContentPadding.times(2)
         } else panelDividerWidth
     }
     val size by rememberComputed(
+        panelState.isVisible,
+        panelState.enabled,
         containerSize.width,
-        containerSize.height,
-        panelState.isVisible
+        containerSize.height
     ) {
         DpSize(
             containerSize.width,
-            panelHeight(panelState.isVisible)
+            panelHeight(
+                if (panelState.enabled) panelState.isVisible
+                else true
+            )
         )
     }
     val position by rememberComputed(size) {

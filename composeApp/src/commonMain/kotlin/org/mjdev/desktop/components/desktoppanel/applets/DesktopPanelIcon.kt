@@ -33,6 +33,7 @@ import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.interfaces.IApp
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.PaddingValues.size
 
 @Composable
 fun DesktopPanelIcon(
@@ -65,7 +66,7 @@ fun DesktopPanelIcon(
     }
     Box(
         modifier = Modifier
-            .size(iconSize)
+            .size(iconSize + iconPadding.size + iconOuterPadding.size)
             .clipRect()
             .onMouseEnter {
                 iconState.value = true
@@ -90,7 +91,7 @@ fun DesktopPanelIcon(
                     2.dp,
                     textColor.alpha(0.5f)
                 ),
-            contentPadding = PaddingValues(0.dp),
+            contentPadding = PaddingValues(2.dp),
             colors = ButtonDefaults.color(background),
             elevation = ButtonDefaults.noElevation(),
             onClick = {}
