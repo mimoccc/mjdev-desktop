@@ -26,5 +26,5 @@ fun BluetoothSettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun BluetoothSettingsPagePreview() = preview {
-    BluetoothSettingsPage().render()
+    BluetoothSettingsPage().Render()
 }

@@ -23,5 +23,5 @@ fun ThemeSettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun ThemeSettingsPagePreview() = preview {
-    ThemeSettingsPage().render()
+    ThemeSettingsPage().Render()
 }

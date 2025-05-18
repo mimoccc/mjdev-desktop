@@ -143,5 +143,5 @@ fun MainSettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun MainSettingsPagePreview() = preview {
-    MainSettingsPage().render()
+    MainSettingsPage().Render()
 }

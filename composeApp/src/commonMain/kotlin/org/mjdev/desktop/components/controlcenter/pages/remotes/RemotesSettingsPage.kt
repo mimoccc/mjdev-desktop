@@ -23,5 +23,5 @@ fun RemotesSettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun RemotesSettingsPagePreview() = preview {
-    RemotesSettingsPage().render()
+    RemotesSettingsPage().Render()
 }

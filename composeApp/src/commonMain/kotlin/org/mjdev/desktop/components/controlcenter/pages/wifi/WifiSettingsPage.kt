@@ -79,5 +79,5 @@ fun WifiSettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun WifiSettingsPagePreview() = preview {
-    WifiSettingsPage().render()
+    WifiSettingsPage().Render()
 }

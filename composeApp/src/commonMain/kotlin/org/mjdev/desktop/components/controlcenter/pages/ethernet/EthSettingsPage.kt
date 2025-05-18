@@ -26,5 +26,5 @@ fun EthSettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun EthSettingsPagePreview() = preview {
-    EthSettingsPage().render()
+    EthSettingsPage().Render()
 }

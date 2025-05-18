@@ -25,8 +25,9 @@ class ControlCenterPage(
 //    val scrollState: ScrollState = ScrollState(0),
     val content: @Composable ControlCenterPageScope.() -> Unit = {},
 ) : IPage {
+    @Preview
     @Composable
-    override fun render() {
+    override fun Render() {
         withControlCenterPageScope(
             cache = cache
         ) {

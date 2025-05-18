@@ -28,5 +28,5 @@ fun DevicesPage() = ControlCenterPage(
 @Preview
 @Composable
 fun DevicesPagePreview() = preview {
-    DevicesPage().render()
+    DevicesPage().Render()
 }

@@ -23,5 +23,5 @@ fun AboutPage() = ControlCenterPage(
 @Preview
 @Composable
 fun AboutPagePreview() = preview {
-    AboutPage().render()
+    AboutPage().Render()
 }

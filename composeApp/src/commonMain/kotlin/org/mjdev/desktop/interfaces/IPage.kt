@@ -10,5 +10,5 @@ interface IPage : IDisposable {
     val saver: IControlCenterPageDataSaver?
 
     @Composable
-    fun render()
+    fun Render()
 }

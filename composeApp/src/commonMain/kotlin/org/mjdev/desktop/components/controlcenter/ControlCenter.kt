@@ -170,7 +170,7 @@ fun ControlCenter(
                                 ) {
                                     val page = pagesFiltered[pagerState.value]
                                     Box(modifier = Modifier.weight(1f)) {
-                                        page.render()
+                                        page.Render()
                                     }
                                 }
                                 Divider(

@@ -23,5 +23,5 @@ fun SoundSettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun SoundSettingsPagePreview() = preview {
-    SoundSettingsPage().render()
+    SoundSettingsPage().Render()
 }

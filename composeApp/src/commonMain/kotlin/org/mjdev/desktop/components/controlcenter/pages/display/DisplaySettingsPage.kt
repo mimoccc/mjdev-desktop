@@ -22,5 +22,5 @@ fun DisplaySettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun DisplaySettingsPagePreview() = preview {
-    DisplaySettingsPage().render()
+    DisplaySettingsPage().Render()
 }
