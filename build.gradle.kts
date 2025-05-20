@@ -9,9 +9,9 @@ plugins {
     // auto applied
 //    alias(libs.plugins.qodana)
 //    alias(libs.plugins.kover)
-    alias(libs.plugins.changelog)
+    alias(libs.plugins.changelog) apply false
 //    alias(libs.plugins.gradle.ktlint)
-    alias(libs.plugins.manes.versions)
+    alias(libs.plugins.manes.versions) apply false
 }
 
 //dependencies {

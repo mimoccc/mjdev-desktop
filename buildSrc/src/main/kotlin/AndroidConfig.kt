@@ -1,5 +1,3 @@
-package org.mjdev.gradle.extensions
-
 //import org.gradle.api.JavaVersion
 
 //fun BaseExtension.androidConfig() {

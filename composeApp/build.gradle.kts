@@ -1,3 +1,4 @@
+import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.desktop.DesktopExtension
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.resources.ResourcesExtension
@@ -19,8 +20,6 @@ plugins {
 //    MultiPlatformPlugin
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
-
 fun NamedDomainObjectContainer<KotlinSourceSet>.getOrCreate(
     name: String
 ): KotlinSourceSet = findByName(name) ?: create(name)
@@ -40,6 +39,9 @@ fun KotlinTargetContainerWithWasmPresetFunctions.wasmJsTarget(
     configure: Action<KotlinWasmJsTargetDsl>
 ) = wasmJs(configure)
 
+val Project.compose: ComposeExtension
+    get() = extensions.getByType()
+
 fun Project.desktop(
     config: DesktopExtension.() -> Unit
 ) = compose.desktop(config)
@@ -54,7 +56,7 @@ fun targets(
 
 // todo
 @Suppress("UNUSED_PARAMETER", "UnusedReceiverParameter")
-fun Project.wasm(config: DesktopExtension.() -> Unit) {
+fun Project.wasmjs(config: DesktopExtension.() -> Unit) {
     // todo
 //    compose.wasmJs(config)
 }
@@ -65,6 +67,8 @@ fun Project.kotlinSourceSets(
 ) = with(kotlin) {
     sourceSets(config)
 }
+
+setJavaLanguageVersion(libs.versions.java.language.version)
 
 targets {
     desktopTarget {
@@ -327,5 +331,5 @@ desktop {
 }
 
 // wasm config
-wasm {
+wasmjs {
 }

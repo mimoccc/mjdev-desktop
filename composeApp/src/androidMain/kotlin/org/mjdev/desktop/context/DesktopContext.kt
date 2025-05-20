@@ -1,11 +1,12 @@
 package org.mjdev.desktop.context
 
-import android.content.Context
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ComponentActivity
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.compose.LocalPlatformContext
@@ -48,7 +49,8 @@ import kotlin.reflect.full.companionObject
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class DesktopContext(
-    val context: Context? = null,
+    @SuppressLint("RestrictedApi")
+    val context: ComponentActivity? = null,
     override val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     override val imageLoader: ImageLoader? = null,
     val isInDesign: Boolean = false,
@@ -132,7 +134,8 @@ class DesktopContext(
     companion object {
         @Composable
         fun rememberDesktopContext(
-            context: Context,
+            @SuppressLint("RestrictedApi")
+            context: ComponentActivity,
             imageLoader: ImageLoader = asyncImageLoader(),
             platformContext: PlatformContext = LocalPlatformContext.current,
             scope: CoroutineScope = rememberCoroutineScope(),

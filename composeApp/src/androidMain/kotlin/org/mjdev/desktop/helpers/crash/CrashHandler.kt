@@ -7,12 +7,13 @@ import android.content.Intent
 import android.util.Log
 import kotlin.system.exitProcess
 
+@Suppress("UNREACHABLE_CODE")
 class CrashHandler(
-    val context: Context,
-    val restartMillis:Long = 1000
+    private val context: Context,
+    private val restartMillis:Long = 1000
 ) : Thread.UncaughtExceptionHandler {
     private val defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
-    val alarmMgr
+    private val alarmMgr
         get() = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     @Suppress("KotlinUnreachableCode")

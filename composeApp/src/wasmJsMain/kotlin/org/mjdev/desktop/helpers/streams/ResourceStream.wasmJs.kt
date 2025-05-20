@@ -5,8 +5,11 @@ package org.mjdev.desktop.helpers.streams
 actual class ResourceStream actual constructor(
     val resourcePath: String
 ) {
+    // todo
     actual val bytes: ByteArray
         get() = byteArrayOf()
+
+    // todo
     actual val text: String
         get() = ""
 }

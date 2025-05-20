@@ -1,5 +1,3 @@
-package org.mjdev.gradle.extensions
-
 //    fun KotlinDependencyHandler.kapt(
 //        dependency:String
 //    ) = configurations["kapt"].dependencies.add(dependency)

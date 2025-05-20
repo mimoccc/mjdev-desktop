@@ -26,7 +26,7 @@ gradlePlugin {
             id = "MultiPlatformPlugin"
             displayName = "MultiPlatformPlugin"
             description = "Common library plugin to handle all stuffs needed."
-            implementationClass = "org.mjdev.gradle.plugins.MultiPlatformPlugin"
+            implementationClass = "MultiPlatformPlugin"
         }
     }
 }

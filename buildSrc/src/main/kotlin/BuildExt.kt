@@ -1,9 +1,33 @@
 import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.provider.Provider
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+
+val Project.java: JavaPluginExtension
+    get() = extensions.getByType()
+
+fun Project.setJavaLanguageVersion(
+    version: Provider<String>
+): JavaLanguageVersion = version.get().let { vs ->
+    JavaLanguageVersion.of(vs)
+}.also { jlv ->
+    java.toolchain.languageVersion.set(jlv)
+}
 
 fun NamedDomainObjectContainer<KotlinSourceSet>.getOrCreate(
     name: String
 ): KotlinSourceSet = findByName(name) ?: create(name)
+
+//fun Project.kotlinSourceSets(
+//    config: Action<NamedDomainObjectContainer<KotlinSourceSet>>
+//) = kotlin.sourceSets.configure(config)
+
+//fun NamedDomainObjectContainer<KotlinSourceSet>.getOrCreate(
+//    name: String
+//): KotlinSourceSet = findByName(name) ?: create(name)
 
 //fun NamedDomainObjectContainer<KotlinSourceSet>.desktopMain(
 //    block: KotlinSourceSet.() -> Unit = {}
