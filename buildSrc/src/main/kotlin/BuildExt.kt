@@ -5,9 +5,9 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.getOrCreate(
     name: String
 ): KotlinSourceSet = findByName(name) ?: create(name)
 
-//fun NamedDomainObjectContainer<KotlinSourceSet>.desktopMain(
-//    block: KotlinSourceSet.() -> Unit = {}
-//): KotlinSourceSet = getOrCreate("desktopMain").apply(block)
+fun NamedDomainObjectContainer<KotlinSourceSet>.desktopMain(
+    block: KotlinSourceSet.() -> Unit = {}
+): KotlinSourceSet = getOrCreate("desktopMain").apply(block)
 
 // todo
 //@Suppress("UNUSED_PARAMETER", "UnusedReceiverParameter")

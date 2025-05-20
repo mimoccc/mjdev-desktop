@@ -6,19 +6,17 @@ import org.mjdev.desktop.interfaces.IDesktopContext
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual object ImageBitmapExt {
 
+    // todo
     actual fun ImageBitmap.cut(
         x: Int,
         y: Int,
         width: Int,
         height: Int
-    ): ImageBitmap {
-        TODO("Not yet implemented")
-    }
+    ): ImageBitmap = this
 
+    // todo
     actual suspend fun IDesktopContext.loadPicture(
         src: Any?
-    ): ImageBitmap? {
-        TODO("Not yet implemented")
-    }
+    ): ImageBitmap? = null
 
 }

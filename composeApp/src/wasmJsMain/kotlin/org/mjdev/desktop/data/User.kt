@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package org.mjdev.desktop.data
 
 import okio.Path
@@ -8,6 +10,7 @@ import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
 import org.mjdev.desktop.interfaces.IUserDirs
 
+@Suppress("MemberVisibilityCanBePrivate")
 class User() : IUser {
     override val userName: String
         get() = "-" // todo
@@ -57,6 +60,6 @@ class User() : IUser {
 
         fun allUsers(
             context: IDesktopContext
-        ): List<User> = emptyList()
+        ): List<User> = listOf(NOBODY)
     }
 }

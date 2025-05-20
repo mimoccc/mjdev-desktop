@@ -13,21 +13,23 @@ actual object Filesystem : FileSystem() {
         TODO("Not yet implemented")
     }
 
-    actual fun extension(path: Path): String {
-        TODO("Not yet implemented")
+    actual fun extension(
+        path: Path
+    ): String = path.name.split(".").let {
+        if (it.size>0) it.last() else ""
     }
 
-    actual fun isDirectory(path: Path): Boolean {
-        TODO("Not yet implemented")
-    }
+    actual fun isDirectory(
+        path: Path
+    ): Boolean = metadataOrNull(path)?.isDirectory == true
 
-    actual fun isFile(path: Path): Boolean {
-        TODO("Not yet implemented")
-    }
+    actual fun isFile(
+        path: Path
+    ): Boolean = metadataOrNull(path)?.isRegularFile == true
 
-    actual fun isSymbolicLink(path: Path): Boolean {
-        TODO("Not yet implemented")
-    }
+    actual fun isSymbolicLink(
+        path: Path
+    ): Boolean = metadata(path)?.symlinkTarget != null
 
     actual fun cwd(): Path {
         TODO("Not yet implemented")

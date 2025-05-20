@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package org.mjdev.desktop.extensions
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -64,7 +66,6 @@ object FocusState {
         key: Any? = Unit
     ) = remember(key) { FocusRequester() }
 
-    @OptIn(ExperimentalFoundationApi::class)
     fun Modifier.bringIntoViewIfChildrenAreFocused(): Modifier = composed(
         inspectorInfo = debugInspectorInfo { name = "bringIntoViewIfChildrenAreFocused" },
         factory = {

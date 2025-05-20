@@ -1,14 +1,11 @@
 package org.mjdev.desktop.activity
 
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -20,63 +17,40 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import org.mjdev.desktop.activity.MainActivity.Companion.TAG
 import org.mjdev.desktop.main.MainView
 import org.mjdev.desktop.context.DesktopContext.Companion.rememberDesktopContext
 import org.mjdev.desktop.context.LocalDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.helpers.permission.rememberPermissionManager
 import org.mjdev.desktop.helpers.theme.DesktopTheme
-import org.mjdev.desktop.helpers.WakeLockHelper
-import org.mjdev.desktop.BuildConfig
+import org.mjdev.desktop.extensions.ComponentActivityExt.OnBackPress
+import org.mjdev.desktop.extensions.ComponentActivityExt.TRANSPARENT
+import org.mjdev.desktop.extensions.ComponentActivityExt.setBackgroundColor
 
+@Suppress("unused")
 @OptIn(ExperimentalPermissionsApi::class)
 class MainActivity : ComponentActivity() {
-    private val wakeLockHelper by lazy { WakeLockHelper(this) }
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        wakeLockHelper.acquireWakeLock()
         installSplashScreen()
-        setKeepScreenOn()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT)
+            statusBarStyle = SystemBarStyle.dark(TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(TRANSPARENT)
         )
-        WindowCompat.getInsetsController(window, window.decorView).apply {
-            hide(WindowInsetsCompat.Type.statusBars())
-            hide(WindowInsetsCompat.Type.navigationBars())
-            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
+        setBackgroundColor(Color.Black)
         setContent {
-            onBackPress(!BuildConfig.DEBUG)
+            OnBackPress()
             rememberPermissionManager()
             CompositionLocalProvider(
-                LocalDesktopContext provides rememberDesktopContext(baseContext)
+                LocalDesktopContext provides rememberDesktopContext(this)
             ) {
                 ActivityMain()
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        resetKeepScreenOn()
-        wakeLockHelper.releaseWakeLock()
-    }
-
-    private fun ComponentActivity.setKeepScreenOn() {
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-    }
-
-    private fun ComponentActivity.resetKeepScreenOn() {
-        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     companion object {
@@ -85,19 +59,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun onBackPress(
-    enabled:Boolean = true,
-    action: () -> Unit = {
-        Log.d(TAG, "OnBackPressed")
-    }
-) = BackHandler(true, action)
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
 private fun ActivityMain() {
     DesktopTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize()
+                .background(Color.Black)
         ) { paddingValues ->
             Box(
                 modifier = Modifier
@@ -105,6 +71,7 @@ private fun ActivityMain() {
                     .padding(paddingValues)
                     .consumeWindowInsets(paddingValues)
                     .windowInsetsPadding(WindowInsets.safeDrawing)
+                    .background(Color.Black)
             ) {
                 MainView()
             }

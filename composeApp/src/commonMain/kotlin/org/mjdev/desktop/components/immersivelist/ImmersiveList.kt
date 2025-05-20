@@ -20,7 +20,6 @@ import org.mjdev.desktop.extensions.FocusState.bringIntoViewIfChildrenAreFocused
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("IllegalExperimentalApiUsage")
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ImmersiveList(
     background: @Composable ImmersiveListBackgroundScope.(
