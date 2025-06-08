@@ -136,6 +136,7 @@ kotlin {
                 implementation(libs.ini4j)
                 // tts
                 implementation(libs.tts)
+                implementation(libs.tts.compose)
                 // flowmvi
 //                implementation(libs.flowmvi.core)
 //                implementation(libs.flowmvi.compose)

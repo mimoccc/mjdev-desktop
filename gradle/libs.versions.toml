@@ -9,7 +9,7 @@ app-name = "mjdev-desktop"
 app-pkg-name = "org.mjdev.desktop"
 app-pkg-version = "1.0.3"
 app-vendor = "mjdev"
-java-language-version="17"
+java-language-version = "17"
 # app specific android
 android-compile-sdk = "36"
 android-min-sdk = "24"
@@ -48,9 +48,16 @@ kover = "0.9.1"
 qodana = "2025.1.1"
 intelliJPlatform = "2.6.0"
 changelog = "2.2.1"
-gradle-ktlint="12.3.0"
+gradle-ktlint = "12.3.0"
 #foojay-resolver-convention="0.9.0"
-manes-versions="0.52.0"
+manes-versions = "0.52.0"
+coreKtx = "1.16.0"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.1"
+material = "1.12.0"
+devtools-ksp = "2.1.21-2.0.1"
 
 [libraries]
 # gradle
@@ -97,6 +104,7 @@ kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-co
 ini4j = { module = "org.ini4j:ini4j", version.ref = "ini4j" }
 # tts
 tts = { module = "nl.marc-apps:tts", version.ref = "tts" }
+tts-compose = { module = "nl.marc-apps:tts-compose", version.ref = "tts" }
 # ai
 sh-google-generative-ai = { module = "dev.shreyaspatil.generativeai:generativeai-google", version.ref = "generative-ai" }
 # strings
@@ -105,6 +113,12 @@ human-readable = { module = "nl.jacobras:Human-Readable", version.ref = "human-r
 alert-kmp = { module = "io.github.khubaibkhan4:alert-kmp", version.ref = "alert-kmp" }
 #androidx-emoji2 = { group = "androidx.emoji2", name = "emoji2", version.ref = "emoji2" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }
@@ -120,4 +134,6 @@ intellij-platform = { id = "org.jetbrains.intellij.platform", version.ref = "int
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 gradle-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "gradle-ktlint" }
 #foojay-resolver-convention = { id ="org.gradle.toolchains.foojay-resolver-convention", version.ref = "foojay-resolver-convention" }
-manes-versions = { id = "com.github.ben-manes.versions", version.ref  = "manes-versions" }
+manes-versions = { id = "com.github.ben-manes.versions", version.ref = "manes-versions" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "devtools-ksp" }
