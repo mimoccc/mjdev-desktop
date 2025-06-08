@@ -38,6 +38,8 @@ fun FolderIcon(
     dragEnabled: Boolean = true,
     iconSize: DpSize = DpSize(128.dp, 128.dp),
     modifier: Modifier = Modifier,
+    innerPadding: PaddingValues = PaddingValues(4.dp),
+    outerPadding: PaddingValues = PaddingValues(4.dp),
     onDragStart: () -> Unit = {},
     onDragEnd: () -> Unit = {},
     onContextMenuClick: () -> Unit = {},
@@ -72,8 +74,8 @@ fun FolderIcon(
                     iconSize = iconSize,
                     iconColor = textColor,
                     iconBackgroundColor = iconsTintColor.alpha(0.4f),
-                    outerPadding = PaddingValues(8.dp),
-                    innerPadding = PaddingValues(8.dp),
+                    outerPadding = outerPadding,
+                    innerPadding = innerPadding,
                     onClick = onClick,
                     onRightClick = onContextMenuClick
                 )

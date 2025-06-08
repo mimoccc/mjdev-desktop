@@ -1,6 +1,7 @@
 package org.mjdev.desktop.components.file
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -45,6 +46,8 @@ fun FolderView(
     showHomeFolder: Boolean = false,
     iconSpacing: Dp = 2.dp,
     iconSize: DpSize = DpSize(128.dp, 128.dp),
+    innerIconPadding: PaddingValues = PaddingValues(8.dp),
+    outerIconPadding: PaddingValues = PaddingValues(4.dp),
     path: Path = cwd,
 //    orientation: Orientation = Orientation.Vertical, // todo
     guideVisibleState: VisibilityState = rememberVisibilityState(false),
@@ -61,6 +64,8 @@ fun FolderView(
             FolderIcon(
                 modifier = Modifier.padding(iconSpacing),
                 iconSize = iconSize,
+                outerPadding = outerIconPadding,
+                innerPadding = innerIconPadding,
             )
         }
     ) { size ->

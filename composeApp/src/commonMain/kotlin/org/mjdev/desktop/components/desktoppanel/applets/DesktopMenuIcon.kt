@@ -3,6 +3,7 @@ package org.mjdev.desktop.components.desktoppanel.applets
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
@@ -19,15 +20,17 @@ fun DesktopMenuIcon(
     iconSize: DpSize = DpSize(56.dp, 56.dp),
     iconPadding: PaddingValues = PaddingValues(2.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
+    iconName :String = "menu" ,
     onTooltip: (item: Any?) -> Unit = {},
     onClick: () -> Unit = {},
     onContextMenuClick: () -> Unit = {}
 ) = Row(
-    modifier = modifier
+    modifier = modifier,
+    verticalAlignment = Alignment.CenterVertically,
 ) {
     DesktopPanelIcon(
         contentDescription = "System menu",
-        icon = "menu",
+        iconName = iconName,
         iconColor = iconColor,
         iconBackgroundColor = iconBackgroundColor,
         iconBackgroundHover = Color.White.copy(alpha = 0.4f),

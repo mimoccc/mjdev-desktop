@@ -4,6 +4,10 @@ package org.mjdev.desktop.components.fonticon
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,15 +28,15 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun FontIcon(
     modifier: Modifier = Modifier,
-    iconId: Int = 0,
+    iconId: Int = "x".toInt(),
     iconicFont: IFont? = null,
     iconSize: DpSize = DpSize(32.dp, 32.dp),
     iconColor: Color = Color.Black,
     iconBackgroundColor: Color = Color.White,
-    innerPadding: PaddingValues = PaddingValues(2.dp),
-    contentDescription: String = "",
-    outerPadding: PaddingValues = PaddingValues(2.dp),
+    innerPadding: PaddingValues = PaddingValues(4.dp),
+    outerPadding: PaddingValues = PaddingValues(4.dp),
     iconShape: Shape = CircleShape,
+    contentDescription: String = "",
     onRightClick: () -> Unit = {},
     onClick: () -> Unit = {}
 ) = withDesktopContext {
@@ -47,7 +51,6 @@ fun FontIcon(
         outerPadding = outerPadding,
         customContent = {
             AutoResizeText(
-                modifier = Modifier.align(Alignment.Center),
                 text = iconId.toChar().toString(),
                 color = iconColor,
                 fontFamily = (iconicFont ?: theme.iconSet).fontFamily,
@@ -100,9 +103,18 @@ fun FontIcon(
 @Composable
 fun FontIconPreview() = preview {
     Column {
-        FontIcon(iconId = 0)
-        FontIcon(iconName = "")
-        FontIcon(iconName = "tv")
-        FontIcon(iconName = "browser")
+        Column {
+            FontIcon(iconId = 0)
+            FontIcon(iconName = "")
+            FontIcon(iconName = "tv")
+            FontIcon(iconName = "browser")
+        }
+        Spacer(modifier = Modifier.height(32.dp).fillMaxWidth())
+        Row {
+            FontIcon(iconId = 0)
+            FontIcon(iconName = "")
+            FontIcon(iconName = "tv")
+            FontIcon(iconName = "browser")
+        }
     }
 }

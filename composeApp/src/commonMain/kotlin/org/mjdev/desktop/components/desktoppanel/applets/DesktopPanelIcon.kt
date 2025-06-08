@@ -38,23 +38,25 @@ import org.mjdev.desktop.extensions.PaddingValues.size
 @Composable
 fun DesktopPanelIcon(
     app: IApp? = null,
-    icon: String? = null,
+    iconName: String? = null,
     iconColor: Color = Color.Black,
     iconBackgroundColor: Color = Color.White,
     iconBackgroundHover: Color = Color.White,
     iconColorRunning: Color = Color.White,
     iconSize: DpSize = DpSize(48.dp, 48.dp),
-    iconPadding: PaddingValues = PaddingValues(2.dp),
-    iconOuterPadding: PaddingValues = PaddingValues(2.dp),
+    iconPadding: PaddingValues = PaddingValues(4.dp),
+    iconOuterPadding: PaddingValues = PaddingValues(4.dp),
     iconState: MutableState<Boolean> = rememberState(false),
     contentDescription: String? = null,
+    innerPadding: PaddingValues = PaddingValues(4.dp),
+    outerPadding: PaddingValues = PaddingValues(4.dp),
     onTooltip: (item: Any?) -> Unit = {},
     onContextMenuClick: () -> Unit = {},
     onClick: () -> Unit = {},
 ) = withDesktopContext {
-    val materialIcon: Int = remember(app, icon) {
-        val iconName = app?.name ?: icon // todo better guess
-        iconSet.iconForName(iconName) ?: 0
+    val materialIcon: Int = remember(app, iconName) {
+        val icn = app?.name ?: iconName // todo better guess
+        iconSet.iconForName(icn) ?: 0
     }
     val background = when {
         iconState.value -> iconBackgroundHover

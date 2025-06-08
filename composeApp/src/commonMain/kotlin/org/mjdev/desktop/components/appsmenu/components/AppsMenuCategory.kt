@@ -65,8 +65,8 @@ fun AppsMenuCategory(
                 iconSize = iconSize,
                 iconColor = textColor,
                 iconBackgroundColor = backgroundColor,
-                outerPadding = PaddingValues(2.dp),
-                innerPadding = PaddingValues(0.dp),
+                outerPadding = PaddingValues(0.dp),
+                innerPadding = PaddingValues(4.dp),
             )
             TextAny(
                 modifier = Modifier.padding(start = 4.dp).fillMaxWidth(),

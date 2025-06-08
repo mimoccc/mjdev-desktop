@@ -2,9 +2,9 @@ package org.mjdev.desktop.components.text
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +26,7 @@ import kotlin.math.max
 @Suppress("FunctionName")
 @Composable
 fun AutoResizeText(
-    text: String = "A",
+    text: String = "x",
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
     fontStyle: FontStyle? = FontStyle.Normal,
@@ -45,15 +45,13 @@ fun AutoResizeText(
         maxFontSize.value,
         max(
             minFontSize.value,
-            constraints
-                .maxWidth
-                .coerceAtMost(
+            constraints.maxWidth.coerceAtMost(
                     constraints.maxHeight
-                ).toFloat() / 2
+            ).toFloat()
         )
     ).sp
+    val verticalOffset = -(calculatedFontSize.value * 0.1f).dp
     Text(
-        modifier = modifier,
         text = text,
         color = color,
         fontStyle = fontStyle,
@@ -63,6 +61,9 @@ fun AutoResizeText(
         maxLines = maxLines,
         textAlign = textAlign,
         overflow = TextOverflow.Clip,
+        modifier = Modifier.offset(
+            y = verticalOffset
+        )
     )
 }
 
@@ -73,6 +74,6 @@ fun AutoResizeTextPreview() = preview(64, 64) {
         modifier = Modifier
             .background(Color.White)
             .size(64.dp),
-        text = "o",
+        text = "x",
     )
 }
