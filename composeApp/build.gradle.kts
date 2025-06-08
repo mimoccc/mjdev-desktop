@@ -236,7 +236,7 @@ kotlin {
 composeResources {
     publicResClass = true
     packageOfResClass = "org.mjdev.desktop.resources"
-    generateResClass = auto
+    generateResClass = always
 }
 
 // android app config
