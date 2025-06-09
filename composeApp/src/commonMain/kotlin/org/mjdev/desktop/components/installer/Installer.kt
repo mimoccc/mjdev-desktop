@@ -14,7 +14,6 @@ import org.mjdev.desktop.components.background.BackgroundImage
 import org.mjdev.desktop.components.sliding.base.VisibilityState
 import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 

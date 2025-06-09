@@ -26,7 +26,6 @@ import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContex
 import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.LaunchedEffect.launchedEffect
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 import org.mjdev.desktop.helpers.system.shell.Shell
 import org.mjdev.desktop.log.Log

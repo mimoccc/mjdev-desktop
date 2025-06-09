@@ -9,7 +9,7 @@
 package org.mjdev.desktop.managers.theme
 
 import org.mjdev.desktop.managers.theme.base.ThemeManagerStub
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 
 // todo other platforms
 @Suppress("FunctionName")

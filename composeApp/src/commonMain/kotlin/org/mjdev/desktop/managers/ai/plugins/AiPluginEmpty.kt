@@ -8,7 +8,7 @@
 
 package org.mjdev.desktop.managers.ai.plugins
 
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.managers.ai.plugins.base.AIPlugin
 
 @Suppress("UNUSED_PARAMETER")

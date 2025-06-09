@@ -2,7 +2,7 @@ package org.mjdev.desktop.helpers.system.meminfo
 
 import org.jetbrains.skiko.OS
 import org.jetbrains.skiko.hostOs
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 
 actual fun MemInfo(
     context: IDesktopContext

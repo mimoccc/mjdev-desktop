@@ -76,3 +76,18 @@ dependencyResolutionManagement {
 include(":studio-plugin")
 include(":composeApp")
 //</editor-fold>------------------------------------------------------------------------------------
+
+//<editor-fold desc="rename gradle build files">----------------------------------------------------
+// Configure modules to use their own name as the build file name
+// app/build.gradle.kts → app/app.gradle.kts
+// features/home/build.gradle.kts → features/home/home.gradle.kts
+rootProject.children.forEach { project ->
+    fun configureProject(project: ProjectDescriptor) {
+        project.buildFileName = "${project.name}.gradle.kts"
+        project.children.forEach { child->
+            configureProject(child)
+        }
+    }
+    configureProject(project)
+}
+//</editor-fold>------------------------------------------------------------------------------------

@@ -4,7 +4,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
 import org.mjdev.desktop.context.DesktopContext
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 
 class MemInfoAndroid(
     context: IDesktopContext

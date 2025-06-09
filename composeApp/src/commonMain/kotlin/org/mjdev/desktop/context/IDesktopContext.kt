@@ -1,9 +1,11 @@
-package org.mjdev.desktop.interfaces
+package org.mjdev.desktop.context
 
 import androidx.compose.ui.unit.DpSize
 import coil3.ImageLoader
 import coil3.PlatformContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.mjdev.desktop.components.controlcenter.pages.about.AboutPage
 import org.mjdev.desktop.components.controlcenter.pages.ai.AIPage
 import org.mjdev.desktop.components.controlcenter.pages.bluetooth.BluetoothSettingsPage
@@ -16,7 +18,14 @@ import org.mjdev.desktop.components.controlcenter.pages.sound.SoundSettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.theme.ThemeSettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.wifi.WifiSettingsPage
 import org.mjdev.desktop.data.Category
-import org.mjdev.desktop.managers.ai.base.IAiManager
+import org.mjdev.desktop.helpers.persistence.StorageProvider
+import org.mjdev.desktop.interfaces.IApp
+import org.mjdev.desktop.interfaces.IDisposable
+import org.mjdev.desktop.interfaces.ILocale
+import org.mjdev.desktop.interfaces.IPage
+import org.mjdev.desktop.interfaces.ITheme
+import org.mjdev.desktop.interfaces.IUser
+import org.mjdev.desktop.managers.ai.IAiManager
 import org.mjdev.desktop.managers.apps.IAppsManager
 import org.mjdev.desktop.managers.connectivity.IConnectivityManager
 import org.mjdev.desktop.managers.os.IOSManager
@@ -26,16 +35,30 @@ import org.mjdev.desktop.managers.translations.ITranslator
 import org.mjdev.desktop.managers.base.IDelegate
 import org.mjdev.desktop.managers.base.ManagerCache
 import org.mjdev.desktop.managers.keys.IKeyManager
+import org.mjdev.desktop.managers.palette.IPalette
+import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
-@Suppress("LeakingThis")
+@Suppress("LeakingThis", "unused")
 abstract class IDesktopContext : IDisposable {
-    open val managersCache: ManagerCache by lazy {
-        ManagerCache(this)
-    }
+    open val managersCache: ManagerCache = ManagerCache(this)
 
-    open val controlCenterPages: List<IPage> = CONTROL_CENTER_PAGES
+    open val controlCenterPages: MutableList<IPage> = mutableListOf(
+        MainSettingsPage(this),
+        WifiSettingsPage(this),
+        EthSettingsPage(this),
+        SoundSettingsPage(this),
+        BluetoothSettingsPage(this),
+        DisplaySettingsPage(this),
+        DevicesPage(this),
+        RemotesSettingsPage(this),
+        ThemeSettingsPage(this),
+        AIPage(this),
+        AboutPage(this)
+    )
+
+    val storageProvider = StorageProvider(this)
 
     open val osManager: IOSManager by this
     open val connectionManager: IConnectivityManager by this
@@ -49,8 +72,8 @@ abstract class IDesktopContext : IDisposable {
 
     abstract var isFirstStart: Boolean
     abstract var isInstalled: Boolean
+
     abstract val machineName: String
-    abstract val isLandscapeMode: Boolean
     abstract val appArgs: List<String>
     abstract val containerSize: DpSize
     abstract val scope: CoroutineScope
@@ -77,21 +100,38 @@ abstract class IDesktopContext : IDisposable {
 
     abstract fun createManager(cls: KClass<*>): IDelegate?
 
+    fun runAsync(
+        context: CoroutineContext = Dispatchers.Default,
+        block: suspend () -> Unit
+    ) = scope.launch(context) { block() }
+
+    fun notify(
+        message: String = "This is a test message",
+        id: String = "1",
+        title: String = "This is a test",
+    ) {
+//        val messageData = KNotifMessageData(
+//            id = id,
+//            title = title,
+//            appName = stringResource(Res.string.app_name),
+//            message = message,
+//            poster = imageResource(Res.drawable.default_poster),
+//            appIcon = imageResource(Res.drawable.default_app_icon),
+//        )
+//        // Show the notification
+//        Knotif.show(messageData)
+//        // Dismiss the notification
+//        Knotif.dismiss(messageData.id)
+//        // Dismiss all notifications
+//        Knotif.dismissAll()
+//        // Set a listener to be called when a notification is clicked
+//        Knotif.setOnBuildMessageKnotifListener {
+//            println("notification clicked ${it}")
+//        }
+    }
+
     companion object {
         const val APP_PARAM_DEBUG = "--debug"
-        val CONTROL_CENTER_PAGES = listOf<IPage>(
-            MainSettingsPage(),
-            WifiSettingsPage(),
-            EthSettingsPage(),
-            SoundSettingsPage(),
-            BluetoothSettingsPage(),
-            DisplaySettingsPage(),
-            DevicesPage(),
-            RemotesSettingsPage(),
-            ThemeSettingsPage(),
-            AIPage(),
-            AboutPage()
-        )
     }
 
     inline operator fun <reified T : IDelegate> IDesktopContext.getValue(
@@ -99,4 +139,3 @@ abstract class IDesktopContext : IDisposable {
         property: KProperty<*>
     ): T = managersCache.get()
 }
-

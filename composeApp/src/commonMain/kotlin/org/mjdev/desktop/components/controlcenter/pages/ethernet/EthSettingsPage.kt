@@ -8,9 +8,13 @@ import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.settings.SettingsEthernet
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("FunctionName")
-fun EthSettingsPage() = ControlCenterPage(
+fun EthSettingsPage(
+    context: IDesktopContext
+) = ControlCenterPage(
+    context = context,
     icon = SettingsEthernet,
     name = "Ethernet",
     condition = {
@@ -26,5 +30,5 @@ fun EthSettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun EthSettingsPagePreview() = preview {
-    EthSettingsPage().Render()
+    EthSettingsPage(context).Render()
 }

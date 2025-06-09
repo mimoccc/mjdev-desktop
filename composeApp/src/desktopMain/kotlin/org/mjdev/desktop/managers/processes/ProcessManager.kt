@@ -16,7 +16,7 @@ import kotlinx.coroutines.*
 import org.mjdev.desktop.context.LocalDesktopContext
 import org.mjdev.desktop.extensions.Compose.orElse
 import org.mjdev.desktop.interfaces.IApp
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.interfaces.IProcessListener
 import org.mjdev.desktop.managers.process.IProcessManager
 import kotlin.jvm.optionals.getOrNull

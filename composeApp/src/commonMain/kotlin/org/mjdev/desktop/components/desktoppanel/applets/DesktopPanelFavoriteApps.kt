@@ -5,12 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
@@ -29,9 +31,10 @@ fun DesktopPanelFavoriteApps(
     iconSize: DpSize = DpSize(56.dp, 56.dp),
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
+    iconSpace: Dp = 2.dp,
     onTooltip: (item: Any?) -> Unit = {},
     onAppClick: (app: IApp) -> Unit = {},
-    onContextMenuClick: (app: IApp) -> Unit = {}
+    onContextMenuClick: (app: IApp) -> Unit = {},
 ) = withDesktopContext {
     val apps: List<IApp> by flowBlock(
         emptyList(),
@@ -45,7 +48,7 @@ fun DesktopPanelFavoriteApps(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            items(apps) { app ->
+            itemsIndexed(apps) { idx, app ->
                 DesktopPanelIcon(
                     app = app,
                     iconColor = iconColor,
@@ -61,6 +64,12 @@ fun DesktopPanelFavoriteApps(
                     },
                     onContextMenuClick = { onContextMenuClick(app) }
                 )
+                if (idx < apps.size - 1) {
+                    VerticalDivider(
+                        color = Color.Transparent,
+                        thickness = iconSpace
+                    )
+                }
             }
         }
     }

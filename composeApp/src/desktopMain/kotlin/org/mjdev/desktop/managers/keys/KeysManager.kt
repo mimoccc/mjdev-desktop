@@ -2,7 +2,7 @@ package org.mjdev.desktop.managers.keys
 
 import kotlinx.coroutines.CoroutineScope
 import org.mjdev.desktop.helpers.streams.ResourceStream
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 
 class KeysManager(
     val context: IDesktopContext,

@@ -5,10 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,7 +24,6 @@ import org.mjdev.desktop.components.text.TextAny
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Colors.SuperDarkGray
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.extensions.Modifier.circleBorder
 import org.mjdev.desktop.extensions.Modifier.onLeftClick
 import org.mjdev.desktop.extensions.Modifier.onMousePress
@@ -47,7 +45,7 @@ fun AppsMenuApp(
     dividerPadding: Dp = 48.dp,
     dividerColor: Color = Color.Black,
     onContextMenuClick: () -> Unit = {},
-    onClick: () -> Unit = { runAsync { app?.start() } },
+    onClick: () -> Unit = {},
     onTooltip: (item: Any?) -> Unit = {}
 ) = withDesktopContext {
     val appIconName = remember(app, icon) { app?.name ?: icon }
@@ -90,15 +88,15 @@ fun AppsMenuApp(
             }
         }
         if (showDivider) {
-            Divider(
-                modifier = Modifier.fillMaxWidth()
+            HorizontalDivider(
+                modifier = Modifier
                     .padding(start = dividerPadding)
-                    .height(1.dp)
                     .background(
                         color = dividerColor,
                         shape = DottedShape(5.dp)
                     ),
-                color = Color.Transparent
+                color = Color.Transparent,
+                thickness = 1.dp
             )
         }
     }

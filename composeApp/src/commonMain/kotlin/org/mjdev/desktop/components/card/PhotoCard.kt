@@ -24,7 +24,7 @@ import org.mjdev.desktop.extensions.FocusState.rememberFocusRequester
 import org.mjdev.desktop.extensions.FocusState.rememberFocusState
 import org.mjdev.desktop.helpers.compose.FocusHelper
 import org.mjdev.desktop.components.image.PhotoImage
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

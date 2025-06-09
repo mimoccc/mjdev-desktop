@@ -20,7 +20,6 @@ import org.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
 import org.mjdev.desktop.helpers.mouseevents.MouseRange
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.orElse
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.windows.ChromeWindow
 import org.mjdev.desktop.windows.ChromeWindowState
 import org.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState

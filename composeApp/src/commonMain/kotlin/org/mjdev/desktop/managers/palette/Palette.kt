@@ -22,8 +22,7 @@ import org.mjdev.desktop.extensions.Colors.nonAlphaValue
 import org.mjdev.desktop.extensions.ImageBitmapExt.cut
 import org.mjdev.desktop.extensions.ImageBitmapExt.loadPicture
 import org.mjdev.desktop.helpers.image.ImageUtils.topMostColor
-import org.mjdev.desktop.interfaces.IDesktopContext
-import org.mjdev.desktop.interfaces.IPalette
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("CanBeParameter", "MemberVisibilityCanBePrivate", "unused")
 class Palette(

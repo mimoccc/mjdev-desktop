@@ -1,7 +1,8 @@
-package org.mjdev.desktop.interfaces
+package org.mjdev.desktop.managers.palette
 
 import androidx.compose.ui.graphics.Color
 import org.mjdev.desktop.extensions.Colors.SuperDarkGray
+import org.mjdev.desktop.interfaces.IDisposable
 import org.mjdev.desktop.managers.base.IDelegate
 
 interface IPalette : IDisposable, IDelegate {

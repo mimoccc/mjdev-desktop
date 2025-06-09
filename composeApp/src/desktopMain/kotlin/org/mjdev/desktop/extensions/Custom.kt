@@ -1,7 +1,6 @@
 package org.mjdev.desktop.extensions
 
 import androidx.compose.ui.graphics.NativePaint
-import com.google.gson.Gson
 import okio.Path
 import org.jetbrains.skia.FilterBlurMode.NORMAL
 import org.jetbrains.skia.MaskFilter.Companion.makeBlur
@@ -62,14 +61,6 @@ object Custom {
     ) {
         maskFilter = makeBlur(NORMAL, blurRadius / 2, true)
     }
-
-    inline fun <reified T> String.jsonToList(): List<T> = runCatching {
-        Gson().fromJson(this, List::class.java).mapNotNull { item -> item as? T }
-    }.getOrNull() ?: emptyList()
-
-    inline fun <reified T> String.to(): T? = runCatching {
-        Gson().fromJson(this, T::class.java)
-    }.getOrNull()
 
     val Process.command: String?
         get() = info().command().getOrNull()

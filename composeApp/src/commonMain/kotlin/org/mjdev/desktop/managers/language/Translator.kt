@@ -8,7 +8,7 @@
 
 package org.mjdev.desktop.managers.language
 
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.managers.base.IDelegate
 
 //import  org.mini2Dx.gettext.GetText

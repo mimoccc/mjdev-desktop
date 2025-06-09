@@ -7,7 +7,6 @@ import androidx.compose.ui.unit.DpOffset
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.interfaces.IUser
 import org.mjdev.desktop.windows.ChromeWindow
 

@@ -2,7 +2,7 @@ package org.mjdev.desktop.components.controlcenter.pages.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,14 +18,17 @@ import org.mjdev.desktop.components.user.UserAvatar
 import org.mjdev.desktop.extensions.Colors.alpha
 import org.mjdev.desktop.extensions.Colors.darker
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.helpers.compose.Orientation
 import org.mjdev.desktop.helpers.shape.BarShape
 import org.mjdev.desktop.icons.settings.SettingsHome
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("FunctionName")
-fun MainSettingsPage() = ControlCenterPage(
+fun MainSettingsPage(
+    context: IDesktopContext
+) = ControlCenterPage(
+    context = context,
     icon = SettingsHome,
     name = "Home",
     showHeader = false
@@ -80,9 +83,7 @@ fun MainSettingsPage() = ControlCenterPage(
                     orientation = Orientation.Horizontal
                 )
             }
-            Divider(
-                modifier = Modifier.fillMaxWidth()
-                    .height(2.dp),
+            HorizontalDivider(
                 color = borderColor.alpha(0.5f),
                 thickness = 2.dp
             )
@@ -143,5 +144,5 @@ fun MainSettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun MainSettingsPagePreview() = preview {
-    MainSettingsPage().Render()
+    MainSettingsPage(context).Render()
 }

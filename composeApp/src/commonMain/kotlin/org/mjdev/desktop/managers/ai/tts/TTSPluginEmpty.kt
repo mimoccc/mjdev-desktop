@@ -1,6 +1,6 @@
 package org.mjdev.desktop.managers.ai.tts
 
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.managers.ai.tts.base.TTSPlugin
 
 @Suppress("UNUSED_PARAMETER")

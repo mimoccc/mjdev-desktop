@@ -2,16 +2,16 @@ package org.mjdev.desktop.components.controlcenter.base
 
 import androidx.compose.runtime.DisallowComposableCalls
 import org.mjdev.desktop.interfaces.IControlCenterPageDataSaver
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
-@Suppress("unused")
 class PageCache(
     private val saver: IControlCenterPageDataSaver? = null
 ) {
-    private val _data : MutableMap<Int, Any> = mutableMapOf()
+    private val _data: MutableMap<Int, Any> = mutableMapOf()
 
-    init {
-        saver?.load()?.onEach { (t, u) -> _data[t] = u }
+    fun load() {
+        saver?.load()?.onEach { (t, u) ->
+            _data[t] = u
+        }
     }
 
     fun save() {

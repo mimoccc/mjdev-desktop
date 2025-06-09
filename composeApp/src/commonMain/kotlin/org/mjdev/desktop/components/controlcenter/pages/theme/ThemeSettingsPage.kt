@@ -8,9 +8,13 @@ import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.custom.Mjdev
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("FunctionName")
-fun ThemeSettingsPage() = ControlCenterPage(
+fun ThemeSettingsPage(
+    context: IDesktopContext
+) = ControlCenterPage(
+    context = context,
     icon = Mjdev, // todo
     name = "Theme",
     condition = { true }
@@ -23,5 +27,5 @@ fun ThemeSettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun ThemeSettingsPagePreview() = preview {
-    ThemeSettingsPage().Render()
+    ThemeSettingsPage(context).Render()
 }

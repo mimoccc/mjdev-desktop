@@ -6,31 +6,32 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import org.mjdev.desktop.components.controlcenter.base.ControlCenterPageScope.Companion.withControlCenterPageScope
 import org.mjdev.desktop.interfaces.IControlCenterPageDataSaver
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.interfaces.IPage
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("MemberVisibilityCanBePrivate")
 class ControlCenterPage(
+    override val context: IDesktopContext,
     override val icon: ImageVector = Icons.Filled.Settings,
     override val name: String = "",
     override val condition: IDesktopContext.() -> Boolean = { true },
-    override val saver: IControlCenterPageDataSaver? = null,
-    val cache: PageCache = PageCache(saver),
-    val showHeader: Boolean = true,
-//    val scrollState: ScrollState = ScrollState(0),
-    val content: @Composable ControlCenterPageScope.() -> Unit = {},
+    override val saver: (context: IDesktopContext) -> IControlCenterPageDataSaver? = { null },
+    override val cache: PageCache = PageCache(saver(context)),
+    override val showHeader: Boolean = true,
+    override val content: @Composable ControlCenterPageScope.() -> Unit = {},
 ) : IPage {
+    //    val scrollState: ScrollState = ScrollState(0),
+
     @Preview
     @Composable
     override fun Render() {
-        withControlCenterPageScope(
-            cache = cache
-        ) {
+        withControlCenterPageScope(cache) {
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -46,6 +47,12 @@ class ControlCenterPage(
 //                modifier = Modifier.fillMaxHeight(),
 //                adapter = rememberScrollbarAdapter(scrollState)
 //            )
+            }
+            DisposableEffect(Unit) {
+                cache.load()
+                onDispose {
+                    cache.save()
+                }
             }
         }
     }

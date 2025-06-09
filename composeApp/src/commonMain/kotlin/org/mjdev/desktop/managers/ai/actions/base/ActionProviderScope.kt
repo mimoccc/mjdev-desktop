@@ -10,8 +10,8 @@ package org.mjdev.desktop.managers.ai.actions.base
 
 import org.mjdev.desktop.managers.ai.actions.base.ActionException.ActionFail
 import org.mjdev.desktop.managers.ai.actions.base.ActionException.ActionSuccess
-import org.mjdev.desktop.interfaces.IDesktopContext
-import org.mjdev.desktop.managers.ai.base.IAiManager
+import org.mjdev.desktop.context.IDesktopContext
+import org.mjdev.desktop.managers.ai.IAiManager
 
 @Suppress("RedundantSuspendModifier", "unused")
 class ActionProviderScope(

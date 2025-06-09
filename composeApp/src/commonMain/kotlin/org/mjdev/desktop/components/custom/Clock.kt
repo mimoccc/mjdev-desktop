@@ -1,6 +1,5 @@
 package org.mjdev.desktop.components.custom
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -21,13 +20,11 @@ import org.mjdev.desktop.extensions.CustomExt.dateFlow
 import org.mjdev.desktop.extensions.CustomExt.timeFlow
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.helpers.parsers.Parsers.ParsedList
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo remove params
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Clock(
     modifier: Modifier = Modifier,
@@ -45,20 +42,15 @@ fun Clock(
     val time = timeFlow.value
     var lastTalk by rememberState("")
     val talk: () -> Unit = {
-        runAsync {
-            lastTalk = time
-            val parsed = ParsedList(time, ":")
-//            ai.talk(
-//                "It is ${parsed.firstOrNull()} hour, ${
-//                    parsed.getOrNull(1)?.let { "$it minutes" }.orEmpty()
-//                }, ${
-//                    parsed.getOrNull(2)?.let { "$it seconds" }.orEmpty()
-//                }"
-//            )
-        }
+        lastTalk = time
+        ai.ask("Whats current time?")
     }
     Box(
-        modifier = modifier.onMousePress { if (talkOnClick) talk() },
+        modifier = modifier.onMousePress {
+            if (talkOnClick) {
+                talk()
+            }
+        },
         contentAlignment = Alignment.Center
     ) {
         Column(

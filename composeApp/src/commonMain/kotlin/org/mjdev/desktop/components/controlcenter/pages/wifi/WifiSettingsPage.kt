@@ -15,18 +15,25 @@ import org.mjdev.desktop.data.WifiNetwork
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.LaunchedEffect.flowBlock
 
-import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
-
 import org.mjdev.desktop.icons.settings.SettingsWifi
 import org.mjdev.desktop.log.Log
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.components.controlcenter.base.ControlCenterPageScope.Companion.rememberComputed
+import org.mjdev.desktop.components.controlcenter.base.PersistentPageSaver
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("FunctionName")
-fun WifiSettingsPage() = ControlCenterPage(
+fun WifiSettingsPage(
+    context: IDesktopContext
+) = ControlCenterPage(
+    context = context,
     icon = SettingsWifi,
     name = "Wifi",
     condition = {
-        connectionManager?.isWifiAdapterAvailable ?: false
+        connectionManager.isWifiAdapterAvailable
+    },
+    saver = { ctx ->
+        PersistentPageSaver(ctx, "Assistant")
     }
 ) {
     val shape = RoundedCornerShape(8.dp)
@@ -34,19 +41,26 @@ fun WifiSettingsPage() = ControlCenterPage(
     val wifiList: Map<String, WifiNetwork> by flowBlock(
         emptyMap(),
         250L
-    ) { context.connectionManager?.wifiNetworks ?: emptyMap() }
+    ) { context.connectionManager.wifiNetworks }
     val items: List<WifiNetwork> by rememberComputed(isConnecting) {
-        if (wifiList.isEmpty()) emptyList() else wifiList.map { e -> e.value }
+        if (wifiList.isEmpty()) emptyList()
+        else wifiList.map { e -> e.value }
     }
     val connect: (item: WifiNetwork) -> Unit = remember {
         { wn ->
             isConnecting = true
-            context.connectionManager?.connectWifi(wn.ssid)?.onFailure { e ->
-                Log.e(e)
-            }
-            isConnecting = false
+            context.connectionManager.connectWifi(wn.ssid)
+                .onSuccess {
+                    Log.d("Connected to ${wn.ssid}")
+                    isConnecting = false
+                }
+                .onFailure { e ->
+                    Log.e(e)
+                    isConnecting = false
+                }
         }
     }
+
     ExpandableLazyColumn(
         modifier = Modifier.fillMaxWidth(),
         items = items
@@ -79,5 +93,5 @@ fun WifiSettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun WifiSettingsPagePreview() = preview {
-    WifiSettingsPage().Render()
+    WifiSettingsPage(context).Render()
 }

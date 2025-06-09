@@ -40,13 +40,13 @@ class Queue<E>(
         when {
             hasNext() -> {
                 source[currentIndex].apply {
-                    Log.d("New background request: $this")
+//                    Log.d("New background request: $this")
                     currentIndex += 1
                 }
             }
 
             source.isEmpty() -> {
-                Log.e("No background, empty list.")
+//                Log.e("No background, empty list.")
                 null
             }
 

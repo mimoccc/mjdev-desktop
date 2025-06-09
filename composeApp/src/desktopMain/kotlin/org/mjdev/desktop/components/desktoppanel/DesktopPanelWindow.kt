@@ -25,7 +25,7 @@ import org.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindo
 @Suppress("FunctionName")
 @Composable
 fun DesktopPanelWindow(
-    iconSize: DpSize = DpSize(56.dp, 56.dp),
+    iconSize: DpSize = DpSize(48.dp, 48.dp),
     iconPadding: PaddingValues = PaddingValues(4.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     showMenuIcon: Boolean = true,
@@ -134,6 +134,7 @@ fun DesktopPanelWindow(
         DesktopPanel(
             iconSize = iconSize,
             iconPadding = iconPadding,
+            iconOuterPadding = iconOuterPadding,
             showMenuIcon = showMenuIcon,
             panelState = panelState,
             onMenuIconClicked = {

@@ -27,7 +27,8 @@ import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.theme.base.ThemeManagerStub
 import org.mjdev.desktop.extensions.PathExt.exists
 import org.mjdev.desktop.extensions.StringExt.hexRgb
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.runAsync
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -52,62 +53,77 @@ class ThemeManagerLinux(
     private val systemGtk4CssFile = systemGtk4ThemeDir["gtk.css"]
 
     override fun clearSystemTheme() {
-        Log.i("Deleting : file:///${systemGtk3CssFile.absolutePath}")
-        systemGtk3CssFile.delete()
-        Log.i("Deleting : file:///${systemGtk4CssFile.absolutePath}")
-        systemGtk4CssFile.delete()
-    }
-
-    override fun createFromPalette() {
-        createDesktopFile()
-        createCssFile(gtk3CssFile)
-        createCssFile(gtk4CssFile)
-        createCssFile(systemGtk3CssFile)
-        createCssFile(systemGtk4CssFile)
-    }
-
-    private fun createDesktopFile() {
-        desktopFile(themeDesktopFile) {
-            mkDirs()
-            deleteFile()
-            desktopSection {
-                Type = DesktopEntryType.Theme
-                Name = THEME_MJDEV
-                Comment = "dynamic system theme"
-                Encoding = Charsets.UTF_8.name()
-            }
-            themeSection {
-                GtkTheme = THEME_MJDEV
-                MetacityTheme = THEME_ADWAITA_DARK
-                IconTheme = THEME_ADWAITA_DARK
-                CursorTheme = THEME_CURSOR_BLOOM
-                ButtonLayout = "minimize,maximize,close:"
-                UseOverlayScrollbars = true
-            }
-            write()
+        runCatching {
+            Log.i("Deleting : file:///${systemGtk3CssFile.absolutePath}")
+            systemGtk3CssFile.delete()
+            Log.i("Deleting : file:///${systemGtk4CssFile.absolutePath}")
+            systemGtk4CssFile.delete()
+            Log.i("Deleting theme : file:///${themeDesktopFile.absolutePath}")
+            themeDesktopFile.delete()
+        }.onFailure { e ->
+            Log.e(e)
         }
     }
 
-    private fun createCssFile(file: Path) = theme(file) {
-        bgColor = palette.backgroundColor
-        fgColor = palette.textColor
-
-        baseColor = palette.baseColor
-        textColor = palette.textColor
-
-        selectedBgColor = palette.selectedBgColor
-        selectedFgColor = palette.selectedFgColor
-
-        tooltipBgColor = palette.tooltipBgColor
-        tooltipFgColor = palette.tooltipFgColor
-
-        buttonBgColor = palette.backgroundColor.darker(0.1f)
-        buttonFgColor = if (buttonBgColor.isLightColor) Color.Black else Color.White
-
-        write()
+    override fun createFromPalette() {
+        runCatching {
+            createDesktopFile()
+            createCssFile(gtk3CssFile)
+            createCssFile(gtk4CssFile)
+            createCssFile(systemGtk3CssFile)
+            createCssFile(systemGtk4CssFile)
+        }.onFailure { e ->
+            Log.e(e)
+        }
     }
 
-    /*
+    private fun createDesktopFile() = runAsync{
+        runCatching {
+            desktopFile(themeDesktopFile) {
+                mkDirs()
+                deleteFile()
+                desktopSection {
+                    Type = DesktopEntryType.Theme
+                    Name = THEME_MJDEV
+                    Comment = "dynamic system theme"
+                    Encoding = Charsets.UTF_8.name()
+                }
+                themeSection {
+                    GtkTheme = THEME_MJDEV
+                    MetacityTheme = THEME_ADWAITA_DARK
+                    IconTheme = THEME_ADWAITA_DARK
+                    CursorTheme = THEME_CURSOR_BLOOM
+                    ButtonLayout = "minimize,maximize,close:"
+                    UseOverlayScrollbars = true
+                }
+                write()
+            }
+        }.onFailure { e ->
+            Log.e(e)
+        }
+    }
+
+    private fun createCssFile(file: Path) {
+        runCatching {
+            theme(file) {
+                bgColor = palette.backgroundColor
+                fgColor = palette.textColor
+                baseColor = palette.baseColor
+                textColor = palette.textColor
+                selectedBgColor = palette.selectedBgColor
+                selectedFgColor = palette.selectedFgColor
+                tooltipBgColor = palette.tooltipBgColor
+                tooltipFgColor = palette.tooltipFgColor
+                buttonBgColor = palette.backgroundColor.darker(0.1f)
+                buttonFgColor = if (buttonBgColor.isLightColor) Color.Black else Color.White
+                write()
+            }
+        }.onFailure { e ->
+            Log.e(e)
+        }
+    }
+
+    /**
     @define-color accent_color #ffb49e;
     @define-color accent_bg_color #ffb49e;
     @define-color accent_fg_color #5e1703;
@@ -125,7 +141,7 @@ class ThemeManagerLinux(
     @define-color error_fg_color #680003;
     @define-color shade_color rgba(0, 0, 0, 0.36);
     @define-color scrollbar_outline_color rgba(160, 140, 135, 0.5);
- */
+     */
     // ~/.config/gtk-3.0/gtk.css
     // ~/.config/gtk-4.0/gtk.css
     @Suppress("MemberVisibilityCanBePrivate")
@@ -340,26 +356,30 @@ class ThemeManagerLinux(
 
     fun setColorScheme(
         schemeName: String
-    ) = runAsync {
-        Shell.executeAndRead(
-            "gsettings",
-            "set",
-            "org.gnome.desktop.interface",
-            "color-scheme",
-            schemeName
-        )
+    ) {
+        runAsync {
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "color-scheme",
+                schemeName
+            )
+        }
     }
 
     fun setGTKTheme(
         themeName: String = THEME_YARU
-    ) = runAsync {
-        Shell.executeAndRead(
-            "gsettings",
-            "set",
-            "org.gnome.desktop.interface",
-            "gtk-theme",
-            themeName
-        )
+    ) {
+        runAsync {
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "gtk-theme",
+                themeName
+            )
+        }
     }
 
 //    fun getGTKTheme(): String = runAsync { Shell.executeAndRead(
@@ -372,30 +392,35 @@ class ThemeManagerLinux(
 
     fun setIconTheme(
         themeName: String = THEME_YARU
-    ) = runAsync {
-        Shell.executeAndRead(
-            "gsettings",
-            "set",
-            "org.gnome.desktop.interface",
-            "icon-theme",
-            themeName
-        )
+    ) {
+        runAsync {
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "icon-theme",
+                themeName
+            )
+        }
     }
 
     fun setSoundTheme(
         themeName: String = THEME_YARU
-    ) = runAsync {
-        Shell.executeAndRead(
-            "gsettings",
-            "set",
-            "org.gnome.desktop.sound",
-            "gtk-theme",
-            themeName
-        )
+    ) {
+        runAsync {
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.sound",
+                "gtk-theme",
+                themeName
+            )
+        }
     }
 
-    fun setDarkColorScheme() =
+    fun setDarkColorScheme() {
         setColorScheme(COLOR_SCHEME_PREFER_DARK)
+    }
 
     companion object {
         const val COLOR_SCHEME_PREFER_DARK = "prefer-dark"

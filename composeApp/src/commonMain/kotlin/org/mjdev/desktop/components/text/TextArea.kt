@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -29,9 +29,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun TextArea(
     modifier: Modifier = Modifier,
     textState: MutableState<String>,
-    clipboardManager: ClipboardManager,
     onDone: () -> Unit = {}
 ) = withDesktopContext {
+    val clipboard : ClipboardManager = LocalClipboardManager.current
     val iconSend = rememberComputed {
         if (textState.value.isNotEmpty()) Send else null
     }
@@ -63,7 +63,7 @@ fun TextArea(
                         modifier = Modifier.padding(4.dp)
                             .size(24.dp)
                             .onMousePress { // on click
-                                clipboardManager.setText(AnnotatedString(textState.value))
+                                clipboard.setText(AnnotatedString(textState.value))
                             },
                         imageVector = ContentCopy,
                         tint = Color.White.copy(alpha = 0.9f),
@@ -91,7 +91,6 @@ fun TextArea(
 @Composable
 fun TextAreaPreview() {
     TextArea(
-        textState = remember { mutableStateOf("Hello") },
-        clipboardManager = LocalClipboardManager.current
+        textState = remember { mutableStateOf("Hello") }
     )
 }

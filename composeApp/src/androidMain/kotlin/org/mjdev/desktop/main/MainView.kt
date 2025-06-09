@@ -26,7 +26,6 @@ import org.mjdev.desktop.components.tooltip.rememberTooltipState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 import org.mjdev.desktop.components.desktop.widgets.MemoryChart
 

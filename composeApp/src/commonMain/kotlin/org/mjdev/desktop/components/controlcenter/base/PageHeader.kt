@@ -30,11 +30,12 @@ import org.mjdev.desktop.extensions.Modifier.circleBorder
 import org.mjdev.desktop.extensions.Modifier.clipCircle
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.context.LocalDesktopContext
 
 @Composable
 fun PageHeader(
     modifier: Modifier = Modifier,
-    page: ControlCenterPage = ControlCenterPage(),
+    page: ControlCenterPage = ControlCenterPage(LocalDesktopContext.current),
     contentPadding: PaddingValues = PaddingValues(8.dp),
     iconSize: Dp = 64.dp,
     actions: @Composable RowScope.() -> Unit = {},
@@ -76,6 +77,6 @@ fun PageHeader(
 @Composable
 fun PageHeaderPreview() = preview {
     PageHeader(
-        page = ControlCenterPage()
+        page = ControlCenterPage(context)
     )
 }

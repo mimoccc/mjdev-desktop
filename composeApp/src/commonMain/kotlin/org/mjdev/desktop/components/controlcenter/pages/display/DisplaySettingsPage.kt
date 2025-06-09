@@ -8,9 +8,13 @@ import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.settings.SettingsMonitor
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("FunctionName")
-fun DisplaySettingsPage() = ControlCenterPage(
+fun DisplaySettingsPage(
+    context: IDesktopContext
+) = ControlCenterPage(
+    context = context,
     icon = SettingsMonitor,
     name = "Display"
 ) {
@@ -22,5 +26,5 @@ fun DisplaySettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun DisplaySettingsPagePreview() = preview {
-    DisplaySettingsPage().Render()
+    DisplaySettingsPage(context).Render()
 }

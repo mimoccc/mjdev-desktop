@@ -1,6 +1,5 @@
 package org.mjdev.desktop.extensions
 
-import androidx.annotation.RestrictTo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -16,11 +15,12 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import org.mjdev.desktop.context.DesktopContextScope
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import kotlin.coroutines.CoroutineContext
 
+@Suppress("ComposableNaming")
 object LaunchedEffect {
+
     fun launch(
         context: CoroutineContext = Dispatchers.Default,
         scope: CoroutineScope = CoroutineScope(context),

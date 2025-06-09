@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -52,7 +52,6 @@ import org.mjdev.desktop.extensions.Compose.sortByRelevance
 import org.mjdev.desktop.extensions.Compose.trimIsNotEmpty
 import org.mjdev.desktop.extensions.LaunchedEffect.flowBlock
 import org.mjdev.desktop.extensions.LaunchedEffect.launchedEffect
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import org.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
 import org.mjdev.desktop.interfaces.IApp
@@ -66,7 +65,11 @@ fun AppsMenu(
     panelState: VisibilityState = rememberVisibilityState(),
     enterAnimation: EnterTransition = AppsMenuEnterAnimation,
     exitAnimation: ExitTransition = AppsMenuExitAnimation,
-    onAppClick: DesktopContextScope.(IApp) -> Unit = { app -> runAsync { app.start() } },
+    onAppClick: DesktopContextScope.(IApp) -> Unit = { app ->
+        runAsync {
+            appsManager.startApp(app)
+        }
+    },
     onAppContextMenuClick: DesktopContextScope.(IApp) -> Unit = {},
     onCategoryContextMenuClick: DesktopContextScope.(Category) -> Unit = {},
     onUserAvatarClick: () -> Unit = {},
@@ -172,14 +175,11 @@ fun AppsMenu(
                         onTooltip = onTooltip
                     )
                 }
-                Divider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(2.dp)
-                        .padding(
-                            start = 2.dp,
-                            end = 2.dp
-                        ),
+                HorizontalDivider(
+                    modifier = Modifier.padding(
+                        start = 2.dp,
+                        end = 2.dp
+                    ),
                     color = borderColor,
                     thickness = 2.dp
                 )
@@ -204,14 +204,11 @@ fun AppsMenu(
                     .wrapContentHeight()
                     .align(Alignment.BottomStart),
             ) {
-                Divider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(2.dp)
-                        .padding(
-                            start = 2.dp,
-                            end = 2.dp
-                        ),
+                HorizontalDivider(
+                    modifier = Modifier.padding(
+                        start = 2.dp,
+                        end = 2.dp
+                    ),
                     color = borderColor,
                     thickness = 2.dp
                 )

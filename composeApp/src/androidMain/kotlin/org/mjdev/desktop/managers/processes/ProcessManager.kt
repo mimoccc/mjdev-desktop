@@ -9,7 +9,7 @@
 package org.mjdev.desktop.managers.processes
 
 import org.mjdev.desktop.interfaces.IApp
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.interfaces.IProcessListener
 import org.mjdev.desktop.managers.process.IProcessManager
 

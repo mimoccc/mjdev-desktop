@@ -8,9 +8,13 @@ import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.mobile.MobileFriendly
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("FunctionName")
-fun DevicesPage() = ControlCenterPage(
+fun DevicesPage(
+    context: IDesktopContext
+) = ControlCenterPage(
+    context = context,
     icon = MobileFriendly,
     name = "Connected devices",
     condition = {
@@ -28,5 +32,5 @@ fun DevicesPage() = ControlCenterPage(
 @Preview
 @Composable
 fun DevicesPagePreview() = preview {
-    DevicesPage().Render()
+    DevicesPage(context).Render()
 }

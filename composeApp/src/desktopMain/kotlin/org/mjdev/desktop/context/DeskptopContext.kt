@@ -13,28 +13,26 @@ import coil3.request.ImageRequest
 import coil3.toBitmap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import okio.Path
 import org.mjdev.desktop.data.Category
 import org.mjdev.desktop.data.User
 import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.helpers.application.ApplicationScope
 import org.mjdev.desktop.helpers.image.ImageLoader.asyncImageLoader
+import org.mjdev.desktop.helpers.persistence.StorageProvider
 import org.mjdev.desktop.managers.palette.Palette
 import org.mjdev.desktop.helpers.system.shell.Shell
 import org.mjdev.desktop.interfaces.IApp
 import org.mjdev.desktop.managers.connectivity.IConnectivityManager
-import org.mjdev.desktop.interfaces.IDesktopContext
-import org.mjdev.desktop.interfaces.IPalette
+import org.mjdev.desktop.managers.palette.IPalette
 import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
 import org.mjdev.desktop.managers.language.Translator
 import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.ai.AiManager
-import org.mjdev.desktop.managers.ai.base.IAiManager
+import org.mjdev.desktop.managers.ai.IAiManager
 import org.mjdev.desktop.managers.ai.plugins.AiPluginGemini
 import org.mjdev.desktop.managers.ai.stt.STTPluginEmpty
-import org.mjdev.desktop.managers.ai.tts.TTSPluginDesktop
 import org.mjdev.desktop.managers.ai.tts.TTSPluginSwift
 import org.mjdev.desktop.managers.apps.IAppsManager
 import org.mjdev.desktop.managers.os.IOSManager
@@ -52,11 +50,11 @@ import java.awt.Desktop
 import java.awt.Toolkit
 import java.io.File
 import java.net.URI
-import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
 import org.mjdev.desktop.managers.keys.KeysManager
 
+@Suppress("RedundantSuspendModifier", "unused", "MemberVisibilityCanBePrivate")
 class DesktopContext(
     val application: ApplicationScope? = null,
     override val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
@@ -103,10 +101,25 @@ class DesktopContext(
         get() = runCatching {
             toolkit.screenSize.let { screen -> DpSize(screen.width.dp, screen.height.dp) }
         }.getOrNull() ?: DpSize.Zero
-    override val isLandscapeMode: Boolean
-        get() = containerSize.let { it.width > it.height }
 
-//    init {
+    init {
+        // sudo apt-get update
+        // sudo apt-get install \
+        //    libgl1-mesa-dev \
+        //    xorg-dev \
+        //    libgtk-3-dev \
+        //    libglib2.0-dev \
+        //    libwebkit2gtk-4.0-dev \
+        //    libjavafx-web-dev \
+        //    openjfx \
+        //    libwebkit2gtk-4.0-37 \
+        //    libwebkitgtk-6.0-4
+//        val javaLibPath = System.getProperty("java.library.path")
+//        System.setProperty("prism.order", "sw")
+//        System.setProperty("glass.platform", "gtk")
+//        System.setProperty("javafx.platform", "gtk")
+//        System.setProperty("quantum.multithreaded", "false")
+//        System.setProperty("java.library.path","$javaLibPath:/usr/lib/x86_64-linux-gnu/")
 //        Log.i("Got app args: $args")
 //        runCatching {
 //            windowsManager.init()
@@ -117,7 +130,7 @@ class DesktopContext(
 //        runCatching {
 //            dbus.updateEnvironment()
 //        }
-//    }
+    }
 
     override fun dispose() {
         Log.i("Cleaning up resources.")
@@ -133,13 +146,6 @@ class DesktopContext(
 //        runCatching {
 //            windowsManager.dispose()
 //        }
-    }
-
-    fun runAsync(
-        context: CoroutineContext = Dispatchers.Default,
-        block: suspend () -> Unit
-    ) {
-        scope.launch(context) { block() }
     }
 
     suspend fun openMail(emailAddress: String) = runCatching {
@@ -211,8 +217,10 @@ class DesktopContext(
         Shell.executeAndRead("/usr/bin/loginctl", "lock-sessions")
     }
 
-    override suspend fun logOut(): Unit = runAsync {
-        application?.exitApplication()
+    override suspend fun logOut() {
+        runAsync {
+            application?.exitApplication()
+        }
     }
 
     override suspend fun suspend() {
@@ -231,7 +239,7 @@ class DesktopContext(
         return false // todo
     }
 
-    override fun createManager(cls: KClass<*>): IDelegate? = when (cls) {
+    override fun createManager(cls: KClass<*>): IDelegate = when (cls) {
         IOSManager::class -> OsManager(this)
         IPalette::class -> Palette(this)
         ITranslator::class -> Translator(this)
@@ -243,6 +251,7 @@ class DesktopContext(
             pluginTTS = TTSPluginSwift(this@DesktopContext),
             pluginSTT = STTPluginEmpty(this@DesktopContext)
         )
+
         IAppsManager::class -> AppsManager(this)
         IThemeManager::class -> ThemeManager(this)
         IProcessManager::class -> ProcessManager(this)
@@ -254,7 +263,7 @@ class DesktopContext(
         Shell.executeAndRead("/usr/sbin/halt", "--reboot")
     }
 
-//    suspend fun Desktop.startApp(app: App) {
+//    suspend fun startApp(app: App) {
 //        startApp(app.desktopFile)
 //    }
 

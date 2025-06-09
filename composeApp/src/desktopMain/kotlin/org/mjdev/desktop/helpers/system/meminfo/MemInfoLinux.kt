@@ -2,7 +2,7 @@ package org.mjdev.desktop.helpers.system.meminfo
 
 import okio.Path.Companion.toPath
 import org.mjdev.desktop.extensions.PathExt.lines
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 
 class MemInfoLinux(
     context: IDesktopContext

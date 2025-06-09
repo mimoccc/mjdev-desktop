@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -42,17 +42,24 @@ import org.mjdev.desktop.helpers.compose.rememberForeverLazyListState
 import org.mjdev.desktop.icons.chat.Chat
 import org.mjdev.desktop.icons.system.ContentCopy
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.components.controlcenter.base.PersistentPageSaver
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("FunctionName")
-fun AIPage() = ControlCenterPage(
+fun AIPage(
+    context: IDesktopContext,
+) = ControlCenterPage(
+    context = context,
     icon = Chat,
     name = "Assistant",
     condition = {
-         ai.isAvailable()
+        ai.isAvailable()
+    },
+    saver = { ctx ->
+        PersistentPageSaver(ctx, "Assistant") // todo name
     }
 ) {
     val scrollState = rememberForeverLazyListState("Assistant")
-    val clipboardManager = LocalClipboardManager.current
     val questionsList = remember { mutableStateListOf<Pair<String, String>>() }
     val request = remember { mutableStateOf("") }
     val onDone: () -> Unit = {
@@ -110,14 +117,12 @@ fun AIPage() = ControlCenterPage(
                     ) {
                         TimeLineItem(
                             idx = idx,
-                            item = item,
-                            clipboardManager = clipboardManager
+                            item = item
                         )
                     }
                 }
                 TextArea(
                     modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
-                    clipboardManager = clipboardManager,
                     textState = request,
                     onDone = onDone
                 )
@@ -129,8 +134,7 @@ fun AIPage() = ControlCenterPage(
 @Composable
 fun TimeLineItem(
     idx: Int,
-    item: Pair<String, String>,
-    clipboardManager: ClipboardManager
+    item: Pair<String, String>
 ) {
     Column(
         modifier = Modifier.padding(4.dp)
@@ -142,12 +146,10 @@ fun TimeLineItem(
     ) {
         TextBlock(
             idx = idx,
-            text = item.first,
-            clipboardManager = clipboardManager
+            text = item.first
         )
         TextBlock(
-            text = item.second,
-            clipboardManager = clipboardManager
+            text = item.second
         )
     }
 }
@@ -155,9 +157,9 @@ fun TimeLineItem(
 @Composable
 fun TextBlock(
     idx: Int = -1,
-    text: String = "",
-    clipboardManager: ClipboardManager = LocalClipboardManager.current
+    text: String = ""
 ) {
+    val clipboard: ClipboardManager = LocalClipboardManager.current
     Box(
         Modifier.padding(4.dp)
             .fillMaxWidth()
@@ -180,7 +182,7 @@ fun TextBlock(
                 .clipCircle()
                 .align(Alignment.TopEnd),
             onClick = {
-                clipboardManager.setText(AnnotatedString(text))
+                clipboard.setText(AnnotatedString(text))
             },
         ) {
             Icon(
@@ -196,5 +198,5 @@ fun TextBlock(
 @Preview
 @Composable
 fun AIPagePreview() = preview {
-    AIPage().Render()
+    AIPage(context).Render()
 }

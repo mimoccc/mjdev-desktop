@@ -8,9 +8,13 @@ import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.custom.Mjdev
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("FunctionName")
-fun AboutPage() = ControlCenterPage(
+fun AboutPage(
+    context: IDesktopContext
+) = ControlCenterPage(
+    context = context,
     icon = Mjdev,
     name = "About",
     condition = { true }
@@ -23,5 +27,5 @@ fun AboutPage() = ControlCenterPage(
 @Preview
 @Composable
 fun AboutPagePreview() = preview {
-    AboutPage().Render()
+    AboutPage(context).Render()
 }

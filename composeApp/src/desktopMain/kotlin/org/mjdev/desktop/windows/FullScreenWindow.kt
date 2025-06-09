@@ -6,7 +6,7 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.unit.DpOffset
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.context.LocalDesktopContext
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
 @Suppress("FunctionName")

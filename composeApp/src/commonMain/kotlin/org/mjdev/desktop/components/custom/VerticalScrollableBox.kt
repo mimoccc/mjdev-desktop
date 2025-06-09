@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.mjdev.desktop.extensions.Compose.isLandscapeMode
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Compose.verticalTouchScrollable
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -24,7 +23,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun VerticalScrollableBox(
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.TopStart,
-    propagateMinConstraints: Boolean = isLandscapeMode(),
+    propagateMinConstraints: Boolean = false, // isLandscapeMode(),
     state: LazyListState = rememberLazyListState(),
     content: @Composable BoxScope.() -> Unit = {}
 ) = Box(

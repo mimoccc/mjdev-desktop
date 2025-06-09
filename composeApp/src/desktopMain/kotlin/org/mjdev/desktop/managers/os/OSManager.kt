@@ -12,7 +12,7 @@ import org.mjdev.desktop.managers.os.base.OSManagerStub
 import org.mjdev.desktop.managers.os.linux.OSManagerLinux
 import org.jetbrains.skiko.OS
 import org.jetbrains.skiko.hostOs
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("FunctionName")
 fun OsManager(

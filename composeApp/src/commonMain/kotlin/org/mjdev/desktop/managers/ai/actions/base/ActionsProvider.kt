@@ -16,7 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import org.mjdev.desktop.extensions.Compose.addIfNotExists
 import org.mjdev.desktop.extensions.System.currentTimeMillis
 import org.mjdev.desktop.helpers.fuzzywuzzy.FuzzySearch
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("unused")
 class ActionsProvider(

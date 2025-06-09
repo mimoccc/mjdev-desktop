@@ -8,9 +8,13 @@ import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.network.Bluetooth
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("FunctionName")
-fun BluetoothSettingsPage() = ControlCenterPage(
+fun BluetoothSettingsPage(
+    context: IDesktopContext
+) = ControlCenterPage(
+    context = context,
     icon = Bluetooth,
     name = "Bluetooth",
     condition = {
@@ -26,5 +30,5 @@ fun BluetoothSettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun BluetoothSettingsPagePreview() = preview {
-    BluetoothSettingsPage().Render()
+    BluetoothSettingsPage(context).Render()
 }

@@ -1,4 +1,4 @@
-package org.mjdev.desktop.managers.ai.base
+package org.mjdev.desktop.managers.ai
 
 import org.mjdev.desktop.managers.base.IDelegate
 

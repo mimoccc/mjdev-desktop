@@ -1,3 +1,5 @@
+//<editor-fold desc="imports">----------------------------------------------------------------------
+
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.desktop.DesktopExtension
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
@@ -12,13 +14,21 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
+//</editor-fold>------------------------------------------------------------------------------------
+
+//<editor-fold desc="plugins">----------------------------------------------------------------------
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
-//    MultiPlatformPlugin
+    alias(libs.plugins.openjfx)
 }
+
+//</editor-fold>------------------------------------------------------------------------------------
+
+//<editor-fold desc="helpers">----------------------------------------------------------------------
 
 fun NamedDomainObjectContainer<KotlinSourceSet>.getOrCreate(
     name: String
@@ -68,16 +78,44 @@ fun Project.kotlinSourceSets(
     sourceSets(config)
 }
 
+//</editor-fold>------------------------------------------------------------------------------------
+
+//<editor-fold desc="configurations">---------------------------------------------------------------
+
+// java version
 setJavaLanguageVersion(libs.versions.java.language.version)
+
+// resources config
+composeResources {
+    publicResClass = true
+    packageOfResClass = "org.mjdev.desktop.resources"
+    generateResClass = always
+}
+
+javafx {
+    version = "21.0.3"
+    modules = listOf(
+        "javafx.controls",
+        "javafx.web",
+        "javafx.graphics",
+        "javafx.media"
+    )
+}
+
+//</editor-fold>------------------------------------------------------------------------------------
+
+//<editor-fold desc="targets">----------------------------------------------------------------------
 
 targets {
     desktopTarget {
     }
+
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
+
     wasmJsTarget {
         outputModuleName = "composeApp"
         browser {
@@ -98,8 +136,13 @@ targets {
     }
 }
 
+//</editor-fold>------------------------------------------------------------------------------------
+
+//<editor-fold desc="source sets / dependencies">---------------------------------------------------
+
 kotlin {
     sourceSets {
+
         // common dependencies
         commonMain {
             dependencies {
@@ -131,12 +174,18 @@ kotlin {
                 // qr code
                 implementation(libs.qrose)
                 // json
-                implementation(libs.google.gson)
-                // desktop file linux todo move to desktop
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
+                // desktop file linux
                 implementation(libs.ini4j)
                 // tts
                 implementation(libs.tts)
                 implementation(libs.tts.compose)
+                // notification
+                // implementation("io.github.shadmanadman:knotif:0.56.0")
+                // media player
+                implementation("io.github.shadmanadman:kmpShaPlayer:1.0.2")
+                // sensors
+                //implementation("io.github.shadmanadman:KSensor:0.59.0")
                 // flowmvi
 //                implementation(libs.flowmvi.core)
 //                implementation(libs.flowmvi.compose)
@@ -175,6 +224,7 @@ kotlin {
                 implementation("com.squareup.okio:okio:3.10.2")
             }
         }
+
         // android dependencies
         androidMain {
             dependencies {
@@ -194,8 +244,11 @@ kotlin {
                 implementation(libs.accompanist.permissions)
                 // ai gemini
                 implementation(libs.sh.google.generative.ai)
+                // sensors
+                //implementation("io.github.shadmanadman:KSensor:0.59.0")
             }
         }
+
         // wasm dependencies
         wasmJsMain {
             dependencies {
@@ -207,6 +260,7 @@ kotlin {
                 implementation(libs.sh.google.generative.ai)
             }
         }
+
         // desktop dependencies
         desktopMain {
             dependencies {
@@ -230,15 +284,13 @@ kotlin {
                 implementation(libs.ini4j)
             }
         }
+
     }
 }
 
-// resources config
-composeResources {
-    publicResClass = true
-    packageOfResClass = "org.mjdev.desktop.resources"
-    generateResClass = always
-}
+//</editor-fold>------------------------------------------------------------------------------------
+
+//<editor-fold desc="platforms">--------------------------------------------------------------------
 
 // android app config
 android {
@@ -324,9 +376,9 @@ desktop {
                 TargetFormat.Rpm
             )
             buildTypes.release.proguard {
-                configurationFiles.from("compose-desktop.pro")
+                configurationFiles.from("composeApp.pro")
             }
-//                appResourcesRootDir.set(project.rootDir.resolve("resources"))
+//            appResourcesRootDir.set(project.rootDir.resolve("resources"))
         }
     }
 }
@@ -334,3 +386,5 @@ desktop {
 // wasm config
 wasmjs {
 }
+
+//</editor-fold>------------------------------------------------------------------------------------

@@ -2,7 +2,7 @@ package org.mjdev.desktop.managers.ai.tts
 
 import nl.marc_apps.tts.TextToSpeechFactory
 import nl.marc_apps.tts.experimental.ExperimentalDesktopTarget
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 
 @OptIn(ExperimentalDesktopTarget::class)
 class TTSPluginDesktop(

@@ -5,7 +5,7 @@ import okio.Path
 import okio.Path.Companion.toPath
 import org.mjdev.desktop.extensions.PathExt.lines
 import org.mjdev.desktop.icons.user.AccountCircle
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.interfaces.IUser
 import org.mjdev.desktop.interfaces.IUserDirs
 import java.io.File

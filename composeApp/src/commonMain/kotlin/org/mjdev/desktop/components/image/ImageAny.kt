@@ -16,11 +16,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
+import okio.Path
+import org.adman.kmp.player.KmpShaPlayer
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.helpers.image.ImageLoader.asyncImageLoader
 import org.mjdev.desktop.icons.image.BrokenImage
 import androidx.compose.foundation.Image as ComposeImage
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.PathExt.absolutePath
 
 @Suppress("FunctionName", "UNUSED_PARAMETER")
 @Composable
@@ -34,12 +37,12 @@ fun ImageAny(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
     // todo
-    imageLoader:ImageLoader? = asyncImageLoader(),
+    imageLoader: ImageLoader? = asyncImageLoader(),
     placeholder: @Composable () -> Unit = {}, // todo
     onLoading: () -> Unit = {},
     onFail: (error: Throwable) -> Unit = {},
     onAnimationFinish: () -> Unit = {}
-)  {
+) {
     // todo from mime
     val isGif = src.toString().trim().endsWith(".gif")
     // todo from mime
@@ -110,19 +113,17 @@ fun ImageAny(
 //            onAnimationFinish = onAnimationFinish
 //        )
 
-//        isVideo -> VideoView(
-//            modifier = modifier,
-//            src = when {
-//                src is File -> src.absolutePath
-//                else -> src.toString()
-//            },
-//            alignment = alignment,
-//            alpha = alpha,
-//            contentDescription = contentDescription,
-//            colorFilter = colorFilter,
-//            contentScale = contentScale,
-//            onVideoFinish = onAnimationFinish
-//        )
+        isVideo -> KmpShaPlayer(
+            modifier = modifier,
+            urlOrPathToFile = when {
+                src is Path -> src.absolutePath
+                else -> src.toString()
+            },
+            isLandscape = true,
+            stop = false,
+            onLoading = { onLoading() },
+            onError = onFail
+        )
 
         else -> AsyncImage(
             modifier = modifier,
@@ -131,12 +132,8 @@ fun ImageAny(
             contentScale = contentScale,
             filterQuality = filterQuality,
             imageLoader = imageLoader ?: asyncImageLoader(),
-            onLoading = {
-                onLoading()
-            },
-            onError = {
-                onFail(it.result.throwable)
-            },
+            onLoading = { onLoading() },
+            onError = { e -> onFail(e.result.throwable) },
         )
     }
 }

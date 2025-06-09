@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable

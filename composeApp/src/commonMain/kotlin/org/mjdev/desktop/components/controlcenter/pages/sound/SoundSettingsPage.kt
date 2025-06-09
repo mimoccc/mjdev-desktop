@@ -8,9 +8,13 @@ import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.settings.SettingsSound
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("FunctionName")
-fun SoundSettingsPage() = ControlCenterPage(
+fun SoundSettingsPage(
+    context: IDesktopContext
+) = ControlCenterPage(
+    context = context,
     icon = SettingsSound,
     name = "Sound",
     condition = { true } // todo sound manager
@@ -23,5 +27,5 @@ fun SoundSettingsPage() = ControlCenterPage(
 @Preview
 @Composable
 fun SoundSettingsPagePreview() = preview {
-    SoundSettingsPage().Render()
+    SoundSettingsPage(context).Render()
 }

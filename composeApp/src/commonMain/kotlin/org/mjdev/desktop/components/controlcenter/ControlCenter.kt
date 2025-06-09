@@ -17,8 +17,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -34,7 +34,6 @@ import org.mjdev.desktop.components.sliding.base.VisibilityState
 import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.orElse
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.extensions.Modifier.onLeftClick
 import org.mjdev.desktop.extensions.Modifier.onMouseEnter
 import org.mjdev.desktop.extensions.Modifier.onMousePress
@@ -79,11 +78,9 @@ fun ControlCenter(
         }
     ) { isVisible ->
         if (!isVisible) {
-            Divider(
-                modifier = Modifier.fillMaxHeight()
-                    .width(controlCenterDividerWidth),
-                color = if (isDebug) Color.Red else Color.Transparent,
-                thickness = controlCenterDividerWidth
+            VerticalDivider(
+                thickness = controlCenterDividerWidth,
+                color = if (isDebug) Color.Red else Color.Transparent
             )
         } else {
             BlurPanel(
@@ -159,11 +156,9 @@ fun ControlCenter(
                             Row(
                                 Modifier.fillMaxHeight()
                             ) {
-                                Divider(
-                                    modifier = Modifier.fillMaxHeight()
-                                        .width(2.dp),
-                                    color = borderColor,
-                                    thickness = 2.dp
+                                VerticalDivider(
+                                    thickness = 2.dp,
+                                    color = borderColor
                                 )
                                 Column(
                                     modifier = Modifier.width(controlCenterExpandedWidth),
@@ -173,18 +168,15 @@ fun ControlCenter(
                                         page.Render()
                                     }
                                 }
-                                Divider(
-                                    modifier = Modifier.fillMaxHeight()
-                                        .width(2.dp),
-                                    color = borderColor,
-                                    thickness = 2.dp
+                                VerticalDivider(
+                                    thickness = 2.dp,
+                                    color = borderColor
                                 )
                             }
                         }
-                        Divider(
-                            modifier = Modifier.fillMaxHeight().width(2.dp),
-                            color = Color.White.copy(0.1f),
-                            thickness = 2.dp
+                        VerticalDivider(
+                            thickness = 2.dp,
+                            color = Color.White.copy(0.1f)
                         )
                     }
                 }

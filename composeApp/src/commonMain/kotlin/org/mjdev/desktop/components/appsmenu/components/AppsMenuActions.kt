@@ -54,9 +54,9 @@ fun AppsMenuActions(
             onClick = {
                 onActionClick()
                 // todo : dialog
-//                runAsync(Dispatchers.Default) {
-//                    context.restart()
-//                }
+                runAsync {
+                    context.restart()
+                }
             }
         )
         ShapedIcon(
@@ -68,9 +68,9 @@ fun AppsMenuActions(
             onClick = {
                 onActionClick()
                 // todo : dialog
-//                runAsync(Dispatchers.Default) {
-//                    context.suspend()
-//                }
+                runAsync {
+                    context.suspend()
+                }
             }
         )
         ShapedIcon(
@@ -82,9 +82,9 @@ fun AppsMenuActions(
             onClick = {
                 onActionClick()
                 // todo : dialog
-//                runAsync(Dispatchers.Default) {
-//                    context.logOut()
-//                }
+                runAsync {
+                    context.logOut()
+                }
             }
         )
     }

@@ -60,8 +60,6 @@ Build on compose kotlin and jvm, multiplatform, for android, web & desktop.
   Image loader
 - [Coroutines Swing] (https://github.com/Kotlin/kotlinx.coroutines)
   Coroutines in JVM
-- [Google Gson] (https://github.com/google/gson)
-  JSON Parser
 - [FuzzyWuzzy] (https://github.com/xdrop/fuzzywuzzy)
   Fuzzy search
 - [Thechance101 Chart] (https://github.com/TheChance101/AAY-chart)

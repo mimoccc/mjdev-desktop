@@ -14,7 +14,18 @@ plugins {
     alias(libs.plugins.gradle.ktlint)
     alias(libs.plugins.manes.versions) apply false
     alias(libs.plugins.kotlin.android) apply false
+//    alias(libs.plugins.vlc.setup) apply true
 }
+
+// vlc setup
+//vlcSetup {
+//    vlcVersion = "3.0.21"
+//    shouldCompressVlcFiles = true
+//    shouldIncludeAllVlcFiles = false
+//    pathToCopyVlcLinuxFilesTo = rootDir.resolve("resources/linux/")
+//    pathToCopyVlcMacosFilesTo = rootDir.resolve("resources/macos/")
+//    pathToCopyVlcWindowsFilesTo = rootDir.resolve("resources/windows/")
+//}
 
 //dependencies {
 //    kover(project(":composeApp"))

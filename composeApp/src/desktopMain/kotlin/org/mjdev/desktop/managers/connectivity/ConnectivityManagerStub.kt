@@ -12,7 +12,7 @@ import org.mjdev.desktop.data.EthNetwork
 import org.mjdev.desktop.data.WifiNetwork
 import org.mjdev.desktop.data.BthDevice
 import org.mjdev.desktop.data.NetDevice
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 
 open class ConnectivityManagerStub(
     val context: IDesktopContext

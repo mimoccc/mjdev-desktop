@@ -16,19 +16,19 @@ import org.mjdev.desktop.data.Category
 import org.mjdev.desktop.data.User
 import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.helpers.image.ImageLoader.asyncImageLoader
+import org.mjdev.desktop.helpers.persistence.StorageProvider
 import org.mjdev.desktop.interfaces.IApp
 import org.mjdev.desktop.managers.apps.IAppsManager
 import org.mjdev.desktop.managers.connectivity.IConnectivityManager
-import org.mjdev.desktop.interfaces.IDesktopContext
 import org.mjdev.desktop.interfaces.ILocale
-import org.mjdev.desktop.interfaces.IPalette
+import org.mjdev.desktop.managers.palette.IPalette
 import org.mjdev.desktop.managers.process.IProcessManager
 import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
 import org.mjdev.desktop.managers.language.Translator
 import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.ai.AiManager
-import org.mjdev.desktop.managers.ai.base.IAiManager
+import org.mjdev.desktop.managers.ai.IAiManager
 import org.mjdev.desktop.managers.os.IOSManager
 import org.mjdev.desktop.managers.theme.IThemeManager
 import org.mjdev.desktop.managers.translations.ITranslator
@@ -60,17 +60,33 @@ class DesktopContext(
     val androidContext
         get() = context
 
+    // todo
     override var isFirstStart: Boolean = false
-    override var isInstalled: Boolean = false
+
+    override var isInstalled: Boolean = true
+
+    // todo
     override val machineName: String = ""
+
+    // todo
     override val appArgs: List<String> = emptyList()
+
+    // todo
     override val currentUser: IUser = allUsers.firstOrNull { u -> u.isLoggedIn } ?: User.DEFAULT
+
+    // todo
     override val currentLocale: ILocale = ILocale.DEFAULT
+
     override val theme: ITheme = ITheme.DEFAULT
-    override val appCategories: List<Category> = emptyList()
-    override val allApps: List<IApp> = emptyList()
-    override val favoriteApps: List<IApp> = emptyList()
-    override val isLandscapeMode: Boolean = true
+
+    override val appCategories: List<Category>
+        get() = appsManager.categories
+
+    override val allApps: List<IApp>
+        get() = appsManager.allApps
+
+    override val favoriteApps: List<IApp>
+        get() = appsManager.favoriteApps
 
     override val containerSize: DpSize = androidContext?.resources
         ?.displayMetrics

@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.DpSize
 import org.mjdev.desktop.components.sliding.base.VisibilityState
 import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import org.mjdev.desktop.context.DesktopContextScope
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
 import org.mjdev.desktop.extensions.PaddingValues.height
 import org.mjdev.desktop.helpers.animation.Animations.DesktopPanelEnterAnimation
@@ -55,6 +54,7 @@ fun DesktopPanel(
     iconSize: DpSize = DpSize(56.dp, 56.dp),
     iconPadding: PaddingValues = PaddingValues(2.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
+    iconSpace: Dp = 2.dp,
     showMenuIcon: Boolean = true,
     panelState: VisibilityState = rememberVisibilityState(),
     enterAnimation: EnterTransition = DesktopPanelEnterAnimation,
@@ -184,6 +184,7 @@ fun DesktopPanel(
                                         iconBackgroundColor = iconsTintColor,
                                         iconColorRunning = iconsTintColor.lighter(0.3f),
                                         iconSize = iconSize,
+                                        iconSpace = iconSpace,
                                         iconPadding = iconPadding,
                                         iconOuterPadding = iconOuterPadding,
                                         onTooltip = onTooltip,

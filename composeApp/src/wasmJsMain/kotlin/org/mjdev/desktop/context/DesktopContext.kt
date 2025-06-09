@@ -15,14 +15,13 @@ import org.mjdev.desktop.data.User
 import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.helpers.image.ImageLoader.asyncImageLoader
 import org.mjdev.desktop.interfaces.IApp
-import org.mjdev.desktop.interfaces.IDesktopContext
 import org.mjdev.desktop.interfaces.ILocale
-import org.mjdev.desktop.interfaces.IPalette
+import org.mjdev.desktop.managers.palette.IPalette
 import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
 import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.ai.AiManager
-import org.mjdev.desktop.managers.ai.base.IAiManager
+import org.mjdev.desktop.managers.ai.IAiManager
 import org.mjdev.desktop.managers.ai.stt.STTPluginEmpty
 import org.mjdev.desktop.managers.base.IDelegate
 import org.mjdev.desktop.managers.os.IOSManager
@@ -32,7 +31,7 @@ import org.mjdev.desktop.managers.ai.plugins.AiPluginGemini
 import org.mjdev.desktop.managers.ai.tts.TTSPluginEmpty
 import kotlin.reflect.KClass
 
-@Suppress("unused")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class DesktopContext(
     override val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     override val imageLoader: ImageLoader? = null,
@@ -50,14 +49,13 @@ class DesktopContext(
     override val appCategories: List<Category> = emptyList()
     override val allApps: List<IApp> = emptyList()
     override val favoriteApps: List<IApp> = emptyList()
-    override val isLandscapeMode: Boolean = true
 
     override val containerSize: DpSize = DpSize(0.dp, 0.dp) // todo
 
     val allUsers
         get() = runCatching {
             User.allUsers(this)
-        }.getOrNull() ?: emptyList<User>()
+        }.getOrNull() ?: emptyList()
 
     override suspend fun logOut() {
     }

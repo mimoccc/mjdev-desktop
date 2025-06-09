@@ -42,7 +42,6 @@ interface IConnectivityManager : IDelegate {
         store: Boolean = true
     ): Result<Boolean> = Result.success(false)
 
-
     companion object {
         val EMPTY = object : IConnectivityManager {
             override val allDevices: MutableMap<String, NetDevice> = mutableMapOf()
@@ -57,7 +56,6 @@ interface IConnectivityManager : IDelegate {
             override val isEthAdapterAvailable: Boolean = false
             override val isBthAdapterAvailable: Boolean = false
             override val hasConnectedDevices: Boolean = false
-
         }
     }
 }

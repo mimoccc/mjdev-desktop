@@ -10,7 +10,7 @@ package org.mjdev.desktop.managers.ai.stt
 
 import org.mjdev.desktop.managers.ai.stt.base.STTPlugin
 import org.mjdev.desktop.managers.ai.stt.base.STTListener
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("UNUSED_PARAMETER")
 class STTPluginEmpty(

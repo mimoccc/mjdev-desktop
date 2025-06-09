@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import nl.marc_apps.tts.TextToSpeechEngine
 import nl.marc_apps.tts.TextToSpeechFactory
 import org.mjdev.desktop.context.DesktopContext
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("unused")
 class TTSPluginAndroid(

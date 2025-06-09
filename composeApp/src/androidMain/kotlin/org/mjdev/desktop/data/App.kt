@@ -9,7 +9,6 @@ import android.content.pm.LauncherActivityInfo
 import android.content.pm.PackageInfo
 import android.os.Build
 import androidx.annotation.RequiresApi
-import org.mjdev.desktop.extensions.JSonExt.toJson
 import org.mjdev.desktop.interfaces.IApp
 
 

@@ -18,7 +18,7 @@ import okio.Path.Companion.toPath
 import org.mjdev.desktop.data.BthDevice
 import org.mjdev.desktop.data.NetDevice
 import org.mjdev.desktop.extensions.PathExt.all
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 
 class ConnectivityManagerLinux(
     context: IDesktopContext,
@@ -67,11 +67,11 @@ class ConnectivityManagerLinux(
         }
     )
 
-    fun rescanWifi() = Shell.executeAndReadLines(
+    private fun rescanWifi() = Shell.executeAndReadLines(
         CMD_NMCLI, *CMD_NMCLI_RESCAN
     )
 
-    fun getWifiNetworks() = Shell.executeAndReadLines(
+    private fun getWifiNetworks() = Shell.executeAndReadLines(
         CMD_NMCLI, *CMD_NMCLI_GET_NETWORKS
     ).map { ws ->
         WifiNetwork(ws.split(":"))

@@ -26,7 +26,6 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.helpers.compose.rememberForeverLazyListState
 import org.mjdev.desktop.context.DesktopContextScope
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.interfaces.IApp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

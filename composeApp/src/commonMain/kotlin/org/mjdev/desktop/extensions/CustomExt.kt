@@ -8,13 +8,17 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toLocalDateTime
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.TimeZone.Companion.currentSystemDefault
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import org.mjdev.desktop.log.Log
+import kotlin.coroutines.suspendCoroutine
 
+@Suppress("unused")
 object CustomExt {
 
     // todo
-    fun Instant.formatDate(): String {
+    private fun Instant.formatDate(): String {
         val localDateTime = this.toLocalDateTime(currentSystemDefault())
         val day = localDateTime.date.dayOfMonth.toString().padStart(2, '0')
         val month = localDateTime.date.monthNumber.toString().padStart(2, '0')
@@ -23,8 +27,8 @@ object CustomExt {
     }
 
     // todo
-    fun Instant.formatTime(): String {
-        val localDateTime = this.toLocalDateTime(TimeZone.currentSystemDefault())
+    private fun Instant.formatTime(): String {
+        val localDateTime = this.toLocalDateTime(currentSystemDefault())
         val hours = localDateTime.hour.toString().padStart(2, '0')
         val minutes = localDateTime.minute.toString().padStart(2, '0')
         val seconds = localDateTime.second.toString().padStart(2, '0')
@@ -96,5 +100,84 @@ object CustomExt {
 //        prefix: String,
 //        ignoreCase: Boolean = false
 //    ) = !trim().startsWith(prefix, ignoreCase)
+
+    suspend fun <T : Any> getAsync(
+        block: () -> T
+    ): T = suspendCoroutine { continuation ->
+        runCatching {
+            block()
+        }.onSuccess { result ->
+            continuation.resumeWith(Result.success(result))
+        }.onFailure { e ->
+            continuation.resumeWith(Result.failure(e))
+        }
+    }
+
+    inline fun <reified T> String.jsonToList(): List<T> = runCatching {
+        jsonSerializer.decodeFromString<List<T>>(this)
+    }.onFailure { err ->
+        Log.e(err)
+    }.getOrNull() ?: emptyList()
+
+    inline fun <reified T> String.to(): T? = runCatching {
+        jsonSerializer.decodeFromString<T>(this)
+    }.onFailure { err ->
+        Log.e(err)
+    }.getOrNull()
+
+    inline fun <reified T> T.asJson(): String = runCatching {
+        jsonSerializer.encodeToString(this)
+    }.onFailure { err ->
+        Log.e(err)
+    }.getOrDefault("")
+
+//    @ExperimentalSerializationApi
+//    class DynamicLookupSerializer : KSerializer<Any> {
+//        override val descriptor: SerialDescriptor = ContextualSerializer(
+//            Any::class,
+//            null,
+//            emptyArray()
+//        ).descriptor
+//
+//        @Suppress("UNCHECKED_CAST")
+//        @OptIn(InternalSerializationApi::class)
+//        override fun serialize(
+//            encoder: Encoder,
+//            value: Any
+//        ) {
+//            if (value is List<*>) {
+//                encoder.encodeSerializableValue(
+//                    ListSerializer(
+//                        DynamicLookupSerializer()
+//                    ),
+//                    value as List<Any>
+//                )
+//                return
+//            }
+//            encoder.encodeSerializableValue(
+//                encoder.serializersModule.getContextual(
+//                    value::class
+//                ) ?: value::class.serializer(),
+//                value
+//            )
+//        }
+//
+//        override fun deserialize(decoder: Decoder): Any {
+//            error("Unsupported")
+//        }
+//    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    val jsonSerializer: Json = Json {
+        allowStructuredMapKeys = true
+        coerceInputValues = true
+        useArrayPolymorphism = true
+        allowSpecialFloatingPointValues = true
+        ignoreUnknownKeys = true
+        isLenient = true
+        allowComments = true
+        allowTrailingComma = true
+        prettyPrint = true
+    }
 
 }

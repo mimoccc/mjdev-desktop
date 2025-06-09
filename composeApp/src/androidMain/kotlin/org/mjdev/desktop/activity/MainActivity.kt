@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.Scaffold
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -34,6 +34,15 @@ import org.mjdev.desktop.extensions.ComponentActivityExt.setBackgroundColor
 @Suppress("unused")
 @OptIn(ExperimentalPermissionsApi::class)
 class MainActivity : ComponentActivity() {
+//    val sensors = listOf(
+//        SensorType.ACCELEROMETER,
+//        SensorType.GYROSCOPE,
+//        SensorType.MAGNETOMETER,
+//        SensorType.BAROMETER,
+//        SensorType.STEP_COUNTER,
+//        SensorType.LOCATION
+//    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -52,6 +61,24 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+//    fun enableSensors() {
+//        runBlocking {
+//            KSensor.registerSensors(
+//                types = sensors,
+//                locationIntervalMillis = 1000L
+//            ).collect { sensorUpdate ->
+//                when (sensorUpdate) {
+//                    is SensorUpdate.Data -> Log.d(TAG, sensorUpdate.data.toString())
+//                    is SensorUpdate.Error -> Log.d(TAG, sensorUpdate.exception.toString())
+//                }
+//            }
+//        }
+//    }
+
+//    fun disableSensors() {
+//        KSensor.unregisterSensors(sensors)
+//    }
 
     companion object {
         val TAG = MainActivity::class.simpleName

@@ -8,7 +8,7 @@
 
 package org.mjdev.desktop.managers.os.base
 
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.managers.os.IOSManager
 
 open class OSManagerStub(

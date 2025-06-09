@@ -1,17 +1,18 @@
 package org.mjdev.desktop.managers.base
 
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 import kotlin.reflect.KClass
 
 class ManagerCache(
     val context: IDesktopContext
 ) {
-    val managersCache = mutableMapOf<KClass<*>, Any>()
+    val managersCache = mutableMapOf<KClass<*>, Any?>()
 
     inline fun <reified T : IDelegate> get(): T {
         val type = T::class
-        if (!managersCache.containsKey(type)) {
-            val manager = context.createManager(type)
+        var manager = if (managersCache.containsKey(type)) managersCache[type] else null
+        if (manager == null) {
+            manager = context.createManager(type)
             if (manager == null) {
                 throw (RuntimeException("No manager for ${T::class.simpleName} found."))
             } else {

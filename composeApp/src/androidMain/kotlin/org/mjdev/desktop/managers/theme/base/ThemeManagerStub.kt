@@ -8,7 +8,7 @@
 
 package org.mjdev.desktop.managers.theme.base
 
-import org.mjdev.desktop.interfaces.IDesktopContext
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.managers.theme.IThemeManager
 
 @Suppress("unused")

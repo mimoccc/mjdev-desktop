@@ -17,17 +17,10 @@ interface IProcessManager : IDisposable, IDelegate {
     companion object {
         val EMPTY = object : IProcessManager {
             override val size: Int = 0
-
             override fun hasAppProcess(app: IApp?): Boolean = false
-
-            override fun addListener(listener: IProcessListener) {
-            }
-
-            override fun removeListener(listener: IProcessListener) {
-            }
-
-            override fun dispose() {
-            }
+            override fun addListener(listener: IProcessListener) {}
+            override fun removeListener(listener: IProcessListener) {}
+            override fun dispose() {}
         }
     }
 }
