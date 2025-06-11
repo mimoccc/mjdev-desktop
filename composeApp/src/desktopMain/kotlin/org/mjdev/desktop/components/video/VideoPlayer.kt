@@ -13,7 +13,6 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer
 import uk.co.caprica.vlcj.player.embedded.videosurface.CallbackVideoSurface
 import uk.co.caprica.vlcj.player.embedded.videosurface.VideoSurfaceAdapters
 
-// todo performance
 @Composable
 actual fun VideoPlayer(
     mrl: String,
