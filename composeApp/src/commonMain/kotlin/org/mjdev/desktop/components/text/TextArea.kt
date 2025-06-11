@@ -89,7 +89,7 @@ fun TextArea(
 
 @Preview
 @Composable
-fun TextAreaPreview() {
+fun PreviewTextArea() {
     TextArea(
         textState = remember { mutableStateOf("Hello") }
     )

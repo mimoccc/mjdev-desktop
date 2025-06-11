@@ -101,6 +101,6 @@ fun BackgroundImage(
 @Suppress("unused")
 @Preview
 @Composable
-fun BackgroundImagePreview() = preview {
+fun PreviewBackgroundImage() = preview {
     BackgroundImage()
 }

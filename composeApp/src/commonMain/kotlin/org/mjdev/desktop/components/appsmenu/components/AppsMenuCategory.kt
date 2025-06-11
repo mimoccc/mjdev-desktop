@@ -93,7 +93,7 @@ fun AppsMenuCategory(
 
 @Preview
 @Composable
-fun AppsMenuCategoryPreview() = preview {
+fun PreviewAppsMenuCategory() = preview {
     AppsMenuCategory(
         modifier = Modifier.padding(8.dp)
             .background(

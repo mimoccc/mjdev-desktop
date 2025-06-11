@@ -78,7 +78,7 @@ fun TextAny(
 
 @Preview
 @Composable
-fun TextAnyPreview() = preview {
+fun PreviewTextAny() = preview {
     TextAny(
         modifier = Modifier.height(48.dp).background(Color.White),
         text = "test" // App.Test

@@ -171,6 +171,6 @@ fun MainWindow() = withDesktopContext {
 @Suppress("unused")
 @Preview
 @Composable
-fun MainWindowPreview() = preview {
+fun PreviewMainWindow() = preview {
     MainWindow()
 }

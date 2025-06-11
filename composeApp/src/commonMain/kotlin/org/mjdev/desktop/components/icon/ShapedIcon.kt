@@ -70,6 +70,6 @@ fun ShapedIcon(
 
 @Preview
 @Composable
-fun ShapedIconPreview() = preview {
+fun PreviewShapedIcon() = preview {
     ShapedIcon()
 }

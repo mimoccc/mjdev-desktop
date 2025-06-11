@@ -36,7 +36,7 @@ fun MeasureUnconstrainedView(
 
 @Preview
 @Composable
-fun MeasureUnconstrainedViewPreview() = preview {
+fun PreviewMeasureUnconstrainedView() = preview {
     MeasureUnconstrainedView({
         TextAny("test")
     }, { size ->

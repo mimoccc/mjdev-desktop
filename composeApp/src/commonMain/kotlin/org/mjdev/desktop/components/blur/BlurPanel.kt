@@ -81,6 +81,6 @@ fun BlurPanel(
 
 @Preview
 @Composable
-fun BlurPanelPreview() = preview(480, 800) {
+fun PreviewBlurPanel() = preview(480, 800) {
     BlurPanel()
 }

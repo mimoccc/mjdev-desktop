@@ -60,7 +60,7 @@ fun GuideLines(
 
 @Preview
 @Composable
-fun GuideLinesPreview() = preview(320, 320) {
+fun PreviewGuideLines() = preview(320, 320) {
     GuideLines(
         modifier = Modifier.fillMaxSize(),
         cellSize = DpSize(32.dp, 32.dp),

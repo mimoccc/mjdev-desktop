@@ -61,7 +61,7 @@ fun Card(
 
 @Preview
 @Composable
-fun CardPreview() = preview {
+fun PreviewCard() = preview {
     Card(
         modifier = Modifier.size(200.dp, 128.dp),
         colors = CardDefaults.colors(

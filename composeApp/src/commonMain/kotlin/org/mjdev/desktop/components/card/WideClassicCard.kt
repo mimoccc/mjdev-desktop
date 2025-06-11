@@ -69,7 +69,7 @@ fun WideClassicCard(
 
 @Preview
 @Composable
-fun WideClassicCardPreview() = preview {
+fun PreviewWideClassicCard() = preview {
     WideClassicCard(
         colors = CardDefaults.colors(
             containerColor = Color.White

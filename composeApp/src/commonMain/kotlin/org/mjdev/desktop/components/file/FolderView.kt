@@ -147,7 +147,7 @@ private fun rememberFiles(
 // todo
 @Preview
 @Composable
-fun FolderViewPreview() = preview {
+fun PreviewFolderView() = preview {
     FolderView(
         modifier = Modifier.fillMaxSize()
     )

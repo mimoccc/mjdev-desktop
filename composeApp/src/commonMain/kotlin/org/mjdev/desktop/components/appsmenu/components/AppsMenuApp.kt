@@ -104,7 +104,7 @@ fun AppsMenuApp(
 
 @Preview
 @Composable
-fun AppsMenuAppPreview() = preview {
+fun PreviewAppsMenuApp() = preview {
     AppsMenuApp(
         modifier = Modifier.padding(8.dp)
             .background(

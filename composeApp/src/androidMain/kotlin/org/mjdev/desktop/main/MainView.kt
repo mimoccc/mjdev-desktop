@@ -120,6 +120,6 @@ fun MainView() = withDesktopContext {
 
 @Preview(device = Devices.TABLET)
 @Composable
-fun MainViewPreview() = preview {
+fun PreviewMainView() = preview {
     MainView()
 }

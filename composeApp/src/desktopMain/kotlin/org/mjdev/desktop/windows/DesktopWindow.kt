@@ -13,7 +13,6 @@ import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.remem
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun DesktopWindow(
     controlCenterState: VisibilityState = rememberVisibilityState(),
@@ -62,4 +61,4 @@ fun DesktopWindow(
 @Suppress("unused")
 @Preview
 @Composable
-fun DesktopWindowPreview() = DesktopWindow()
+fun PreviewDesktopWindow() = DesktopWindow()

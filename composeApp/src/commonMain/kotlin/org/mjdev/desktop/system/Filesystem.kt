@@ -18,4 +18,5 @@ expect object Filesystem : okio.FileSystem {
     fun createDir(path: Path)
     fun writeText(path: Path, text: String)
     fun listFiles(path: Path): List<Path>
+    fun deleteDir(path: Path)
 }

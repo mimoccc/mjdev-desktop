@@ -39,7 +39,7 @@ fun TransparentButton(
 
 @Preview
 @Composable
-fun TransparentButtonPreview() = preview {
+fun PreviewTransparentButton() = preview {
     TransparentButton {
         Icon(
             imageVector = AccountCircle,

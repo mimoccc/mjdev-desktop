@@ -197,6 +197,6 @@ fun TextBlock(
 
 @Preview
 @Composable
-fun AIPagePreview() = preview {
+fun PreviewAIPage() = preview {
     AIPage(context).Render()
 }

@@ -81,7 +81,7 @@ fun AppsList(
 
 @Preview
 @Composable
-fun AppsListPreview() = preview(320, 640) {
+fun PreviewAppsList() = preview(320, 640) {
     AppsList(
         modifier = Modifier
             .background(

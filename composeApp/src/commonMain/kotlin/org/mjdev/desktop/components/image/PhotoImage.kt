@@ -127,6 +127,6 @@ fun PhotoImage(
 
 @Preview
 @Composable
-fun PhotoImagePreview() = preview {
+fun PreviewPhotoImage() = preview {
     PhotoImage()
 }

@@ -76,6 +76,6 @@ fun Info(
 
 @Preview
 @Composable
-fun InfoPreview() = preview(320, 320) {
+fun PreviewInfo() = preview(320, 320) {
     Info()
 }

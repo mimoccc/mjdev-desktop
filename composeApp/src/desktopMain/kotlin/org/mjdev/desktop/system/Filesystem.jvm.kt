@@ -122,4 +122,8 @@ actual object Filesystem : FileSystem() {
     actual fun listFiles(path: Path): List<Path> {
         return listOrNull(path) ?: emptyList()
     }
+
+    actual fun deleteDir(path: Path) {
+        SYSTEM.deleteRecursively(path)
+    }
 }

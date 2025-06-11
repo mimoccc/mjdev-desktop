@@ -54,6 +54,6 @@ fun GifView(
 @Suppress("unused")
 @Preview
 @Composable
-fun GifViewPreview() = preview {
+fun PreviewGifView() = preview {
     GifView()
 }

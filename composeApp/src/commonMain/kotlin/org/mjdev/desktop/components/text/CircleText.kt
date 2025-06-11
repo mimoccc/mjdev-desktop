@@ -60,6 +60,6 @@ fun CircleText(
 
 @Preview
 @Composable
-fun CircleTextPreview() = preview {
+fun PreviewCircleText() = preview {
     CircleText()
 }

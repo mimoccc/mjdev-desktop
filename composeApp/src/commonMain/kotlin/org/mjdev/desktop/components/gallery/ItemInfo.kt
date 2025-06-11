@@ -89,6 +89,6 @@ package org.mjdev.desktop.components.gallery
 //
 //@Preview
 //@Composable
-//fun ItemInfoPreview() = preview {
+//fun PreviewItemInfo() = preview {
 //    ItemInfo()
 //}

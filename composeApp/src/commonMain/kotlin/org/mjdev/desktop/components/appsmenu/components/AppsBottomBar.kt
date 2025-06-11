@@ -76,7 +76,7 @@ fun AppsBottomBar(
 
 @Preview
 @Composable
-fun AppsBottomBarPreview() = preview {
+fun PreviewAppsBottomBar() = preview {
     AppsBottomBar(
         modifier = Modifier.background(Color.SuperDarkGray)
     )

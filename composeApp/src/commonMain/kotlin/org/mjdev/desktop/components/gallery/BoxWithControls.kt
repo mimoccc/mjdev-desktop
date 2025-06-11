@@ -43,7 +43,7 @@ package org.mjdev.desktop.components.gallery
 //
 //@Preview
 //@Composable
-//fun BoxWithControlsPreview() = preview {
+//fun PreviewBoxWithControls() = preview {
 //    BoxWithControls()
 //}
 //

@@ -212,7 +212,7 @@ package org.mjdev.desktop.components.gallery
 //
 //@Preview
 //@Composable
-//fun GalleryPreview() = preview {
+//fun PreviewGallery() = preview {
 //    Gallery(
 //        list = listOf(App.Test, App.Test, App.Test),
 //    )

@@ -40,6 +40,6 @@ fun GreeterWindow() = withDesktopContext {
 
 @Preview
 @Composable
-fun GreeterWindowPreview() = preview {
+fun PreviewGreeterWindow() = preview {
     GreeterWindow()
 }

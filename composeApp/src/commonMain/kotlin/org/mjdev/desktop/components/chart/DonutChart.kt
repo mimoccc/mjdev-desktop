@@ -68,7 +68,7 @@ fun DonutChart(
 
 @Preview
 @Composable
-fun DonutChartPreview() = preview(480) {
+fun PreviewDonutChart() = preview(480) {
     DonutChart(
         textColor = Color.White,
         outerCircularColor = Color.White,

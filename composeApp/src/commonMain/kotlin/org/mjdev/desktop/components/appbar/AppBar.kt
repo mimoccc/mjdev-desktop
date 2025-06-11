@@ -126,7 +126,7 @@ fun AppBar(
 
 @Preview
 @Composable
-fun AppBarHorizontalPreview() = preview {
+fun PreviewAppBarHorizontal() = preview {
     AppBar(
         modifier = Modifier.height(48.dp)
             .background(Color.Green),
@@ -155,7 +155,7 @@ fun AppBarHorizontalPreview() = preview {
 
 @Preview
 @Composable
-fun AppBarHorizontalFillPreview() = preview {
+fun PreviewAppBarHorizontalFill() = preview {
     AppBar(
         modifier = Modifier.height(48.dp)
             .background(Color.Green),
@@ -185,7 +185,7 @@ fun AppBarHorizontalFillPreview() = preview {
 
 @Preview
 @Composable
-fun AppBarVerticalPreview() = preview {
+fun PreviewAppBarVertical() = preview {
     AppBar(
         modifier = Modifier.background(Color.Green),
         orientation = Orientation.Vertical,
@@ -213,7 +213,7 @@ fun AppBarVerticalPreview() = preview {
 
 @Preview
 @Composable
-fun AppBarVerticalFillPreview() = preview {
+fun PreviewAppBarVerticalFill() = preview {
     AppBar(
         modifier = Modifier.background(Color.Green),
         orientation = Orientation.Vertical,

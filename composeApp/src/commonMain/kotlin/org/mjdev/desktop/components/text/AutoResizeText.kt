@@ -69,7 +69,7 @@ fun AutoResizeText(
 
 @Preview
 @Composable
-fun AutoResizeTextPreview() = preview(64, 64) {
+fun PreviewAutoResizeText() = preview(64, 64) {
     AutoResizeText(
         modifier = Modifier
             .background(Color.White)

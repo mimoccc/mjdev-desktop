@@ -94,6 +94,6 @@ fun Desktop(
 // todo
 @Preview
 @Composable
-fun DesktopPreview() = preview {
+fun PreviewDesktop() = preview {
     Desktop()
 }

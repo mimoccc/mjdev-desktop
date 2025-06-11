@@ -63,6 +63,6 @@ fun MemoryChart(
 // todo
 @Preview
 @Composable
-fun MemoryChartPreview() = preview {
+fun PreviewMemoryChart() = preview {
     MemoryChart()
 }

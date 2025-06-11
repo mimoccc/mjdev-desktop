@@ -32,6 +32,6 @@ fun DesktopPanelTray(
 
 @Preview
 @Composable
-fun DesktopPanelTrayPreview() = preview {
+fun PreviewDesktopPanelTray() = preview {
     DesktopPanelTray()
 }

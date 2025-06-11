@@ -58,8 +58,8 @@ class ThemeManagerLinux(
             systemGtk3CssFile.delete()
             Log.i("Deleting : file:///${systemGtk4CssFile.absolutePath}")
             systemGtk4CssFile.delete()
-            Log.i("Deleting theme : file:///${themeDesktopFile.absolutePath}")
-            themeDesktopFile.delete()
+            Log.i("Deleting theme : file:///${themeDesktopFile.parentFile.absolutePath}")
+            themeDesktopFile.parentFile.delete()
         }.onFailure { e ->
             Log.e(e)
         }

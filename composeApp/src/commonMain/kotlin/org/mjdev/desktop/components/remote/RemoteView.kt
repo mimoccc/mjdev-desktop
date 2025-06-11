@@ -18,6 +18,6 @@ fun RemoteView(
 
 @Preview
 @Composable
-private fun PreviewRemoteView() {
+private fun PreviewPreviewRemote() {
     RemoteView()
 }

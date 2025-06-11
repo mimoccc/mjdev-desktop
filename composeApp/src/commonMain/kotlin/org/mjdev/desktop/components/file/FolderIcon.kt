@@ -97,6 +97,6 @@ fun FolderIcon(
 
 @Preview
 @Composable
-fun FolderIconPreview() = preview {
+fun PreviewFolderIcon() = preview {
     FolderIcon()
 }

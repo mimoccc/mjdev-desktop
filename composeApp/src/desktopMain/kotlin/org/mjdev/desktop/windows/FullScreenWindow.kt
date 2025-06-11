@@ -10,7 +10,6 @@ import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
 @Suppress("FunctionName")
-@Preview
 @Composable
 fun FullScreenWindow(
     name: String? = null,
@@ -50,3 +49,5 @@ fun FullScreenWindow(
         content = content
     )
 }
+
+// todo Preview

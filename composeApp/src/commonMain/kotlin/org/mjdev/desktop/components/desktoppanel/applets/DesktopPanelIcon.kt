@@ -121,7 +121,7 @@ fun DesktopPanelIcon(
 
 @Preview
 @Composable
-fun DesktopPanelIconPreview() = preview {
+fun PreviewDesktopPanelIcon() = preview {
     DesktopPanelIcon(
         app = null //App.Test
     )

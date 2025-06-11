@@ -108,6 +108,6 @@ private fun ActivityMain() {
 
 @Preview
 @Composable
-fun MainActivityPreview() = preview {
+fun PreviewMainActivity() = preview {
     ActivityMain()
 }

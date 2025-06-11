@@ -232,6 +232,6 @@ private const val NonFocusedZIndex = 0f
 
 @Preview
 @Composable
-fun SurfacePreview() = preview {
+fun PreviewSurface() = preview {
     Surface()
 }

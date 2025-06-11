@@ -101,7 +101,7 @@ fun FontIcon(
 
 @Preview
 @Composable
-fun FontIconPreview() = preview {
+fun PreviewFontIcon() = preview {
     Column {
         Column {
             FontIcon(iconId = 0)

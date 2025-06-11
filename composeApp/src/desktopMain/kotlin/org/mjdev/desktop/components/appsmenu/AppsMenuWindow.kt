@@ -146,6 +146,6 @@ fun AppsMenuWindow(
 @Suppress("unused")
 //@Preview
 @Composable
-fun AppsMenuWindowPreview() = preview {
+fun PreviewAppsMenuWindow() = preview {
     AppsMenuWindow()
 }

@@ -44,7 +44,7 @@ fun CardContent(
 
 @Preview
 @Composable
-fun CardContentPreview() = preview {
+fun PreviewCardContent() = preview {
     CardContent(
         title = {
             Text("title")

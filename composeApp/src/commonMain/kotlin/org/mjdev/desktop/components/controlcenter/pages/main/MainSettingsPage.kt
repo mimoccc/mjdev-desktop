@@ -143,6 +143,6 @@ fun MainSettingsPage(
 
 @Preview
 @Composable
-fun MainSettingsPagePreview() = preview {
+fun PreviewMainSettingsPage() = preview {
     MainSettingsPage(context).Render()
 }

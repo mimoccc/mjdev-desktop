@@ -26,6 +26,6 @@ fun AboutPage(
 
 @Preview
 @Composable
-fun AboutPagePreview() = preview {
+fun PreviewAboutPage() = preview {
     AboutPage(context).Render()
 }

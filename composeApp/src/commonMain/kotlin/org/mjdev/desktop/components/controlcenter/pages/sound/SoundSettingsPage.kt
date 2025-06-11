@@ -26,6 +26,6 @@ fun SoundSettingsPage(
 
 @Preview
 @Composable
-fun SoundSettingsPagePreview() = preview {
+fun PreviewSoundSettingsPage() = preview {
     SoundSettingsPage(context).Render()
 }

@@ -170,7 +170,7 @@ fun FocusableCard(
 
 @Preview
 @Composable
-fun FocusableCardPreview() = preview {
+fun PreviewFocusableCard() = preview {
     FocusableCard(
         item = "test",
         modifier = Modifier.size(200.dp, 128.dp),

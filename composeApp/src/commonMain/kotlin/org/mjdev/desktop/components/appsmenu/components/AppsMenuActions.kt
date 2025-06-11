@@ -92,7 +92,7 @@ fun AppsMenuActions(
 
 @Preview
 @Composable
-fun AppsMenuActionsPreview() = preview {
+fun PreviewAppsMenuActions() = preview {
     AppsMenuActions(
         modifier = Modifier
             .background(Color.SuperDarkGray, RoundedCornerShape(16.dp))

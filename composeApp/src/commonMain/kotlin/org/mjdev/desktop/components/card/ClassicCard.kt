@@ -69,7 +69,7 @@ fun ClassicCard(
 
 @Preview
 @Composable
-fun ClassicCardPreview() = preview {
+fun PreviewClassicCard() = preview {
     ClassicCard(
         modifier = Modifier.size(320.dp, 200.dp),
         colors = CardDefaults.colors(

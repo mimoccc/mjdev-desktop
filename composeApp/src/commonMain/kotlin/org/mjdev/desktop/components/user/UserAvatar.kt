@@ -162,7 +162,7 @@ fun UserAvatar(
 
 @Preview
 @Composable
-fun UserAvatarHorizontalFillPreview() = preview {
+fun PreviewUserAvatarHorizontalFill() = preview {
     UserAvatar(
         modifier = Modifier.fillMaxWidth()
             .wrapContentHeight()
@@ -173,7 +173,7 @@ fun UserAvatarHorizontalFillPreview() = preview {
 
 @Preview
 @Composable
-fun UserAvatarVerticalPreview() = preview {
+fun PreviewUserAvatarVertical() = preview {
     UserAvatar(
         modifier = Modifier.fillMaxWidth()
             .wrapContentHeight()

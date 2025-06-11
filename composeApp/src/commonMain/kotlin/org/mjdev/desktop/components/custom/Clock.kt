@@ -88,7 +88,7 @@ fun Clock(
 
 @Preview
 @Composable
-fun ClockPreview() = preview {
+fun PreviewClock() = preview {
     Clock(
         modifier = Modifier.size(320, 200)
     )

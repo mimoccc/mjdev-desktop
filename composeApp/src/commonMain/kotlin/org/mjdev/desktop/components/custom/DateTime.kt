@@ -52,7 +52,7 @@ fun DateTime(
 
 @Preview
 @Composable
-fun DateTimePreview() = preview {
+fun PreviewDateTime() = preview {
     DateTime(
         modifier = Modifier.size(320, 200)
     )

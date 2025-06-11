@@ -109,7 +109,7 @@ fun PasswordTextView(
 
 @Preview
 @Composable
-fun PasswordTextViewPreview() = preview {
+fun PreviewPasswordTextView() = preview {
     PasswordTextView(
         password = mutableStateOf("test")
     )

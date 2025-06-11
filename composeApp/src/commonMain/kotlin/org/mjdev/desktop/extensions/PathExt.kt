@@ -11,7 +11,7 @@ object PathExt {
         get() = Filesystem.absolutePath(this)
 
     val Path.bytes: ByteArray
-        get() =  Filesystem.readBytes(this)
+        get() = Filesystem.readBytes(this)
 
     val Path.extension: String
         get() = Filesystem.extension(this)
@@ -25,7 +25,41 @@ object PathExt {
     val Path.isSymbolicLink: Boolean
         get() = Filesystem.isSymbolicLink(this)
 
-    operator fun Path.get(name:String) = resolve(name, true)
+    val Path.exists: Boolean
+        get() = Filesystem.fileExists(this)
+
+    val Path.parentFile: Path
+        get() = this.parent ?: cwd
+
+    val Path.nameWithoutExtension
+        get() = name.let {
+            if (it.contains(".$extension")) it.replace(".$extension", "")
+            else it
+        }
+
+    val Path.all
+        get() = listFiles()
+
+    val Path.filesOnly
+        get() = listFiles().filter { !it.isDirectory }
+
+    val Path.dirsOnly
+        get() = listFiles().filter { it.isDirectory }
+
+    val Path.lines: List<String>
+        get() = runCatching {
+            if (this.exists) Filesystem.readLines(this)
+            else null
+        }.getOrNull() ?: emptyList()
+
+    val Path.text: String
+        get() = runCatching {
+            if (this.exists) Filesystem.readText(this)
+            else null
+        }.getOrNull().orEmpty()
+
+    operator fun Path.get(name: String) =
+        resolve(name, true)
 
     fun Path.listFilesOnly(
         ext: String? = null,
@@ -45,19 +79,17 @@ object PathExt {
         }
     } else emptyList()
 
-    val Path.exists : Boolean
-        get() = Filesystem.fileExists(this)
+    fun Path.writeText(text: String) =
+        Filesystem.writeText(this, text)
 
-    val Path.parentFile : Path
-        get() = this.parent ?: cwd
+    fun Path.mkdirs() =
+        Filesystem.createDir(this)
 
-    fun Path.writeText(text:String) = Filesystem.writeText(this, text)
+    fun Path.delete() = if (isDirectory) Filesystem.deleteDir(this)
+    else Filesystem.delete(this)
 
-    fun Path.mkdirs() = Filesystem.createDir(this)
-
-    fun Path.delete() = Filesystem.delete(this)
-
-    fun Path.createNewFile() = Filesystem.createNewFile(this)
+    fun Path.createNewFile() =
+        Filesystem.createNewFile(this)
 
 //    fun Path.listFiles(
 //        ext: String? = null
@@ -94,30 +126,4 @@ object PathExt {
         crossinline selector: (Path) -> R?
     ): List<Path> = listFiles(ext).sortedBy(selector)
 
-    val Path.nameWithoutExtension
-        get() = name.let {
-            if (it.contains(".$extension")) it.replace(".$extension", "")
-            else it
-        }
-
-    val Path.all
-        get() = listFiles()
-
-    val Path.filesOnly
-        get() = listFiles().filter { !it.isDirectory }
-
-    val Path.dirsOnly
-        get() = listFiles().filter { it.isDirectory }
-
-    val Path.lines: List<String>
-        get() = runCatching {
-            if (this.exists) Filesystem.readLines(this)
-            else null
-        }.getOrNull() ?: emptyList()
-
-    val Path.text: String
-        get() = runCatching {
-            if (this.exists) Filesystem.readText(this)
-            else null
-        }.getOrNull().orEmpty()
 }

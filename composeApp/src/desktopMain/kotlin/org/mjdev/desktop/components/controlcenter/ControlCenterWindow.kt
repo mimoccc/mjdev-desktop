@@ -131,6 +131,6 @@ fun ControlCenterWindow(
 @Suppress("unused")
 @Preview
 @Composable
-fun ControlCenterWindowPreview() = preview {
+fun PreviewControlCenterWindow() = preview {
     ControlCenterWindow()
 }

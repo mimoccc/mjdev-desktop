@@ -272,7 +272,7 @@ class AppsMenuState(
 
 @Preview
 @Composable
-fun AppsMenuPreview() = preview {
+fun PreviewAppsMenu() = preview {
     AppsMenu(
         appsMenuState = rememberAppsMenuState(true),
         panelState = rememberVisibilityState(true)

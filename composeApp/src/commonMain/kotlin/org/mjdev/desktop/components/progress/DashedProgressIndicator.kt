@@ -50,7 +50,7 @@ fun DashedProgressIndicator(
 
 @Preview
 @Composable
-fun DashedProgressIndicatorPreview() = preview {
+fun PreviewDashedProgressIndicator() = preview {
     DashedProgressIndicator(
         modifier = Modifier.fillMaxWidth()
     )

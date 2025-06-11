@@ -86,6 +86,6 @@ package org.mjdev.desktop.components.image
 //@Suppress("unused")
 //@Preview
 //@Composable
-//fun ImageColoredBackgroundPreview() = preview {
+//fun PreviewImageColoredBackground() = preview {
 //    ImageColoredBackground()
 //}

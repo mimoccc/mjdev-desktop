@@ -70,6 +70,6 @@ fun Greeter(
 
 @Preview
 @Composable
-fun GreeterPreview() = preview(320, 320) {
+fun PreviewGreeter() = preview(320, 320) {
     Greeter()
 }

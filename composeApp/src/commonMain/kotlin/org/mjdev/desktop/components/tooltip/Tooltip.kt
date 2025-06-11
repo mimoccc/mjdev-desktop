@@ -93,7 +93,7 @@ fun rememberTooltipState() = remember { TooltipState() }
 
 @Preview
 @Composable
-fun TooltipPreview() = preview {
+fun PreviewTooltip() = preview {
     Tooltip(
         tooltipState = rememberTooltipState().apply{ show("test tooltip") }
     )

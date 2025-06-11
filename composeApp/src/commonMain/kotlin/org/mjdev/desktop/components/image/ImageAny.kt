@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) Milan Jurkulák 2024.
+ *  Contact:
+ *  e: mimoccc@gmail.com
+ *  e: mj@mjdev.org
+ *  w: https://mjdev.org
+ */
+
 package org.mjdev.desktop.components.image
 
 import androidx.compose.foundation.background
@@ -17,12 +25,12 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import okio.Path
-import org.adman.kmp.player.KmpShaPlayer
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.helpers.image.ImageLoader.asyncImageLoader
 import org.mjdev.desktop.icons.image.BrokenImage
 import androidx.compose.foundation.Image as ComposeImage
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.components.video.VideoView
 import org.mjdev.desktop.extensions.PathExt.absolutePath
 
 @Suppress("FunctionName", "UNUSED_PARAMETER")
@@ -113,16 +121,14 @@ fun ImageAny(
 //            onAnimationFinish = onAnimationFinish
 //        )
 
-        isVideo -> KmpShaPlayer(
+        isVideo -> VideoView (
             modifier = modifier,
-            urlOrPathToFile = when {
+            src = when {
                 src is Path -> src.absolutePath
                 else -> src.toString()
             },
-            isLandscape = true,
-            stop = false,
             onLoading = { onLoading() },
-            onError = onFail
+            onFail = onFail
         )
 
         else -> AsyncImage(
@@ -140,6 +146,6 @@ fun ImageAny(
 
 @Preview
 @Composable
-fun ImageAnyPreview() = preview {
+fun PreviewImageAny() = preview {
     ImageAny()
 }

@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) Milan Jurkulák 2024.
+ *  Contact:
+ *  e: mimoccc@gmail.com
+ *  e: mj@mjdev.org
+ *  w: https://mjdev.org
+ */
+
 //<editor-fold desc="imports">----------------------------------------------------------------------
 
 import org.jetbrains.compose.ComposeExtension
@@ -11,7 +19,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithPresetFunctions
 import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithWasmPresetFunctions
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 //</editor-fold>------------------------------------------------------------------------------------
@@ -23,7 +30,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.openjfx)
+    alias(libs.plugins.vlc.setup)
 }
 
 //</editor-fold>------------------------------------------------------------------------------------
@@ -85,6 +92,11 @@ fun Project.kotlinSourceSets(
 // java version
 setJavaLanguageVersion(libs.versions.java.language.version)
 
+// kotlin toolchain java version
+kotlin {
+    jvmToolchain(libs.versions.java.language.version.get().toInt())
+}
+
 // resources config
 composeResources {
     publicResClass = true
@@ -92,14 +104,16 @@ composeResources {
     generateResClass = always
 }
 
-javafx {
-    version = "21.0.3"
-    modules = listOf(
-        "javafx.controls",
-        "javafx.web",
-        "javafx.graphics",
-        "javafx.media"
-    )
+// setup vlc plugin configuration
+vlcSetup {
+    val appVlcDir: String = libs.versions.vlc.dir.get()
+    val appVlcVersion: String = libs.versions.vlc.version.get()
+    vlcVersion.set(appVlcVersion)
+    shouldCompressVlcFiles = true
+    shouldIncludeAllVlcFiles = false
+    pathToCopyVlcLinuxFilesTo = rootDir.resolve(appVlcDir)
+//        pathToCopyVlcMacosFilesTo = rootDir.resolve(appVlcDir)
+//        pathToCopyVlcWindowsFilesTo = rootDir.resolve(appVlcDir)
 }
 
 //</editor-fold>------------------------------------------------------------------------------------
@@ -116,24 +130,6 @@ targets {
         }
     }
 
-    wasmJsTarget {
-        outputModuleName = "composeApp"
-        browser {
-            val rootDirPath = project.rootDir.path
-            val projectDirPath = project.projectDir.path
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(rootDirPath)
-                        add(projectDirPath)
-                    }
-                }
-            }
-        }
-        binaries.executable()
-    }
 }
 
 //</editor-fold>------------------------------------------------------------------------------------
@@ -160,11 +156,11 @@ kotlin {
                 implementation(compose.animation)
                 implementation(compose.animationGraphics)
                 implementation(compose.components.resources)
+                // lifecycles
                 implementation(libs.androidx.lifecycle.viewmodel)
                 implementation(libs.androidx.lifecycle.runtime.compose)
                 // date time
                 implementation(libs.kotlinx.datetime)
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
                 // images
                 implementation(libs.coil.compose)
                 implementation(libs.coil.svg)
@@ -174,16 +170,22 @@ kotlin {
                 // qr code
                 implementation(libs.qrose)
                 // json
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
+                implementation(libs.kotlinx.serialization.json)
                 // desktop file linux
                 implementation(libs.ini4j)
                 // tts
                 implementation(libs.tts)
                 implementation(libs.tts.compose)
+                // blur
+                implementation(libs.haze)
+                // vlc
+                implementation(libs.vlcj)
+                // mo po gettext
+                implementation(libs.gettext.lib)
+                // timeline
+                implementation(libs.jetlime)
                 // notification
                 // implementation("io.github.shadmanadman:knotif:0.56.0")
-                // media player
-                implementation("io.github.shadmanadman:kmpShaPlayer:1.0.2")
                 // sensors
                 //implementation("io.github.shadmanadman:KSensor:0.59.0")
                 // flowmvi
@@ -194,10 +196,6 @@ kotlin {
 //                implementation(libs.flowmvi.debugger)
                 // locale
 //            implementation(libs.i18n4k)
-                // mo po gettext
-                implementation(libs.gettext.lib)
-                // timeline
-                implementation(libs.jetlime)
                 // anims kottie
 //            implementation("io.github.ismai117:kottie:2.0.1")
                 // kbd
@@ -221,7 +219,7 @@ kotlin {
                 // tor
                 // implementation("io.matthewnelson.kmp-tor:runtime:2.1.0")
                 // files
-                implementation("com.squareup.okio:okio:3.10.2")
+                implementation(libs.okio)
             }
         }
 
@@ -246,18 +244,6 @@ kotlin {
                 implementation(libs.sh.google.generative.ai)
                 // sensors
                 //implementation("io.github.shadmanadman:KSensor:0.59.0")
-            }
-        }
-
-        // wasm dependencies
-        wasmJsMain {
-            dependencies {
-                // reflection
-                implementation(kotlin("reflect"))
-                // preview
-                implementation(compose.components.uiToolingPreview)
-                // ai gemini
-                implementation(libs.sh.google.generative.ai)
             }
         }
 
@@ -367,12 +353,12 @@ desktop {
                 vendor = libs.versions.app.vendor.get()
             }
             targetFormats(
-                TargetFormat.Dmg,
-                TargetFormat.Msi,
+//                TargetFormat.Dmg,
+//                TargetFormat.Msi,
                 TargetFormat.Deb,
-                TargetFormat.Exe,
+//                TargetFormat.Exe,
                 TargetFormat.AppImage,
-                TargetFormat.Pkg,
+//                TargetFormat.Pkg,
                 TargetFormat.Rpm
             )
             buildTypes.release.proguard {
@@ -381,10 +367,6 @@ desktop {
 //            appResourcesRootDir.set(project.rootDir.resolve("resources"))
         }
     }
-}
-
-// wasm config
-wasmjs {
 }
 
 //</editor-fold>------------------------------------------------------------------------------------

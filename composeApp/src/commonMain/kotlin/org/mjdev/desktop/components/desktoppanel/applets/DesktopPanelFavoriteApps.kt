@@ -78,6 +78,6 @@ fun DesktopPanelFavoriteApps(
 // todo
 @Preview
 @Composable
-fun DesktopPanelFavoriteAppsPreview() = preview {
+fun PreviewDesktopPanelFavoriteApps() = preview {
     DesktopPanelFavoriteApps()
 }

@@ -104,7 +104,7 @@ fun ItemCard(
 
 @Preview
 @Composable
-fun ItemCardPreview() = preview {
+fun PreviewItemCard() = preview {
     ItemCard(
         item = "test",
         modifier = Modifier.size(200.dp, 128.dp),

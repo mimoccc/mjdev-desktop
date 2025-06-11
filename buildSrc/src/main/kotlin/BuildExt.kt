@@ -6,6 +6,21 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
+enum class OS { WINDOWS, LINUX, MAC, OTHER }
+
+fun getCurrentOs(): OS {
+    val osName = System
+        .getProperty("os.name")
+        .lowercase()
+        .trim()
+    return when {
+        osName.startsWith("win") -> OS.WINDOWS
+        osName.startsWith("mac") -> OS.MAC
+        osName == "linux" -> OS.LINUX
+        else -> OS.OTHER
+    }
+}
+
 val Project.java: JavaPluginExtension
     get() = extensions.getByType()
 

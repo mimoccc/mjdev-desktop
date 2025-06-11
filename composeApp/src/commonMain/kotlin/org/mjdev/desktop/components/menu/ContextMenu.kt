@@ -61,6 +61,6 @@ fun ContextMenu(
 
 @Preview
 @Composable
-fun ContextMenuPreview() = preview {
+fun PreviewContextMenu() = preview {
     ContextMenu()
 }

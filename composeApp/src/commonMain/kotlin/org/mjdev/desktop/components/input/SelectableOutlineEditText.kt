@@ -111,7 +111,7 @@ fun SelectableOutlineEditText(
 
 @Preview
 @Composable
-fun SelectableOutlineEditTextPreview() = preview {
+fun PreviewSelectableOutlineEditText() = preview {
     SelectableOutlineEditText(
         value = "test"
     )

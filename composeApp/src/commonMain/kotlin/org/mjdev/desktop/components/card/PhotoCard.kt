@@ -96,7 +96,7 @@ fun computeCardWidth(
 
 @Preview
 @Composable
-fun PhotoCardPreview() = preview {
+fun PreviewPhotoCard() = preview {
     PhotoCard(
         item = "test",
         modifier = Modifier.size(200.dp, 128.dp),
