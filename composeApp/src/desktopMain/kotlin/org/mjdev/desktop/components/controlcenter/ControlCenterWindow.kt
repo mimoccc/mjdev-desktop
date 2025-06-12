@@ -100,7 +100,7 @@ fun ControlCenterWindow(
         onGlobalMouse = {
             onPointerEnter(mouseRange) {
                 runAsync {
-                    println("Pointer enter control center.")
+//                    println("Pointer enter control center.")
                     controlCenterState.showOrFocus()
                 }
             }

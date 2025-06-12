@@ -25,19 +25,19 @@ fun VideoView(
     state: VideoPlayerState = rememberVideoPlayerState(),
     onFail: (Throwable) -> Unit = { e -> Log.e(e) },
     onLoading: () -> Unit = {},
-    onVideoFinish: () -> Unit = {}
+    onVideoFinish: () -> Unit = {},
+    onLoaded: (duration: Long) -> Unit = {}
 ) = withDesktopContext {
     BoxWithConstraints(
         modifier = modifier,
         contentAlignment = alignment
     ) {
         val url = remember(src) {
-            src.toString().let {
-                if (it.startsWith("http://") || it.startsWith("https://")) it
-                else "file://$it"
+            src.toString().let { s ->
+                if (s.startsWith("http://") || s.startsWith("https://")) s
+                else "file://$s"
             }
         }
-        println("Playing: $url")
         VideoPlayer(
             modifier = Modifier.fillMaxSize(),
             mrl = url,

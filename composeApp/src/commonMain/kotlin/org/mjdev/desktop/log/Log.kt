@@ -83,5 +83,9 @@ object Log {
         }
     }
 
+    fun e(message: String, e: Throwable) {
+        e(message)
+        e(e)
+    }
 
 }

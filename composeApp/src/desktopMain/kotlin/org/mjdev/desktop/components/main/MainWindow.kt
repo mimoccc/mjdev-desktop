@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +26,6 @@ import org.mjdev.desktop.components.tooltip.rememberTooltipState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.extensions.LaunchedEffect.launchedEffect
 import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 import org.mjdev.desktop.helpers.system.shell.Shell
 import org.mjdev.desktop.log.Log
@@ -60,7 +60,7 @@ fun MainWindow() = withDesktopContext {
         else max(0.dp, panelState.height)
     }
     val onTooltip: (item: Any?) -> Unit = { item ->
-        println("Tooltip: $item")
+//        println("Tooltip: $item")
         tooltipState.show(item)
     }
     DesktopWindow(
@@ -97,7 +97,7 @@ fun MainWindow() = withDesktopContext {
         panelState = panelState,
         menuState = menuState,
         onFocusChange = { focused ->
-            Log.d("panel focus : $focused")
+//            Log.d("panel focus : $focused")
             val menuIsVisible = appsMenuState.isVisible || menuState.isVisible
             if (panelState.enabled) {
                 if (!menuIsVisible && !focused) {
@@ -124,7 +124,7 @@ fun MainWindow() = withDesktopContext {
         onTooltip = onTooltip,
         controlCenterState = controlCenterState,
         onFocusChange = { focused ->
-            Log.d("control center focus : $focused")
+//            Log.d("control center focus : $focused")
             if (!focused) {
                 runAsync {
                     controlCenterState.hide()
@@ -162,8 +162,8 @@ fun MainWindow() = withDesktopContext {
             Log.i("App ended.")
         }
     }
-    launchedEffect(menuState.isVisible) { isVisible ->
-        appsMenuState.isVisible = isVisible
+    LaunchedEffect(menuState.isVisible) {
+        appsMenuState.isVisible = menuState.isVisible
     }
 }
 

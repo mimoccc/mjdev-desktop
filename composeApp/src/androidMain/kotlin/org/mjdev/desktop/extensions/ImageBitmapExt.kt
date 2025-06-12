@@ -11,14 +11,6 @@ import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual object ImageBitmapExt {
-
-    actual fun ImageBitmap.cut(
-        x: Int,
-        y: Int,
-        width: Int,
-        height: Int
-    ): ImageBitmap = Bitmap.createBitmap(asAndroidBitmap(), x, y, width, height).asImageBitmap()
-
     actual suspend fun IDesktopContext.loadPicture(
         src: Any?
     ): ImageBitmap? = runCatching {

@@ -3,6 +3,7 @@ package org.mjdev.desktop.components.background
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -13,7 +14,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.layout.ContentScale
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import org.mjdev.desktop.components.image.ImageAny
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
@@ -22,38 +22,35 @@ import org.mjdev.desktop.extensions.Colors.SuperDarkGray
 import org.mjdev.desktop.extensions.Colors.alpha
 import org.mjdev.desktop.extensions.Compose.Crossfade
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.extensions.LaunchedEffect.launch
-import org.mjdev.desktop.extensions.LaunchedEffect.launchedEffect
 import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
 import org.mjdev.desktop.helpers.generic.Queue
 import kotlin.math.min
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.log.Log
 
-@Suppress("FunctionName")
+@Suppress("FunctionName", "CoroutineCreationDuringComposition")
 @Composable
 fun BackgroundImage(
     modifier: Modifier = Modifier,
     switchDelay: Long = 60000L,
+    fadeInDuration: Long = 60000L / 8,
+    fadeOutDuration: Long = 60000L / 4,
     backgroundColor: Color = Color.SuperDarkGray,
     images: MutableList<Any> = mutableListOf(),
-    onError: (Throwable) -> Unit = { e -> e.printStackTrace() },
+    onError: (Throwable) -> Unit = { e -> Log.e(e) },
     onChange: (bck: Any?) -> Unit = {}
 ) = withDesktopContext {
     Box(
         modifier = modifier.background(backgroundColor)
     ) {
-        val backgroundQueue by rememberComputed(images, images.size) { Queue(images) }
-        val fadeInDuration by rememberComputed(switchDelay) { switchDelay / 8 }
-        val fadeOutDuration by rememberComputed(switchDelay) { switchDelay / 4 }
-        var currentBackground by remember { mutableStateOf(backgroundQueue.nextOrNull()) }
+        val imagesSize by rememberComputed(images.size) { images.size }
+        val backgroundQueue by rememberComputed(imagesSize) { Queue(images) }
+        var currentBackground: Any by remember { mutableStateOf(backgroundColor) }
         Crossfade(
-            targetState = currentBackground ?: Color.SuperDarkGray,
+            targetState = currentBackground,
             fadeInDuration = fadeInDuration,
             fadeOutDuration = fadeOutDuration
         ) { imageValue ->
-            launch(Dispatchers.Default) {
-                onChange(currentBackground)
-            }
             ImageAny(
                 modifier = modifier,
                 contentScale = ContentScale.Crop,
@@ -61,8 +58,14 @@ fun BackgroundImage(
                 src = imageValue,
                 onFail = onError,
                 colorFilter = ContrastColorFilter(1.5f),
+                onLoading = {
+                    Log.d("Background image loading: $imageValue")
+                },
+                onLoaded = { duration ->
+                    Log.d("Background image loaded: $imageValue, duration: $duration")
+                },
                 onAnimationFinish = {
-                    currentBackground = backgroundQueue.nextOrNull()
+                    Log.d("Background image finished: $imageValue")
                 }
             )
             Box(
@@ -89,11 +92,16 @@ fun BackgroundImage(
                 )
             )
         }
-        launchedEffect(currentBackground) {
-            if (switchDelay > 0) {
-                delay(switchDelay)
-                currentBackground = backgroundQueue.nextOrNull()
-            }
+        LaunchedEffect(imagesSize) {
+            currentBackground = backgroundQueue.nextOrNull() ?: backgroundColor
+        }
+        // todo duration from movie or gif
+        LaunchedEffect(currentBackground) {
+            delay(switchDelay)
+            currentBackground = backgroundQueue.nextOrNull() ?: backgroundColor
+        }
+        LaunchedEffect(currentBackground) {
+            onChange(currentBackground)
         }
     }
 }

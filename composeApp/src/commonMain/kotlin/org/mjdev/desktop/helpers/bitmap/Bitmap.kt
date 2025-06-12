@@ -138,9 +138,6 @@
 //        }
 //    }
 //
-//    fun cut(x: Int, y: Int, w: Int, h: Int): Bitmap =
-//        Bitmap(image.getSubimage(x, y, w, h))
-//
 //    companion object {
 //        fun Bitmap.applyCanvas(block: Canvas.() -> Unit): Bitmap {
 //            Canvas(this).apply(block)

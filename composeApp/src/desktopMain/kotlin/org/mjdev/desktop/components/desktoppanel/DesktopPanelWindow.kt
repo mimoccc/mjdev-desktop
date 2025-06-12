@@ -123,7 +123,7 @@ fun DesktopPanelWindow(
         onGlobalMouse = {
             onPointerEnter(mouseRange) {
                 runAsync {
-                    println("Pointer enter desktop panel.")
+//                    println("Pointer enter desktop panel.")
                     if (menuState.isNotVisible) {
                         panelState.showOrFocus()
                     }

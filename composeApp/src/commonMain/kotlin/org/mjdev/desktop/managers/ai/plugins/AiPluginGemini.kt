@@ -23,12 +23,12 @@ class AiPluginGemini(
     private val aiModel: GeminiModel = GeminiModel.Gemini1_5Pro,
     private val scope: CoroutineScope = context.scope
 ) : AIPlugin {
-    private val key = context.keysManager.loadKey("gemini")
+    private val apiKey = context.keysManager.loadKey("gemini")
     private val generativeModel: GenerativeModel? by lazy {
-        if (key.isNotEmpty()) {
+        if (apiKey.isNotEmpty()) {
             GenerativeModel(
                 modelName = aiModel.model,
-                apiKey = key
+                apiKey = apiKey
             )
         } else null
     }
@@ -36,7 +36,7 @@ class AiPluginGemini(
     override suspend fun ask(question: String): String = scope.async {
         var error: Throwable? = null
         runCatching {
-            if (key.isEmpty()) {
+            if (apiKey.isEmpty()) {
                 throw (Exception("Error: No gemini api key provided, pleas read manual and provide Your api key."))
             } else {
                 generativeModel?.generateContent(

@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 
 @Composable
 actual fun VideoPlayer(
@@ -21,7 +22,7 @@ actual fun VideoPlayer(
     videoInfo: VideoInfo,
     state: VideoPlayerState,
     modifier: Modifier,
-) withDesktopContext {
+) = withDesktopContext {
     val time = rememberSaveable(mrl) { mutableIntStateOf(-1) }
     var videoRatio by rememberSaveable(mrl) { mutableFloatStateOf(-1f) }
     Box(modifier = modifier) {
@@ -41,7 +42,6 @@ actual fun VideoPlayer(
                                 mediaPlayer.setDataSource(context, mrl.toUri())
                                 mediaPlayer.setSurface(surface)
                                 mediaPlayer.prepareAsync()
-                                // Play video when the media source is ready for playback.
                                 mediaPlayer.setOnPreparedListener { mediaPlayer ->
                                     if (time.intValue != -1) {
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

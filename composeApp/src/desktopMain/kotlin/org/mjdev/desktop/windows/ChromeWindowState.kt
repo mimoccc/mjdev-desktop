@@ -13,7 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.mjdev.desktop.components.sliding.base.VisibilityState
-import org.mjdev.desktop.extensions.LaunchedEffect.launchedEffect
+import org.mjdev.desktop.extensions.LaunchedEffect.LaunchedEffect
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.log.Log
 import java.awt.Window
@@ -80,7 +80,7 @@ open class ChromeWindowState(
 
     override var position: DpOffset = position
         set(value) {
-            Log.i("Setting position of window : ${window?.name}")
+//            Log.i("Setting position of window : ${window?.name}")
             field = value
             if (isCreated) {
                 scope.launch {
@@ -91,7 +91,7 @@ open class ChromeWindowState(
 
     override var size: DpSize = size
         set(value) {
-            Log.i("Setting size of window : ${window?.name}, $size")
+//            Log.i("Setting size of window : ${window?.name}, $size")
             val oldSize = field
             field = value
             if (isCreated) {
@@ -126,7 +126,7 @@ open class ChromeWindowState(
     }
 
     suspend fun moveBy(x: Dp, y: Dp) = runCatching {
-        Log.i("moveBy called ($x, $y)")
+//        Log.i("moveBy called ($x, $y)")
         setPosition(
             DpOffset(
                 position.x - x,
@@ -136,12 +136,12 @@ open class ChromeWindowState(
     }.onFailure { e -> Log.e(e) }
 
     suspend fun setSize(size: DpSize) = runCatching {
-        Log.i("Setting window size : ${window?.name} to $size")
+//        Log.i("Setting window size : ${window?.name} to $size")
         window?.setSizeSafely(size, WindowPlacement.Floating)
     }.onFailure { e -> Log.e(e) }
 
     suspend fun setPosition(position: DpOffset) = runCatching {
-        Log.i("Setting window position : ${window?.name} to $position")
+//        Log.i("Setting window position : ${window?.name} to $position")
         window?.setPosition(
             WindowPosition.Absolute(position.x, position.y),
             WindowPlacement.Floating
@@ -150,7 +150,7 @@ open class ChromeWindowState(
 
     override suspend fun focus() {
         runCatching {
-            Log.i("Requesting window focus : ${window?.name}")
+//            Log.i("Requesting window focus : ${window?.name}")
             window?.toFront()
             if (!isFocused) {
                 window?.requestFocus()
@@ -207,8 +207,8 @@ open class ChromeWindowState(
             visible: Boolean,
             wnState: MutableState<Boolean>,
             state: ChromeWindowState
-        ) = launchedEffect(wnState.value) { currentState ->
-            if (wnState.value == currentState && !visible) {
+        ) = LaunchedEffect {
+            if (wnState.value == wnState.value && !visible) {
                 if (state.closeAction == WindowCloseAction.CLOSE) {
                     wnState.value = false
                 }

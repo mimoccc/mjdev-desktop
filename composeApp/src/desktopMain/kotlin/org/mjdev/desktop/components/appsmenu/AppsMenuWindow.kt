@@ -3,6 +3,7 @@ package org.mjdev.desktop.components.appsmenu
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.DpOffset
@@ -10,7 +11,6 @@ import androidx.compose.ui.unit.DpSize
 import org.mjdev.desktop.components.appsmenu.AppsMenuState.Companion.rememberAppsMenuState
 import org.mjdev.desktop.data.Category
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.extensions.LaunchedEffect.launchedEffect
 import org.mjdev.desktop.extensions.MutableStateExt.clear
 import org.mjdev.desktop.extensions.MutableStateExt.plus
 import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
@@ -71,8 +71,8 @@ fun AppsMenuWindow(
             panelState.x,
             containerSize.height - (panelState.height + appMenuMinHeight)
         ).apply {
-            println("Menu position: $this")
-            println("Menu size: $size")
+//            println("Menu position: $this")
+//            println("Menu size: $size")
         }
     }
     ChromeWindow(
@@ -135,8 +135,8 @@ fun AppsMenuWindow(
             onActionClick = onActionClick,
             onTooltip = onTooltip
         )
-        launchedEffect(menuState.isVisible) { isVisible ->
-            if (!isVisible) {
+        LaunchedEffect(menuState.isVisible) {
+            if (!menuState.isVisible) {
                 categoryState.value = null
             }
         }

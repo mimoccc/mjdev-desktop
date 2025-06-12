@@ -29,22 +29,9 @@ object LaunchedEffect {
     ) = scope.launch(context, start, block)
 
     @Composable
-    fun launchedEffect(
+    fun LaunchedEffect(
         block: suspend CoroutineScope.() -> Unit
     ) = LaunchedEffect(Unit, block)
-
-    @Composable
-    fun <T> launchedEffect(
-        key: T,
-        block: suspend CoroutineScope.(key: T) -> Unit
-    ) = LaunchedEffect(key) { block(key) }
-
-    @Composable
-    fun <T, E> launchedEffect(
-        key1: T,
-        key2: E,
-        block: suspend CoroutineScope.(key1: T, key2: E) -> Unit
-    ) = LaunchedEffect(key1, key2) { block(key1, key2) }
 
     fun runAsync(
         context: CoroutineContext = Dispatchers.Main,

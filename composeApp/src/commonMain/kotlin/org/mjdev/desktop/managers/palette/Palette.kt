@@ -19,10 +19,10 @@ import org.mjdev.desktop.extensions.Colors.darker
 import org.mjdev.desktop.extensions.Colors.isLightColor
 import org.mjdev.desktop.extensions.Colors.lighter
 import org.mjdev.desktop.extensions.Colors.nonAlphaValue
-import org.mjdev.desktop.extensions.ImageBitmapExt.cut
 import org.mjdev.desktop.extensions.ImageBitmapExt.loadPicture
 import org.mjdev.desktop.helpers.image.ImageUtils.topMostColor
 import org.mjdev.desktop.context.IDesktopContext
+import org.mjdev.desktop.extensions.cut
 
 @Suppress("CanBeParameter", "MemberVisibilityCanBePrivate", "unused")
 class Palette(
@@ -103,14 +103,10 @@ class Palette(
                 val cutPercent = 5
                 val cutWidth = (width / 100) * cutPercent
                 val cutHeight = (height / 100) * cutPercent
-                val leftTopPart = image
-                    .cut(0, 0, cutWidth, cutHeight)
-                val rightTopPart = image
-                    .cut(width - cutWidth, 0, cutWidth, cutHeight)
-                val leftBottomPart = image
-                    .cut(0, height - cutHeight, cutWidth, cutHeight)
-                val rightBottomPart = image
-                    .cut(width - cutWidth, height - cutHeight, cutWidth, cutHeight)
+                val leftTopPart = image.cut(0, 0, cutWidth, cutHeight)
+                val rightTopPart = image.cut(width - cutWidth, 0, cutWidth, cutHeight)
+                val leftBottomPart = image.cut(0, height - cutHeight, cutWidth, cutHeight)
+                val rightBottomPart = image.cut(width - cutWidth, height - cutHeight, cutWidth, cutHeight)
                 val colors = PaletteColors(
                     leftTopPart.topMostColor,
                     rightTopPart.topMostColor,

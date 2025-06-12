@@ -20,13 +20,14 @@ import org.mjdev.desktop.managers.ai.actions.ActionCalculator
 import org.mjdev.desktop.managers.ai.actions.base.ActionsProvider
 import org.mjdev.desktop.managers.ai.actions.ActionCurrentTime
 import org.mjdev.desktop.managers.ai.actions.base.ActionException.ActionNone
+import org.mjdev.desktop.managers.ai.plugins.AiPluginOpenAi
 import org.mjdev.desktop.managers.ai.plugins.base.AIPlugin
 import org.mjdev.desktop.managers.ai.tts.TTSPluginEmpty
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class AiManager(
     val context: IDesktopContext,
-    var pluginAI: AIPlugin = AiPluginGemini(context),
+    var pluginAI: AIPlugin = AiPluginEmpty(context),
     var pluginSTT: STTPlugin = STTPluginEmpty(context),
     var pluginTTS: TTSPlugin = TTSPluginEmpty(context),
     var actions: ActionsProvider = ActionsProvider(context) {

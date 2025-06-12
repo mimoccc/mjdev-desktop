@@ -208,7 +208,7 @@ fun Window.align(alignment: Alignment) {
     val location = alignment.align(size, screenSize, LayoutDirection.Ltr)
     val x = screenBounds.x + screenInsets.left + location.x
     val y = screenBounds.y + screenInsets.top + location.y
-    Log.i("Window location (aligned) set to : ($x, $y)")
+//    Log.i("Window location (aligned) set to : ($x, $y)")
     setLocation(x, y)
 }
 
@@ -218,7 +218,7 @@ fun Window.setPositionImpl(
 ) = when (position) {
     WindowPosition.PlatformDefault -> {
         val loc = platformDefaultPosition()
-        Log.i("Window location (platform) set to : (${loc.x}, ${loc.y})")
+//        Log.i("Window location (platform) set to : (${loc.x}, ${loc.y})")
         location = loc
     }
 
@@ -227,7 +227,7 @@ fun Window.setPositionImpl(
     }
 
     is WindowPosition.Absolute -> {
-        Log.i("Window location (absolute) set to : $position")
+//        Log.i("Window location (absolute) set to : $position")
         val x = try {
             position.x.value.roundToInt()
         } catch (e: Exception) {
@@ -238,7 +238,7 @@ fun Window.setPositionImpl(
         } catch (e: Exception) {
             0
         }
-        Log.i("Window location (absolute) set to : ($x,$y)")
+//        Log.i("Window location (absolute) set to : ($x,$y)")
         setLocation(x, y)
     }
 }
@@ -304,7 +304,7 @@ fun Window.setSizeImpl(size: DpSize) {
     }
     val finalWidth = if (isWidthSpecified) width else computedPreferredSize!!.width
     val finalHeight = if (isHeightSpecified) height else computedPreferredSize!!.height
-    Log.i("Window $name size set to : $finalWidth x  $finalHeight.")
+//    Log.i("Window $name size set to : $finalWidth x  $finalHeight.")
     setSize(finalWidth, finalHeight)
     revalidate()
 }

@@ -53,14 +53,14 @@ open class VisibilityState(
     }
 
     open suspend fun show() {
-        println("Show called.")
+//        println("Show called.")
         hideJob?.cancel()
         visibleState.value = true
     }
 
     open suspend fun hide(force: Boolean = false) {
         if (enabledState.value || force) {
-            println("Hide called.")
+//            println("Hide called.")
             hideJob?.cancel()
             if (hideDelay == 0L) {
                 visibleState.value = false
@@ -85,7 +85,7 @@ open class VisibilityState(
     }
 
     open suspend fun updateSize(size: DpSize) {
-        println("Size update: $size")
+//        println("Size update: $size")
         this.sizeState.value = size
     }
 

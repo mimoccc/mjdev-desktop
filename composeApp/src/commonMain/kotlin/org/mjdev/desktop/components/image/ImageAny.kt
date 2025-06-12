@@ -31,57 +31,62 @@ import org.mjdev.desktop.icons.image.BrokenImage
 import androidx.compose.foundation.Image as ComposeImage
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.video.VideoView
+import org.mjdev.desktop.extensions.Compose.runAsync
 import org.mjdev.desktop.extensions.PathExt.absolutePath
+import org.mjdev.desktop.extensions.MimeTypeExt.isGif
+import org.mjdev.desktop.extensions.MimeTypeExt.isVideo
 
-@Suppress("FunctionName", "UNUSED_PARAMETER")
+@Suppress("FunctionName", "UNUSED_PARAMETER", "ModifierParameter")
 @Composable
 fun ImageAny(
     src: Any? = null,
-    contentDescription: String? = "",
     modifier: Modifier = Modifier,
+    contentDescription: String? = "",
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    // todo
-    imageLoader: ImageLoader? = asyncImageLoader(),
+    imageLoader: ImageLoader? = asyncImageLoader(),// todo?
     placeholder: @Composable () -> Unit = {}, // todo
     onLoading: () -> Unit = {},
+    onLoaded: (duration: Long) -> Unit = {},
     onFail: (error: Throwable) -> Unit = {},
     onAnimationFinish: () -> Unit = {}
 ) {
-    // todo from mime
-    val isGif = src.toString().trim().endsWith(".gif")
-    // todo from mime
-    val isVideo = src.toString().trim().let {
-        it.endsWith(".mp4") || it.endsWith(".mpg")
-    }
     when {
-        src == null -> ComposeImage(
-            modifier = modifier,
-            imageVector = BrokenImage,
-            alignment = alignment,
-            alpha = alpha,
-            contentDescription = contentDescription,
-            colorFilter = colorFilter,
-            contentScale = contentScale
-        )
+        src == null -> {
+            runAsync { onLoaded(0L) }
+            ComposeImage(
+                modifier = modifier,
+                imageVector = BrokenImage,
+                alignment = alignment,
+                alpha = alpha,
+                contentDescription = contentDescription,
+                colorFilter = colorFilter,
+                contentScale = contentScale
+            )
+        }
 
-        src is Color -> Box(
-            modifier = modifier.background(src)
-        )
+        src is Color -> {
+            runAsync { onLoaded(0L) }
+            Box(
+                modifier = modifier.background(src)
+            )
+        }
 
-        src is Painter -> ComposeImage(
-            modifier = modifier,
-            painter = src,
-            alignment = alignment,
-            alpha = alpha,
-            contentDescription = contentDescription,
-            colorFilter = colorFilter,
-            contentScale = contentScale
-        )
-
+        src is Painter -> {
+            runAsync { onLoaded(0L) }
+            ComposeImage(
+                modifier = modifier,
+                painter = src,
+                alignment = alignment,
+                alpha = alpha,
+                contentDescription = contentDescription,
+                colorFilter = colorFilter,
+                contentScale = contentScale
+            )
+        }
 //        src is Bitmap -> ComposeImage(
 //            modifier = modifier,
 //            bitmap = src.asComposeImageBitmap(),
@@ -92,42 +97,52 @@ fun ImageAny(
 //            contentScale = contentScale
 //        )
 
-        src is ImageBitmap -> ComposeImage(
+        src is ImageBitmap -> {
+            runAsync { onLoaded(0L) }
+            ComposeImage(
+                modifier = modifier,
+                bitmap = src,
+                alignment = alignment,
+                alpha = alpha,
+                contentDescription = contentDescription,
+                colorFilter = colorFilter,
+                contentScale = contentScale
+            )
+        }
+
+        src is ImageVector -> {
+            runAsync { onLoaded(0L) }
+            ComposeImage(
+                modifier = modifier,
+                imageVector = src,
+                alignment = alignment,
+                alpha = alpha,
+                contentDescription = contentDescription,
+                colorFilter = colorFilter,
+                contentScale = contentScale
+            )
+        }
+
+        src.isGif -> GifView(
             modifier = modifier,
-            bitmap = src,
-            alignment = alignment,
-            alpha = alpha,
-            contentDescription = contentDescription,
-            colorFilter = colorFilter,
-            contentScale = contentScale
+            src = when {
+                src is Path -> src.absolutePath
+                else -> src.toString()
+            },
+            onLoading = onLoading,
+            onLoaded = onLoaded,
+            onAnimationFinish = onAnimationFinish,
+            onFail = onFail
         )
 
-        src is ImageVector -> ComposeImage(
-            modifier = modifier,
-            imageVector = src,
-            alignment = alignment,
-            alpha = alpha,
-            contentDescription = contentDescription,
-            colorFilter = colorFilter,
-            contentScale = contentScale
-        )
-
-//        isGif -> GifView(
-//            modifier = modifier,
-//            src = when {
-//                src is File -> src.absolutePath
-//                else -> src.toString()
-//            },
-//            onAnimationFinish = onAnimationFinish
-//        )
-
-        isVideo -> VideoView (
+        src.isVideo -> VideoView(
             modifier = modifier,
             src = when {
                 src is Path -> src.absolutePath
                 else -> src.toString()
             },
             onLoading = { onLoading() },
+            onLoaded = onLoaded,
             onFail = onFail
         )
 
@@ -139,6 +154,7 @@ fun ImageAny(
             filterQuality = filterQuality,
             imageLoader = imageLoader ?: asyncImageLoader(),
             onLoading = { onLoading() },
+            onSuccess = { onLoaded(0L) },
             onError = { e -> onFail(e.result.throwable) },
         )
     }

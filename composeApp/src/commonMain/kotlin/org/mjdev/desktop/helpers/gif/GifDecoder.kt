@@ -8,37 +8,33 @@
 
 package org.mjdev.desktop.helpers.gif
 
-import java.awt.AlphaComposite
-import java.awt.Color
-import java.awt.Dimension
-import java.awt.Rectangle
-import java.awt.image.BufferedImage
-import java.awt.image.DataBufferInt
-import java.io.BufferedInputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.IOException
-import java.io.InputStream
-import java.net.URL
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.unit.IntRect
+import okio.BufferedSource
+import okio.IOException
+import okio.Path
+import okio.Path.Companion.toPath
+import okio.buffer
+import okio.source
+import org.mjdev.desktop.extensions.pixels
+import org.mjdev.desktop.extensions.fillRect
+import org.mjdev.desktop.log.Log
+import org.mjdev.desktop.system.Filesystem.source
 
-@Suppress("unused", "DEPRECATION")
+// todo optimize code, remove unused variables, use better data structures
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 class GifDecoder {
-    companion object {
-        const val STATUS_OK = 0
-        const val STATUS_FORMAT_ERROR = 1
-        const val STATUS_OPEN_ERROR = 2
-    }
-
     private var status: Int = STATUS_OK
     private var width: Int = 0
     private var height: Int = 0
-    private var gctSize: Int = 0
+    private var globalColorTableSize: Int = 0
     private var loopCount: Int = 1
-    private var bgIndex: Int = 0
-    private var bgColor: Int = 0
-    private var lastBgColor: Int = 0
+    private var backgroundIndex: Int = 0
+    private var backgroundColor: Int = 0
+    private var lastBackgroundColor: Int = 0
     private var pixelAspect: Int = 0
-    private var lctSize: Int = 0
+    private var localColorTableSize: Int = 0
     private var ix: Int = 0
     private var iy: Int = 0
     private var iw: Int = 0
@@ -49,62 +45,131 @@ class GifDecoder {
     private var delay: Int = 0
     private var transIndex: Int = 0
     private val maxStackSize = 4096
-
     private var transparency: Boolean = false
-    private var lctFlag: Boolean = false
+    private var localColorTableFlag: Boolean = false
     private var interlace: Boolean = false
-    private var gctFlag: Boolean = false
-
+    private var globalColorTableFlag: Boolean = false
     private var prefix: ShortArray = shortArrayOf()
     private var suffix: ByteArray = byteArrayOf()
     private var pixelStack: ByteArray = byteArrayOf()
     private var pixels: ByteArray = byteArrayOf()
-    private var lastRect: Rectangle = Rectangle()
-
-    private var gct: IntArray = intArrayOf()
-    private var lct: IntArray = intArrayOf()
-    private var act: IntArray = intArrayOf()
-
-    private var image: BufferedImage? = null
-    private var lastImage: BufferedImage? = null
-    private var input: BufferedInputStream? = null
-
-    private val block = ByteArray(256)
-    private var frames = ArrayList<GifFrame>()
+    private var lastRect: IntRect = IntRect.Zero
+    private var globalColorTable: IntArray = intArrayOf()
+    private var localColorTable: IntArray = intArrayOf()
+    private var activeColorTable: IntArray = intArrayOf()
+    private var image: ImageBitmap? = null
+    private var lastImage: ImageBitmap? = null
+    private var input: BufferedSource? = null
+    private var block = byteArrayOf()
     private var frameCount: Int = 0
 
-    fun getDelay(n: Int): Int {
+    private val frames = mutableListOf<GifFrame>()
+
+    fun getWidth() : Int = width
+
+    fun getHeight() : Int = height
+
+    fun getDuration(): Long = frames.sumOf { f ->
+        f.delay
+    }.times(loopCount).toLong()
+
+    fun getDelay(n: Int): Long {
         delay = -1
         if (n in 0..<frameCount) {
             delay = frames[n].delay
         }
-        return delay
+        return delay.toLong()
     }
 
     fun getFrameCount(): Int = frameCount
 
-    fun getImage(): BufferedImage? = getFrame(0)
+    fun getFrame(n: Int): ImageBitmap? = if (n in 0..<frameCount) frames[n].image
+    else null
 
-    fun getLoopCount(): Int = loopCount
+    fun fromSource(
+        inp: BufferedSource?
+    ): Int {
+        init()
+        if (inp != null) {
+            input = inp
+            readHeader()
+            if (!isErr()) {
+                readContents()
+                if (frameCount < 0) {
+                    status = STATUS_FORMAT_ERROR
+                }
+            } else {
+                status = STATUS_OPEN_ERROR
+            }
+            inp.close()
+        } else {
+            status = STATUS_OPEN_ERROR
+        }
+        return status
+    }
+
+    fun fromFile(
+        path: String
+    ): Int = fromPath(path.toPath())
+
+    fun fromPath(path: Path): Int {
+        status = STATUS_OK
+        try {
+            status = fromSource(source(path).buffer())
+        } catch (e: IOException) {
+            Log.e(e)
+            status = STATUS_OPEN_ERROR
+        }
+        return status
+    }
+
+    fun fromUrl(
+        url: String
+    ): Int {
+        return try {
+            val connection = java.net.URL(url).openConnection()
+            connection.connect()
+            fromSource(connection.getInputStream().source().buffer())
+        } catch (e: Exception) {
+            Log.e(e)
+            status = STATUS_OPEN_ERROR
+            status
+        }
+    }
+
+    fun from(
+        pathOrUrl: String
+    ) : Int {
+        status = when {
+            pathOrUrl.startsWith("http://") || pathOrUrl.startsWith("https://") -> {
+                fromUrl(pathOrUrl)
+            }
+            else -> {
+                fromFile(pathOrUrl)
+            }
+        }
+        return status
+    }
 
     private fun setPixels() {
-        val dest = (image?.raster?.dataBuffer as DataBufferInt).data ?: intArrayOf()
+        val dest = image?.pixels ?: intArrayOf()
         if (lastDispose > 0) {
             if (lastDispose == 3) {
                 val n = frameCount - 2
                 lastImage = if (n > 0) getFrame(n - 1) else null
             }
             if (lastImage != null) {
-                val prev = (lastImage?.raster?.dataBuffer as DataBufferInt).data ?: intArrayOf()
+                val prev = lastImage?.pixels ?: intArrayOf()
                 System.arraycopy(prev, 0, dest, 0, width * height)
-
                 if (lastDispose == 2) {
-                    val g = image!!.createGraphics()
-                    val c: Color = if (transparency) Color(0, 0, 0, 0) else Color(lastBgColor)
-                    g.color = c
-                    g.composite = AlphaComposite.Src
-                    g.fillRect(lastRect.x, lastRect.y, lastRect.width, lastRect.height)
-                    g.dispose()
+                    image?.fillRect(
+                        lastRect.left,
+                        lastRect.top,
+                        lastRect.width,
+                        lastRect.height,
+                        if (transparency) Color(0, 0, 0, 0)
+                        else Color(lastBackgroundColor)
+                    )
                 }
             }
         }
@@ -122,7 +187,6 @@ class GifDecoder {
                             iLine = 2
                             inc = 4
                         }
-
                         4 -> {
                             iLine = 1
                             inc = 2
@@ -143,73 +207,13 @@ class GifDecoder {
                 var sx = i * iw
                 while (dx < dLim) {
                     val index = pixels[sx++].toInt() and 0xff
-                    val c = act[index]
+                    val c = activeColorTable[index]
                     if (c != 0) dest[dx] = c
                     dx++
                 }
             }
         }
-    }
-
-    fun getFrame(n: Int): BufferedImage? = if (n in 0..<frameCount) frames[n].image else null
-
-    fun getFrameSize(): Dimension = Dimension(width, height)
-
-    fun read(inp: BufferedInputStream?): Int {
-        init()
-        if (inp != null) {
-            input = inp
-            readHeader()
-            if (!err()) {
-                readContents()
-                if (frameCount < 0) {
-                    status = STATUS_FORMAT_ERROR
-                }
-            } else {
-                status = STATUS_OPEN_ERROR
-            }
-            inp.close()
-        } else {
-            status = STATUS_OPEN_ERROR
-        }
-        return status
-    }
-
-    fun read(inp: InputStream?): Int {
-        init()
-        if (inp != null) {
-            input = if (inp !is BufferedInputStream) BufferedInputStream(inp) else inp
-            readHeader()
-            if (!err()) {
-                readContents()
-                if (frameCount < 0) {
-                    status = STATUS_FORMAT_ERROR
-                }
-            } else {
-                status = STATUS_OPEN_ERROR
-            }
-            inp.close()
-        } else {
-            status = STATUS_OPEN_ERROR
-        }
-        return status
-    }
-
-    fun read(name: String): Int {
-        status = STATUS_OK
-        try {
-            val bufferedInputStream = BufferedInputStream(
-                if (name.startsWith("file:") || name.contains(":/"))
-                    URL(name).openStream()
-                else
-                    FileInputStream(File(name))
-            )
-            status = read(bufferedInputStream)
-            bufferedInputStream.close()
-        } catch (e: IOException) {
-            status = STATUS_OPEN_ERROR
-        }
-        return status
+        image?.pixels = dest
     }
 
     private fun decodeImageData() {
@@ -232,7 +236,7 @@ class GifDecoder {
         if (prefix.isEmpty()) prefix = ShortArray(maxStackSize)
         if (suffix.isEmpty()) suffix = ByteArray(maxStackSize)
         if (pixelStack.isEmpty()) pixelStack = ByteArray(maxStackSize + 1)
-        val dataSize: Int = read()
+        val dataSize: Int = readByte()
         clear = 1 shl dataSize
         val endOfInformation: Int = clear + 1
         available = clear + 2
@@ -313,80 +317,75 @@ class GifDecoder {
         for (ii in pi until numPix) pixels[ii] = 0
     }
 
-    private fun err(): Boolean = status != STATUS_OK
+    private fun isErr(): Boolean = status != STATUS_OK
 
     private fun init() {
         status = STATUS_OK
         frameCount = 0
-        frames = arrayListOf()
-        gct = intArrayOf()
-        lct = intArrayOf()
+        frames.clear()
+        globalColorTable = intArrayOf()
+        localColorTable = intArrayOf()
     }
 
-    private fun read(): Int {
+    private fun readByte(): Int {
         val curByte = try {
-            input!!.read()
+            input!!.readByte()
         } catch (e: IOException) {
+            Log.e(e)
             status = STATUS_FORMAT_ERROR
             -1
         }
-        return curByte
+        return curByte.toInt() and 0xff
     }
 
     private fun readBlock(): Int {
-        val blockSize = read()
-        var n = 0
+        val blockSize = readByte()
         if (blockSize > 0) {
             try {
-                var count: Int
-                while (n < blockSize) {
-                    count = input!!.read(block, n, blockSize - n)
-                    if (count == -1) break
-                    n += count
-                }
+                block = input!!.readByteArray(blockSize.toLong())
             } catch (e: IOException) {
-                e.printStackTrace()
-            }
-            if (n < blockSize) {
+                Log.e(e)
                 status = STATUS_FORMAT_ERROR
             }
         }
-        return n
+        return blockSize
     }
 
     private fun readColorTable(colors: Int): IntArray {
-        val bytes = 3 * colors
-        var tab: IntArray? = null
-        val c = ByteArray(bytes)
-        var n = 0
+        var tab: IntArray
         try {
-            n = input!!.read(c)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        if (n < bytes) {
-            status = STATUS_FORMAT_ERROR
-        } else {
-            tab = IntArray(256)
-            var i = 0
-            var j = 0
-            while (i < colors) {
-                val r = c[j++].toInt() and 0xff
-                val g = c[j++].toInt() and 0xff
-                val b = c[j++].toInt() and 0xff
-                tab[i++] = 0xff000000.toInt() or (r shl 16) or (g shl 8) or b
+            val bytes = 3 * colors
+            val c = input!!.readByteArray(bytes.toLong())
+            if (c.size < bytes) {
+                tab = intArrayOf()
+                status = STATUS_FORMAT_ERROR
+            } else {
+                tab = IntArray(256)
+                var i = 0
+                var j = 0
+                while (i < colors) {
+                    val r = c[j++].toInt() and 0xff
+                    val g = c[j++].toInt() and 0xff
+                    val b = c[j++].toInt() and 0xff
+                    tab[i++] = 0xff000000.toInt() or (r shl 16) or (g shl 8) or b
+                }
             }
+        } catch (e: IOException) {
+            Log.e(e)
+            tab = intArrayOf()
+            status = STATUS_FORMAT_ERROR
         }
-        return tab ?: intArrayOf()
+        return tab
     }
 
     private fun readContents() {
         var done = false
-        while (!(done || err())) {
-            when (read()) {
+        while (!(done || isErr())) {
+            val token = readByte()
+            when (token) {
                 0x2C -> readImage()
                 0x21 -> {
-                    when (read()) {
+                    when (readByte()) {
                         0xf9 -> readGraphicControlExt()
                         0xff -> {
                             readBlock()
@@ -400,11 +399,9 @@ class GifDecoder {
                                 skip()
                             }
                         }
-
                         else -> skip()
                     }
                 }
-
                 0x3b -> done = true
                 0x00 -> {}
                 else -> status = STATUS_FORMAT_ERROR
@@ -413,31 +410,31 @@ class GifDecoder {
     }
 
     private fun readGraphicControlExt() {
-        read()
-        val packed = read()
+        readByte()
+        val packed = readByte()
         dispose = (packed and 0x1c) shr 2
         if (dispose == 0) {
             dispose = 1
         }
         transparency = (packed and 1) != 0
         delay = readShort() * 10
-        transIndex = read()
-        read()
+        transIndex = readByte()
+        readByte()
     }
 
     private fun readHeader() {
         val id = StringBuilder()
         for (i in 0 until 6) {
-            id.append(read().toChar())
+            id.append(readByte().toChar())
         }
         if (!id.toString().startsWith("GIF")) {
             status = STATUS_FORMAT_ERROR
             return
         }
         readLSD()
-        if (gctFlag && !err()) {
-            gct = readColorTable(gctSize)
-            bgColor = gct[bgIndex]
+        if (globalColorTableFlag && !isErr()) {
+            globalColorTable = readColorTable(globalColorTableSize)
+            backgroundColor = globalColorTable[backgroundIndex]
         }
     }
 
@@ -446,38 +443,38 @@ class GifDecoder {
         iy = readShort()
         iw = readShort()
         ih = readShort()
-        val packed = read()
-        lctFlag = (packed and 0x80) != 0
+        val packed = readByte()
+        localColorTableFlag = (packed and 0x80) != 0
         interlace = (packed and 0x40) != 0
-        lctSize = 2 shl (packed and 7)
-        if (lctFlag) {
-            lct = readColorTable(lctSize)
-            act = lct
+        localColorTableSize = 2 shl (packed and 7)
+        if (localColorTableFlag) {
+            localColorTable = readColorTable(localColorTableSize)
+            activeColorTable = localColorTable
         } else {
-            act = gct
-            if (bgIndex == transIndex) {
-                bgColor = 0
+            activeColorTable = globalColorTable
+            if (backgroundIndex == transIndex) {
+                backgroundColor = 0
             }
         }
         var save = 0
-        if (act.isEmpty()) {
+        if (activeColorTable.isEmpty()) {
             status = STATUS_FORMAT_ERROR
             return
         }
         if (transparency) {
-            save = act[transIndex]
-            act[transIndex] = 0
+            save = activeColorTable[transIndex]
+            activeColorTable[transIndex] = 0
         }
-        if (err()) return
+        if (isErr()) return
         decodeImageData()
         skip()
-        if (err()) return
+        if (isErr()) return
         frameCount++
-        image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE)
+        image = ImageBitmap(width, height)
         setPixels()
         frames.add(GifFrame(image, delay))
         if (transparency) {
-            act[transIndex] = save
+            activeColorTable[transIndex] = save
         }
         resetFrame()
     }
@@ -485,11 +482,11 @@ class GifDecoder {
     private fun readLSD() {
         width = readShort()
         height = readShort()
-        val packed = read()
-        gctFlag = (packed and 0x80) != 0
-        gctSize = 2 shl (packed and 7)
-        bgIndex = read()
-        pixelAspect = read()
+        val packed = readByte()
+        globalColorTableFlag = (packed and 0x80) != 0
+        globalColorTableSize = 2 shl (packed and 7)
+        backgroundIndex = readByte()
+        pixelAspect = readByte()
     }
 
     private fun readNetscapeExt() {
@@ -500,25 +497,61 @@ class GifDecoder {
                 val b2 = block[2].toInt() and 0xff
                 loopCount = (b2 shl 8) or b1
             }
-        } while (blockSize > 0 && !err())
+        } while (blockSize > 0 && !isErr())
     }
 
-    private fun readShort(): Int = read() or (read() shl 8)
+    private fun readShort(): Int = (readByte() or (readByte() shl 8)) and 0xffff
 
     private fun resetFrame() {
         lastDispose = dispose
-        lastRect = Rectangle(ix, iy, iw, ih)
+        lastRect = IntRect(ix, iy, iw, ih)
         lastImage = image
-        lastBgColor = bgColor
+        lastBackgroundColor = backgroundColor
         dispose = 0
         transparency = false
         delay = 0
-        lct = intArrayOf()
+        localColorTable = intArrayOf()
     }
 
     private fun skip() {
         do {
             readBlock()
-        } while (blockSize > 0 && !err())
+        } while (blockSize > 0 && !isErr())
+    }
+
+    companion object {
+        const val STATUS_OK = 0
+        const val STATUS_FORMAT_ERROR = 1
+        const val STATUS_OPEN_ERROR = 2
+
+        fun fromSource(
+            source: BufferedSource?
+        ): GifDecoder = GifDecoder().apply {
+            fromSource(source)
+        }
+
+        fun fromPath(
+            source: Path
+        ): GifDecoder = GifDecoder().apply {
+            fromPath(source)
+        }
+
+        fun fromUrl(
+            source: String
+        ): GifDecoder = GifDecoder().apply {
+            fromUrl(source)
+        }
+
+        fun fromPathOrUrl(
+            source: String
+        ): GifDecoder = GifDecoder().apply {
+            fromPathOrUrl(source)
+        }
+
+        fun fromFile(
+            source: String
+        ): GifDecoder = GifDecoder().apply {
+            fromFile(source)
+        }
     }
 }

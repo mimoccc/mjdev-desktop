@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,7 +52,6 @@ import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContex
 import org.mjdev.desktop.extensions.Compose.sortByRelevance
 import org.mjdev.desktop.extensions.Compose.trimIsNotEmpty
 import org.mjdev.desktop.extensions.LaunchedEffect.flowBlock
-import org.mjdev.desktop.extensions.LaunchedEffect.launchedEffect
 import org.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import org.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
 import org.mjdev.desktop.interfaces.IApp
@@ -231,8 +231,8 @@ fun AppsMenu(
             }
         }
     }
-    launchedEffect(appsMenuState.isVisible) { isVisible ->
-        if (!isVisible) {
+    LaunchedEffect(appsMenuState.isVisible) {
+        if (!appsMenuState.isVisible) {
             appsMenuState.categoryState.value = null
         }
     }

@@ -184,6 +184,26 @@ kotlin {
                 implementation(libs.gettext.lib)
                 // timeline
                 implementation(libs.jetlime)
+                // html to text
+                implementation("com.github.BartoszJarocki:android-boilerpipe:-SNAPSHOT")
+                // markdown
+                implementation("io.noties.markwon:core:4.6.2")
+                // open ai
+                implementation (platform("com.aallam.openai:openai-client-bom:3.2.0"))
+                implementation ("com.aallam.openai:openai-client")
+                // ktor
+                implementation("io.ktor:ktor-client-core:2.3.9")
+                implementation("io.ktor:ktor-client-cio:2.3.9")
+                implementation("io.ktor:ktor-client-content-negotiation:2.3.9")
+                implementation("io.ktor:ktor-client-logging:2.3.9")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.9")
+                // okhttp
+                implementation("com.squareup.okhttp3:okhttp:4.12.0")
+                implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+                implementation("com.squareup.okhttp3:okhttp-urlconnection:4.12.0")
+                implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.12.0")
+                implementation("com.squareup.okhttp3:okhttp-tls:4.12.0")
+//                implementation("com.squareup.okhttp3:okhttp-ws:4.12.0")
                 // notification
                 // implementation("io.github.shadmanadman:knotif:0.56.0")
                 // sensors
