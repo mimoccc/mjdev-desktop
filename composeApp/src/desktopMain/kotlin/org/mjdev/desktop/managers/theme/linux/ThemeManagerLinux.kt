@@ -28,7 +28,6 @@ import org.mjdev.desktop.managers.theme.base.ThemeManagerStub
 import org.mjdev.desktop.extensions.PathExt.exists
 import org.mjdev.desktop.extensions.StringExt.hexRgb
 import org.mjdev.desktop.context.IDesktopContext
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.runAsync
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -54,14 +53,16 @@ class ThemeManagerLinux(
 
     override fun clearSystemTheme() {
         runCatching {
-            Log.i("Deleting : file:///${systemGtk3CssFile.absolutePath}")
+//            Log.i("Deleting : file:///${systemGtk3CssFile.absolutePath}")
             systemGtk3CssFile.delete()
-            Log.i("Deleting : file:///${systemGtk4CssFile.absolutePath}")
+//            Log.i("Deleting : file:///${systemGtk4CssFile.absolutePath}")
             systemGtk4CssFile.delete()
-            Log.i("Deleting theme : file:///${themeDesktopFile.parentFile.absolutePath}")
+//            Log.i("Deleting theme : file:///${themeDesktopFile.parentFile.absolutePath}")
             themeDesktopFile.parentFile.delete()
         }.onFailure { e ->
             Log.e(e)
+        }.onSuccess {
+            Log.d("Custom system theme cleared.")
         }
     }
 
@@ -77,7 +78,7 @@ class ThemeManagerLinux(
         }
     }
 
-    private fun createDesktopFile() = runAsync{
+    private fun createDesktopFile() = runAsync {
         runCatching {
             desktopFile(themeDesktopFile) {
                 mkDirs()

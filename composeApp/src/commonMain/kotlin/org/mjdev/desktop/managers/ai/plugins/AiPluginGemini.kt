@@ -8,50 +8,47 @@
 
 package org.mjdev.desktop.managers.ai.plugins
 
-import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
-import dev.shreyaspatil.ai.client.generativeai.type.content
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
+import community.flock.aigentic.core.agent.start
+import community.flock.aigentic.core.agent.tool.Result.Fatal
+import community.flock.aigentic.core.agent.tool.Result.Finished
+import community.flock.aigentic.core.agent.tool.Result.Stuck
+import community.flock.aigentic.core.dsl.agent
+import community.flock.aigentic.gemini.dsl.geminiModel
+import community.flock.aigentic.gemini.model.GeminiModelIdentifier
+import community.flock.aigentic.gemini.model.GeminiModelIdentifier.Gemini1_5Pro
 import org.mjdev.desktop.context.IDesktopContext
+import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.ai.plugins.base.AIPlugin
 
-/*
-* Gemini key : https://makersuite.google.com/app/apikey
-* */
+// todo tools = actions
+// Gemini key : https://makersuite.google.com/app/apikey
 class AiPluginGemini(
     private val context: IDesktopContext,
-    private val aiModel: GeminiModel = GeminiModel.Gemini1_5Pro,
-    private val scope: CoroutineScope = context.scope
+    private val apiKey: String = context.keysManager.loadKey("gemini"),
+    private val model: GeminiModelIdentifier = Gemini1_5Pro,
 ) : AIPlugin {
-    private val apiKey = context.keysManager.loadKey("gemini")
-    private val generativeModel: GenerativeModel? by lazy {
-        if (apiKey.isNotEmpty()) {
-            GenerativeModel(
-                modelName = aiModel.model,
-                apiKey = apiKey
-            )
-        } else null
+
+    override suspend fun ask(
+        question: String
+    ): String = agent {
+//        Log.d("Using api key : $apiKey")
+        geminiModel {
+            apiKey(apiKey)
+            modelIdentifier(model)
+        }
+        task("Provide information") {
+            addInstruction("Respond to user queries with relevant information.")
+        }
+        context {
+            addText(question)
+        }
+        finishResponse()
+    }.start().result.let { result ->
+        when (result) {
+            is Finished<*> -> result.response.toString()
+            is Stuck -> result.reason
+            is Fatal -> result.message
+        }
     }
 
-    override suspend fun ask(question: String): String = scope.async {
-        var error: Throwable? = null
-        runCatching {
-            if (apiKey.isEmpty()) {
-                throw (Exception("Error: No gemini api key provided, pleas read manual and provide Your api key."))
-            } else {
-                generativeModel?.generateContent(
-                    content {
-                        text(question)
-                    }
-                )?.text
-            }
-        }.onFailure { e ->
-            error = e
-        }.getOrNull() ?: error?.message ?: ""
-    }.await()
-
-    @Suppress("EnumEntryName")
-    enum class GeminiModel(val model: String) {
-        Gemini1_5Pro("gemini-1.5-pro-latest")
-    }
 }

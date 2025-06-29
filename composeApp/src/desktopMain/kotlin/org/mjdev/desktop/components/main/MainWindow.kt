@@ -79,6 +79,12 @@ fun MainWindow() = withDesktopContext {
                     modifier = Modifier.size(350.dp, 300.dp)
                         .align(Alignment.BottomEnd)
                 )
+//                WebView(
+//                    modifier = Modifier
+//                        .size(800.dp, 600.dp)
+//                        .align(Alignment.Center),
+//                    url = "https://www.google.com"
+//                )
             },
             onLeftMouseClick = {
                 runAsync {

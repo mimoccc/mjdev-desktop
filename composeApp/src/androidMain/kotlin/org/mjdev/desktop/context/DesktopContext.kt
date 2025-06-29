@@ -133,7 +133,7 @@ class DesktopContext(
         IAiManager::class -> AiManager(
             context = this,
             // todo user can configure
-            pluginAI = AiPluginOpenAi(this@DesktopContext),
+            pluginAI = AiPluginGemini(this@DesktopContext),
             pluginTTS = TTSPluginAndroid(this@DesktopContext),
             pluginSTT = STTPluginEmpty(this@DesktopContext)
         )

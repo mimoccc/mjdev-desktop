@@ -64,7 +64,7 @@ fun DesktopPanelIcon(
     }
     val isStarting by rememberCalculated(app) { app?.isStarting ?: false }
     val isRunning by rememberCalculated(app) {
-        app?.isRunning == true || processManager.hasAppProcess(app)
+        app?.isRunning == true // || processManager.hasAppProcess(app) // todo
     }
     Box(
         modifier = Modifier

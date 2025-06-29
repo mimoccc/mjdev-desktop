@@ -28,13 +28,14 @@ pluginManagement {
         maven("https://plugins.gradle.org/m2/")
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         maven("https://dl.bintray.com/kotlin/ktor")
-        google {
-            mavenContent {
-                includeGroupAndSubgroups("androidx")
-                includeGroupAndSubgroups("com.android")
-                includeGroupAndSubgroups("com.google")
-            }
-        }
+        maven("https://central.sonatype.com/repository/maven-snapshots")
+//        google {
+//            mavenContent {
+//                includeGroupAndSubgroups("androidx")
+//                includeGroupAndSubgroups("com.android")
+//                includeGroupAndSubgroups("com.google")
+//            }
+//        }
         google()
     }
 }
@@ -60,13 +61,14 @@ dependencyResolutionManagement {
         maven("https://plugins.gradle.org/m2/")
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         maven("https://dl.bintray.com/kotlin/ktor")
-        google {
-            mavenContent {
-                includeGroupAndSubgroups("androidx")
-                includeGroupAndSubgroups("com.android")
-                includeGroupAndSubgroups("com.google")
-            }
-        }
+        maven("https://central.sonatype.com/repository/maven-snapshots")
+//        google {
+//            mavenContent {
+//                includeGroupAndSubgroups("androidx")
+//                includeGroupAndSubgroups("com.android")
+//                includeGroupAndSubgroups("com.google")
+//            }
+//        }
         google()
     }
 }
@@ -84,7 +86,7 @@ include(":composeApp")
 rootProject.children.forEach { project ->
     fun configureProject(project: ProjectDescriptor) {
         project.buildFileName = "${project.name}.gradle.kts"
-        project.children.forEach { child->
+        project.children.forEach { child ->
             configureProject(child)
         }
     }

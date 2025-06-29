@@ -19,7 +19,6 @@ import org.mjdev.desktop.data.User
 import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.helpers.application.ApplicationScope
 import org.mjdev.desktop.helpers.image.ImageLoader.asyncImageLoader
-import org.mjdev.desktop.helpers.persistence.StorageProvider
 import org.mjdev.desktop.managers.palette.Palette
 import org.mjdev.desktop.helpers.system.shell.Shell
 import org.mjdev.desktop.interfaces.IApp
@@ -32,7 +31,6 @@ import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.ai.AiManager
 import org.mjdev.desktop.managers.ai.IAiManager
 import org.mjdev.desktop.managers.ai.plugins.AiPluginGemini
-import org.mjdev.desktop.managers.ai.plugins.AiPluginOpenAi
 import org.mjdev.desktop.managers.ai.stt.STTPluginEmpty
 import org.mjdev.desktop.managers.ai.tts.TTSPluginSwift
 import org.mjdev.desktop.managers.apps.IAppsManager
@@ -248,7 +246,7 @@ class DesktopContext(
         IAiManager::class -> AiManager(
             context = this,
             // todo user can configure
-            pluginAI = AiPluginOpenAi(this@DesktopContext),
+            pluginAI = AiPluginGemini(this@DesktopContext),
             pluginTTS = TTSPluginSwift(this@DesktopContext),
             pluginSTT = STTPluginEmpty(this@DesktopContext)
         )

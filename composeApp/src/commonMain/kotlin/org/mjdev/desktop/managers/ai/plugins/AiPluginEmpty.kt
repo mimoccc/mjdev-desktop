@@ -15,6 +15,9 @@ import org.mjdev.desktop.managers.ai.plugins.base.AIPlugin
 class AiPluginEmpty(
     context: IDesktopContext
 ) : AIPlugin {
-    override suspend fun ask(question: String): String =
-        "No a.i. provider selected please read manual."
+
+    override suspend fun ask(
+        question: String
+    ): String = "No a.i. provider selected please read manual."
+
 }

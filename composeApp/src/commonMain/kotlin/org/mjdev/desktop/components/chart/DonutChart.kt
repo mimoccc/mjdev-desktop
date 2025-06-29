@@ -61,7 +61,7 @@ fun DonutChart(
     LaunchedEffect(Unit) {
         while (isActive) {
             delay(refreshTimeout)
-            needRefresh = currentTimeMillis()
+            needRefresh = currentTimeMillis
         }
     }
 }

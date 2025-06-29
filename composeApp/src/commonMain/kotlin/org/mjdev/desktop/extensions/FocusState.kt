@@ -87,6 +87,7 @@ object FocusState {
         }
     )
 
+    @Suppress("SuspiciousModifierThen")
     @Composable
     fun Modifier.requestFocusOnTouch(
         focusRequester: FocusRequester,

@@ -5,21 +5,33 @@ import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.TimeZone.Companion.currentSystemDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import org.mjdev.desktop.extensions.System.currentTime
 import org.mjdev.desktop.log.Log
 import kotlin.coroutines.suspendCoroutine
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 @Suppress("unused")
 object CustomExt {
 
+//    fun runSafe(
+//        shouldLog: Boolean = true,
+//        block: () -> Unit
+//    ) = runCatching {
+//        block()
+//    }.onFailure { err ->
+//        if (shouldLog) Log.e(err)
+//    }
+
     // todo
+
     private fun Instant.formatDate(): String {
-        val localDateTime = this.toLocalDateTime(currentSystemDefault())
+        val localDateTime = toLocalDateTime(currentSystemDefault())
         val day = localDateTime.date.dayOfMonth.toString().padStart(2, '0')
         val month = localDateTime.date.monthNumber.toString().padStart(2, '0')
         val year = localDateTime.date.year.toString()
@@ -28,7 +40,7 @@ object CustomExt {
 
     // todo
     private fun Instant.formatTime(): String {
-        val localDateTime = this.toLocalDateTime(currentSystemDefault())
+        val localDateTime = toLocalDateTime(currentSystemDefault())
         val hours = localDateTime.hour.toString().padStart(2, '0')
         val minutes = localDateTime.minute.toString().padStart(2, '0')
         val seconds = localDateTime.second.toString().padStart(2, '0')
@@ -42,7 +54,7 @@ object CustomExt {
                 var date = "1.1.1970"
                 do {
                     // todo
-                    Clock.System.now().formatDate().also { t ->
+                    currentTime.formatDate().also { t ->
                         if (date != t) {
                             date = t
                             send(date)
@@ -59,7 +71,7 @@ object CustomExt {
             launch {
                 var time = "00:00:00"
                 do {
-                    Clock.System.now().formatTime().also { t ->
+                    currentTime.formatTime().also { t ->
                         if (time != t) {
                             time = t
                             send(time)

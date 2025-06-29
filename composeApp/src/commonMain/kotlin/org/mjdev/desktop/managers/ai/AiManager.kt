@@ -15,12 +15,10 @@ import org.mjdev.desktop.managers.ai.tts.base.TTSPlugin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.mjdev.desktop.context.IDesktopContext
-import org.mjdev.desktop.managers.ai.plugins.AiPluginGemini
 import org.mjdev.desktop.managers.ai.actions.ActionCalculator
 import org.mjdev.desktop.managers.ai.actions.base.ActionsProvider
 import org.mjdev.desktop.managers.ai.actions.ActionCurrentTime
 import org.mjdev.desktop.managers.ai.actions.base.ActionException.ActionNone
-import org.mjdev.desktop.managers.ai.plugins.AiPluginOpenAi
 import org.mjdev.desktop.managers.ai.plugins.base.AIPlugin
 import org.mjdev.desktop.managers.ai.tts.TTSPluginEmpty
 

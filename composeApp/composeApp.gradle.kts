@@ -31,6 +31,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.vlc.setup)
+    alias(libs.plugins.devtools.ksp)
 }
 
 //</editor-fold>------------------------------------------------------------------------------------
@@ -51,11 +52,6 @@ fun KotlinTargetContainerWithPresetFunctions.desktopTarget(
     configure.execute(this)
 }
 
-@OptIn(ExperimentalWasmDsl::class)
-fun KotlinTargetContainerWithWasmPresetFunctions.wasmJsTarget(
-    configure: Action<KotlinWasmJsTargetDsl>
-) = wasmJs(configure)
-
 val Project.compose: ComposeExtension
     get() = extensions.getByType()
 
@@ -70,20 +66,6 @@ fun Project.composeResources(
 fun targets(
     config: Action<KotlinMultiplatformExtension>
 ) = kotlin(config)
-
-// todo
-@Suppress("UNUSED_PARAMETER", "UnusedReceiverParameter")
-fun Project.wasmjs(config: DesktopExtension.() -> Unit) {
-    // todo
-//    compose.wasmJs(config)
-}
-
-// todo
-fun Project.kotlinSourceSets(
-    config: Action<NamedDomainObjectContainer<KotlinSourceSet>>
-) = with(kotlin) {
-    sourceSets(config)
-}
 
 //</editor-fold>------------------------------------------------------------------------------------
 
@@ -129,7 +111,6 @@ targets {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-
 }
 
 //</editor-fold>------------------------------------------------------------------------------------
@@ -173,6 +154,8 @@ kotlin {
                 implementation(libs.kotlinx.serialization.json)
                 // desktop file linux
                 implementation(libs.ini4j)
+                // files
+                implementation(libs.okio)
                 // tts
                 implementation(libs.tts)
                 implementation(libs.tts.compose)
@@ -185,35 +168,39 @@ kotlin {
                 // timeline
                 implementation(libs.jetlime)
                 // html to text
-                implementation("com.github.BartoszJarocki:android-boilerpipe:-SNAPSHOT")
+                implementation(libs.html2text)
                 // markdown
-                implementation("io.noties.markwon:core:4.6.2")
-                // open ai
-                implementation (platform("com.aallam.openai:openai-client-bom:3.2.0"))
-                implementation ("com.aallam.openai:openai-client")
+                implementation(libs.markwon)
+                // strings
+                implementation(libs.human.readable)
+                // alerts
+                implementation(libs.alert.kmp)
+                // ai plugins
+                implementation(libs.flock.aigentic.core)
+                implementation(libs.flock.aigentic.openai)
+                implementation(libs.flock.aigentic.gemini)
+                implementation(libs.flock.aigentic.ollama)
+                implementation(libs.flock.aigentic.vertexai)
+                implementation(libs.flock.aigentic.http)
+                implementation(libs.flock.aigentic.openapi)
+//                ksp("community.flock.aigentic:ksp-processor:0.1.0")
                 // ktor
-                implementation("io.ktor:ktor-client-core:2.3.9")
-                implementation("io.ktor:ktor-client-cio:2.3.9")
-                implementation("io.ktor:ktor-client-content-negotiation:2.3.9")
-                implementation("io.ktor:ktor-client-logging:2.3.9")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.9")
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.cio)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.ktor.serialization.kotlinx.json)
                 // okhttp
-                implementation("com.squareup.okhttp3:okhttp:4.12.0")
-                implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-                implementation("com.squareup.okhttp3:okhttp-urlconnection:4.12.0")
-                implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.12.0")
-                implementation("com.squareup.okhttp3:okhttp-tls:4.12.0")
+                implementation(libs.okhttp3.client)
+                implementation(libs.okhttp3.logging.interceptor)
+                implementation(libs.okhttp3.urlconnection)
+                implementation(libs.okhttp3.dnsoverhttps)
+                implementation(libs.okhttp3.tls)
 //                implementation("com.squareup.okhttp3:okhttp-ws:4.12.0")
                 // notification
                 // implementation("io.github.shadmanadman:knotif:0.56.0")
                 // sensors
                 //implementation("io.github.shadmanadman:KSensor:0.59.0")
-                // flowmvi
-//                implementation(libs.flowmvi.core)
-//                implementation(libs.flowmvi.compose)
-//                implementation(libs.flowmvi.android)
-//                implementation(libs.flowmvi.savedstate)
-//                implementation(libs.flowmvi.debugger)
                 // locale
 //            implementation(libs.i18n4k)
                 // anims kottie
@@ -231,15 +218,8 @@ kotlin {
 //            implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc10")
 //                implementation (libs.popkorn)
 //                kapt(libs.popkorn.compiler)
-//                implementation("io.github.khubaibkhan4:mediaplayer-kmp:2.0.6")
-                // strings
-                implementation(libs.human.readable)
-                // alerts
-                implementation(libs.alert.kmp)
                 // tor
                 // implementation("io.matthewnelson.kmp-tor:runtime:2.1.0")
-                // files
-                implementation(libs.okio)
             }
         }
 
@@ -260,8 +240,6 @@ kotlin {
                 implementation(libs.androidx.core.splashscreen)
                 // permissions
                 implementation(libs.accompanist.permissions)
-                // ai gemini
-                implementation(libs.sh.google.generative.ai)
                 // sensors
                 //implementation("io.github.shadmanadman:KSensor:0.59.0")
             }
@@ -282,8 +260,6 @@ kotlin {
                 implementation(libs.okhttp3.client)
                 // images okhttp
                 implementation(libs.coil.okhttp)
-                // ai gemini
-                implementation(libs.sh.google.generative.ai)
                 // chatgpt
                 implementation(libs.ychat)
                 // desktop files
@@ -341,6 +317,7 @@ desktop {
     group = libs.versions.app.pkg.name.get()
     version = libs.versions.app.pkg.version.get()
     application {
+        jvmArgs("-Dprism.order=sw")
         mainClass = "org.mjdev.desktop.main.MainKt"
         nativeDistributions {
             packageName = libs.versions.app.name.get()

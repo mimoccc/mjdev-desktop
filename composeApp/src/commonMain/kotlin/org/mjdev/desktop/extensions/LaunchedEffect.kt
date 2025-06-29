@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
+import org.mjdev.desktop.extensions.System.currentTimeMillis
 import kotlin.coroutines.CoroutineContext
 
 @Suppress("ComposableNaming")
@@ -59,7 +60,7 @@ object LaunchedEffect {
             }
             if (delay > 0L) {
                 delay(delay)
-                state = System.currentTimeMillis()
+                state = currentTimeMillis
             }
         }
         return result

@@ -69,7 +69,7 @@ class ActionsProvider(
                 }
             }
             if (action != null) {
-                action.lastSeen = currentTimeMillis()
+                action.lastSeen = currentTimeMillis
                 action.history.addIfNotExists(t) { t1, t2 -> t1.contentEquals(t2, true) }
                 action.action.invoke(ActionProviderScope(context)).let { r ->
                     when (r) {

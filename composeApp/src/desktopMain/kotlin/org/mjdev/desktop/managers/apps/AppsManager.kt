@@ -165,8 +165,12 @@ class AppsManager(
         }.toList()
 
     override val favoriteApps: List<App>
-        get() = Shell.executeAndRead("gsettings", "get", "org.gnome.shell", "favorite-apps")
-            .replace("'", "\"") // todo ?
+        get() = Shell.executeAndRead(
+            "gsettings",
+            "get",
+            "org.gnome.shell",
+            "favorite-apps"
+        ).replace("'", "\"") // todo ?
             .jsonToList<String>()
             .flatMap { deskFileName ->
                 findDesktopFileByName(deskFileName).map { deskFile ->

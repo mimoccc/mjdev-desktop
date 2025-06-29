@@ -1,25 +1,23 @@
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.Provider
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.getByType
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
-enum class OS { WINDOWS, LINUX, MAC, OTHER }
+//enum class OS { WINDOWS, LINUX, MAC, OTHER }
 
-fun getCurrentOs(): OS {
-    val osName = System
-        .getProperty("os.name")
-        .lowercase()
-        .trim()
-    return when {
-        osName.startsWith("win") -> OS.WINDOWS
-        osName.startsWith("mac") -> OS.MAC
-        osName == "linux" -> OS.LINUX
-        else -> OS.OTHER
-    }
-}
+//fun getCurrentOs(): OS {
+//    val osName = System
+//        .getProperty("os.name")
+//        .lowercase()
+//        .trim()
+//    return when {
+//        osName.startsWith("win") -> OS.WINDOWS
+//        osName.startsWith("mac") -> OS.MAC
+//        osName == "linux" -> OS.LINUX
+//        else -> OS.OTHER
+//    }
+//}
 
 val Project.java: JavaPluginExtension
     get() = extensions.getByType()
@@ -32,9 +30,9 @@ fun Project.setJavaLanguageVersion(
     java.toolchain.languageVersion.set(jlv)
 }
 
-fun NamedDomainObjectContainer<KotlinSourceSet>.getOrCreate(
-    name: String
-): KotlinSourceSet = findByName(name) ?: create(name)
+//fun NamedDomainObjectContainer<KotlinSourceSet>.getOrCreate(
+//    name: String
+//): KotlinSourceSet = findByName(name) ?: create(name)
 
 //fun Project.kotlinSourceSets(
 //    config: Action<NamedDomainObjectContainer<KotlinSourceSet>>
@@ -61,4 +59,3 @@ fun NamedDomainObjectContainer<KotlinSourceSet>.getOrCreate(
 //) = with(kotlin) {
 //    sourceSets(config)
 //}
-

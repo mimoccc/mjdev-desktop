@@ -13,7 +13,7 @@ import org.mjdev.desktop.extensions.System.currentTimeMillis
 
 // todo colors
 object Log {
-    private val creationDate = currentTimeMillis().toString()
+    private val creationDate = currentTimeMillis.toString()
     private val logFile = "/var/tmp/mjdev-desktop/log/$creationDate.log".toPath()
 //    private val logWriter = PrintWriter(logFile.apply {
 //        runCatching {

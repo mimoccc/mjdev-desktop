@@ -2,12 +2,35 @@
 
 plugins {
     `kotlin-dsl`
+    alias(libs.plugins.kotlin.multiplatform) apply false
 }
 
 repositories {
     mavenLocal()
     gradlePluginPortal()
     mavenCentral()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
+    maven("https://androidx.dev/storage/compose-compiler/repository")
+    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
+    maven("https://gitlab.com/api/v4/projects/38224197/packages/maven")
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
+    maven("https://jogamp.org/deployment/maven")
+    maven("https://jitpack.io")
+    maven("https://maven.mozilla.org/maven2/")
+    maven("https://maven.pkg.github.com/tuProlog/2p-kt")
+    maven("https://dl.bintray.com/animeshz/maven")
+    maven("https://plugins.gradle.org/m2/")
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    maven("https://dl.bintray.com/kotlin/ktor")
+    maven("https://central.sonatype.com/repository/maven-snapshots")
+//        google {
+//            mavenContent {
+//                includeGroupAndSubgroups("androidx")
+//                includeGroupAndSubgroups("com.android")
+//                includeGroupAndSubgroups("com.google")
+//            }
+//        }
     google()
 }
 
@@ -41,9 +64,13 @@ val TASK_BUILD_PLUGIN = "installPlugin"
 val PROJECT_IDE_PLUGIN = "studio-plugin"
 val DEPENDENCY_BUILD_SRC = ":$PROJECT_IDE_PLUGIN:$TASK_BUILD_PLUGIN"
 
-fun Task.execute(action: Action<ExecSpec>) = this.project.providers.exec(action)
+fun Task.execute(
+    action: Action<ExecSpec>
+) = project.providers.exec(action)
+
 val Task.pluginProject
-    get() = this.project.rootProject.project(PROJECT_IDE_PLUGIN)
+    get() = project.rootProject.project(PROJECT_IDE_PLUGIN)
+
 val Task.pluginDistributionFile
     get() = "${pluginProject.path}/$FOLDER_BUILD/$FOLDER_DISTRIBUTION/$PLUGIN_FILE_NAME"
 

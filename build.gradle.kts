@@ -14,7 +14,6 @@ plugins {
     alias(libs.plugins.gradle.ktlint)
     alias(libs.plugins.manes.versions) apply false
     alias(libs.plugins.kotlin.android) apply false
-//    alias(libs.plugins.vlc.setup) apply true
 //    id("com.github.gmazzo.buildconfig") version "5.6.5"
 }
 
@@ -43,20 +42,6 @@ plugins {
 //    buildConfigField("FILE", File("aFile"))
 //    buildConfigField("URI", uri("https://example.io"))
 //    buildConfigField("com.github.gmazzo.buildconfig.demos.kts.SomeData", "DATA", "SomeData(\"a\", 1)")
-//}
-
-// vlc setup
-//vlcSetup {
-//    // todo
-//    //val vlcVersionLibs: String = libs.versions.vlc.get().toString()
-//    vlcVersion.set("3.0.21-2")
-//
-//    shouldCompressVlcFiles = true
-//    shouldIncludeAllVlcFiles = true
-//
-//    pathToCopyVlcLinuxFilesTo = rootDir.resolve("composeApp/src/commonMain/composeResources/vlc/")
-//    pathToCopyVlcMacosFilesTo = rootDir.resolve("composeApp/src/commonMain/composeResources/vlc/")
-//    pathToCopyVlcLinuxFilesTo = rootDir.resolve("composeApp/src/commonMain/composeResources/vlc/")
 //}
 
 //dependencies {
