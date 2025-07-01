@@ -12,13 +12,10 @@ import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.desktop.DesktopExtension
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.resources.ResourcesExtension
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithPresetFunctions
-import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithWasmPresetFunctions
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 //</editor-fold>------------------------------------------------------------------------------------
@@ -31,7 +28,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.vlc.setup)
-    alias(libs.plugins.devtools.ksp)
+//    alias(libs.plugins.devtools.ksp)
 }
 
 //</editor-fold>------------------------------------------------------------------------------------
@@ -140,6 +137,11 @@ kotlin {
                 // lifecycles
                 implementation(libs.androidx.lifecycle.viewmodel)
                 implementation(libs.androidx.lifecycle.runtime.compose)
+                // log
+                implementation(libs.napier)
+                // crypto
+                implementation(libs.cryptography.core)
+                implementation(libs.cryptography.provider.optimal)
                 // date time
                 implementation(libs.kotlinx.datetime)
                 // images
@@ -291,12 +293,19 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/INDEX.LIST"
+            excludes += "META-INF/DEPENDENCIES"
         }
     }
     buildTypes {
         getByName("release") {
+            isDebuggable = true
+            isJniDebuggable = true
             isMinifyEnabled = false
+            isShrinkResources = false
+//            isRenderscriptDebuggable = true
+            isPseudoLocalesEnabled = true
         }
     }
     compileOptions {

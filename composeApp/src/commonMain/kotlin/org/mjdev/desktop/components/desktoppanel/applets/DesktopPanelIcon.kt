@@ -35,6 +35,7 @@ import org.mjdev.desktop.interfaces.IApp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.PaddingValues.size
 
+// todo paddings
 @Composable
 fun DesktopPanelIcon(
     app: IApp? = null,

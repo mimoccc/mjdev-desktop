@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import org.mjdev.desktop.data.Category
 import org.mjdev.desktop.interfaces.IApp
@@ -17,6 +18,7 @@ import org.mjdev.desktop.managers.process.IProcessManager
 import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 // todo theme user support
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -155,9 +157,10 @@ open class DesktopContextScope(
     fun dispose() = context.dispose()
 
     fun runAsync(
-        coroutineContext: CoroutineContext = Dispatchers.Default,
-        block: suspend () -> Unit
-    ) = context.runAsync(coroutineContext, block)
+        coroutineContext: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ) = context.runAsync(coroutineContext, start, block)
 
     companion object {
         @Suppress("ComposableNaming")

@@ -8,12 +8,13 @@
 
 package org.mjdev.desktop.managers.processes
 
-import org.mjdev.desktop.interfaces.IApp
 import org.mjdev.desktop.context.IDesktopContext
+import org.mjdev.desktop.interfaces.IApp
 import org.mjdev.desktop.interfaces.IProcessListener
 import org.mjdev.desktop.managers.process.IProcessManager
 
 // todo dbus
+// todo strange error :  index (71) is out of bound of [0, 0)
 @Suppress("unused")
 class ProcessManager(
     private val context: IDesktopContext,
@@ -32,6 +33,7 @@ class ProcessManager(
     }
 
     override fun dispose() {
+        listeners.clear()
     }
 
     // todo

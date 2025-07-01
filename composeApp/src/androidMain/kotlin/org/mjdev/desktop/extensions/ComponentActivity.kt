@@ -1,6 +1,5 @@
 package org.mjdev.desktop.extensions
 
-import android.util.Log
 import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
@@ -11,9 +10,9 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import org.mjdev.desktop.BuildConfig
-import org.mjdev.desktop.activity.MainActivity.Companion.TAG
 import org.mjdev.desktop.helpers.WakeLockHelper
 import androidx.core.graphics.drawable.toDrawable
+import org.mjdev.desktop.log.Log
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object ComponentActivityExt {
@@ -71,7 +70,7 @@ object ComponentActivityExt {
     fun OnBackPress(
         enabled: Boolean = !BuildConfig.DEBUG,
         action: () -> Unit = {
-            Log.d(TAG, "OnBackPressed")
+            Log.d("OnBackPressed")
         }
     ) = BackHandler(enabled, action)
 }

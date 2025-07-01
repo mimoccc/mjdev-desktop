@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
@@ -30,14 +31,16 @@ import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+@Suppress("unused")
+@OptIn(ExperimentalComposeUiApi::class)
 object Modifier {
-    @Stable
     @Composable
     fun Modifier.conditional(
         condition: Boolean,
@@ -157,7 +160,7 @@ object Modifier {
         pass: PointerEventPass = PointerEventPass.Main,
         onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit
     ): Modifier = onPointerEvent(
-        eventType = PointerEventType.Press,
+        eventType = PointerEventType.Release,
         pass = pass,
         onEvent = onEvent
     )
@@ -192,6 +195,58 @@ object Modifier {
     ) {
         if (isSecondary) block()
     }
+
+//    val PointerEvent.isConsumed
+//        get() = changes.firstOrNull()?.isConsumed ?: false
+
+//    val PointerEvent.isNotConsumed
+//        get() = isConsumed.not()
+
+//    val PointerEvent.isRelease
+//        get() = type == PointerEventType.Release
+
+//    val PointerEvent.isPress
+//        get() = type == PointerEventType.Press
+
+//    val PointerEvent.isPressed
+//        get() = changes.firstOrNull()?.pressed ?: false
+
+//    @OptIn(ExperimentalComposeUiApi::class)
+//    val PointerEvent.isLeftButton
+//        get() = buttons.isPrimaryPressed
+
+
+//    val PointerEvent.isRightButton
+//        get() = buttons.isSecondaryPressed
+
+//    val PointerEvent.isNotPressed
+//        get() = isPressed.not()
+
+//    fun Modifier.onLeftClick(
+//        onClick: () -> Unit
+//    ): Modifier = pointerInput(Unit) {
+//        awaitPointerEventScope {
+//            while (true) {
+//                val event = awaitPointerEvent(PointerEventPass.Main)
+//                if (event.isPressed && event.isNotConsumed && event.isLeftButton) {
+//                    onClick()
+//                }
+//            }
+//        }
+//    }
+
+//    fun Modifier.onRightClick(
+//        onClick: () -> Unit
+//    ): Modifier = pointerInput(Unit) {
+//        awaitPointerEventScope {
+//            while (true) {
+//                val event = awaitPointerEvent(PointerEventPass.Main)
+//                if (event.isPressed && event.isNotConsumed && event.isRightButton) {
+//                    onClick()
+//                }
+//            }
+//        }
+//    }
 
     @Stable
     @Composable

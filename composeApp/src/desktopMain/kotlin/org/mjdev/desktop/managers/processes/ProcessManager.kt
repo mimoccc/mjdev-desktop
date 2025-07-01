@@ -18,6 +18,7 @@ import org.mjdev.desktop.extensions.Compose.orElse
 import org.mjdev.desktop.interfaces.IApp
 import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.interfaces.IProcessListener
+import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.process.IProcessManager
 import kotlin.jvm.optionals.getOrNull
 
@@ -27,9 +28,18 @@ class ProcessManager(
     context: IDesktopContext,
     private val checkDelay: Long = 1000L
 ) : IProcessManager {
-    override val size: Int get() = processes.size
+
     private val listeners = mutableListOf<IProcessListener>()
+
+    override val size: Int
+        get() = runCatching {
+            processes.size
+        }.onFailure { e ->
+            Log.e(e)
+        }.getOrElse { 0 }
+
     private var job: Job? = null
+
     private val processes = mutableStateListOf<ProcessWrapper>()
 
     init {
@@ -93,6 +103,8 @@ class ProcessManager(
                     (appFullName != null && pw.commandLine.contains(appFullName))
 
         }
+    }.onFailure { e ->
+        Log.e(e)
     }.getOrNull() ?: false
 
     companion object {

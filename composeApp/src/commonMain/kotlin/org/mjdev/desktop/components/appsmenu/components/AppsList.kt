@@ -9,6 +9,10 @@
 package org.mjdev.desktop.components.appsmenu.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -16,9 +20,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.mjdev.desktop.data.Category
 import org.mjdev.desktop.extensions.Colors.SuperDarkGray
 import org.mjdev.desktop.extensions.Colors.alpha
@@ -33,17 +41,28 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun AppsList(
     modifier: Modifier = Modifier,
     category: Category? = null,
+    items: List<Any> = listOf(),
     listState: LazyListState = rememberForeverLazyListState("AppsMenu"),
     onCategoryClick: DesktopContextScope.(Category) -> Unit = {},
     onCategoryContextMenuClick: DesktopContextScope.(Category) -> Unit = {},
     onAppClick: DesktopContextScope.(IApp) -> Unit = { app -> runAsync { app.start() } },
     onAppContextMenuClick: DesktopContextScope.(IApp) -> Unit = {},
-    items: List<Any> = listOf(),
-    onTooltip: (item: Any?) -> Unit = {}
+    onTooltip: (item: Any?) -> Unit = {},
 ) = withDesktopContext {
+    val state = if (category == null) listState else rememberLazyListState()
+    var clickEnabled = remember { true }
     LazyColumn(
-        modifier = modifier,
-        state = if (category == null) listState else rememberLazyListState(),
+        modifier = modifier.draggable(
+            orientation = Orientation.Horizontal,
+            state = rememberDraggableState { delta ->
+                runAsync {
+                    state.scrollBy(delta * 8) // todo remove magic number
+                }
+            },
+            onDragStarted = { clickEnabled = false },
+            onDragStopped = { clickEnabled = true },
+        ),
+        state = state,
     ) {
         when (items.firstOrNull()) {
             is Category -> {
@@ -52,8 +71,8 @@ fun AppsList(
                         category = item as Category,
                         showDivider = (items.size - 1) > idx,
                         dividerColor = textColor.alpha(0.3f),
-                        onClick = { onCategoryClick(item) },
-                        onContextMenuClick = { onCategoryContextMenuClick(item) },
+                        onClick = { if (clickEnabled) onCategoryClick(item) },
+                        onContextMenuClick = { if (clickEnabled) onCategoryContextMenuClick(item) },
                         onTooltip = onTooltip
                     )
                 }

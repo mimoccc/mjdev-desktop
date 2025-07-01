@@ -35,12 +35,12 @@ human-readable = "1.11.0"
 #i18n4k-core = "0.9.0"
 ini4j = "0.5.4"
 jetlime = "3.0.1"
-kotlin = "2.1.21"
+kotlin = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-date-time = "0.6.2"
 #logback = "1.5.7"
 okhttp3 = "4.12.0"
-okio = "3.12.0"
+okio = "3.13.0"
 qrose = "1.0.1"
 tts = "3.0.0"
 ychat = "1.4.1"
@@ -60,17 +60,19 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.1"
 material = "1.12.0"
-devtools-ksp = "2.1.21-2.0.1"
+#devtools-ksp = "2.1.21-2.0.1"
 vlc-setup = "0.1.0"
 vlcj = "4.11.0"
 jna = "5.17.0"
 image-comparison = "4.4.0"
 haze = "1.6.4"
 kotlinx-serialization-json = "1.8.1"
-ktor = "3.2.0"
+ktor = "3.1.0"
 flock = "0.1.0"
 markwon = "4.6.2"
 html2text = "-SNAPSHOT"
+napier = "2.7.1"
+cryptography = "0.5.0"
 ### libs ###########################################################################################
 [libraries]
 ####################################################################################################
@@ -166,6 +168,11 @@ flock-aigentic-openapi = { module = "community.flock.aigentic:openapi", version.
 markwon = { module = "io.noties.markwon:core", version.ref = "markwon" }
 # html 2 text
 html2text = { module = "com.github.BartoszJarocki:android-boilerpipe", version.ref = "html2text" }
+# logs
+napier = { module = "io.github.aakira:napier", version.ref = "napier" }
+# cryptography
+cryptography-core = { module = "dev.whyoleg.cryptography:cryptography-core", version.ref = "cryptography" }
+cryptography-provider-optimal = { module = "dev.whyoleg.cryptography:cryptography-provider-optimal", version.ref = "cryptography" }
 ### plugins ########################################################################################
 [plugins]
 ####################################################################################################
@@ -184,6 +191,6 @@ gradle-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "gradle-kt
 #foojay-resolver-convention = { id ="org.gradle.toolchains.foojay-resolver-convention", version.ref = "foojay-resolver-convention" }
 manes-versions = { id = "com.github.ben-manes.versions", version.ref = "manes-versions" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "devtools-ksp" }
+#devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "devtools-ksp" }
 vlc-setup = { id = "ir.mahozad.vlc-setup", version.ref = "vlc-setup" }
 ####################################################################################################

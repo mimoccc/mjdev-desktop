@@ -42,11 +42,13 @@ fun application(
     args: List<String> = emptyList(),
     exitProcessOnExit: Boolean = true,
     onExit: () -> Unit = {},
+    onStart: () -> Unit = {},
     content: @Composable ApplicationScope.() -> Unit
 ) {
     if (System.getProperty("compose.application.configure.swing.globals") == "true") {
         configureSwingGlobalsForCompose()
     }
+    onStart()
     runBlocking {
         awaitApplication(
             args,

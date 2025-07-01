@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.DpSize
 import coil3.ImageLoader
 import coil3.PlatformContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.mjdev.desktop.components.controlcenter.pages.about.AboutPage
@@ -37,6 +38,7 @@ import org.mjdev.desktop.managers.base.ManagerCache
 import org.mjdev.desktop.managers.keys.IKeyManager
 import org.mjdev.desktop.managers.palette.IPalette
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
@@ -101,9 +103,10 @@ abstract class IDesktopContext : IDisposable {
     abstract fun createManager(cls: KClass<*>): IDelegate?
 
     fun runAsync(
-        context: CoroutineContext = Dispatchers.Default,
-        block: suspend () -> Unit
-    ) = scope.launch(context) { block() }
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ) = scope.launch(context, start, block)
 
     fun notify(
         message: String = "This is a test message",

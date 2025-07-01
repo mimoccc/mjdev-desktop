@@ -8,12 +8,15 @@
 
 package org.mjdev.desktop.log
 
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
 import okio.Path.Companion.toPath
 import org.mjdev.desktop.extensions.System.currentTimeMillis
 
-// todo colors
 object Log {
+    private var isInitialized = false
     private val creationDate = currentTimeMillis.toString()
+    // todo
     private val logFile = "/var/tmp/mjdev-desktop/log/$creationDate.log".toPath()
 //    private val logWriter = PrintWriter(logFile.apply {
 //        runCatching {
@@ -22,70 +25,95 @@ object Log {
 //        }
 //    })
 
+    fun init() {
+        if (!isInitialized) {
+            isInitialized = true
+            Napier.base(DebugAntilog())
+        }
+    }
+
     fun i(message: String) {
-        println(message)
+        init()
+        Napier.i(message)
+//        println(message)
 //        runCatching {
 //            logWriter.println(message)
 //        }
     }
 
     fun i(e: Throwable) {
-        e.stackTraceToString().also { message ->
-            println(message)
+        init()
+        Napier.i(e.message ?: "", e)
+//        e.stackTraceToString().also { message ->
+//            println(message)
 //            runCatching {
 //                logWriter.println(message)
 //            }
-        }
+//        }
     }
 
     fun d(message: String) {
-        println(message)
+        init()
+        Napier.d(message)
+//        println(message)
 //        runCatching {
 //            logWriter.println(message)
 //        }
     }
 
     fun d(e: Throwable) {
-        e.stackTraceToString().also { message ->
-            println(message)
+        init()
+        Napier.d(e.message ?: "", e)
+//        e.stackTraceToString().also { message ->
+//            println(message)
 //            runCatching {
 //                logWriter.println(message)
 //            }
-        }
+//        }
     }
 
     fun w(message: String) {
-        println(message)
+        init()
+        Napier.w(message)
+//        println(message)
 //        runCatching {
 //            logWriter.println(message)
 //        }
     }
 
     fun w(e: Throwable) {
-        e.stackTraceToString().also { message ->
-            println(message)
+        init()
+        Napier.w(e.message ?: "", e)
+//        e.stackTraceToString().also { message ->
+//            println(message)
 //            runCatching {
 //                logWriter.println(message)
 //            }
-        }
+//        }
     }
 
     fun e(message: String) {
-        RuntimeException(message).also { e -> e(e) }
+        init()
+        Napier.e(message)
+//        RuntimeException(message).also { e -> e(e) }
     }
 
     fun e(e: Throwable) {
-        e.stackTraceToString().also { message ->
-            println(message)
+        init()
+        Napier.e(e.message ?: "", e)
+//        e.stackTraceToString().also { message ->
+//            println(message)
 //            runCatching {
 //                logWriter.println(message)
 //            }
-        }
+//        }
     }
 
     fun e(message: String, e: Throwable) {
-        e(message)
-        e(e)
+        init()
+        Napier.e(message, e)
+//        e(message)
+//        e(e)
     }
 
 }

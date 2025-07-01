@@ -50,7 +50,8 @@ fun AppsMenuCategory(
     val categoryName = remember(category) { category.name }
     val materialIcon = remember(categoryName) { iconSet.iconForName(categoryName) ?: 0 }
     Column(
-        modifier = modifier.padding(vertical = 2.dp)
+        modifier = modifier
+            .padding(vertical = 2.dp)
             .onMousePress {
                 onLeftClick { onClick(category) }
                 onRightClick { onContextMenuClick(category) }

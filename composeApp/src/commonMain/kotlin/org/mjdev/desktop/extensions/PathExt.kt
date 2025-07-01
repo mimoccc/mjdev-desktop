@@ -1,6 +1,7 @@
 package org.mjdev.desktop.extensions
 
 import okio.Path
+import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.system.Filesystem
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -26,7 +27,7 @@ object PathExt {
         get() = Filesystem.isSymbolicLink(this)
 
     val Path.exists: Boolean
-        get() = Filesystem.fileExists(this)
+        get() = isFile || isDirectory
 
     val Path.parentFile: Path
         get() = this.parent ?: cwd
@@ -83,10 +84,12 @@ object PathExt {
         Filesystem.writeText(this, text)
 
     fun Path.mkdirs() =
-        Filesystem.createDir(this)
+        Filesystem.createDirectories(this)
 
-    fun Path.delete() = if (isDirectory) Filesystem.deleteDir(this)
-    else Filesystem.delete(this)
+    fun Path.delete() = if (isDirectory)
+        Filesystem.deleteDir(this)
+    else
+        Filesystem.delete(this)
 
     fun Path.createNewFile() =
         Filesystem.createNewFile(this)
