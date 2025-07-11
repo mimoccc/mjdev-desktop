@@ -8,12 +8,12 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.TimeZone.Companion.currentSystemDefault
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
 import org.mjdev.desktop.extensions.System.currentTime
 import org.mjdev.desktop.log.Log
 import kotlin.coroutines.suspendCoroutine
 import kotlin.time.ExperimentalTime
+import org.mjdev.desktop.helpers.generic.JsonHelper.toJson
+import org.mjdev.desktop.helpers.generic.JsonHelper.fromJson
 
 @OptIn(ExperimentalTime::class)
 @Suppress("unused")
@@ -126,19 +126,19 @@ object CustomExt {
     }
 
     inline fun <reified T> String.jsonToList(): List<T> = runCatching {
-        jsonSerializer.decodeFromString<List<T>>(this)
+        fromJson<List<T>>(this)
     }.onFailure { err ->
         Log.e(err)
     }.getOrNull() ?: emptyList()
 
     inline fun <reified T> String.to(): T? = runCatching {
-        jsonSerializer.decodeFromString<T>(this)
+        fromJson<T>(this)
     }.onFailure { err ->
         Log.e(err)
     }.getOrNull()
 
     inline fun <reified T> T.asJson(): String = runCatching {
-        jsonSerializer.encodeToString(this)
+        toJson()
     }.onFailure { err ->
         Log.e(err)
     }.getOrDefault("")
@@ -178,18 +178,5 @@ object CustomExt {
 //            error("Unsupported")
 //        }
 //    }
-
-    @OptIn(ExperimentalSerializationApi::class)
-    val jsonSerializer: Json = Json {
-        allowStructuredMapKeys = true
-        coerceInputValues = true
-        useArrayPolymorphism = true
-        allowSpecialFloatingPointValues = true
-        ignoreUnknownKeys = true
-        isLenient = true
-        allowComments = true
-        allowTrailingComma = true
-        prettyPrint = true
-    }
 
 }

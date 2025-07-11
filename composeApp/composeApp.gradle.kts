@@ -153,7 +153,7 @@ kotlin {
                 // qr code
                 implementation(libs.qrose)
                 // json
-                implementation(libs.kotlinx.serialization.json)
+                implementation("com.google.code.gson:gson:2.10.1")
                 // desktop file linux
                 implementation(libs.ini4j)
                 // files
@@ -198,6 +198,18 @@ kotlin {
                 implementation(libs.okhttp3.urlconnection)
                 implementation(libs.okhttp3.dnsoverhttps)
                 implementation(libs.okhttp3.tls)
+                implementation("dev.kotbase:couchbase-lite:3.1.9-1.1.1")
+                implementation("io.ktor:ktor-server-core:3.2.1")
+                implementation("io.ktor:ktor-server-netty:3.2.1")
+                implementation("io.ktor:ktor-server-default-headers:3.2.1")
+                implementation("io.ktor:ktor-server-call-logging:3.2.1")
+                implementation("io.ktor:ktor-server-content-negotiation:3.2.1")
+                implementation("io.ktor:ktor-serialization-gson:3.2.1")
+                implementation("io.ktor:ktor-server-status-pages:3.2.1")
+                implementation("io.ktor:ktor-server-cors:3.2.1")
+                implementation("io.ktor:ktor-server-auth:3.2.1")
+                implementation("io.ktor:ktor-server-compression:3.2.1")
+                implementation("ch.qos.logback:logback-classic:1.3.11")
 //                implementation("com.squareup.okhttp3:okhttp-ws:4.12.0")
                 // notification
                 // implementation("io.github.shadmanadman:knotif:0.56.0")
