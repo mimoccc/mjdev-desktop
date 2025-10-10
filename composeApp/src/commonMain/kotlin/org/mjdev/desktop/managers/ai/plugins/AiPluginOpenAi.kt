@@ -1,46 +1,37 @@
 package org.mjdev.desktop.managers.ai.plugins
 
+import ai.koog.agents.core.agent.AIAgent
+import ai.koog.prompt.executor.clients.openai.OpenAIModels
+import ai.koog.prompt.executor.llms.all.simpleOpenAIExecutor
+import ai.koog.prompt.llm.LLModel
 import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.managers.ai.plugins.base.AIPlugin
-import community.flock.aigentic.core.agent.tool.Result.Stuck
-import community.flock.aigentic.core.agent.tool.Result.Fatal
-import community.flock.aigentic.core.agent.tool.Result.Finished
-import community.flock.aigentic.core.agent.start
-import community.flock.aigentic.core.dsl.agent
-import community.flock.aigentic.openai.dsl.openAIModel
-import community.flock.aigentic.openai.model.OpenAIModelIdentifier
-import community.flock.aigentic.openai.model.OpenAIModelIdentifier.GPT4OMini
-import org.mjdev.desktop.log.Log
 
 // todo tools = actions
 // Open AI keys: https://platform.openai.com/api-keys
 class AiPluginOpenAi(
     private val context: IDesktopContext,
     private val apiKey: String = context.keysManager.loadKey("open-ai"),
-    private val model: OpenAIModelIdentifier = GPT4OMini,
+    private val model: LLModel = OpenAIModels.Chat.GPT4o,
 ) : AIPlugin {
-
-    override suspend fun ask(
-        question: String
-    ): String = agent {
-//        Log.d("Using api key : $apiKey")
-        openAIModel {
-            apiKey(apiKey)
-            modelIdentifier(model)
-        }
-        task("Provide information") {
-            addInstruction("Respond to user queries with relevant information.")
-        }
-        context {
-            addText(question)
-        }
-        finishResponse()
-    }.start().result.let { result ->
-        when (result) {
-            is Finished<*> -> result.response.toString()
-            is Stuck -> result.reason
-            is Fatal -> result.message
+    val agent by lazy {
+        runCatching {
+            AIAgent(
+                executor = simpleOpenAIExecutor(apiKey),
+                systemPrompt = "You are a helpful assistant. Answer user questions concisely.",
+                llmModel = model
+            )
         }
     }
 
+    @Suppress("USELESS_CAST")
+    override suspend fun ask(
+        question: String
+    ): String = runCatching {
+        agent.getOrThrow().let { agent ->
+            (agent as AIAgent<String, String>).run("Hello! How can you help me?")
+        }
+    }.getOrElse { e ->
+        "Error at: ${e.stackTraceToString()}"
+    }
 }

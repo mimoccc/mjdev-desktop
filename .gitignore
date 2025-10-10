@@ -44,8 +44,9 @@ MediaDeviceSalts-journal
 sources/
 /sources
 /sources/
-/.intellijPlatform/
 
 ### no keys
 composeApp/src/commonMain/resources/keys/*.key
 /composeApp/src/commonMain/resources/keys/*.key
+.intellijPlatform/
+.intellijPlatform

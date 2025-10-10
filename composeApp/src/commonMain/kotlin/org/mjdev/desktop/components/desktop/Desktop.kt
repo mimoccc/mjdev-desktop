@@ -1,10 +1,11 @@
 package org.mjdev.desktop.components.desktop
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +24,7 @@ import org.mjdev.desktop.extensions.Modifier.onLeftClick
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.extensions.Modifier.onRightClick
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.components.adb.AdbScreenMirror
 
 @Suppress("FunctionName", "UNUSED_PARAMETER")
 @Composable
@@ -69,8 +71,9 @@ fun Desktop(
                 }
             }
         )
-        BoxWithConstraints(
-            modifier = Modifier.padding(16.dp)
+        Box(
+            modifier = Modifier.padding(16.dp),
+            contentAlignment = Alignment.CenterEnd
         ) {
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -86,6 +89,12 @@ fun Desktop(
 //            ComposeWebView(
 //                modifier = Modifier.align(Alignment.Center).size(640.dp, 480.dp)
 //            )
+                AdbScreenMirror(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxHeight()
+                        .wrapContentWidth()
+                )
             }
         }
     }

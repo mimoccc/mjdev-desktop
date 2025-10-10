@@ -7,7 +7,6 @@ object JsonHelper {
     val gson: Gson by lazy {
         GsonBuilder()
             .setPrettyPrinting()
-            .setLenient()
             .serializeNulls()
             .serializeSpecialFloatingPointValues()
             .create()

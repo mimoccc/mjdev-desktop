@@ -17,7 +17,6 @@ import community.flock.aigentic.gemini.dsl.geminiModel
 import community.flock.aigentic.gemini.model.GeminiModelIdentifier
 import community.flock.aigentic.gemini.model.GeminiModelIdentifier.Gemini1_5Pro
 import org.mjdev.desktop.context.IDesktopContext
-import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.ai.plugins.base.AIPlugin
 
 // todo tools = actions

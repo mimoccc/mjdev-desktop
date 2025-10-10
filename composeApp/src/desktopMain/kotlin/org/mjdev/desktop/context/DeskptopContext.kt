@@ -31,6 +31,7 @@ import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.ai.AiManager
 import org.mjdev.desktop.managers.ai.IAiManager
 import org.mjdev.desktop.managers.ai.plugins.AiPluginGemini
+import org.mjdev.desktop.managers.ai.plugins.AiPluginOpenAi
 import org.mjdev.desktop.managers.ai.stt.STTPluginEmpty
 import org.mjdev.desktop.managers.ai.tts.TTSPluginSwift
 import org.mjdev.desktop.managers.apps.IAppsManager
@@ -246,7 +247,7 @@ class DesktopContext(
         IAiManager::class -> AiManager(
             context = this,
             // todo user can configure
-            pluginAI = AiPluginGemini(this@DesktopContext),
+            pluginAI = AiPluginOpenAi(this@DesktopContext),
             pluginTTS = TTSPluginSwift(this@DesktopContext),
             pluginSTT = STTPluginEmpty(this@DesktopContext)
         )

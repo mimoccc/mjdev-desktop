@@ -185,7 +185,7 @@ kotlin {
                 implementation(libs.flock.aigentic.vertexai)
                 implementation(libs.flock.aigentic.http)
                 implementation(libs.flock.aigentic.openapi)
-//                ksp("community.flock.aigentic:ksp-processor:0.1.0")
+                // ksp("community.flock.aigentic:ksp-processor:0.1.0")
                 // ktor
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.cio)
@@ -210,7 +210,9 @@ kotlin {
                 implementation("io.ktor:ktor-server-auth:3.2.1")
                 implementation("io.ktor:ktor-server-compression:3.2.1")
                 implementation("ch.qos.logback:logback-classic:1.3.11")
-//                implementation("com.squareup.okhttp3:okhttp-ws:4.12.0")
+                // ai
+                implementation("ai.koog:koog-agents:0.3.0")
+                // implementation("com.squareup.okhttp3:okhttp-ws:4.12.0")
                 // notification
                 // implementation("io.github.shadmanadman:knotif:0.56.0")
                 // sensors
@@ -234,6 +236,10 @@ kotlin {
 //                kapt(libs.popkorn.compiler)
                 // tor
                 // implementation("io.matthewnelson.kmp-tor:runtime:2.1.0")
+                // web
+                implementation("io.github.shadmanadman:kwebview:1.31.0")
+                // adb
+                implementation("dev.mobile:dadb:1.2.10")
             }
         }
 
@@ -256,6 +262,8 @@ kotlin {
                 implementation(libs.accompanist.permissions)
                 // sensors
                 //implementation("io.github.shadmanadman:KSensor:0.59.0")
+                // adb
+                // implementation("dev.mobile:dadb:1.2.10")
             }
         }
 
@@ -278,6 +286,8 @@ kotlin {
                 implementation(libs.ychat)
                 // desktop files
                 implementation(libs.ini4j)
+                // adb
+                // implementation("dev.mobile:dadb:1.2.10")
             }
         }
 
