@@ -115,6 +115,25 @@ targets {
 //<editor-fold desc="source sets / dependencies">---------------------------------------------------
 
 kotlin {
+//    linuxX64 {
+//        compilations.getByName("main") {
+//            cinterops {
+//                val waylandClient by creating {
+//                    defFile(project.file("src/nativeInterop/cinterop/wayland.def"))
+//                    packageName = "wayland.client"
+//                }
+//            }
+//        }
+//    }
+
+//    linuxX64 {
+//        binaries {
+//            executable {
+//                entryPoint = "main"
+//            }
+//        }
+//    }
+
     sourceSets {
 
         // common dependencies
@@ -287,10 +306,17 @@ kotlin {
                 // desktop files
                 implementation(libs.ini4j)
                 // adb
-                // implementation("dev.mobile:dadb:1.2.10")
+//                implementation("dev.mobile:dadb:1.2.10")
+                // wayland
+//                implementation("org.freedesktop:wayland:1.4.0")
             }
         }
 
+//        val linuxX64Main by getting {
+//            dependencies {
+//                // Linux-specific dependencies
+//            }
+//        }
     }
 }
 
