@@ -67,8 +67,8 @@ open class DesktopScope(
     val connectionManager
         get() = api.connectionManager
 
-//    val windowsManager
-//        get() = api.windowsManager
+    val windowsManager
+        get() = api.windowsManager
 
 //    val dbus
 //        get() = api.dbus
@@ -120,6 +120,8 @@ open class DesktopScope(
 
     val panelHideDelay
         get() = theme.panelHideDelay
+    val windowFocusGraceDelay
+        get() = theme.windowFocusGraceDelay
     val panelAutoHideEnabled
         get() = theme.panelHideDelay > 0L
     val panelDividerWidth

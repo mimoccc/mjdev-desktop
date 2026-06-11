@@ -21,6 +21,7 @@ import eu.mjdev.desktop.managers.kcef.kcefManager
 import eu.mjdev.desktop.managers.os.osManager
 import eu.mjdev.desktop.managers.processes.ProcessManager
 import eu.mjdev.desktop.managers.theme.themeManager
+import eu.mjdev.desktop.managers.window.WindowsManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -59,7 +60,7 @@ class DesktopProvider(
     val palette by lazy { Palette(this) }
     val desktopUtils: Desktop by lazy { Desktop.getDesktop() }
     val processManager by lazy { ProcessManager() }
-    //    val windowsManager by lazy { WindowsManager(this) }
+    val windowsManager by lazy { WindowsManager(this) }
     //    val dbus: DBus by lazy { DBus() }
 
     val appArgs
@@ -139,6 +140,9 @@ class DesktopProvider(
         Log.i("Cleaning up resources.")
         processManager.dispose()
         palette.dispose()
+        runCatching {
+            windowsManager.dispose()
+        }
 //        runCatching {
 //            mounts.dispose()
 //        }

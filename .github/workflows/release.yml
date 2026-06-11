@@ -1,0 +1,60 @@
+name: release
+
+# builds the distributable packages (deb + portable app image) and
+# attaches them to a github release so they are downloadable
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # libwlroots-0.18 is only packaged from ubuntu 25.04 on
+    container: ubuntu:25.04
+    steps:
+      - name: Install build dependencies
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y \
+            git curl unzip zip tar ca-certificates binutils fakeroot \
+            openjdk-21-jdk gcc pkg-config dpkg-dev \
+            libwlroots-0.18-dev libwayland-dev wayland-protocols \
+            libxkbcommon-dev libinput-dev libpixman-1-dev libwayland-bin
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache gradle and kotlin/native toolchain
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.konan
+          key: ${{ runner.os }}-gradle-konan-${{ hashFiles('**/*.gradle.kts', 'gradle/libs.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-konan-
+
+      - name: Build all packages
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          chmod +x ./gradlew
+          ./gradlew --no-daemon buildAll
+
+      - name: Upload artifacts (manual run)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mjdev-desktop-packages
+          path: release/*
+
+      - name: Publish github release (tag push)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*

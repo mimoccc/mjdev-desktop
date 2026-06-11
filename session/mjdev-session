@@ -1,0 +1,23 @@
+#!/bin/sh
+# mjdev desktop wayland session
+# started by the display manager via /usr/share/wayland-sessions/mjdev.desktop
+
+export XDG_CURRENT_DESKTOP=mjdev
+export XDG_SESSION_TYPE=wayland
+export MOZ_ENABLE_WAYLAND=1
+export QT_QPA_PLATFORM="wayland;xcb"
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+# desktop shell binary - deb/appimage install location, gradle dev fallback
+SHELL_CMD="/opt/mjdev-desktop/bin/mjdev-desktop"
+if [ ! -x "$SHELL_CMD" ]; then
+    SHELL_CMD="$HOME/.local/bin/mjdev-desktop"
+fi
+
+# compositor binary - /usr/bin (deb) or /usr/local/bin (manual install)
+MJDEVC="$(command -v mjdevc 2>/dev/null)"
+if [ -z "$MJDEVC" ]; then
+    MJDEVC="/usr/bin/mjdevc"
+fi
+
+exec "$MJDEVC" --session --shell-cmd "$SHELL_CMD"

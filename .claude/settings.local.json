@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pkill -x mjdevc.kexe)",
+      "Bash(pkill -x gnome-calculator)",
+      "Bash(./gradlew :compositor:linkMjdevcDebugExecutableLinuxX64 -q)",
+      "Bash(dpkg -l)",
+      "Bash(awk '{print $2, $3}')",
+      "Bash(dpkg-deb -I /home/mimo/Plocha/mjdev-desktop/packages/mjdev-desktop-1.0.2.deb)",
+      "Bash(dpkg-deb -c /home/mimo/Plocha/mjdev-desktop/packages/mjdev-desktop-1.0.2.deb)",
+      "Bash(./gradlew packageMjdevDeb -q)",
+      "Bash(grep *)",
+      "Bash(./gradlew buildAll -q)"
+    ]
+  }
+}

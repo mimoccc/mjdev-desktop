@@ -27,17 +27,10 @@ class ThemeManagerLinux(
     api: DesktopProvider,
 ) : ThemeManagerStub(api) {
     private val palette = api.palette
-    private val themeName = THEME_MJDEV
+    private var themeName = THEME_MJDEV
     private val homeDir = api.homeDir
     private val themesDir = homeDir[".themes"]
     private val systemThemeDir = homeDir[".config"]
-    private val themeDir = themesDir[themeName]
-    private val themeDesktopFile = themeDir["index.theme"]
-    private val gtk2ThemeDir = themeDir["gtk-2.0"]
-    private val gtk3ThemeDir = themeDir["gtk-3.0"]
-    private val gtk4ThemeDir = themeDir["gtk-4.0"]
-    private val gtk3CssFile = gtk3ThemeDir["gtk.css"]
-    private val gtk4CssFile = gtk4ThemeDir["gtk.css"]
     private val systemGtk3ThemeDir = systemThemeDir["gtk-3.0"]
     private val systemGtk4ThemeDir = systemThemeDir["gtk-4.0"]
     private val systemGtk3CssFile = systemGtk3ThemeDir["gtk.css"]
@@ -51,25 +44,36 @@ class ThemeManagerLinux(
     }
 
     override fun createFromPalette() {
-        createDesktopFile()
-        createCssFile(gtk3CssFile)
-        createCssFile(gtk4CssFile)
+        // gtk reloads theme css only when the theme *name* changes,
+        // so each regeneration alternates between two theme names
+        themeName = if (themeName == THEME_MJDEV) THEME_MJDEV_ALT else THEME_MJDEV
+        val themeDir = themesDir[themeName]
+        createDesktopFile(themeDir["index.theme"])
+        createCssFile(themeDir["gtk-3.0"]["gtk.css"])
+        createCssFile(themeDir["gtk-4.0"]["gtk.css"])
+        // libadwaita apps ignore gtk-theme, they read these at startup
         createCssFile(systemGtk3CssFile)
         createCssFile(systemGtk4CssFile)
+        // running gtk apps pick the change up live (xsettings/portal)
+        setGTKTheme(themeName)
+        setColorScheme(
+            if (palette.backgroundColor.isLightColor) COLOR_SCHEME_PREFER_LIGHT
+            else COLOR_SCHEME_PREFER_DARK
+        )
     }
 
-    private fun createDesktopFile() {
+    private fun createDesktopFile(themeDesktopFile: File) {
         desktopFile(themeDesktopFile) {
             mkDirs()
             deleteFile()
             desktopSection {
                 Type = DesktopFile.DesktopEntryType.Theme
-                Name = THEME_MJDEV
+                Name = themeName
                 Comment = "dynamic system theme"
                 Encoding = Charsets.UTF_8.name()
             }
             themeSection {
-                GtkTheme = THEME_MJDEV
+                GtkTheme = themeName
                 MetacityTheme = THEME_ADWAITA_DARK
                 IconTheme = THEME_ADWAITA_DARK
                 CursorTheme = THEME_CURSOR_BLOOM
@@ -391,11 +395,13 @@ class ThemeManagerLinux(
 
     companion object {
         const val COLOR_SCHEME_PREFER_DARK = "prefer-dark"
+        const val COLOR_SCHEME_PREFER_LIGHT = "prefer-light"
         const val COLOR_SCHEME_MJDEV = "mjdev"
         const val THEME_YARU = "Yaru"
         const val THEME_ADWAITA = "Adwaita"
         const val THEME_ADWAITA_DARK = "Adwaita-dark"
         const val THEME_MJDEV = "Mjdev"
+        const val THEME_MJDEV_ALT = "Mjdev-alt"
         const val THEME_CURSOR_BLOOM = "bloom"
 
         private fun theme(

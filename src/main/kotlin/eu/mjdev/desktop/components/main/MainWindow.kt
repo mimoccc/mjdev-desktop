@@ -24,14 +24,16 @@ import eu.mjdev.desktop.windows.DesktopWindow
 @Composable
 fun MainWindow() = withDesktopScope {
     val controlCenterState = rememberChromeWindowState(
-//        hideDelay = controlPanelHideDelay
+        hideDelay = windowFocusGraceDelay
     )
     val panelState = rememberChromeWindowState(
         visible = true,
         enabled = panelAutoHideEnabled,
         hideDelay = panelHideDelay
     )
-    val menuState = rememberChromeWindowState()
+    val menuState = rememberChromeWindowState(
+        hideDelay = windowFocusGraceDelay
+    )
     val installWindowState = rememberVisibilityState()
     val infoWindowState = rememberVisibilityState(false) //(api.isFirstStart || api.isDebug) // todo
     DesktopWindow(
@@ -57,7 +59,12 @@ fun MainWindow() = withDesktopScope {
             menuState = menuState,
             panelState = panelState,
             onFocusChange = { focused ->
-                if (!focused) {
+                // hide is delayed by the focus grace period; a focus bounce
+                // (compositor briefly re-focusing another shell window)
+                // cancels it instead of killing the menu right after open
+                if (focused) {
+                    menuState.show()
+                } else {
                     menuState.hide()
                 }
             }
@@ -65,7 +72,9 @@ fun MainWindow() = withDesktopScope {
         ControlCenter(
             controlCenterState = controlCenterState,
             onFocusChange = { focused ->
-                if (!focused) {
+                if (focused) {
+                    controlCenterState.show()
+                } else {
                     controlCenterState.hide()
                 }
             }

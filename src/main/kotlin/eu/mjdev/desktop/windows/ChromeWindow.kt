@@ -65,7 +65,8 @@ fun ChromeWindow(
             onCloseRequest = onCloseRequest,
             state = windowState,
             visible = wnState.value,
-            title = "",
+            // mjdev:: prefix lets the mjdev compositor recognize shell windows
+            title = name?.let { "mjdev::$it" } ?: "",
             icon = null,
             undecorated = true,
             transparent = transparent,

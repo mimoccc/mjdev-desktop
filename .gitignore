@@ -63,3 +63,5 @@ sources/
 /sources
 /sources/
 /local.properties
+release/
+!/release/

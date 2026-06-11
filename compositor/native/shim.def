@@ -1,0 +1,2 @@
+headers = shim.h
+package = mjdev.compositor.shim

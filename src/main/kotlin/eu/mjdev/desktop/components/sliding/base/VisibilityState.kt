@@ -51,6 +51,7 @@ open class VisibilityState(
     }
 
     fun toggle() {
+        hideJob?.cancel()
         visibleState.value = !visibleState.value
     }
 

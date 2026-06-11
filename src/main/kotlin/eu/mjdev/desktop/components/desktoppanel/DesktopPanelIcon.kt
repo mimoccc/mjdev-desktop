@@ -43,6 +43,8 @@ fun DesktopPanelIcon(
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
     iconState: MutableState<Boolean> = rememberState(false),
     contentDescription: String? = null,
+    runningOverride: Boolean? = null,
+    focusedOverride: Boolean? = null,
     onToolTip: (item: Any?) -> Unit = {},
     onContextMenuClick: () -> Unit = {},
     onClick: () -> Unit = {},
@@ -56,7 +58,15 @@ fun DesktopPanelIcon(
         else -> Color.Transparent
     }
     val isStarting by rememberCalculated(app) { app?.isStarting ?: false }
-    val isRunning by rememberCalculated(app) { app?.isRunning == true || processManager.hasAppProcess(app) }
+    val isRunning by rememberCalculated(app, runningOverride) {
+        runningOverride
+            ?: (app?.isRunning == true ||
+                    processManager.hasAppProcess(app) ||
+                    (app != null && windowsManager.hasWindow(app)))
+    }
+    val isFocused by rememberCalculated(app, focusedOverride) {
+        focusedOverride ?: (app != null && windowsManager.isWindowFocus(app))
+    }
     Box(
         modifier = Modifier
             .size(iconSize)
@@ -75,7 +85,11 @@ fun DesktopPanelIcon(
             }
     ) {
         Button(
-            modifier = Modifier.fillMaxSize().circleBorder(2.dp, textColor.alpha(0.5f)),
+            // focused window gets a highlighted ring
+            modifier = Modifier.fillMaxSize().circleBorder(
+                if (isFocused) 3.dp else 2.dp,
+                if (isFocused) textColor else textColor.alpha(0.5f)
+            ),
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.color(background),
             elevation = ButtonDefaults.noElevation(),

@@ -29,6 +29,7 @@ import eu.mjdev.desktop.components.desktoppanel.applets.DesktopMenuIcon
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelDateTime
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelFavoriteApps
 import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelLanguage
+import eu.mjdev.desktop.components.desktoppanel.applets.DesktopPanelRunningApps
 import eu.mjdev.desktop.components.sliding.SlidingPanel
 import eu.mjdev.desktop.components.tooltip.Tooltip
 import eu.mjdev.desktop.components.tooltip.TooltipState
@@ -70,7 +71,12 @@ fun DesktopPanel(
     onMenuIconContextMenuClicked: () -> Unit = {},
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
     onAppClick: DesktopScope.(App) -> Unit = { app ->
-        app.start()
+        when {
+            // click on focused app minimizes it, on running app focuses it
+            windowsManager.isWindowFocus(app) -> windowsManager.minimizeWindows(app)
+            windowsManager.hasWindow(app) -> windowsManager.requestWindowsFocus(app)
+            else -> app.start()
+        }
     },
     onAppContextMenuClick: (App) -> Unit = {},
     onLanguageClick: () -> Unit = {},
@@ -236,18 +242,41 @@ fun DesktopPanel(
                                             onContextMenuClick = onMenuIconContextMenuClicked
                                         )
                                     }
-                                    DesktopPanelFavoriteApps(
+                                    Row(
                                         modifier = Modifier.align(Alignment.Center),
-                                        iconColor = borderColor,
-                                        iconBackgroundColor = iconsTintColor,
-                                        iconColorRunning = iconsTintColor.lighter(0.3f),
-                                        iconSize = iconSize,
-                                        iconPadding = iconPadding,
-                                        iconOuterPadding = iconOuterPadding,
-                                        onTooltip = { item -> tooltipState.show(item) },
-                                        onAppClick = { app -> onAppClick(app) },
-                                        onContextMenuClick = onAppContextMenuClick
-                                    )
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        DesktopPanelFavoriteApps(
+                                            iconColor = borderColor,
+                                            iconBackgroundColor = iconsTintColor,
+                                            iconColorRunning = iconsTintColor.lighter(0.3f),
+                                            iconSize = iconSize,
+                                            iconPadding = iconPadding,
+                                            iconOuterPadding = iconOuterPadding,
+                                            onTooltip = { item -> tooltipState.show(item) },
+                                            onAppClick = { app -> onAppClick(app) },
+                                            onContextMenuClick = onAppContextMenuClick
+                                        )
+                                        DesktopPanelRunningApps(
+                                            iconColor = borderColor,
+                                            iconBackgroundColor = iconsTintColor,
+                                            iconColorRunning = iconsTintColor.lighter(0.3f),
+                                            iconSize = iconSize,
+                                            iconPadding = iconPadding,
+                                            iconOuterPadding = iconOuterPadding,
+                                            onTooltip = { item -> tooltipState.show(item) },
+                                            onWindowClick = { window, _ ->
+                                                if (window.focused) {
+                                                    windowsManager.minimizeWindow(window)
+                                                } else {
+                                                    windowsManager.activateWindow(window)
+                                                }
+                                            },
+                                            onWindowContextMenuClick = { window, _ ->
+                                                windowsManager.closeWindow(window)
+                                            }
+                                        )
+                                    }
                                     DesktopPanelTray(
                                         modifier = Modifier.align(Alignment.CenterEnd)
                                             .padding(end = 16.dp),

@@ -20,6 +20,10 @@ class Theme(
     panelContentPadding: Dp,
     panelHideDelay: Long,
 
+    // grace period before a popup window (menu, control center) hides after
+    // losing focus; absorbs the focus bounce of the wayland compositor
+    windowFocusGraceDelay: Long,
+
     controlCenterLocation: ControlCenterLocation,
     controlPanelHideDelay: Long,
     controlCenterExpandedWidthPercent: Int,
@@ -42,6 +46,7 @@ class Theme(
     val panelLocationState = mutableStateOf(panelLocation)
     val panelHideDelayState = mutableStateOf(panelHideDelay)
     val panelDividerWidthState = mutableStateOf(panelDividerWidth)
+    val windowFocusGraceDelayState = mutableStateOf(windowFocusGraceDelay)
     val panelContentPaddingState = mutableStateOf(panelContentPadding)
 
     val controlCenterLocationState = mutableStateOf(controlCenterLocation)
@@ -68,6 +73,7 @@ class Theme(
     val panelDividerWidth get() = panelDividerWidthState.value
     val panelContentPadding get() = panelContentPaddingState.value
     val panelHideDelay get() = panelHideDelayState.value
+    val windowFocusGraceDelay get() = windowFocusGraceDelayState.value
 
     val controlCenterBackgroundAlphaState = mutableStateOf(controlCenterBackgroundAlpha)
     val controlCenterLocation get() = controlCenterLocationState.value
@@ -104,6 +110,7 @@ class Theme(
             panelDividerWidth = 16.dp,
             panelContentPadding = 4.dp,
             panelHideDelay = 2000L,
+            windowFocusGraceDelay = 300L,
 
             controlCenterLocation = ControlCenterLocation.Right,
             controlPanelHideDelay = 2000L,
