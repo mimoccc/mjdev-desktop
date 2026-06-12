@@ -102,6 +102,10 @@ tasks.register("runNested") {
     val compositorBinary = project(":compositor").layout.buildDirectory
         .file("bin/linuxX64/mjdevcDebugExecutable/mjdevc.kexe").get().asFile
     doLast {
+        // the IDE stop button kills the gradle build but not the spawned
+        // compositor - kill any leftover instance so only one nested
+        // window exists at a time (pkill -x: comm match, never -f)
+        ProcessBuilder("pkill", "-x", compositorBinary.name).start().waitFor()
         val process = ProcessBuilder(
             compositorBinary.absolutePath,
             "--shell-cmd", shellBinary.absolutePath
