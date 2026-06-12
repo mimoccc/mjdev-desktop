@@ -91,7 +91,7 @@ fun ControlCenter(
                 modifier = Modifier.fillMaxHeight()
                     .wrapContentSize()
                     .background(
-                        backgroundColor.copy(alpha = controlCenterBackgroundAlpha)
+                        controlCenterColor.copy(alpha = controlCenterBackgroundAlpha)
                     ),
             ) {
                 Row(
@@ -103,7 +103,7 @@ fun ControlCenter(
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxHeight()
-                                .background(backgroundColor)
+                                .background(controlCenterColor)
                                 .padding(8.dp),
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.Start
@@ -142,7 +142,7 @@ fun ControlCenter(
                                         },
                                     imageVector = page.icon,
                                     contentDescription = "",
-                                    tint = if (pagerState.value == idx) backgroundColor else textColor
+                                    tint = if (pagerState.value == idx) controlCenterColor else textColor
                                 )
                             }
                         }

@@ -72,6 +72,44 @@ project(":composeApp").tasks.matching { task -> task.name == "run" }.configureEa
     }
 }
 
+// installs the debug build on the connected device/emulator and launches it
+tasks.register("runAndroid") {
+    group = "mjdev"
+    description = "Install and run the android app on a connected device."
+    dependsOn(":composeApp:installDebug")
+    val sdkDir = System.getenv("ANDROID_HOME")
+        ?: System.getenv("ANDROID_SDK_ROOT")
+        ?: "${System.getProperty("user.home")}/Android/Sdk"
+    val appId = libs.versions.app.pkg.name.get()
+    doLast {
+        val process = ProcessBuilder(
+            "$sdkDir/platform-tools/adb", "shell", "am", "start",
+            "-n", "$appId/.activity.MainActivity"
+        ).inheritIO().start()
+        check(process.waitFor() == 0) { "adb launch failed" }
+    }
+}
+
+// runs the whole desktop nested in a window inside the current wayland
+// session - testing without logging out; the compositor starts the
+// distributable desktop binary as its shell
+tasks.register("runNested") {
+    group = "mjdev"
+    description = "Run compositor + desktop nested inside the current session."
+    dependsOn(":composeApp:createDistributable", ":compositor:linkMjdevcDebugExecutableLinuxX64")
+    val appName = libs.versions.app.name.get()
+    val shellBinary = rootDir.resolve("packages/main/app/$appName/bin/$appName")
+    val compositorBinary = project(":compositor").layout.buildDirectory
+        .file("bin/linuxX64/mjdevcDebugExecutable/mjdevc.kexe").get().asFile
+    doLast {
+        val process = ProcessBuilder(
+            compositorBinary.absolutePath,
+            "--shell-cmd", shellBinary.absolutePath
+        ).inheritIO().start()
+        check(process.waitFor() == 0) { "nested compositor exited with error" }
+    }
+}
+
 //</editor-fold>------------------------------------------------------------------------------------
 
 //<editor-fold desc="mjdev packaging tasks">---------------------------------------------------------
@@ -82,35 +120,39 @@ tasks.register("packageMjdevDeb") {
     group = "mjdev"
     description = "Builds one deb with the desktop, the compositor and the wayland session."
     dependsOn(":composeApp:createDistributable", ":compositor:linkMjdevcReleaseExecutableLinuxX64")
+    // all values are captured as locals at configuration time, the doLast
+    // closure must not capture the script object (configuration cache)
+    val appName = libs.versions.app.name.get()
+    val version = libs.versions.app.pkg.version.get()
+    val appDescription = libs.versions.app.description.get()
+    // catalog format is "email<Name>", debian control wants "Name <email>"
+    val maintainer = Regex("(.+)<(.+)>").find(libs.versions.app.maintainer.get())
+        ?.let { "${it.groupValues[2].trim()} <${it.groupValues[1].trim()}>" }
+        ?: libs.versions.app.maintainer.get()
+    val stage = layout.buildDirectory.dir("deb/$appName").get().asFile
+    val appImage = rootDir.resolve("packages/main/app/$appName")
+    val compositorBinary = project(":compositor").layout.buildDirectory
+        .file("bin/linuxX64/mjdevcReleaseExecutable/mjdevc.kexe").get().asFile
+    val sessionDir = rootDir.resolve("session")
+    val debFile = rootDir.resolve("release/$appName-$version.deb")
     doLast {
-        val appName = libs.versions.app.name.get()
-        val version = libs.versions.app.pkg.version.get()
-        val appDescription = libs.versions.app.description.get()
-        // catalog format is "email<Name>", debian control wants "Name <email>"
-        val maintainer = Regex("(.+)<(.+)>").find(libs.versions.app.maintainer.get())
-            ?.let { "${it.groupValues[2].trim()} <${it.groupValues[1].trim()}>" }
-            ?: libs.versions.app.maintainer.get()
-        val stage = layout.buildDirectory.dir("deb/$appName").get().asFile
+        // ProcessBuilder on purpose, Task.exec {} and script helpers are
+        // not usable with the configuration cache
+        fun run(vararg args: String) {
+            val process = ProcessBuilder(*args).inheritIO().start()
+            check(process.waitFor() == 0) { "command failed: ${args.joinToString(" ")}" }
+        }
         stage.deleteRecursively()
 
-        copy {
-            from(rootDir.resolve("packages/main/app/$appName"))
-            into(stage.resolve("opt/$appName"))
-        }
-        copy {
-            from(project(":compositor").layout.buildDirectory
-                .file("bin/linuxX64/mjdevcReleaseExecutable/mjdevc.kexe"))
-            into(stage.resolve("usr/bin"))
-            rename { "mjdevc" }
-        }
-        copy {
-            from(rootDir.resolve("session/mjdev-session"))
-            into(stage.resolve("usr/bin"))
-        }
-        copy {
-            from(rootDir.resolve("session/mjdev.desktop"))
-            into(stage.resolve("usr/share/wayland-sessions"))
-        }
+        appImage.copyRecursively(stage.resolve("opt/$appName"), overwrite = true)
+        compositorBinary.copyTo(stage.resolve("usr/bin/mjdevc"), overwrite = true)
+        sessionDir.resolve("mjdev-session")
+            .copyTo(stage.resolve("usr/bin/mjdev-session"), overwrite = true)
+        sessionDir.resolve("mjdev.desktop")
+            .copyTo(stage.resolve("usr/share/wayland-sessions/mjdev.desktop"), overwrite = true)
+        // user unit for autostart without a display manager (kiosk/embedded)
+        sessionDir.resolve("mjdev-desktop.service")
+            .copyTo(stage.resolve("usr/lib/systemd/user/mjdev-desktop.service"), overwrite = true)
 
         val installedKb = stage.walkTopDown()
             .filter { it.isFile }.sumOf { it.length() } / 1024
@@ -132,17 +174,16 @@ tasks.register("packageMjdevDeb") {
             """.trimIndent() + "\n"
         )
 
-        exec {
-            commandLine("chmod", "755",
-                stage.resolve("usr/bin/mjdevc").absolutePath,
-                stage.resolve("usr/bin/mjdev-session").absolutePath)
-        }
-        val debFile = rootDir.resolve("release/$appName-$version.deb")
+        run(
+            "chmod", "755",
+            stage.resolve("usr/bin/mjdevc").absolutePath,
+            stage.resolve("usr/bin/mjdev-session").absolutePath
+        )
         debFile.parentFile.mkdirs()
-        exec {
-            commandLine("dpkg-deb", "--build", "--root-owner-group",
-                stage.absolutePath, debFile.absolutePath)
-        }
+        run(
+            "dpkg-deb", "--build", "--root-owner-group",
+            stage.absolutePath, debFile.absolutePath
+        )
         println("deb created: $debFile")
     }
 }
@@ -152,25 +193,64 @@ tasks.register("packageMjdevAppImage") {
     group = "mjdev"
     description = "Packs the desktop app image into release/ as a portable tar.gz."
     dependsOn(":composeApp:createDistributable")
+    val appName = libs.versions.app.name.get()
+    val version = libs.versions.app.pkg.version.get()
+    val image = rootDir.resolve("packages/main/app/$appName")
+    val out = rootDir.resolve("release/$appName-$version-linux-x64.tar.gz")
     doLast {
-        val appName = libs.versions.app.name.get()
-        val version = libs.versions.app.pkg.version.get()
-        val image = rootDir.resolve("packages/main/app/$appName")
-        val out = rootDir.resolve("release/$appName-$version-linux-x64.tar.gz")
-        out.parentFile.mkdirs()
-        exec {
-            commandLine("tar", "czf", out.absolutePath,
-                "-C", image.parentFile.absolutePath, appName)
+        fun run(vararg args: String) {
+            val process = ProcessBuilder(*args).inheritIO().start()
+            check(process.waitFor() == 0) { "command failed: ${args.joinToString(" ")}" }
         }
+        out.parentFile.mkdirs()
+        run(
+            "tar", "czf", out.absolutePath,
+            "-C", image.parentFile.absolutePath, appName
+        )
         println("app image created: $out")
     }
 }
 
-// everything the release workflow publishes - currently deb + app image
+// android apk copied next to the deb in release/
+tasks.register("packageMjdevApk") {
+    group = "mjdev"
+    description = "Builds the android apk into release/."
+    dependsOn(":composeApp:assembleRelease")
+    val appName = libs.versions.app.name.get()
+    val version = libs.versions.app.pkg.version.get()
+    val apk = project(":composeApp").layout.buildDirectory
+        .file("outputs/apk/release/composeApp-release.apk").get().asFile
+    val out = rootDir.resolve("release/$appName-$version-android.apk")
+    doLast {
+        out.parentFile.mkdirs()
+        apk.copyTo(out, overwrite = true)
+        println("apk created: $out")
+    }
+}
+
+// installs the whole desktop (shell, compositor, wayland session) from the
+// freshly built deb, after this the mjdev session is selectable on gdm
+tasks.register("installDesktop") {
+    group = "mjdev"
+    description = "Builds the deb and installs it (sudo), session ready on gdm."
+    dependsOn("packageMjdevDeb")
+    val appName = libs.versions.app.name.get()
+    val version = libs.versions.app.pkg.version.get()
+    val debFile = rootDir.resolve("release/$appName-$version.deb")
+    doLast {
+        val process = ProcessBuilder(
+            "sudo", "apt-get", "install", "-y", "--reinstall", debFile.absolutePath
+        ).inheritIO().start()
+        check(process.waitFor() == 0) { "installation failed" }
+        println("installed - the mjdev session is available on the login screen")
+    }
+}
+
+// everything the release workflow publishes - deb + app image + apk
 tasks.register("buildAll") {
     group = "mjdev"
-    description = "Builds every distributable package into release/ (deb + app image)."
-    dependsOn("packageMjdevDeb", "packageMjdevAppImage")
+    description = "Builds every distributable package into release/ (deb + app image + apk)."
+    dependsOn("packageMjdevDeb", "packageMjdevAppImage", "packageMjdevApk")
 }
 
 //</editor-fold>------------------------------------------------------------------------------------

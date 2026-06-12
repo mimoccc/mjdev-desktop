@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,17 +51,19 @@ fun AppsList(
     onTooltip: (item: Any?) -> Unit = {},
 ) = withDesktopContext {
     val state = if (category == null) listState else rememberLazyListState()
-    var clickEnabled = remember { true }
+    val clickEnabled = remember { mutableStateOf(true) }
     LazyColumn(
+        // drag to scroll - mouse drag on desktop, touch drag on android;
+        // drag down reveals earlier content, so the delta is inverted
         modifier = modifier.draggable(
-            orientation = Orientation.Horizontal,
+            orientation = Orientation.Vertical,
             state = rememberDraggableState { delta ->
                 runAsync {
-                    state.scrollBy(delta * 8) // todo remove magic number
+                    state.scrollBy(-delta)
                 }
             },
-            onDragStarted = { clickEnabled = false },
-            onDragStopped = { clickEnabled = true },
+            onDragStarted = { clickEnabled.value = false },
+            onDragStopped = { clickEnabled.value = true },
         ),
         state = state,
     ) {
@@ -71,8 +74,8 @@ fun AppsList(
                         category = item as Category,
                         showDivider = (items.size - 1) > idx,
                         dividerColor = textColor.alpha(0.3f),
-                        onClick = { if (clickEnabled) onCategoryClick(item) },
-                        onContextMenuClick = { if (clickEnabled) onCategoryContextMenuClick(item) },
+                        onClick = { if (clickEnabled.value) onCategoryClick(item) },
+                        onContextMenuClick = { if (clickEnabled.value) onCategoryContextMenuClick(item) },
                         onTooltip = onTooltip
                     )
                 }
@@ -85,10 +88,10 @@ fun AppsList(
                         showDivider = (items.size - 1) > idx,
                         dividerColor = textColor.alpha(0.3f),
                         onClick = {
-                            onAppClick(item)
+                            if (clickEnabled.value) onAppClick(item)
                         },
                         onContextMenuClick = {
-                            onAppContextMenuClick(item)
+                            if (clickEnabled.value) onAppContextMenuClick(item)
                         },
                         onTooltip = onTooltip
                     )

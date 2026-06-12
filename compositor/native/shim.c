@@ -779,12 +779,12 @@ static void xdg_toplevel_commit(struct wl_listener *listener, void *data) {
     (void) data;
     struct mjc_view *view = wl_container_of(listener, view, commit);
     if (view->xdg_toplevel->base->initial_commit) {
-        if (view->xdg_toplevel->requested.maximized) {
-            mjc_view_set_maximized(view, true);
-        } else {
-            /* 0x0 lets the client pick its own (or remembered) size */
-            wlr_xdg_toplevel_set_size(view->xdg_toplevel, 0, 0);
-        }
+        /* the client maximize request is deliberately ignored here: apps
+         * with a polluted "was maximized" state would open fullscreen
+         * (a fullscreen calculator helps nobody) - the user driven state
+         * comes back from the geometry store after map instead;
+         * 0x0 lets the client pick its own size */
+        wlr_xdg_toplevel_set_size(view->xdg_toplevel, 0, 0);
         return;
     }
     if (view->pending_center && view->mapped && !view->maximized &&
@@ -837,7 +837,13 @@ static void xdg_toplevel_request_maximize(struct wl_listener *listener, void *da
     (void) data;
     struct mjc_view *view = wl_container_of(listener, view, request_maximize);
     if (view->xdg_toplevel->base->initialized) {
-        mjc_view_set_maximized(view, view->xdg_toplevel->requested.maximized);
+        /* pre-map requests are apps restoring their own remembered state
+         * (a fullscreen calculator helps nobody) - at open time the last
+         * state the user left the app in (geometry store) wins instead,
+         * only post-map requests are real user actions */
+        if (view->mapped) {
+            mjc_view_set_maximized(view, view->xdg_toplevel->requested.maximized);
+        }
         wlr_xdg_surface_schedule_configure(view->xdg_toplevel->base);
     }
 }
@@ -1115,9 +1121,13 @@ static void xwayland_surface_request_maximize(struct wl_listener *listener,
     if (xsurface == NULL) {
         return;
     }
-    /* the client announces the state it wants via _NET_WM_STATE */
-    mjc_view_set_maximized(view,
-        xsurface->maximized_vert && xsurface->maximized_horz);
+    /* the client announces the state it wants via _NET_WM_STATE;
+     * pre-map announcements are startup restores - ignored, the
+     * geometry store decides the open state instead */
+    if (view->mapped) {
+        mjc_view_set_maximized(view,
+            xsurface->maximized_vert && xsurface->maximized_horz);
+    }
 }
 
 static void xwayland_surface_set_title(struct wl_listener *listener, void *data) {
@@ -1521,6 +1531,18 @@ void mjc_view_get_geometry(mjc_view *view, int *x, int *y, int *width, int *heig
     *y = box.y;
     *width = box.width;
     *height = box.height;
+}
+
+void mjc_view_get_floating_geometry(mjc_view *view, int *x, int *y,
+        int *width, int *height) {
+    if (view->maximized && view->saved_geo.width > 0) {
+        *x = view->saved_geo.x;
+        *y = view->saved_geo.y;
+        *width = view->saved_geo.width;
+        *height = view->saved_geo.height;
+        return;
+    }
+    mjc_view_get_geometry(view, x, y, width, height);
 }
 
 void mjc_view_close(mjc_view *view) {

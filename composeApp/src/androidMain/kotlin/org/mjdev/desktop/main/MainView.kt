@@ -1,16 +1,19 @@
 package org.mjdev.desktop.main
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +31,8 @@ import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 import org.mjdev.desktop.components.desktop.widgets.MemoryChart
+import org.mjdev.desktop.components.greeter.Greeter
+import org.mjdev.desktop.interfaces.IUser
 
 @SuppressLint("ComposableNaming")
 @Composable
@@ -90,6 +95,28 @@ fun MainView() = withDesktopContext {
                 appsMenuState.show()
             }
         })
+        // swipe right-to-left from the right edge opens the control center
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .fillMaxHeight()
+                .width(24.dp)
+                .pointerInput(Unit) {
+                    val threshold = 48.dp.toPx()
+                    var dragged = 0f
+                    detectHorizontalDragGestures(
+                        onDragStart = { dragged = 0f },
+                        onHorizontalDrag = { _, amount -> dragged += amount },
+                        onDragEnd = {
+                            if (dragged < -threshold) {
+                                runAsync {
+                                    controlCenterState.show()
+                                }
+                            }
+                        }
+                    )
+                }
+        )
         ControlCenter(
             modifier = Modifier
                 .fillMaxHeight()
@@ -115,6 +142,19 @@ fun MainView() = withDesktopContext {
             onActionClick = {},
             onTooltip = onTooltip,
         )
+        // greeter locks the ui until the user authenticates with a
+        // fingerprint or the device credential (system prompt)
+        if (!context.authenticatedState.value && !isDesign) {
+            val onLogin: (user: IUser, password: String) -> Unit = { u, p ->
+                runAsync {
+                    context.authenticate(u, p)
+                }
+            }
+            Greeter(
+                passwordLogin = false,
+                onLogin = onLogin
+            )
+        }
     }
 }
 

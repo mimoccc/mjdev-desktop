@@ -112,6 +112,10 @@ open class DesktopContextScope(
 
     val backgroundColor: Color
         get() = context.palette.backgroundColor
+    val menuColor: Color
+        get() = context.palette.menuColor
+    val controlCenterColor: Color
+        get() = context.palette.controlCenterColor
     val iconsTintColor: Color
         get() = context.palette.iconsTintColor
     val textColor: Color

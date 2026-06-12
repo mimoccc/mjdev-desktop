@@ -1,0 +1,27 @@
+# systemd user service starting the mjdev desktop (compositor + shell)
+# at login/boot without a display manager - kiosk and embedded setups.
+#
+# Installed by the deb into /usr/lib/systemd/user/, disabled by default.
+# Enable per user with:
+#   systemctl --user enable --now mjdev-desktop
+# For a true boot autostart (no login) additionally enable lingering:
+#   sudo loginctl enable-linger <user>
+#
+# A regular desktop login does not need this - gdm starts the session
+# via /usr/share/wayland-sessions/mjdev.desktop.
+
+[Unit]
+Description=mjdev desktop environment (wayland compositor + shell)
+# wayland needs the seat/session dbus infrastructure of the user manager
+After=basic.target
+ConditionPathExists=/usr/bin/mjdev-session
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/mjdev-session
+Restart=on-failure
+RestartSec=2
+# the compositor exports WAYLAND_DISPLAY/DISPLAY for its children itself
+
+[Install]
+WantedBy=default.target

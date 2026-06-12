@@ -1,5 +1,6 @@
 package org.mjdev.desktop.context
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.DpSize
 import coil3.ImageLoader
 import coil3.PlatformContext
@@ -101,6 +102,16 @@ abstract class IDesktopContext : IDisposable {
     abstract suspend fun shutdown()
     abstract suspend fun login(uName: String, uPasswd: String): Boolean
     abstract suspend fun logout(): Boolean
+
+    // greeter/lock state - true once the user authenticated in the greeter
+    val authenticatedState = mutableStateOf(false)
+
+    open suspend fun authenticate(user: IUser, password: String): Boolean =
+        login(user.userName, password).also { ok ->
+            if (ok) {
+                authenticatedState.value = true
+            }
+        }
 
     abstract fun createManager(cls: KClass<*>): IDelegate?
 

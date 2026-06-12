@@ -25,6 +25,9 @@ import org.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun Greeter(
+    // false = platform authenticates without a typed password
+    // (android biometric prompt / device credential)
+    passwordLogin: Boolean = true,
     onLogin: (user: IUser, password: String) -> Unit = { _, _ -> }
 ) = withDesktopContext {
     val user: IUser? by rememberState(context.currentUser)
@@ -44,10 +47,14 @@ fun Greeter(
                 textAlign = TextAlign.Center,
                 circleBorder = 4.dp,
                 onUserAvatarClick = {
-                    passwordVisible = true
+                    if (passwordLogin) {
+                        passwordVisible = true
+                    } else if (user != null) {
+                        onLogin(user!!, "")
+                    }
                 }
             )
-            if (passwordVisible) {
+            if (passwordLogin && passwordVisible) {
                 PasswordTextView(
                     modifier = Modifier.width(256.dp),
 //                        colors = TextFieldDefaults.outlinedTextFieldColors(

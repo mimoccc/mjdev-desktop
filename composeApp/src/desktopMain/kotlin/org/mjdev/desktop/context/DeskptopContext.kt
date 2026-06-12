@@ -13,6 +13,7 @@ import coil3.request.ImageRequest
 import coil3.toBitmap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okio.Path
 import org.mjdev.desktop.data.Category
 import org.mjdev.desktop.data.User
@@ -233,12 +234,31 @@ class DesktopContext(
         Shell.executeAndRead("/usr/sbin/halt", "--poweroff")
     }
 
-    override suspend fun login(uName: String, uPasswd: String): Boolean {
-        return false // todo
-    }
+    /**
+     * verifies the password of a local user against PAM via the
+     * unix_chkpwd helper (the same mechanism screen lockers use);
+     * works for the calling user without root and without extra deps
+     */
+    override suspend fun login(uName: String, uPasswd: String): Boolean =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                val helper = sequenceOf(
+                    "/usr/sbin/unix_chkpwd",
+                    "/sbin/unix_chkpwd",
+                ).firstOrNull { path -> File(path).canExecute() }
+                    ?: return@runCatching false
+                val process = ProcessBuilder(helper, uName, "nullok").start()
+                process.outputStream.use { out ->
+                    out.write(uPasswd.toByteArray())
+                    out.write(0)
+                }
+                process.waitFor() == 0
+            }.getOrDefault(false)
+        }
 
     override suspend fun logout(): Boolean {
-        return false // todo
+        authenticatedState.value = false
+        return true
     }
 
     override fun createManager(cls: KClass<*>): IDelegate = when (cls) {

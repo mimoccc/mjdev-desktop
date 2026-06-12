@@ -125,7 +125,7 @@ fun AppsMenu(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(menuPadding)
-                .background(backgroundColor.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
+                .background(menuColor.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
                 .border(2.dp, borderColor, RoundedCornerShape(24.dp))
                 .clip(RoundedCornerShape(24.dp))
         ) {
@@ -144,12 +144,12 @@ fun AppsMenu(
                     )
                     val brush = Brush.horizontalGradient(
                         listOf(
-                            backgroundColor.darker(0.1f),
-                            backgroundColor.darker(0.1f),
-                            backgroundColor.darker(0.1f),
-                            backgroundColor.alpha(0.9f),
-                            backgroundColor.alpha(0.7f),
-                            backgroundColor.alpha(0.3f),
+                            menuColor.darker(0.1f),
+                            menuColor.darker(0.1f),
+                            menuColor.darker(0.1f),
+                            menuColor.alpha(0.9f),
+                            menuColor.alpha(0.7f),
+                            menuColor.alpha(0.3f),
                         )
                     )
                     Box(
@@ -216,7 +216,7 @@ fun AppsMenu(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .background(backgroundColor),
+                        .background(menuColor),
                     onTooltip = onTooltip,
                     backButtonVisible = items.firstOrNull() is IApp,
                     searchTextState = appsMenuState.searchTextState,

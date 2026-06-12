@@ -101,6 +101,9 @@ bool mjc_view_is_minimized(mjc_view *view);
 bool mjc_view_is_maximized(mjc_view *view);
 bool mjc_view_is_focused(mjc_view *view);
 void mjc_view_get_geometry(mjc_view *view, int *x, int *y, int *width, int *height);
+/* floating (unmaximized) geometry - for maximized views the remembered
+ * restore target, for floating views the current geometry */
+void mjc_view_get_floating_geometry(mjc_view *view, int *x, int *y, int *width, int *height);
 
 void mjc_view_focus(mjc_view *view);
 void mjc_view_close(mjc_view *view);

@@ -23,9 +23,10 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import mjdev.compositor.shim.mjc_view_get_geometry
+import mjdev.compositor.shim.mjc_view_get_floating_geometry
 import mjdev.compositor.shim.mjc_view_is_maximized
 import mjdev.compositor.shim.mjc_view_set_geometry
+import mjdev.compositor.shim.mjc_view_set_maximized
 import platform.posix.fclose
 import platform.posix.fgets
 import platform.posix.fopen
@@ -57,33 +58,36 @@ class GeometryStore {
     }
 
     /**
-     * applies the remembered geometry to a freshly mapped window;
-     * for windows that start maximized the shim keeps it as the
-     * restore target of the next unmaximize
+     * applies the remembered state to a freshly mapped window: the floating
+     * geometry first (it doubles as the restore target of a later
+     * unmaximize) and the remembered maximized flag on top; the last state
+     * the user left the app in wins over whatever the client requested
      */
     fun restore(info: WindowInfo) {
         val geo = entries[keyOf(info) ?: return] ?: return
-        if (geo.size == 4) {
+        if (geo.size >= 4) {
             mjc_view_set_geometry(info.ptr, geo[0], geo[1], geo[2], geo[3])
+        }
+        if (geo.size >= 5 && geo[4] == 1) {
+            mjc_view_set_maximized(info.ptr, true)
         }
     }
 
-    /** captures the current geometry of a window that is going away */
+    /** captures the state of a window that is going away */
     fun remember(info: WindowInfo) {
         val key = keyOf(info) ?: return
-        if (mjc_view_is_maximized(info.ptr)) {
-            return
-        }
+        val maximized = mjc_view_is_maximized(info.ptr)
         memScoped {
             val x = alloc<IntVar>()
             val y = alloc<IntVar>()
             val w = alloc<IntVar>()
             val h = alloc<IntVar>()
-            mjc_view_get_geometry(info.ptr, x.ptr, y.ptr, w.ptr, h.ptr)
+            // floating geometry, for maximized windows the restore target
+            mjc_view_get_floating_geometry(info.ptr, x.ptr, y.ptr, w.ptr, h.ptr)
             if (w.value <= 0 || h.value <= 0) {
                 return
             }
-            val geo = listOf(x.value, y.value, w.value, h.value)
+            val geo = listOf(x.value, y.value, w.value, h.value, if (maximized) 1 else 0)
             if (entries[key] != geo) {
                 entries[key] = geo
                 save()

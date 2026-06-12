@@ -344,6 +344,7 @@ android {
             excludes += "META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/INDEX.LIST"
             excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/io.netty.versions.properties"
         }
     }
     buildTypes {
@@ -354,6 +355,9 @@ android {
             isShrinkResources = false
 //            isRenderscriptDebuggable = true
             isPseudoLocalesEnabled = true
+            // debug signing so the release apk in release/ is installable;
+            // replace with a real keystore for store distribution
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -369,21 +373,28 @@ android {
     }
 }
 
+// desktop app launcher config - single source for the compose `run`
+// task and the kmp `desktopRun` carrier task
+val desktopMainClass = "org.mjdev.desktop.main.MainKt"
+val desktopJvmArgs = buildList {
+    add("-Dprism.order=sw")
+    addAll(listOf("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED"))
+    addAll(listOf("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED"))
+    if (!System.getProperty("os.name").contains("Mac") &&
+        !System.getProperty("os.name").contains("Windows")
+    ) {
+        // WM_CLASS override for the mjdev compositor (Main.setAwtWindowClass)
+        addAll(listOf("--add-opens", "java.desktop/sun.awt.X11=ALL-UNNAMED"))
+    }
+}
+
 // desktop app config
 desktop {
     group = libs.versions.app.pkg.name.get()
     version = libs.versions.app.pkg.version.get()
     application {
-        jvmArgs("-Dprism.order=sw")
-        jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
-        jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED")
-        if (!System.getProperty("os.name").contains("Mac") &&
-            !System.getProperty("os.name").contains("Windows")
-        ) {
-            // WM_CLASS override for the mjdev compositor (Main.setAwtWindowClass)
-            jvmArgs("--add-opens", "java.desktop/sun.awt.X11=ALL-UNNAMED")
-        }
-        mainClass = "org.mjdev.desktop.main.MainKt"
+        jvmArgs(*desktopJvmArgs.toTypedArray())
+        mainClass = desktopMainClass
         nativeDistributions {
             packageName = libs.versions.app.name.get()
             packageVersion = libs.versions.app.pkg.version.get()
@@ -432,3 +443,13 @@ desktop {
 }
 
 //</editor-fold>------------------------------------------------------------------------------------
+
+// the kmp jvm carrier task (desktopRun) knows nothing about the compose
+// application config - without it the task fails with
+// "No main class specified and classpath is not an executable jar"
+tasks.matching { task -> task.name == "desktopRun" }.configureEach {
+    (this as JavaExec).apply {
+        mainClass.set(desktopMainClass)
+        jvmArgs(desktopJvmArgs)
+    }
+}

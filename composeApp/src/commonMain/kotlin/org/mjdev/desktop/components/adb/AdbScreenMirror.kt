@@ -13,13 +13,12 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import dadb.Dadb
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toComposeImageBitmap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.jetbrains.skia.Image as SkiaImage
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.helpers.image.decodeToImageBitmap
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 
 @Preview
@@ -101,10 +100,11 @@ class DeviceState(
                         val bytes = stream.source.readByteArray()
                         stream.close()
                         if (bytes.isNotEmpty()) {
-                            val skiaImage = SkiaImage.makeFromEncoded(bytes)
-                            imageBitmap = skiaImage.toComposeImageBitmap()
-                            screenWidth = skiaImage.width
-                            screenHeight = skiaImage.height
+                            bytes.decodeToImageBitmap()?.let { decoded ->
+                                imageBitmap = decoded
+                                screenWidth = decoded.width
+                                screenHeight = decoded.height
+                            }
                         }
                     } catch (e: Exception) {
                         error = e.message

@@ -1,6 +1,10 @@
 package org.mjdev.desktop.context
 
 import android.annotation.SuppressLint
+import android.hardware.biometrics.BiometricManager
+import android.hardware.biometrics.BiometricPrompt
+import android.os.Build
+import android.os.CancellationSignal
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -10,8 +14,13 @@ import androidx.core.app.ComponentActivity
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.compose.LocalPlatformContext
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
+import org.mjdev.desktop.R
 import org.mjdev.desktop.data.Category
 import org.mjdev.desktop.data.User
 import org.mjdev.desktop.extensions.Compose.isDesign
@@ -114,12 +123,62 @@ class DesktopContext(
     override suspend fun open(what: Any?) {
     }
 
+    /**
+     * fingerprint or device credential (pin/pattern/password) via the
+     * framework biometric prompt - the password argument is unused,
+     * the system dialog collects the credential itself
+     */
     override suspend fun login(uName: String, uPasswd: String): Boolean {
-        return false
+        val activity = context ?: return false
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            // no biometric prompt api below 28 - nothing to verify against
+            return true
+        }
+        return withContext(Dispatchers.Main) {
+            suspendCancellableCoroutine { cont ->
+                val executor = ContextCompat.getMainExecutor(activity)
+                val builder = BiometricPrompt.Builder(activity)
+                    .setTitle(activity.getString(R.string.app_name))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    builder.setAllowedAuthenticators(
+                        BiometricManager.Authenticators.BIOMETRIC_WEAK or
+                                BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    builder.setDeviceCredentialAllowed(true)
+                }
+                val signal = CancellationSignal()
+                cont.invokeOnCancellation { signal.cancel() }
+                builder.build().authenticate(
+                    signal,
+                    executor,
+                    object : BiometricPrompt.AuthenticationCallback() {
+                        override fun onAuthenticationSucceeded(
+                            result: BiometricPrompt.AuthenticationResult?
+                        ) {
+                            if (cont.isActive) {
+                                cont.resume(true)
+                            }
+                        }
+
+                        override fun onAuthenticationError(
+                            errorCode: Int,
+                            errString: CharSequence?
+                        ) {
+                            if (cont.isActive) {
+                                cont.resume(false)
+                            }
+                        }
+                    }
+                )
+            }
+        }
     }
 
     override suspend fun logout(): Boolean {
-        return false
+        authenticatedState.value = false
+        return true
     }
 
     override fun dispose() {

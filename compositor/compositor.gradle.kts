@@ -71,15 +71,19 @@ val compileShim = tasks.register<Exec>("compileShim") {
     dependsOn(generateProtocols)
     inputs.files(nativeDir.resolve("shim.c"), nativeDir.resolve("shim.h"))
     outputs.file(shimDir.map { it.file("libmjcshim.a") })
+    // locals only - the doFirst closure must not capture the script object,
+    // the configuration cache cannot serialize script references
+    val out = shimDir.get().asFile
+    val protoDir = protocolsDir.get().asFile
+    val srcDir = nativeDir
+    val cflags = wlrCflags.joinToString(" ")
     doFirst {
-        val out = shimDir.get().asFile
-        val cflags = wlrCflags.joinToString(" ")
         commandLine(
             "bash", "-c",
             "mkdir -p '$out' && " +
                     "cc -O2 -fPIC -DWLR_USE_UNSTABLE -std=c11 " +
-                    "-I'${protocolsDir.get().asFile}' -I'$nativeDir' $cflags " +
-                    "-c '${nativeDir.resolve("shim.c")}' -o '$out/shim.o' && " +
+                    "-I'$protoDir' -I'$srcDir' $cflags " +
+                    "-c '${srcDir.resolve("shim.c")}' -o '$out/shim.o' && " +
                     "ar rcs '$out/libmjcshim.a' '$out/shim.o'"
         )
     }
@@ -145,6 +149,7 @@ tasks.register<Copy>("stageSession") {
     }
     from(rootProject.file("session/mjdev-session"))
     from(rootProject.file("session/mjdev.desktop"))
+    from(rootProject.file("session/mjdev-desktop.service"))
     from(nativeDir.resolve("install.sh"))
     into(layout.buildDirectory.dir("session-install"))
 }
@@ -153,8 +158,9 @@ tasks.register("installSession") {
     group = "mjdev"
     description = "Prints the command installing the mjdev wayland session (needs sudo)."
     dependsOn("stageSession")
+    // local only - the doLast closure must not capture the script object
+    val dir = layout.buildDirectory.dir("session-install").get().asFile
     doLast {
-        val dir = layout.buildDirectory.dir("session-install").get().asFile
         println("Session staged. Install it with:")
         println("  sudo sh '$dir/install.sh'")
     }
@@ -165,10 +171,11 @@ tasks.register<Exec>("runNested") {
     description = "Runs the compositor nested inside the current Wayland session."
     dependsOn("linkMjdevcDebugExecutableLinuxX64")
     val shellCmd = (project.findProperty("shellCmd") as String?)
+    // local only - the doFirst closure must not capture the script object
+    val binary = layout.buildDirectory
+        .file("bin/linuxX64/mjdevcDebugExecutable/mjdevc.kexe")
+        .get().asFile.absolutePath
     doFirst {
-        val binary = layout.buildDirectory
-            .file("bin/linuxX64/mjdevcDebugExecutable/mjdevc.kexe")
-            .get().asFile.absolutePath
         val args = mutableListOf(binary)
         if (shellCmd != null) {
             args += listOf("--shell-cmd", shellCmd)

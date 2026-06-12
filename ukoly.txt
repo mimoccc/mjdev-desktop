@@ -1,11 +1,41 @@
+STEP 1:
+- ako tradicne je porusena hlavni myslenka, t.j. ze se komponenty compose celeho projektu
+jejich background a foreground color zmeni dle pozadi tak, aby vyzerali jako soucast obrazku, t.j.
+barvy se po novem nemeni, tak si to checkni a oprav. Chci at to vypada fotorealisticky. a texty a
+ikonky jsou mega citelne, t.j. inverzni ale ne do oci bijici.
+
+- zadal jsem at se vytvori ght 2/3/4 tema tak aby aplikace byli vyrenderovany prave dle toho jaky je
+background, kdyz je majoritni barva zelena budou mit zelene okenko, kdyz modra, modre, ma se zmenit
+okamzite i u jiz otevrenych oken, i kuli tomu jsme delali ten zasrany kompozer
+
+- zadal jsem te, aby se aplikace otevreli dle toho jak si sami zadaji,
+nebo jejich posledni znama uzivatelem zmenena velikost. oteviraji se fullscreen, ja nechapu proc by
+uzivatel potreboval fullscreen kalkulator, asi aby nevidel text v dokumentu ktery chce spocitat?
+OPRAV To.
 - v main menu, ktere se zobrazi pri kliku na prvni ikonku spodniho baru s favorites a running apps
-chci na list s aplikacemi drag to scroll, multiplatform i pro android i pro desktop
+chci na list s aplikacemi drag to scroll, multiplatform i pro android i pro desktop, mozna uz je to
+opravene mergem, skontroluj to.
 - buildAll task a yaml soubor pro github action ktera vygeneruje releases na githubu,
-zatim min apk pro android a deb pro linux
+zatim min apk pro android a deb pro linux, skontroluj.
 - contol panel by mel byt na androidu zobrazitelny pomoci swipe gestury right to left
 - oddel greeter, je tam komponenta a vytvor i greeter pro linux i android nebo to nejak sjednot, tak,
 at to na linuxu funguje prihlaseni uzivatele, na androidu proste umozni prihlasit se prstem nebo heslem.
 - pro linux vytvor systemd service pro spousteni aplikace pri startu systemu
+- jak bylo pozadovano, cely desktop i s kompozerem a greeterem musi byt instalovatelny jednym
+balickem a skontroluj dependencies, vyhod co netreba.
+
+STEP 2:
+- greeter ma zobrazit moznost vybrat uzivatele, pokud je nekdo prihlasenej greeter automaticky neni potrebny.
+a kdyz se klikne na uzivatele, umozni zadat heslo, t.j. fokus na password field. a po zmacknuti
+enter nebo sipky se pokusi prihlasit.
+pokud selze zobrazi se hlaska proc a umozni znovu se prihlasit, t.j. fokus na password field.
+- v emulatoru si vyzkousej apku a at bezi.
+
+STEP 3:
+- adb view, tedy okno s mobilem chci v pravym rohu a mozne ho collapsnout, kdy se pak zobrazi
+jako ikonka pro znovuotvoreni, styl v ideas folderi v roote projektu.
+
+STEP 4:
 - dopln sekce v kontrol panelu, multiplatform, co jde, jsou tam predpripravene pages,
 zachovej strukturu a pluginnable system predtim navrzen
 - zkontroluj kod a navrhni vylepseni, chci aby zustala myslenka wallpaper jako vychozi pro

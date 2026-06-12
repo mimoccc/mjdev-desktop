@@ -10,6 +10,10 @@ interface IPalette : IDisposable, IDelegate {
     val backgroundColor: Color
     val textColor: Color
     val iconsTintColor: Color
+
+    // component colors taken from the wallpaper region they appear over
+    val menuColor: Color
+    val controlCenterColor: Color
     val borderColor: Color
     val disabledColor: Color
     val selectedBgColor: Color
@@ -27,6 +31,8 @@ interface IPalette : IDisposable, IDelegate {
             override val backgroundColor: Color = Color.SuperDarkGray
             override val textColor: Color = Color.White
             override val iconsTintColor: Color = Color.White
+            override val menuColor: Color = Color.SuperDarkGray
+            override val controlCenterColor: Color = Color.SuperDarkGray
             override val borderColor: Color = Color.White
             override val disabledColor: Color = Color.SuperDarkGray
             override val selectedBgColor: Color = Color.White
