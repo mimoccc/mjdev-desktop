@@ -55,6 +55,7 @@ import java.io.File
 import java.net.URI
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
+import kotlin.reflect.full.companionObjectInstance
 import org.mjdev.desktop.managers.keys.KeysManager
 
 @Suppress("RedundantSuspendModifier", "unused", "MemberVisibilityCanBePrivate")
@@ -279,7 +280,8 @@ class DesktopContext(
         IProcessManager::class -> ProcessManager(this)
         IKeyManager::class -> KeysManager(this)
         IWindowsManager::class -> WindowsManager(this)
-        else -> cls.companionObject?.members?.first { it.name == "EMPTY" }?.call() as IDelegate
+        else -> cls.companionObject?.members?.first { it.name == "EMPTY" }
+            ?.call(cls.companionObjectInstance) as IDelegate
     }
 
     override suspend fun restart() {

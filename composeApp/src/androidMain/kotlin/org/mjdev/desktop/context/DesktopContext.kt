@@ -55,6 +55,7 @@ import org.mjdev.desktop.managers.keys.KeysManager
 import org.mjdev.desktop.managers.palette.Palette
 import org.mjdev.desktop.managers.theme.ThemeManager
 import kotlin.reflect.full.companionObject
+import kotlin.reflect.full.companionObjectInstance
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class DesktopContext(
@@ -203,7 +204,7 @@ class DesktopContext(
         IKeyManager::class -> KeysManager(this)
         else -> cls.companionObject?.members?.first {
             it.name == "EMPTY"
-        }?.call() as IDelegate
+        }?.call(cls.companionObjectInstance) as IDelegate
     }
 
     companion object {

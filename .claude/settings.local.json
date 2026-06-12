@@ -72,7 +72,8 @@
       "Bash(convert /tmp/nested.xwd /tmp/nested-desktop.png)",
       "Bash(DISPLAY=:2 import -window 0x200003 /tmp/nested-desktop.png)",
       "Bash(./gradlew -Dorg.gradle.java.home=/home/mimo/.local/share/JetBrains/Toolbox/apps/android-studio-2/jbr packageMjdevDeb)",
-      "Bash(./gradlew installDesktop --dry-run)"
+      "Bash(./gradlew installDesktop --dry-run)",
+      "Bash(adb logcat *)"
     ]
   }
 }
