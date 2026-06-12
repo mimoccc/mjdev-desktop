@@ -62,7 +62,17 @@
       "Bash(pkill -f MainKt)",
       "Bash(./gradlew :composeApp:dependencies --configuration desktopRuntimeClasspath)",
       "Bash(awk '{print $1}')",
-      "Bash(./gradlew help *)"
+      "Bash(./gradlew help *)",
+      "Bash(./gradlew runNested *)",
+      "Bash(gnome-screenshot -f /tmp/screen-test.png)",
+      "Bash(gdbus call *)",
+      "Bash(import -display :2 -window root /tmp/nested-desktop.png)",
+      "Bash(DISPLAY=:2 xwininfo -root -tree)",
+      "Bash(DISPLAY=:2 xwd -root -silent -out /tmp/nested.xwd)",
+      "Bash(convert /tmp/nested.xwd /tmp/nested-desktop.png)",
+      "Bash(DISPLAY=:2 import -window 0x200003 /tmp/nested-desktop.png)",
+      "Bash(./gradlew -Dorg.gradle.java.home=/home/mimo/.local/share/JetBrains/Toolbox/apps/android-studio-2/jbr packageMjdevDeb)",
+      "Bash(./gradlew installDesktop --dry-run)"
     ]
   }
 }

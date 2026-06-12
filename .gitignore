@@ -44,9 +44,14 @@ MediaDeviceSalts-journal
 sources/
 /sources
 /sources/
+
+### local props
 /local.properties
+
+### releases
 release/
-!/release/
+/release
+/release/
 
 ### no keys
 composeApp/src/commonMain/resources/keys/*.key

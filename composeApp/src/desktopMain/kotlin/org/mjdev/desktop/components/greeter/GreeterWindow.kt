@@ -23,7 +23,8 @@ fun GreeterWindow() = withDesktopContext {
         position = DpOffset.Zero,
         // greeter acts as the session lock screen until the password
         // is verified; debug runs skip it to not block development
-        visible = !authenticated && !isDebug,
+        // todo temporarily disabled on user request
+        visible = false && !authenticated && !isDebug,
         enabled = true,
         transparent = true,
         resizable = false,

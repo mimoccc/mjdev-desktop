@@ -43,6 +43,9 @@ class Palette(
     val sampleGrid: Int = 64,
     // minimal required difference between a color and its background (128/255)
     val minContrast: Float = 128f / 255f,
+    // how much the text color is calmed from the accent toward the
+    // neutral inverse (0 = full accent, 1 = plain black/white)
+    val textNeutralBlend: Float = 0.4f,
 ) : IPalette {
     val backgroundColorState: MutableState<Color> = mutableStateOf(initialColor)
 
@@ -167,57 +170,72 @@ class Palette(
      * - background: the darkest corner cut-out (legacy behavior)
      * - menu: dominant color of the bottom left corner (where it opens)
      * - control center: majority color of the right edge strip
-     * - icons: wallpaper center decides - light center picks the darkest
-     *   wallpaper color, dark center the lightest one
-     * - every on-background color is pushed to at least [minContrast]
-     *   luminance distance so texts and icons stay readable
+     * - accent: the most vivid color of the wallpaper (saturation
+     *   weighted by occurrence) - the photorealistic touch, foregrounds
+     *   carry the hue of the picture instead of plain gray
+     * - icons: the accent pushed to full readability (icons are texts)
+     * - text: the same hue calmed toward the neutral inverse
+     * - every foreground keeps at least [minContrast] (128/255) luminance
+     *   distance from the background
      */
     private fun analyze(image: ImageBitmap): ComputedPalette {
         val width = image.width
         val height = image.height
         val region = min(regionSize, min(width, height))
-        val leftTop = image.dominantColor(0, 0, region, region)
-        val rightTop = image.dominantColor(width - region, 0, region, region)
-        val leftBottom = image.dominantColor(0, height - region, region, region)
-        val rightBottom = image.dominantColor(width - region, height - region, region, region)
-        val center = image.dominantColor((width - region) / 2, (height - region) / 2, region, region)
-        val rightStrip = image.dominantColor(width - region, 0, region, height)
+        val leftTop = image.analyzeRegion(0, 0, region, region)
+        val rightTop = image.analyzeRegion(width - region, 0, region, region)
+        val leftBottom = image.analyzeRegion(0, height - region, region, region)
+        val rightBottom = image.analyzeRegion(width - region, height - region, region, region)
+        val center = image.analyzeRegion((width - region) / 2, (height - region) / 2, region, region)
+        val rightStrip = image.analyzeRegion(width - region, 0, region, height)
 
         val corners = listOf(leftTop, rightTop, leftBottom, rightBottom)
-        val sampled = corners + center + rightStrip
-        val darkest = sampled.minBy { color -> color.luminance() }
-        val lightest = sampled.maxBy { color -> color.luminance() }
+        val regions = corners + center + rightStrip
+        val darkest = regions.minBy { stats -> stats.dominant.luminance() }.dominant
+        val lightest = regions.maxBy { stats -> stats.dominant.luminance() }.dominant
 
-        val background = corners.minBy { color -> color.nonAlphaValue }
+        val background = corners.minBy { stats -> stats.dominant.nonAlphaValue }.dominant
+        // the most vivid color of the whole wallpaper; dull images fall
+        // back to the readable extreme so gray photos degrade gracefully
+        val accent = regions.maxBy { stats -> stats.accentScore }
+            .takeIf { stats -> stats.accentScore > 0f }?.accent
+            ?: if (background.isLightColor) darkest else lightest
         // foreground rule: texts and icons (icons are texts) must differ
         // from the background by at least minContrast (128/255)
+        val icons = ensureContrast(accent, against = background)
         val text = ensureContrast(
-            if (background.isLightColor) background.darker(textFactor)
-            else background.lighter(textFactor),
-            against = background,
-        )
-        // icon base by background type: light background picks the darkest
-        // wallpaper color, dark background the lightest one
-        val icons = ensureContrast(
-            if (background.isLightColor) darkest else lightest,
+            lerp(
+                icons,
+                if (background.isLightColor) Color.Black else Color.White,
+                textNeutralBlend,
+            ),
             against = background,
         )
         return ComputedPalette(
             background = background,
             text = text,
-            menu = leftBottom,
-            controlCenter = rightStrip,
+            menu = leftBottom.dominant,
+            controlCenter = rightStrip.dominant,
             icons = icons,
         )
     }
 
+    private class RegionStats(
+        // most frequent color of the region (surface color)
+        val dominant: Color,
+        // most vivid color of the region (saturation weighted by count)
+        val accent: Color,
+        val accentScore: Float,
+    )
+
     /**
-     * Dominant color of a wallpaper region: pixels are sampled on a
-     * [sampleGrid] grid, quantized to 4 bits per channel and the winning
-     * bucket is averaged back to a smooth representative color.
+     * Region statistics in one pass: pixels are sampled on a [sampleGrid]
+     * grid, quantized to 4 bits per channel; the most frequent bucket is
+     * averaged back to a smooth dominant color, the bucket with the best
+     * saturation x occurrence score becomes the accent color.
      * One pixel-map read per region, no bitmap copies.
      */
-    private fun ImageBitmap.dominantColor(x: Int, y: Int, w: Int, h: Int): Color {
+    private fun ImageBitmap.analyzeRegion(x: Int, y: Int, w: Int, h: Int): RegionStats {
         val map = toPixelMap(x, y, w, h)
         val stepX = max(1, w / sampleGrid)
         val stepY = max(1, h / sampleGrid)
@@ -248,38 +266,60 @@ class Palette(
             py += stepY
         }
         if (best < 0) {
-            return initialColor
+            return RegionStats(initialColor, initialColor, 0f)
+        }
+        var accent = -1
+        var accentScore = 0f
+        for (key in 0 until BUCKET_COUNT) {
+            val n = counts[key]
+            if (n == 0) {
+                continue
+            }
+            val r = sumR[key] / n
+            val g = sumG[key] / n
+            val b = sumB[key] / n
+            val maxChannel = max(r, max(g, b))
+            val minChannel = min(r, min(g, b))
+            val saturation = if (maxChannel > 0f) (maxChannel - minChannel) / maxChannel else 0f
+            // vivid and present beats vivid and rare; saturation squared
+            // prefers truly colorful buckets over washed out ones
+            val score = saturation * saturation * n
+            if (score > accentScore) {
+                accentScore = score
+                accent = key
+            }
         }
         val n = counts[best].toFloat()
-        return Color(sumR[best] / n, sumG[best] / n, sumB[best] / n)
+        val dominant = Color(sumR[best] / n, sumG[best] / n, sumB[best] / n)
+        val accentColor = if (accent < 0) dominant else {
+            val an = counts[accent].toFloat()
+            Color(sumR[accent] / an, sumG[accent] / an, sumB[accent] / an)
+        }
+        return RegionStats(dominant, accentColor, accentScore)
     }
 
     private fun quantize(channel: Float): Int =
         (channel * BUCKET_MAX).toInt().coerceIn(0, BUCKET_MAX)
 
     /**
-     * Guarantees at least [minContrast] luminance difference between the
-     * color and its background, pushing the color toward white on dark
-     * backgrounds and toward black on light ones (closed form, no loops).
+     * Guarantees at least [minContrast] (128/255) difference against the
+     * background in every rgb channel: on a dark channel the foreground
+     * channel is lifted, on a light one lowered - the hue of the color
+     * survives, readability is guaranteed.
      */
     private fun ensureContrast(
         color: Color,
         against: Color,
     ): Color {
-        val colorLum = color.luminance()
-        val againstLum = against.luminance()
-        if (abs(colorLum - againstLum) >= minContrast) {
-            return color
-        }
-        return if (againstLum < 0.5f) {
-            val target = (againstLum + minContrast).coerceAtMost(1f)
-            if (colorLum >= 1f) Color.White
-            else lerp(color, Color.White, ((target - colorLum) / (1f - colorLum)).coerceIn(0f, 1f))
-        } else {
-            val target = (againstLum - minContrast).coerceAtLeast(0f)
-            if (colorLum <= 0f) Color.Black
-            else lerp(color, Color.Black, ((colorLum - target) / colorLum).coerceIn(0f, 1f))
-        }
+        fun channel(fg: Float, bg: Float): Float =
+            if (bg < 0.5f) max(fg, (bg + minContrast).coerceAtMost(1f))
+            else min(fg, (bg - minContrast).coerceAtLeast(0f))
+        return Color(
+            red = channel(color.red, against.red),
+            green = channel(color.green, against.green),
+            blue = channel(color.blue, against.blue),
+            alpha = color.alpha,
+        )
     }
 
     companion object {

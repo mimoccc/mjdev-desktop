@@ -373,6 +373,18 @@ android {
     }
 }
 
+// packaging needs jpackage; ide gradle jvm is often the android studio
+// jbr which lacks it - pick the first full jdk available on the machine
+val jdkWithJpackage: String? = (
+    sequenceOf(
+        System.getProperty("java.home"),
+        System.getenv("JAVA_HOME"),
+    ).filterNotNull() + file("/usr/lib/jvm")
+        .listFiles().orEmpty()
+        .map { dir -> dir.absolutePath }
+        .sortedDescending()
+).firstOrNull { home -> file("$home/bin/jpackage").canExecute() }
+
 // desktop app launcher config - single source for the compose `run`
 // task and the kmp `desktopRun` carrier task
 val desktopMainClass = "org.mjdev.desktop.main.MainKt"
@@ -393,6 +405,7 @@ desktop {
     group = libs.versions.app.pkg.name.get()
     version = libs.versions.app.pkg.version.get()
     application {
+        jdkWithJpackage?.let { home -> javaHome = home }
         jvmArgs(*desktopJvmArgs.toTypedArray())
         mainClass = desktopMainClass
         nativeDistributions {

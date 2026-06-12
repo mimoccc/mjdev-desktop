@@ -248,3 +248,13 @@ Implementace (composeApp/commonMain):
 Ověřeno (desktop run): ~/.config/gtk-3.0/gtk.css bg_color #0B0B0A, text #B7B7B6
 (z wallpaperu, ne default #202020), gsettings gtk-theme 'Mjdev'. Android kompiluje
 (ThemeManager tam je EMPTY stub — barvy komponent fungují, gtk se netýká).
+
+### Paleta v2 — photorealistic (finální ladění)
+- `analyzeRegion` vrací kromě dominanty i **akcent**: bucket s nejlepším skóre
+  saturace² × četnost = nejživější barva wallpaperu (Monet/Material-You styl).
+- ikony = akcent + ensureContrast(≥128/255 vůči pozadí) → top visible, barva fotky
+- text = lerp(ikony → neutrální inverz, `textNeutralBlend=0.4`) + kontrast → čitelný,
+  stejný odstín, klidnější než ikony
+- šedé fotky degradují elegantně (akcent → extrém luminance)
+- plochy beze změn: pozadí = nejtmavší roh, menu = levý dolní výřez, CC = pravý pás
+- test: nested běh, monitor čeká na 5 rotací wallpaperu, kontrola css hodnot

@@ -144,7 +144,9 @@ fun MainView() = withDesktopContext {
         )
         // greeter locks the ui until the user authenticates with a
         // fingerprint or the device credential (system prompt)
-        if (!context.authenticatedState.value && !isDesign) {
+        // todo temporarily disabled on user request
+        @Suppress("KotlinConstantConditions")
+        if (false && !context.authenticatedState.value && !isDesign) {
             val onLogin: (user: IUser, password: String) -> Unit = { u, p ->
                 runAsync {
                     context.authenticate(u, p)

@@ -238,8 +238,13 @@ tasks.register("installDesktop") {
     val version = libs.versions.app.pkg.version.get()
     val debFile = rootDir.resolve("release/$appName-$version.deb")
     doLast {
+        // pkexec shows a graphical password dialog - sudo cannot prompt
+        // inside the ide run console (it is not a terminal)
+        val elevate = if (File("/usr/bin/pkexec").canExecute() &&
+            !System.getenv("DISPLAY").isNullOrBlank()
+        ) "pkexec" else "sudo"
         val process = ProcessBuilder(
-            "sudo", "apt-get", "install", "-y", "--reinstall", debFile.absolutePath
+            elevate, "apt-get", "install", "-y", "--reinstall", debFile.absolutePath
         ).inheritIO().start()
         check(process.waitFor() == 0) { "installation failed" }
         println("installed - the mjdev session is available on the login screen")
