@@ -10,7 +10,17 @@
       "Bash(dpkg-deb -c /home/mimo/Plocha/mjdev-desktop/packages/mjdev-desktop-1.0.2.deb)",
       "Bash(./gradlew packageMjdevDeb -q)",
       "Bash(grep *)",
-      "Bash(./gradlew buildAll -q)"
+      "Bash(./gradlew buildAll -q)",
+      "Bash(git checkout *)",
+      "Bash(sed -i '185a kotlin-serialization = { id = \"org.jetbrains.kotlin.plugin.serialization\", version.ref = \"kotlin\" }' gradle/libs.versions.toml)",
+      "Bash(sed -n '183,188p' gradle/libs.versions.toml)",
+      "Bash(git mv *)",
+      "Bash(sed -i '47a import org.mjdev.desktop.managers.window.IWindowsManager\\\\nimport org.mjdev.desktop.managers.window.WindowsManager' composeApp/src/desktopMain/kotlin/org/mjdev/desktop/context/DeskptopContext.kt)",
+      "Bash(sed -i 's|        IKeyManager::class -> KeysManager\\(this\\)|        IKeyManager::class -> KeysManager\\(this\\)\\\\n        IWindowsManager::class -> WindowsManager\\(this\\)|' composeApp/src/desktopMain/kotlin/org/mjdev/desktop/context/DeskptopContext.kt)",
+      "Bash(python3 -)",
+      "Bash(./gradlew -q projects)",
+      "Bash(./gradlew :composeApp:compileKotlinDesktop)",
+      "Bash(./gradlew :composeApp:compileDebugKotlinAndroid)"
     ]
   }
 }

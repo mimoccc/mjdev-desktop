@@ -16,15 +16,30 @@ jobs:
     runs-on: ubuntu-latest
     # libwlroots-0.18 is only packaged from ubuntu 25.04 on
     container: ubuntu:25.04
+    env:
+      ANDROID_HOME: /opt/android-sdk
     steps:
       - name: Install build dependencies
         run: |
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y \
             git curl unzip zip tar ca-certificates binutils fakeroot \
-            openjdk-21-jdk gcc pkg-config dpkg-dev \
+            openjdk-17-jdk openjdk-21-jdk gcc pkg-config dpkg-dev \
             libwlroots-0.18-dev libwayland-dev wayland-protocols \
             libxkbcommon-dev libinput-dev libpixman-1-dev libwayland-bin
+
+      # the composeApp module has an android target, the android gradle
+      # plugin refuses to configure without an sdk installation
+      - name: Install android sdk
+        run: |
+          curl -sSLo /tmp/tools.zip \
+            https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          mkdir -p "$ANDROID_HOME/cmdline-tools"
+          unzip -q /tmp/tools.zip -d "$ANDROID_HOME/cmdline-tools"
+          mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+            "platform-tools" "platforms;android-36" "build-tools;36.0.0" > /dev/null
 
       - name: Checkout
         uses: actions/checkout@v4
