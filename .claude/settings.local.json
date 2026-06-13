@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Read(//tmp/kmp-skill-src/.claude/skills/kmp-compose-multiplatform/**)",
+      "Bash(mkdir -p .claude/skills)",
+      "Bash(cp -r /tmp/kmp-skill-src/.claude/skills/kmp-compose-multiplatform .claude/skills/)",
+      "WebFetch(domain:github.com)",
+      "Read(//tmp/**)",
+      "Bash(rm -rf dpconde-src chrisbanes-src)"
+    ]
+  }
+}

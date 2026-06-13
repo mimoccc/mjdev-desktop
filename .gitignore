@@ -50,3 +50,10 @@ composeApp/src/commonMain/resources/keys/*.key
 /composeApp/src/commonMain/resources/keys/*.key
 .intellijPlatform/
 .intellijPlatform
+
+### ai
+!.claude
+!.claude/
+!/.claude
+!/.claude/
+!.claude/*
