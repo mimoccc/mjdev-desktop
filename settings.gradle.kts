@@ -39,6 +39,9 @@ pluginManagement {
         google()
     }
 }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
 //</editor-fold>------------------------------------------------------------------------------------
 
 //<editor-fold desc="dependency management">--------------------------------------------------------

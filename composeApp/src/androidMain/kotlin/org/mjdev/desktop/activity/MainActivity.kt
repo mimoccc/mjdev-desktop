@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -46,18 +49,26 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        window.statusBarColor = Black.toArgb()
+        window.navigationBarColor = Black.toArgb()
+        window.decorView.setBackgroundColor(Black.toArgb())
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(TRANSPARENT)
         )
-        setBackgroundColor(Color.Black)
         setContent {
-            OnBackPress()
-            rememberPermissionManager()
             CompositionLocalProvider(
-                LocalDesktopContext provides rememberDesktopContext(this)
+                LocalDesktopContext provides rememberDesktopContext(this@MainActivity)
             ) {
-                ActivityMain()
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .systemBarsPadding()
+                ) {
+                    OnBackPress()
+                    rememberPermissionManager()
+                    ActivityMain()
+                }
             }
         }
     }
@@ -89,7 +100,8 @@ class MainActivity : ComponentActivity() {
 private fun ActivityMain() {
     DesktopTheme {
         Scaffold(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .background(Color.Black)
         ) { paddingValues ->
             Box(

@@ -91,7 +91,7 @@ fun Desktop(
 //            )
                 AdbScreenMirror(
                     modifier = Modifier
-                        .align(Alignment.TopCenter)
+                        .align(Alignment.TopEnd)
                         .fillMaxHeight()
                         .wrapContentWidth()
                 )

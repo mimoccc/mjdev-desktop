@@ -335,6 +335,7 @@ android {
     defaultConfig {
         applicationId = "org.mjdev.desktop"
         minSdk = libs.versions.android.min.sdk.get().toInt()
+        targetSdk = libs.versions.android.target.sdk.get().toInt()
         versionCode = libs.versions.app.pkg.version.get().replace(".", "").toInt()
         versionName = libs.versions.app.pkg.version.get()
         resValue("string", "app_name", libs.versions.app.name.get())
@@ -344,6 +345,8 @@ android {
             excludes += "META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/INDEX.LIST"
             excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/io.netty.versions.properties"
+            pickFirsts += "META-INF/native-image/**"
         }
     }
     buildTypes {

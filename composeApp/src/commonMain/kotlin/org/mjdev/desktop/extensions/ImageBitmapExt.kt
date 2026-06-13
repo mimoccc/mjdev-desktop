@@ -5,6 +5,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Paint
 import org.mjdev.desktop.context.IDesktopContext
+import org.mjdev.desktop.data.DecodedImage
+import org.mjdev.desktop.helpers.decodeImage
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 expect object ImageBitmapExt {
@@ -12,6 +14,8 @@ expect object ImageBitmapExt {
         src: Any?
     ): ImageBitmap?
 }
+
+fun ByteArray.decodeImage(): DecodedImage? = decodeImage(this)
 
 var ImageBitmap.pixels: IntArray
     get() = IntArray(width * height).also { pixels -> readPixels(pixels) }

@@ -13,32 +13,29 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import dadb.Dadb
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toComposeImageBitmap
+import com.sun.jna.Platform.isAndroid
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.jetbrains.skia.Image as SkiaImage
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.components.adb.DeviceState.Companion.rememberDeviceState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.mjdev.desktop.extensions.decodeImage
 
 @Preview
 @Composable
 fun AdbScreenMirror(
     modifier: Modifier = Modifier,
     visibilityState: MutableState<Boolean> = mutableStateOf(false),
-    scope : CoroutineScope = rememberCoroutineScope()
+    scope : CoroutineScope = rememberCoroutineScope(),
+    refreshInterval : Long  = 100L,
+    deviceState : DeviceState = rememberDeviceState(
+        refreshInterval = refreshInterval,
+        scope = scope
+    )
 )  = withDesktopContext {
-    val refreshInterval = 100L
-    val deviceState = remember {
-        DeviceState(scope, visibilityState.value, refreshInterval)
-    }
-    DisposableEffect(visibilityState.value) {
-        deviceState.start()
-        onDispose {
-            deviceState.stop()
-        }
-    }
+    if(isAndroid()) return@withDesktopContext
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -69,11 +66,16 @@ fun AdbScreenMirror(
             else -> Text("Waiting for device...")
         }
     }
+    DisposableEffect(visibilityState.value) {
+        deviceState.start()
+        onDispose {
+            deviceState.stop()
+        }
+    }
 }
 
 class DeviceState(
     private val scope:CoroutineScope,
-    private val visibility: Boolean,
     private val refreshInterval: Long,
 ) {
     var imageBitmap by mutableStateOf<ImageBitmap?>(null)
@@ -101,10 +103,12 @@ class DeviceState(
                         val bytes = stream.source.readByteArray()
                         stream.close()
                         if (bytes.isNotEmpty()) {
-                            val skiaImage = SkiaImage.makeFromEncoded(bytes)
-                            imageBitmap = skiaImage.toComposeImageBitmap()
-                            screenWidth = skiaImage.width
-                            screenHeight = skiaImage.height
+                            val decoded = bytes.decodeImage()
+                            if (decoded != null) {
+                                imageBitmap = decoded.bitmap
+                                screenWidth = decoded.width
+                                screenHeight = decoded.height
+                            }
                         }
                     } catch (e: Exception) {
                         error = e.message
@@ -141,6 +145,16 @@ class DeviceState(
                     e.printStackTrace()
                 }
             }
+        }
+    }
+
+    companion object {
+        @Composable
+        fun rememberDeviceState(
+            refreshInterval : Long  = 100L,
+            scope : CoroutineScope = rememberCoroutineScope()
+        ) = remember {
+            DeviceState(scope,  refreshInterval)
         }
     }
 }
