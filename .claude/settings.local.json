@@ -9,7 +9,16 @@
       "Read(//tmp/**)",
       "Bash(rm -rf dpconde-src chrisbanes-src)",
       "Bash(./gradlew dependencyUpdates -Drevision=release --no-configuration-cache)",
-      "Bash(./gradlew :composeApp:dependencyUpdates -Drevision=release --no-configuration-cache)"
+      "Bash(./gradlew :composeApp:dependencyUpdates -Drevision=release --no-configuration-cache)",
+      "Bash(./gradlew --stop)",
+      "Bash(pkill -f \"dependencyUpdates\")",
+      "Bash(pkill -f \"GradleDaemon\")",
+      "Bash(./gradlew tasks *)",
+      "Bash(./gradlew composeApp:ktlintCheck collectKtlintReports -PdepCheck=false --no-configuration-cache)",
+      "Bash(./gradlew composeApp:build --dry-run --no-configuration-cache)",
+      "Bash(./gradlew composeApp:build --dry-run -PdepCheck=false --no-configuration-cache)",
+      "Bash(./gradlew composeApp:dependencyUpdates -PdepCheck=false --no-configuration-cache)",
+      "Bash(echo \"exit=$?\")"
     ]
   }
 }

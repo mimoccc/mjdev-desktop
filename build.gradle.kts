@@ -1,4 +1,6 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.jlleitschuh.gradle.ktlint.KtlintExtension
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
 //    alias(libs.plugins.devtools.ksp) apply false
@@ -9,8 +11,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.app.icon.generator) apply false
-    // auto applied
-//    alias(libs.plugins.qodana)
+    alias(libs.plugins.qodana)
 //    alias(libs.plugins.kover)
     alias(libs.plugins.changelog) apply false
     alias(libs.plugins.gradle.ktlint)
@@ -19,17 +20,77 @@ plugins {
 //    id("com.github.gmazzo.buildconfig") version "5.6.5"
 }
 
-// TEMP exploratory: stable-only update report across all modules
+// ============================================================================
+//  Code quality + dependency reporting  ->  /reports
+//  - ben-manes: stable-only dependency-update report (rejects alpha/rc/dev/tethys/snapshot)
+//  - ktlint:    auto-format after build + report; report-only (never breaks the build)
+//  - After every build: auto-format code, ktlint report, and (gated) dependency report.
+//    Dependency check is ON by default; disable with  -PdepCheck=false
+// ============================================================================
+
+// A version is "non-stable" if it is a milestone/preview build (alpha, beta, rc,
+// eap, dev, snapshot, tethys, …) — we never auto-suggest those over a stable current.
 fun isNonStable(version: String): Boolean {
     val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
     val regex = "^[0-9,.v-]+(-r)?$".toRegex()
     return !(stableKeyword || regex.matches(version))
 }
 
+val depCheckEnabled: Boolean = (findProperty("depCheck") as String?)?.toBooleanStrictOrNull() ?: true
+val reportsDir: Directory = rootProject.layout.projectDirectory.dir("reports")
+
 allprojects {
     apply(plugin = "com.github.ben-manes.versions")
-    tasks.withType<DependencyUpdatesTask> {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+
+    extensions.configure<KtlintExtension> {
+        ignoreFailures.set(true) // report only — never fail the build
+        android.set(true)
+        filter {
+            // never lint/format generated or build output (compose resources, KSP, etc.)
+            exclude { it.file.path.contains("${File.separator}build${File.separator}") }
+            exclude { it.file.path.contains("generated") }
+        }
+        reporters {
+            reporter(ReporterType.PLAIN)
+            reporter(ReporterType.HTML)
+            reporter(ReporterType.CHECKSTYLE)
+        }
+    }
+
+    tasks.withType<DependencyUpdatesTask>().configureEach {
         rejectVersionIf { isNonStable(candidate.version) && !isNonStable(currentVersion) }
+        outputDir = reportsDir.dir("dependencies").asFile.absolutePath
+        reportfileName = "dependency-updates"
+        outputFormatter = "plain,html"
+    }
+}
+
+// Collect ktlint reports from every module into /reports/ktlint/<module>
+val collectKtlintReports by tasks.registering(Copy::class) {
+    group = "reporting"
+    description = "Collects ktlint reports from all modules into /reports/ktlint"
+    allprojects.forEach { p ->
+        from(p.layout.buildDirectory.dir("reports/ktlint")) { into(p.name) }
+    }
+    into(reportsDir.dir("ktlint"))
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    // ensure reports are produced before we collect them
+    mustRunAfter(allprojects.flatMap { p -> p.tasks.matching { it.name == "ktlintCheck" || it.name == "ktlintFormat" } })
+}
+
+// Runs after every build: auto-format, ktlint report, and (gated) dependency-update report -> /reports
+val postBuildCodeCheck by tasks.registering {
+    group = "verification"
+    description = "Auto-formats code, runs ktlint and (gated) dependency-update report into /reports"
+    dependsOn(":composeApp:ktlintFormat")
+    if (depCheckEnabled) dependsOn(":composeApp:dependencyUpdates")
+    finalizedBy(collectKtlintReports)
+}
+
+allprojects {
+    tasks.matching { it.name == "build" }.configureEach {
+        finalizedBy(rootProject.tasks.named("postBuildCodeCheck"))
     }
 }
 

@@ -57,3 +57,6 @@ composeApp/src/commonMain/resources/keys/*.key
 !/.claude
 !/.claude/
 !.claude/*
+
+### reports
+/reports/
