@@ -137,6 +137,7 @@ allprojects {
 //             (Kotlin/Native for iOS cannot build on Linux/Windows) — wired below if present.
 // captured at configuration time -> all the tasks below stay configuration-cache safe
 val appNameV = libs.versions.app.name.get()
+val versionV = libs.versions.app.pkg.version.get()
 val pkgDirV = rootDir.resolve("packages/main-release")
 val appImageToolPath = rootDir.resolve(".gradle/tools/appimagetool-x86_64.AppImage").absolutePath
 

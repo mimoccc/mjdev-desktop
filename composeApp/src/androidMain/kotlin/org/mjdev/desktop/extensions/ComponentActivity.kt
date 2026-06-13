@@ -4,6 +4,7 @@ import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ComponentActivity
 import androidx.core.graphics.drawable.toDrawable
@@ -61,8 +62,19 @@ object ComponentActivityExt {
         }
 
     // todo : black is white ?
+    @Suppress("DEPRECATION")
     fun ComponentActivity.setBackgroundColor(color: Color = Color.Black) {
-        decorView.background = color.toArgb().toDrawable()
+        runCatching {
+            window.statusBarColor = color.toArgb()
+        }.onFailure { e ->
+            e.printStackTrace()
+        }
+        runCatching {
+            window.navigationBarColor = color.toArgb()
+        }.onFailure { e ->
+            e.printStackTrace()
+        }
+        window.decorView.setBackgroundColor(color.toArgb())
     }
 
     @Composable

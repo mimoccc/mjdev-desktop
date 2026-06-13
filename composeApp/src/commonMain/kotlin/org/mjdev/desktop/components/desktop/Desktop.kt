@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -34,6 +35,7 @@ fun Desktop(
     onTooltip: (item: Any?) -> Unit = {},
     onLeftMouseClick: () -> Unit = {},
     onRightMouseClick: () -> Unit = {},
+    onBackgroundChange:(Color) -> Unit = {},
     // todo
     widgets: @Composable () -> Unit = {},
 ) = withDesktopContext {
@@ -71,6 +73,7 @@ fun Desktop(
                         update(src)
                     }.also { p ->
                         context.currentUser.theme.backgroundColor = p.backgroundColor
+                        onBackgroundChange(p.backgroundColor)
                     }
             },
         )

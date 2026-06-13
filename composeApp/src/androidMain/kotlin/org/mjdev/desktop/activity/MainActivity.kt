@@ -32,6 +32,9 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.helpers.permission.rememberPermissionManager
 import org.mjdev.desktop.helpers.theme.DesktopTheme
 import org.mjdev.desktop.main.MainView
+import org.mjdev.desktop.extensions.ComponentActivityExt.OnBackPress
+import org.mjdev.desktop.extensions.ComponentActivityExt.TRANSPARENT
+import org.mjdev.desktop.extensions.ComponentActivityExt.setBackgroundColor
 
 @Suppress("unused", "DEPRECATION")
 @OptIn(ExperimentalPermissionsApi::class)
@@ -48,17 +51,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
-        runCatching {
-            window.statusBarColor = Black.toArgb()
-        }.onFailure { e ->
-            e.printStackTrace()
-        }
-        runCatching {
-            window.navigationBarColor = Black.toArgb()
-        }.onFailure { e ->
-            e.printStackTrace()
-        }
-        window.decorView.setBackgroundColor(Black.toArgb())
+        setBackgroundColor(Black)
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(TRANSPARENT),
@@ -75,7 +68,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     OnBackPress()
                     rememberPermissionManager()
-                    ActivityMain()
+                    ActivityMain(this@MainActivity)
                 }
             }
         }
@@ -105,13 +98,15 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun ActivityMain() {
+private fun ActivityMain(
+    activity: ComponentActivity? = null
+) {
     DesktopTheme {
         Scaffold(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .background(Color.Black),
+                    .background(Black),
         ) { paddingValues ->
             Box(
                 modifier =
@@ -122,7 +117,11 @@ private fun ActivityMain() {
                         .windowInsetsPadding(WindowInsets.safeDrawing)
                         .background(Color.Black),
             ) {
-                MainView()
+                MainView(
+                    onBackgroundChange = { color ->
+                        activity?.setBackgroundColor(color)
+                    }
+                )
             }
         }
     }
@@ -130,7 +129,6 @@ private fun ActivityMain() {
 
 @Preview
 @Composable
-fun PreviewMainActivity() =
-    preview {
-        ActivityMain()
-    }
+fun PreviewMainActivity() = preview {
+    ActivityMain(null)
+}

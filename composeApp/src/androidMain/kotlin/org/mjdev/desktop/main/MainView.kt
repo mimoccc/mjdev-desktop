@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,7 +32,9 @@ import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 
 @SuppressLint("ComposableNaming")
 @Composable
-fun MainView() =
+fun MainView(
+    onBackgroundChange:(Color) -> Unit = {}
+) =
     withDesktopContext {
         val tooltipState: TooltipState = rememberTooltipState()
         val appsMenuState =
@@ -93,6 +96,7 @@ fun MainView() =
                             controlCenterState.hide()
                         }
                     },
+                    onBackgroundChange = onBackgroundChange,
                     onRightMouseClick = {
 //                contextMenuState.show()
                     },
