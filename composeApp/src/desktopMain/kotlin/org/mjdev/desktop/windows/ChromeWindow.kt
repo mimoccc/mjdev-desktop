@@ -35,24 +35,25 @@ fun ChromeWindow(
     onOpened: ChromeWindowState.() -> Unit = {},
     onClosed: ChromeWindowState.() -> Unit = {},
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
-    windowState: ChromeWindowState = rememberChromeWindowState(
-        visible = visible,
-        size = size,
-        position = position
-    ),
+    windowState: ChromeWindowState =
+        rememberChromeWindowState(
+            visible = visible,
+            size = size,
+            position = position,
+        ),
     isGlobalKeyHandlerEnabled: () -> Boolean = { false },
     onGlobalKey: KeyEventHandler.() -> Unit = {},
     isGlobalMouseHandlerEnabled: () -> Boolean = { false },
     onGlobalMouse: MouseEventHandler.() -> Unit = {},
-    content: @Composable () -> Unit = {}
+    content: @Composable () -> Unit = {},
 ) = withDesktopContext {
     globalKeyEventHandler(
         isEnabled = isGlobalKeyHandlerEnabled,
-        block = onGlobalKey
+        block = onGlobalKey,
     )
     globalMouseEventHandler(
         enabled = isGlobalMouseHandlerEnabled,
-        block = onGlobalMouse
+        block = onGlobalMouse,
     )
     if (isDesign) {
         content()
@@ -86,7 +87,7 @@ fun ChromeWindow(
             focusHelper = windowState.focusHelper,
             content = {
                 content()
-            }
+            },
         )
         updateWindowState(visible, wnState, windowState)
     }

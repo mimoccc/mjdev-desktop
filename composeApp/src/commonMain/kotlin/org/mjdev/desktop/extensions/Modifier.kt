@@ -46,32 +46,39 @@ object Modifier {
         condition: Boolean,
         onFalse: (Modifier.() -> Modifier)? = null,
         onTrue: Modifier.() -> Modifier,
-    ): Modifier = if (condition) {
-        then(onTrue(Modifier))
-    } else if (onFalse != null) {
-        then(onFalse(Modifier))
-    } else {
-        this
-    }
+    ): Modifier =
+        if (condition) {
+            then(onTrue(Modifier))
+        } else if (onFalse != null) {
+            then(onFalse(Modifier))
+        } else {
+            this
+        }
 
     fun Modifier.onKey(
         keyCode: Key,
         action: KeyEventType = KeyEventType.KeyDown,
-        block: () -> Unit
-    ): Modifier = this then onKeyEvent { ev ->
-        if (ev.type == action) {
-            if (ev.key == keyCode) {
-                block()
-                true
-            } else false
-        } else false
-    }
+        block: () -> Unit,
+    ): Modifier =
+        this then
+            onKeyEvent { ev ->
+                if (ev.type == action) {
+                    if (ev.key == keyCode) {
+                        block()
+                        true
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                }
+            }
 
     @Composable
     fun Modifier.scaleOnPress(
         interactionSource: InteractionSource,
         pressScale: Float = 0.95f,
-        leaveScale: Float = 1f
+        leaveScale: Float = 1f,
     ) = composed {
         val isPressed by interactionSource.collectIsPressedAsState()
         val scale by animateFloatAsState(if (isPressed) pressScale else leaveScale)
@@ -82,7 +89,10 @@ object Modifier {
     }
 
     @Composable
-    fun Modifier.size(width: Int, height: Int) = size(width.dp, height.dp)
+    fun Modifier.size(
+        width: Int,
+        height: Int,
+    ) = size(width.dp, height.dp)
 
     @Composable
     fun Modifier.size(value: Int) = size(value.dp, value.dp)
@@ -91,7 +101,7 @@ object Modifier {
     fun Modifier.dashedBorder(
         strokeWidth: Dp,
         color: Color,
-        cornerRadiusDp: Dp
+        cornerRadiusDp: Dp,
     ) = composed(
         factory = {
             val density = LocalDensity.current
@@ -100,75 +110,80 @@ object Modifier {
             then(
                 Modifier.drawWithCache {
                     onDrawBehind {
-                        val stroke = Stroke(
-                            width = strokeWidthPx,
-                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
-                        )
+                        val stroke =
+                            Stroke(
+                                width = strokeWidthPx,
+                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f),
+                            )
                         drawRoundRect(
                             color = color,
                             style = stroke,
-                            cornerRadius = CornerRadius(cornerRadiusPx)
+                            cornerRadius = CornerRadius(cornerRadiusPx),
                         )
                     }
-                }
+                },
             )
-        }
+        },
     )
 
     @Composable
     fun Modifier.onPointerEvent(
         eventType: PointerEventType,
         pass: PointerEventPass = PointerEventPass.Main,
-        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit
-    ): Modifier = composed {
-        val currentEventType by rememberUpdatedState(eventType)
-        val currentOnEvent by rememberUpdatedState(onEvent)
-        pointerInput(pass) {
-            awaitPointerEventScope {
-                while (true) {
-                    val event = awaitPointerEvent(pass)
-                    if (event.type == currentEventType) {
-                        currentOnEvent(event)
+        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit,
+    ): Modifier =
+        composed {
+            val currentEventType by rememberUpdatedState(eventType)
+            val currentOnEvent by rememberUpdatedState(onEvent)
+            pointerInput(pass) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent(pass)
+                        if (event.type == currentEventType) {
+                            currentOnEvent(event)
+                        }
                     }
                 }
             }
         }
-    }
 
     @Composable
     fun Modifier.onMouseEnter(
         pass: PointerEventPass = PointerEventPass.Main,
-        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit
-    ): Modifier = onPointerEvent(
-        eventType = PointerEventType.Enter,
-        pass = pass,
-        onEvent = onEvent
-    )
+        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit,
+    ): Modifier =
+        onPointerEvent(
+            eventType = PointerEventType.Enter,
+            pass = pass,
+            onEvent = onEvent,
+        )
 
     @Composable
     fun Modifier.onMouseLeave(
         pass: PointerEventPass = PointerEventPass.Main,
-        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit
-    ): Modifier = onPointerEvent(
-        eventType = PointerEventType.Exit,
-        pass = pass,
-        onEvent = onEvent
-    )
+        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit,
+    ): Modifier =
+        onPointerEvent(
+            eventType = PointerEventType.Exit,
+            pass = pass,
+            onEvent = onEvent,
+        )
 
     @Composable
     fun Modifier.onMousePress(
         pass: PointerEventPass = PointerEventPass.Main,
-        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit
-    ): Modifier = onPointerEvent(
-        eventType = PointerEventType.Release,
-        pass = pass,
-        onEvent = onEvent
-    )
+        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit,
+    ): Modifier =
+        onPointerEvent(
+            eventType = PointerEventType.Release,
+            pass = pass,
+            onEvent = onEvent,
+        )
 
     @Composable
     fun Modifier.onMouseLongPress(
         pass: PointerEventPass = PointerEventPass.Main,
-        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit
+        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit,
     ): Modifier {
 //        return onPointerEvent(
 //            eventType = PointerEventType.Press,
@@ -184,15 +199,11 @@ object Modifier {
     val AwaitPointerEventScope.isSecondary
         get() = currentEvent.buttons.isSecondaryPressed
 
-    fun AwaitPointerEventScope.onLeftClick(
-        block: AwaitPointerEventScope.() -> Unit
-    ) {
+    fun AwaitPointerEventScope.onLeftClick(block: AwaitPointerEventScope.() -> Unit) {
         if (isPrimary) block()
     }
 
-    fun AwaitPointerEventScope.onRightClick(
-        block: AwaitPointerEventScope.() -> Unit
-    ) {
+    fun AwaitPointerEventScope.onRightClick(block: AwaitPointerEventScope.() -> Unit) {
         if (isSecondary) block()
     }
 
@@ -214,7 +225,6 @@ object Modifier {
 //    @OptIn(ExperimentalComposeUiApi::class)
 //    val PointerEvent.isLeftButton
 //        get() = buttons.isPrimaryPressed
-
 
 //    val PointerEvent.isRightButton
 //        get() = buttons.isSecondaryPressed
@@ -264,7 +274,6 @@ object Modifier {
     @Composable
     fun Modifier.circleBorder(
         width: Dp = 2.dp,
-        color: Color = Color.White
+        color: Color = Color.White,
     ) = clipCircle().border(width, color, CircleShape)
-
 }

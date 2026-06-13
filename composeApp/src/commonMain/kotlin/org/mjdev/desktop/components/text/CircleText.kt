@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.clipCircle
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("unused", "FunctionName")
 @Composable
@@ -34,18 +34,19 @@ fun CircleText(
     textSize: TextUnit = 20.sp,
     contentPadding: Dp = 0.dp,
 ) = Box(
-    modifier = modifier
-        .size(textSize.value.dp * 2)
-        .padding(contentPadding)
-        .clipCircle()
-        .background(backGroundColor, CircleShape)
-        .border(
-            BorderStroke(
-                borderSize,
-                borderColor
+    modifier =
+        modifier
+            .size(textSize.value.dp * 2)
+            .padding(contentPadding)
+            .clipCircle()
+            .background(backGroundColor, CircleShape)
+            .border(
+                BorderStroke(
+                    borderSize,
+                    borderColor,
+                ),
+                CircleShape,
             ),
-            CircleShape
-        ),
     contentAlignment = Alignment.Center,
 ) {
     TextAny(
@@ -54,12 +55,13 @@ fun CircleText(
         fontWeight = FontWeight.Bold,
         color = textColor,
         text = text,
-        fontSize = textSize
+        fontSize = textSize,
     )
 }
 
 @Preview
 @Composable
-fun PreviewCircleText() = preview {
-    CircleText()
-}
+fun PreviewCircleText() =
+    preview {
+        CircleText()
+    }

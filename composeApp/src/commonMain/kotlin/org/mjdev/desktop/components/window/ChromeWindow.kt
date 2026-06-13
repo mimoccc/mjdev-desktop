@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onPlaced
-import org.mjdev.desktop.components.sliding.base.VisibilityState
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.components.sliding.base.VisibilityState
 
 @Composable
 fun ChromeWindow(
@@ -21,13 +21,13 @@ fun ChromeWindow(
     enter: EnterTransition = fadeIn() + expandIn(),
     exit: ExitTransition = shrinkOut() + fadeOut(),
     onPlaced: (LayoutCoordinates) -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) = AnimatedVisibility(
     enter = enter,
     exit = exit,
     visible = visibilityState.isVisible,
     modifier = modifier.onPlaced { coordinates -> onPlaced(coordinates) },
-    content = { content() }
+    content = { content() },
 )
 
 // todo preview

@@ -18,7 +18,19 @@
       "Bash(./gradlew composeApp:build --dry-run --no-configuration-cache)",
       "Bash(./gradlew composeApp:build --dry-run -PdepCheck=false --no-configuration-cache)",
       "Bash(./gradlew composeApp:dependencyUpdates -PdepCheck=false --no-configuration-cache)",
-      "Bash(echo \"exit=$?\")"
+      "Bash(echo \"exit=$?\")",
+      "Bash(./gradlew buildAll --dry-run --no-configuration-cache)",
+      "Bash(./gradlew buildAll --console=plain)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(awk -F. '{ if \\(NF>=2\\) print $1\".\"$2; else print $1 }' /tmp/pgwarn.txt)",
+      "Bash(tee /tmp/pgroots.txt)",
+      "Bash(./gradlew :composeApp:proguardReleaseJars --rerun-tasks --console=plain)",
+      "Bash(tee /tmp/pg2.log)",
+      "Bash(awk -F. '{ if \\(NF>=2 && $2 ~ /^[a-z]/\\) print $1\".\"$2; else print $1 }')",
+      "Bash(tee /tmp/pg3.log)",
+      "Bash(grep -cE \"\\\\.kt$\"22)",
+      "Bash(git checkout *)",
+      "Bash(cd *)"
     ]
   }
 }

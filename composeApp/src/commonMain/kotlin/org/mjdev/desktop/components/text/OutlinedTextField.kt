@@ -56,12 +56,13 @@ fun OutlinedTextField(
     interactionSource: MutableInteractionSource? = null,
     shape: Shape = TextFieldDefaults.OutlinedTextFieldShape,
     colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
-    textPadding: PaddingValues = PaddingValues(0.dp)
+    textPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val interactionSourceNonNull = interactionSource ?: remember { MutableInteractionSource() }
-    val textColor = textStyle.color.takeOrElse {
-        colors.textColor(enabled).value
-    }
+    val textColor =
+        textStyle.color.takeOrElse {
+            colors.textColor(enabled).value
+        }
     val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
     val decorationBox: @Composable (innerTextField: @Composable () -> Unit) -> Unit = { innerTextField ->
         TextFieldDefaults.TextFieldDecorationBox(
@@ -83,13 +84,15 @@ fun OutlinedTextField(
     }
     BasicTextField(
         value = value,
-        modifier = modifier.then(
-            if (label != null) {
-                Modifier.semantics(mergeDescendants = true) {}
-            } else {
-                Modifier
-            }
-        ).padding(textPadding),
+        modifier =
+            modifier
+                .then(
+                    if (label != null) {
+                        Modifier.semantics(mergeDescendants = true) {}
+                    } else {
+                        Modifier
+                    },
+                ).padding(textPadding),
         onValueChange = onValueChange,
         enabled = enabled,
         readOnly = readOnly,
@@ -102,7 +105,7 @@ fun OutlinedTextField(
         singleLine = singleLine,
         maxLines = maxLines,
         minLines = minLines,
-        decorationBox = decorationBox
+        decorationBox = decorationBox,
     )
 }
 
@@ -127,7 +130,7 @@ fun OutlinedTextField(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = RoundedCornerShape(8.dp),
     colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
-    textPadding : PaddingValues = PaddingValues(0.dp)
+    textPadding: PaddingValues = PaddingValues(0.dp),
 ) = OutlinedTextField(
     value,
     onValueChange,
@@ -149,7 +152,7 @@ fun OutlinedTextField(
     interactionSource,
     shape,
     colors,
-    textPadding
+    textPadding,
 )
 
 // todo preview

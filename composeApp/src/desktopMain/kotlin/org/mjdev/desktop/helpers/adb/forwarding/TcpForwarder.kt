@@ -1,8 +1,8 @@
 package org.mjdev.desktop.helpers.adb.forwarding
 
+import okio.*
 import org.mjdev.desktop.helpers.adb.IAdb
 import org.mjdev.desktop.log.Log
-import okio.*
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.ServerSocket
@@ -28,18 +28,19 @@ internal class TcpForwarder(
         check(state == State.STOPPED) { "Forwarder is already started at port $hostPort" }
         moveToState(State.STARTING)
         clientExecutor = Executors.newCachedThreadPool()
-        serverThread = thread {
-            try {
-                handleForwarding()
-            } catch (_: SocketException) {
-                // Do nothing
-            } catch (e: IOException) {
-                Log.e("could not start TCP port forwarding: ${e.message}")
-                Log.e(e)
-            } finally {
-                moveToState(State.STOPPED)
+        serverThread =
+            thread {
+                try {
+                    handleForwarding()
+                } catch (_: SocketException) {
+                    // Do nothing
+                } catch (e: IOException) {
+                    Log.e("could not start TCP port forwarding: ${e.message}")
+                    Log.e(e)
+                } finally {
+                    moveToState(State.STOPPED)
+                }
             }
-        }
         waitFor(10, 5000) {
             state == State.STARTED
         }
@@ -54,16 +55,17 @@ internal class TcpForwarder(
             val client = serverRef.accept()
             clientExecutor?.execute {
                 val adbStream = adb.open("tcp:$targetPort")
-                val readerThread = thread {
-                    forward(
-                        client.getInputStream().source(),
-                        adbStream.sink
-                    )
-                }
+                val readerThread =
+                    thread {
+                        forward(
+                            client.getInputStream().source(),
+                            adbStream.sink,
+                        )
+                    }
                 try {
                     forward(
                         adbStream.source,
-                        client.sink().buffer()
+                        client.sink().buffer(),
                     )
                 } finally {
                     adbStream.close()
@@ -94,7 +96,10 @@ internal class TcpForwarder(
         }
     }
 
-    private fun forward(source: Source, sink: BufferedSink) {
+    private fun forward(
+        source: Source,
+        sink: BufferedSink,
+    ) {
         try {
             while (!Thread.interrupted()) {
                 try {
@@ -122,13 +127,13 @@ internal class TcpForwarder(
         STARTING,
         STARTED,
         STOPPING,
-        STOPPED
+        STOPPED,
     }
 
     private fun waitFor(
         intervalMs: Int,
         timeoutMs: Int,
-        test: () -> Boolean
+        test: () -> Boolean,
     ) {
         val start = System.currentTimeMillis()
         var lastCheck = start

@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.card.base.CardBorder
 import org.mjdev.desktop.components.card.base.CardColors
 import org.mjdev.desktop.components.card.base.CardDefaults
@@ -30,7 +31,6 @@ import org.mjdev.desktop.components.card.base.CardShape
 import org.mjdev.desktop.components.surface.Surface
 import org.mjdev.desktop.components.surface.base.Glow
 import org.mjdev.desktop.extensions.Compose.preview
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo, card like in android tv
 @Composable
@@ -44,7 +44,7 @@ fun Card(
     border: CardBorder = CardDefaults.border(),
     glow: CardGlow = CardDefaults.glow(),
     interactionSource: MutableInteractionSource? = null,
-    content: @Composable ColumnScope.() -> Unit = {}
+    content: @Composable ColumnScope.() -> Unit = {},
 ) = Surface(
     onClick = onClick,
     onLongClick = onLongClick,
@@ -61,13 +61,15 @@ fun Card(
 
 @Preview
 @Composable
-fun PreviewCard() = preview {
-    Card(
-        modifier = Modifier.size(200.dp, 128.dp),
-        colors = CardDefaults.colors(
-            containerColor = Color.White
-        ),
-        border = CardDefaults.border(2.dp),
-        glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp))
-    )
-}
+fun PreviewCard() =
+    preview {
+        Card(
+            modifier = Modifier.size(200.dp, 128.dp),
+            colors =
+                CardDefaults.colors(
+                    containerColor = Color.White,
+                ),
+            border = CardDefaults.border(2.dp),
+            glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
+        )
+    }

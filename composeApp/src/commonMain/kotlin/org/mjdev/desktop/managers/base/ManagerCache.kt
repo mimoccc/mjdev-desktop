@@ -4,7 +4,7 @@ import org.mjdev.desktop.context.IDesktopContext
 import kotlin.reflect.KClass
 
 class ManagerCache(
-    val context: IDesktopContext
+    val context: IDesktopContext,
 ) {
     val managersCache = mutableMapOf<KClass<*>, Any?>()
 

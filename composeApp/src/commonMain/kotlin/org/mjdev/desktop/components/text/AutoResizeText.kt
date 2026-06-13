@@ -17,10 +17,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.mjdev.desktop.extensions.Compose.preview
-import kotlin.math.min
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
 import kotlin.math.max
+import kotlin.math.min
 
 // todo may be need refactor
 @Suppress("FunctionName")
@@ -35,21 +35,23 @@ fun AutoResizeText(
     maxLines: Int = 1,
     contentAlignment: Alignment = Alignment.Center,
     textAlign: TextAlign = TextAlign.Center,
-    minFontSize: TextUnit = 16.sp
+    minFontSize: TextUnit = 16.sp,
 ) = BoxWithConstraints(
     modifier = modifier,
-    contentAlignment = contentAlignment
+    contentAlignment = contentAlignment,
 ) {
     val maxFontSize = minOf(maxWidth, maxHeight)
-    val calculatedFontSize = min(
-        maxFontSize.value,
-        max(
-            minFontSize.value,
-            constraints.maxWidth.coerceAtMost(
-                    constraints.maxHeight
-            ).toFloat()
-        )
-    ).sp
+    val calculatedFontSize =
+        min(
+            maxFontSize.value,
+            max(
+                minFontSize.value,
+                constraints.maxWidth
+                    .coerceAtMost(
+                        constraints.maxHeight,
+                    ).toFloat(),
+            ),
+        ).sp
     val verticalOffset = -(calculatedFontSize.value * 0.1f).dp
     Text(
         text = text,
@@ -61,19 +63,22 @@ fun AutoResizeText(
         maxLines = maxLines,
         textAlign = textAlign,
         overflow = TextOverflow.Clip,
-        modifier = Modifier.offset(
-            y = verticalOffset
-        )
+        modifier =
+            Modifier.offset(
+                y = verticalOffset,
+            ),
     )
 }
 
 @Preview
 @Composable
-fun PreviewAutoResizeText() = preview(64, 64) {
-    AutoResizeText(
-        modifier = Modifier
-            .background(Color.White)
-            .size(64.dp),
-        text = "x",
-    )
-}
+fun PreviewAutoResizeText() =
+    preview(64, 64) {
+        AutoResizeText(
+            modifier =
+                Modifier
+                    .background(Color.White)
+                    .size(64.dp),
+            text = "x",
+        )
+    }

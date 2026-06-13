@@ -17,6 +17,7 @@ plugins {
     alias(libs.plugins.gradle.ktlint)
     alias(libs.plugins.manes.versions)
     alias(libs.plugins.kotlin.android) apply false
+    id("AiAgentPlugin")
 //    id("com.github.gmazzo.buildconfig") version "5.6.5"
 }
 
@@ -82,7 +83,9 @@ val collectKtlintReports by tasks.registering(Copy::class) {
 // Runs after every build: auto-format, ktlint report, and (gated) dependency-update report -> /reports
 val postBuildCodeCheck by tasks.registering {
     group = "verification"
-    description = "Auto-formats code, runs ktlint and (gated) dependency-update report into /reports"
+    description = "Auto-formats code (ktlintFormat) and runs the gated dependency-update report into /reports"
+    // Auto-format on build. Safe because .editorconfig disables no-unused-imports — the one
+    // rule that stripped receiver/extension-member imports and broke compilation.
     dependsOn(":composeApp:ktlintFormat")
     if (depCheckEnabled) dependsOn(":composeApp:dependencyUpdates")
     finalizedBy(collectKtlintReports)
@@ -126,3 +129,74 @@ allprojects {
 //}
 
 //kover { reports { total { xml { onCheck = true } } } }
+
+// Aggregate task: build every distributable that this host can produce.
+//  - desktop: Deb + AppImage + Rpm (per the targetFormats in composeApp), release mode
+//  - android: release APK (assembleRelease)
+//  - ios:     only when an iOS Kotlin target is configured AND the host is macOS
+//             (Kotlin/Native for iOS cannot build on Linux/Windows) — wired below if present.
+// captured at configuration time -> all the tasks below stay configuration-cache safe
+val appNameV = libs.versions.app.name.get()
+val pkgDirV = rootDir.resolve("packages/main-release")
+val appImageToolPath = rootDir.resolve(".gradle/tools/appimagetool-x86_64.AppImage").absolutePath
+
+// Downloads appimagetool before the build (only if not already present / on PATH).
+val ensureAppImageTool = tasks.register<EnsureAppImageToolTask>("ensureAppImageTool") {
+    group = "mjdev"
+    description = "Downloads appimagetool (single-file .AppImage builder) if not already present."
+    toolPath.set(appImageToolPath)
+}
+
+// Wraps the jpackage app-image directory into a single, CLI-runnable .AppImage file.
+val packageAppImageFile = tasks.register<PackageAppImageTask>("packageAppImageFile") {
+    group = "mjdev"
+    description = "Builds a single-file .AppImage from the jpackage app-image (skips if appimagetool unavailable)."
+    dependsOn(ensureAppImageTool, ":composeApp:packageReleaseAppImage")
+    appName.set(appNameV)
+    appImagePath.set(pkgDirV.resolve("app/$appNameV").absolutePath)
+    outputPath.set(pkgDirV.resolve("appimage/$appNameV.AppImage").absolutePath)
+    toolPath.set(appImageToolPath)
+}
+
+// Collects all distributables into releases/ with stable (version-less) names so each
+// build overwrites the previous file. Declarative Sync = configuration-cache safe.
+val collectReleases = tasks.register<Sync>("collectReleases") {
+    group = "mjdev"
+    description = "Copies the built distributables into releases/ (stable names, overwrites)."
+    dependsOn(
+        ":composeApp:packageReleaseDistributionForCurrentOS",
+        ":composeApp:assembleRelease",
+        packageAppImageFile,
+    )
+    // local copies so the rename closures capture plain Strings (configuration-cache safe;
+    // capturing the script-level vals makes the closure hold a null script reference on reload)
+    val name = appNameV
+    into(layout.projectDirectory.dir("releases"))
+    from(pkgDirV.resolve("deb")) { include("*.deb"); rename { "$name.deb" } }
+    from(pkgDirV.resolve("rpm")) { include("*.rpm"); rename { "$name.rpm" } }
+    from(pkgDirV.resolve("exe")) { include("*.exe"); rename { "$name.exe" } } // present only on a Windows host
+    from(pkgDirV.resolve("appimage")) { include("*.AppImage") } // already named <app>.AppImage
+    from(rootDir.resolve("composeApp/build/outputs/apk/release")) {
+        include("*.apk"); rename { "$name.apk" }
+    }
+}
+
+val buildAll = tasks.register("buildAll") {
+    group = "mjdev"
+    description = "Builds all distributables this host can produce, collects them into releases/ (stable names), and generates reports into reports/ — like every build."
+    dependsOn(collectReleases, postBuildCodeCheck)
+}
+
+// Attach iOS framework build only when an iOS target actually exists in composeApp
+// (it never does on a Linux/Windows host — Kotlin/Native iOS requires macOS + Xcode).
+project(":composeApp").afterEvaluate {
+    val iosTask = tasks.names.firstOrNull {
+        it.startsWith("linkReleaseFrameworkIos") || it == "embedAndSignAppleFrameworkForXcode"
+    }
+    if (iosTask != null) {
+        buildAll.configure { dependsOn("${this@afterEvaluate.path}:$iosTask") }
+        logger.lifecycle("buildAll: iOS target found — wiring ${this@afterEvaluate.path}:$iosTask")
+    } else {
+        logger.info("buildAll: no iOS target configured (needs macOS + Xcode + an ios* target in composeApp) — iOS skipped")
+    }
+}

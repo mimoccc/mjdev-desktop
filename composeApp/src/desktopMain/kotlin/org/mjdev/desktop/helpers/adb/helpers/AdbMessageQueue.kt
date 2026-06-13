@@ -1,8 +1,9 @@
 package org.mjdev.desktop.helpers.adb.helpers
 
 internal class AdbMessageQueue(
-    private val adbReader: AdbReader
-) : AutoCloseable, MessageQueue<AdbMessage>() {
+    private val adbReader: AdbReader,
+) : MessageQueue<AdbMessage>(),
+    AutoCloseable {
     override fun readMessage() = adbReader.readMessage()
 
     override fun getLocalId(message: AdbMessage) = message.arg1

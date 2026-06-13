@@ -1,6 +1,5 @@
 package org.mjdev.desktop.components.adb
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -8,12 +7,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
-import dadb.Dadb
-import androidx.compose.ui.Modifier
 import com.sun.jna.Platform.isAndroid
+import dadb.Dadb
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -28,17 +28,18 @@ import org.mjdev.desktop.extensions.decodeImage
 fun AdbScreenMirror(
     modifier: Modifier = Modifier,
     visibilityState: MutableState<Boolean> = mutableStateOf(false),
-    scope : CoroutineScope = rememberCoroutineScope(),
-    refreshInterval : Long  = 100L,
-    deviceState : DeviceState = rememberDeviceState(
-        refreshInterval = refreshInterval,
-        scope = scope
-    )
-)  = withDesktopContext {
-    if(isAndroid()) return@withDesktopContext
+    scope: CoroutineScope = rememberCoroutineScope(),
+    refreshInterval: Long = 100L,
+    deviceState: DeviceState =
+        rememberDeviceState(
+            refreshInterval = refreshInterval,
+            scope = scope,
+        ),
+) = withDesktopContext {
+    if (isAndroid()) return@withDesktopContext
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         when {
             deviceState.isConnecting -> CircularProgressIndicator()
@@ -48,18 +49,19 @@ fun AdbScreenMirror(
                 Image(
                     bitmap = currentImage,
                     contentDescription = "Device screen",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .pointerInput(deviceState.dadbInstance) {
-                            detectTapGestures { offset ->
-                                deviceState.tapOnDevice(
-                                    offset.x.toInt(),
-                                    offset.y.toInt(),
-                                    size.width,
-                                    size.height
-                                )
-                            }
-                        }
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .pointerInput(deviceState.dadbInstance) {
+                                detectTapGestures { offset ->
+                                    deviceState.tapOnDevice(
+                                        offset.x.toInt(),
+                                        offset.y.toInt(),
+                                        size.width,
+                                        size.height,
+                                    )
+                                }
+                            },
                 )
             }
 
@@ -75,7 +77,7 @@ fun AdbScreenMirror(
 }
 
 class DeviceState(
-    private val scope:CoroutineScope,
+    private val scope: CoroutineScope,
     private val refreshInterval: Long,
 ) {
     var imageBitmap by mutableStateOf<ImageBitmap?>(null)
@@ -87,39 +89,40 @@ class DeviceState(
     private var job: Job? = null
 
     fun start() {
-        job = scope.launch {
-            try {
-                val dadb = Dadb.discover()
-                if (dadb == null) {
-                    error = "No device found"
-                    isConnecting = false
-                    return@launch
-                }
-                dadbInstance = dadb
-                isConnecting = false
-                while (job?.isActive == true) {
-                    try {
-                        val stream = dadb.open("exec:screencap -p")
-                        val bytes = stream.source.readByteArray()
-                        stream.close()
-                        if (bytes.isNotEmpty()) {
-                            val decoded = bytes.decodeImage()
-                            if (decoded != null) {
-                                imageBitmap = decoded.bitmap
-                                screenWidth = decoded.width
-                                screenHeight = decoded.height
-                            }
-                        }
-                    } catch (e: Exception) {
-                        error = e.message
+        job =
+            scope.launch {
+                try {
+                    val dadb = Dadb.discover()
+                    if (dadb == null) {
+                        error = "No device found"
+                        isConnecting = false
+                        return@launch
                     }
-                    delay(refreshInterval)
+                    dadbInstance = dadb
+                    isConnecting = false
+                    while (job?.isActive == true) {
+                        try {
+                            val stream = dadb.open("exec:screencap -p")
+                            val bytes = stream.source.readByteArray()
+                            stream.close()
+                            if (bytes.isNotEmpty()) {
+                                val decoded = bytes.decodeImage()
+                                if (decoded != null) {
+                                    imageBitmap = decoded.bitmap
+                                    screenWidth = decoded.width
+                                    screenHeight = decoded.height
+                                }
+                            }
+                        } catch (e: Exception) {
+                            error = e.message
+                        }
+                        delay(refreshInterval)
+                    }
+                } catch (e: Exception) {
+                    error = e.message
+                    isConnecting = false
                 }
-            } catch (e: Exception) {
-                error = e.message
-                isConnecting = false
             }
-        }
     }
 
     fun stop() {
@@ -131,7 +134,7 @@ class DeviceState(
         offsetX: Int,
         offsetY: Int,
         sizeWidth: Int,
-        sizeHeight: Int
+        sizeHeight: Int,
     ) {
         dadbInstance?.let { dadb ->
             scope.launch {
@@ -151,10 +154,10 @@ class DeviceState(
     companion object {
         @Composable
         fun rememberDeviceState(
-            refreshInterval : Long  = 100L,
-            scope : CoroutineScope = rememberCoroutineScope()
+            refreshInterval: Long = 100L,
+            scope: CoroutineScope = rememberCoroutineScope(),
         ) = remember {
-            DeviceState(scope,  refreshInterval)
+            DeviceState(scope, refreshInterval)
         }
     }
 }

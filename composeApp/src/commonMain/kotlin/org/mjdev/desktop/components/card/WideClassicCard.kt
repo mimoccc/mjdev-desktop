@@ -14,13 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.card.base.*
 import org.mjdev.desktop.components.image.ImageAny
 import org.mjdev.desktop.components.surface.base.Glow
 import org.mjdev.desktop.components.text.TextAny
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.user.AccountCircle
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("unused")
 @Composable
@@ -38,7 +38,7 @@ fun WideClassicCard(
     border: CardBorder = CardDefaults.border(),
     glow: CardGlow = CardDefaults.glow(),
     contentPadding: PaddingValues = PaddingValues(),
-    interactionSource: MutableInteractionSource? = null
+    interactionSource: MutableInteractionSource? = null,
 ) = Card(
     onClick = onClick,
     onLongClick = onLongClick,
@@ -48,20 +48,20 @@ fun WideClassicCard(
     colors = colors,
     scale = scale,
     border = border,
-    glow = glow
+    glow = glow,
 ) {
     Row(
-        modifier = Modifier.padding(contentPadding)
+        modifier = Modifier.padding(contentPadding),
     ) {
         Box(
             contentAlignment = CardDefaults.ContentImageAlignment,
-            content = image
+            content = image,
         )
         Column {
             CardContent(
                 title = title,
                 subtitle = subtitle,
-                description = description
+                description = description,
             )
         }
     }
@@ -69,31 +69,34 @@ fun WideClassicCard(
 
 @Preview
 @Composable
-fun PreviewWideClassicCard() = preview {
-    WideClassicCard(
-        colors = CardDefaults.colors(
-            containerColor = Color.White
-        ),
-        border = CardDefaults.border(),
-        glow = CardDefaults.glow(
-            glow = Glow(Color.Green, 4.dp)
-        ),
-        contentPadding = PaddingValues(8.dp),
-        scale = CardDefaults.scale(1f),
-        image = {
-            ImageAny(
-                src = AccountCircle,
-                contentDescription = ""
-            )
-        },
-        title = {
-            TextAny("title")
-        },
-        subtitle = {
-            TextAny("subtitle")
-        },
-        description = {
-            TextAny("description")
-        }
-    )
-}
+fun PreviewWideClassicCard() =
+    preview {
+        WideClassicCard(
+            colors =
+                CardDefaults.colors(
+                    containerColor = Color.White,
+                ),
+            border = CardDefaults.border(),
+            glow =
+                CardDefaults.glow(
+                    glow = Glow(Color.Green, 4.dp),
+                ),
+            contentPadding = PaddingValues(8.dp),
+            scale = CardDefaults.scale(1f),
+            image = {
+                ImageAny(
+                    src = AccountCircle,
+                    contentDescription = "",
+                )
+            },
+            title = {
+                TextAny("title")
+            },
+            subtitle = {
+                TextAny("subtitle")
+            },
+            description = {
+                TextAny("description")
+            },
+        )
+    }

@@ -3,20 +3,20 @@ package org.mjdev.desktop.data
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
-import org.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
-import org.mjdev.desktop.helpers.system.shell.Shell
-import org.mjdev.desktop.log.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okio.Path
 import org.mjdev.desktop.extensions.PathExt.text
+import org.mjdev.desktop.helpers.exception.EmptyException.Companion.EmptyException
+import org.mjdev.desktop.helpers.system.shell.Shell
 import org.mjdev.desktop.interfaces.IApp
+import org.mjdev.desktop.log.Log
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class App(
     val desktopFile: DesktopFile = DesktopFile.Empty,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
 ) : IApp {
     constructor(file: Path) : this(DesktopFile(file))
 
@@ -44,17 +44,25 @@ class App(
     val iconName: String
         get() = desktopFile.desktopSection?.Icon ?: fullAppName
     override val categories: List<Category>
-        get() = desktopFile.desktopSection?.Categories.orEmpty().map {
-            Category(it)
-        }.ifEmpty {
-            listOf(Category.Empty)
-        }
+        get() =
+            desktopFile.desktopSection
+                ?.Categories
+                .orEmpty()
+                .map {
+                    Category(it)
+                }.ifEmpty {
+                    listOf(Category.Empty)
+                }
     val notifyOnStart: Boolean
         get() = desktopFile.desktopSection?.NotifyOnStart ?: false
     val runInTerminal: Boolean
         get() = desktopFile.desktopSection?.RunInTerminal ?: false
     val windowClass: String
-        get() = desktopFile.desktopSection?.StartupWMClass.orEmpty().ifEmpty { fullAppName }
+        get() =
+            desktopFile.desktopSection
+                ?.StartupWMClass
+                .orEmpty()
+                .ifEmpty { fullAppName }
 
     override val cmd
         get() = exec.split(" ").first()
@@ -100,7 +108,7 @@ class App(
                     onStopped = { e ->
                         Log.i("App stopped: $name [$windowClass].")
                         triggerStop(e)
-                    }
+                    },
                 )
             }
         }.onFailure { e ->
@@ -142,15 +150,14 @@ class App(
         return this
     }
 
-    override fun equals(other: Any?): Boolean {
-        return when {
+    override fun equals(other: Any?): Boolean =
+        when {
             other is App -> {
                 other.fileName.contentEquals(file.name)
             }
 
             else -> false
         }
-    }
 
     override fun hashCode(): Int {
         var result = file.hashCode()
@@ -180,23 +187,26 @@ class App(
     override fun toString(): String = name
 
     companion object {
-        val Test = App(
-            desktopFile = DesktopFile.Test,
-            isFavorite = true,
-        ).apply {
-            isStartingState.value = true
-        }
+        val Test =
+            App(
+                desktopFile = DesktopFile.Test,
+                isFavorite = true,
+            ).apply {
+                isStartingState.value = true
+            }
 
         val Empty: App = App()
 
-        fun List<String>?.ifEmptyCategories(block: () -> List<String>) = this?.filter { s ->
-            s.isNotEmpty()
-        }.let { list ->
-            when {
-                list == null -> block()
-                list.isEmpty() -> block()
-                else -> list
-            }
-        }
+        fun List<String>?.ifEmptyCategories(block: () -> List<String>) =
+            this
+                ?.filter { s ->
+                    s.isNotEmpty()
+                }.let { list ->
+                    when {
+                        list == null -> block()
+                        list.isEmpty() -> block()
+                        else -> list
+                    }
+                }
     }
 }

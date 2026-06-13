@@ -10,10 +10,10 @@
 
 package org.mjdev.desktop.managers.window
 
-//import com.sun.jna.platform.unix.X11.Window
-import org.mjdev.desktop.data.App
-import org.mjdev.desktop.context.DesktopContext
+// import com.sun.jna.platform.unix.X11.Window
 import kotlinx.coroutines.CoroutineScope
+import org.mjdev.desktop.context.DesktopContext
+import org.mjdev.desktop.data.App
 
 @Suppress("unused")
 class WindowsManager(
@@ -57,9 +57,10 @@ class WindowsManager(
         get() = null
 
     // todo
-    private fun findWindows(app: App? = null): List<SystemWindow> = listOf<SystemWindow>().let { list ->
-        if (app == null) list else list.filter { w -> w.windowClass == app.windowClass }
-    }
+    private fun findWindows(app: App? = null): List<SystemWindow> =
+        listOf<SystemWindow>().let { list ->
+            if (app == null) list else list.filter { w -> w.windowClass == app.windowClass }
+        }
 
 //    init {
 //        Log.i("Current display : $currentDisplay")
@@ -83,8 +84,7 @@ class WindowsManager(
 //        Log.i("app[${app.windowClass}] : ${count()}")
 //    }
 
-    fun hasWindow(app: App): Boolean =
-        findWindows(app).isNotEmpty()
+    fun hasWindow(app: App): Boolean = findWindows(app).isNotEmpty()
 
     fun isWindowFocus(app: App): Boolean {
         val appWindow = windows.firstOrNull { it.windowClass.contentEquals(app.windowClass, true) }
@@ -141,16 +141,16 @@ class WindowsManager(
 //            if (id == 0L) continue
 //            Window(id).also { window ->
 //                val pid = getWindowPid(window) ?: 0L
-////                val name = getWindowName(window).orEmpty()
+// //                val name = getWindowName(window).orEmpty()
 //                val cls = getWindowClass(window).orEmpty()
 //                val desk = getWindowDesktop(window) ?: 0L
 //                val process = ProcessHandle.allProcesses().toList().firstOrNull { it.pid() == pid }
-////                val icon = getWindowIconName(window).orEmpty()
+// //                val icon = getWindowIconName(window).orEmpty()
 //                windowList.add(
 //                    SystemWindow(
 //                        id,
-////                        name,
-////                        icon,
+// //                        name,
+// //                        icon,
 //                        pid,
 //                        cls,
 //                        desk,
@@ -257,7 +257,7 @@ class WindowsManager(
 //        val prop = get_property(window, xa_prop_type, prop_name, size)
 //        if (prop != null) {
 //            longProp = prop.getLong(0)
-////            g_free(prop)
+// //            g_free(prop)
 //        }
 //        return longProp
 //    }
@@ -272,7 +272,7 @@ class WindowsManager(
 //        val prop = get_property(win, xa_prop_type, prop_name, null)
 //        if (prop != null) {
 //            intProp = prop.getInt(0)
-////            g_free(prop)
+// //            g_free(prop)
 //        }
 //        return intProp
 //    }
@@ -290,7 +290,7 @@ class WindowsManager(
 //        )
 //        if (prop != null) {
 //            strProp = g_strdup(prop)
-////            g_free(prop)
+// //            g_free(prop)
 //        }
 //        return strProp
 //    }
@@ -317,7 +317,7 @@ class WindowsManager(
 //        val prop = get_property(window, xa_prop_type, prop_name, null)
 //        if (prop != null) {
 //            strProp = g_locale_to_utf8(prop)
-////            g_free(prop)
+// //            g_free(prop)
 //        }
 //        return strProp
 //    }
@@ -332,7 +332,7 @@ class WindowsManager(
 //        val prop = get_property(window, xa_prop_type, prop_name, null)
 //        if (prop != null) {
 //            ret = Window(prop.getLong(0))
-////            g_free(prop)
+// //            g_free(prop)
 //        }
 //        return ret
 //    }
@@ -368,7 +368,7 @@ class WindowsManager(
 //        }
 //        if ((xa_ret_type.value == null) || (xa_ret_type.value.toLong() != xa_prop_type.toLong())
 //        ) {
-////            g_free(ret_prop.pointer)
+// //            g_free(ret_prop.pointer)
 //            return null
 //        }
 //        if (size != null) {

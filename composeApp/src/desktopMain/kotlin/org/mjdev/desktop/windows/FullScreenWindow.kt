@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.unit.DpOffset
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.mjdev.desktop.context.LocalDesktopContext
 import org.mjdev.desktop.context.IDesktopContext
+import org.mjdev.desktop.context.LocalDesktopContext
 import org.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
 @Suppress("FunctionName")
@@ -21,14 +21,15 @@ fun FullScreenWindow(
     onCloseRequest: () -> Unit = {},
     onPreviewKeyEvent: (KeyEvent) -> Boolean = { false },
     onKeyEvent: (KeyEvent) -> Boolean = { false },
-    windowState: ChromeWindowState = rememberChromeWindowState(
-        placement = WindowPlacement.Fullscreen,
-        size = context.containerSize,
-        position = DpOffset.Zero
-    ),
+    windowState: ChromeWindowState =
+        rememberChromeWindowState(
+            placement = WindowPlacement.Fullscreen,
+            size = context.containerSize,
+            position = DpOffset.Zero,
+        ),
     onCreated: ChromeWindowState.() -> Unit = {},
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
-    content: @Composable () -> Unit = {}
+    content: @Composable () -> Unit = {},
 ) = withDesktopContext {
     ChromeWindow(
         name = name ?: "FullScreenWindow",
@@ -46,7 +47,7 @@ fun FullScreenWindow(
         onOpened = onOpened,
         onFocusChange = onFocusChange,
         windowState = windowState,
-        content = content
+        content = content,
     )
 }
 

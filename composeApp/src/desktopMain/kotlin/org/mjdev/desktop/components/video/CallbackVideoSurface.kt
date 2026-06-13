@@ -11,18 +11,19 @@ class CallbackVideoSurface(
         bufferWidth: Int,
         bufferHeight: Int,
         displayWidth: Int,
-        displayHeight: Int
-    ) -> Unit = { _, _, _, _ -> }
+        displayHeight: Int,
+    ) -> Unit = { _, _, _, _ -> },
 ) : BufferFormatCallback {
-    override fun getBufferFormat(sourceWidth: Int, sourceHeight: Int): BufferFormat {
-        return RV32BufferFormat(sourceWidth, sourceHeight)
-    }
+    override fun getBufferFormat(
+        sourceWidth: Int,
+        sourceHeight: Int,
+    ): BufferFormat = RV32BufferFormat(sourceWidth, sourceHeight)
 
     override fun newFormatSize(
         bufferWidth: Int,
         bufferHeight: Int,
         displayWidth: Int,
-        displayHeight: Int
+        displayHeight: Int,
     ) {
         onNewSize(bufferWidth, bufferHeight, displayWidth, displayHeight)
     }

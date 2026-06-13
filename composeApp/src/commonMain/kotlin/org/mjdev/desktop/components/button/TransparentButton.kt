@@ -17,34 +17,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.ButtonDefaults.noElevation
 import org.mjdev.desktop.extensions.ButtonDefaults.transparent
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.user.AccountCircle
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TransparentButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    content: @Composable RowScope.() -> Unit = {}
+    content: @Composable RowScope.() -> Unit = {},
 ) = Button(
     modifier = modifier,
     contentPadding = PaddingValues(0.dp),
     onClick = onClick,
     colors = ButtonDefaults.transparent(),
     elevation = ButtonDefaults.noElevation(),
-    content = content
+    content = content,
 )
 
 @Preview
 @Composable
-fun PreviewTransparentButton() = preview {
-    TransparentButton {
-        Icon(
-            imageVector = AccountCircle,
-            contentDescription = "",
-            tint = Color.White
-        )
+fun PreviewTransparentButton() =
+    preview {
+        TransparentButton {
+            Icon(
+                imageVector = AccountCircle,
+                contentDescription = "",
+                tint = Color.White,
+            )
+        }
     }
-}

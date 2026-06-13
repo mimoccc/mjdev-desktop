@@ -11,33 +11,35 @@ import org.mjdev.desktop.interfaces.IUserDirs
 // todo api has directories & hashmap from file
 @Suppress("unused")
 class UserDirs(
-    override val homeDirectory: Path
+    override val homeDirectory: Path,
 ) : IUserDirs {
     private val configFile: Path by lazy {
         homeDirectory.resolve(".config").resolve("user-dirs.dirs")
     }
     private val configFileContent: List<String> by lazy {
-        configFile.lines.filter { line ->
-            line.let { l -> l.isNotEmpty() && l.notStartsWith("#") }
-        }.map { s ->
-            s.replace(
-                "\$HOME",
-                homeDirectory.absolutePath
-            ).replace("\"", "")
-        }
+        configFile.lines
+            .filter { line ->
+                line.let { l -> l.isNotEmpty() && l.notStartsWith("#") }
+            }.map { s ->
+                s
+                    .replace(
+                        "\$HOME",
+                        homeDirectory.absolutePath,
+                    ).replace("\"", "")
+            }
     }
     val data by lazy {
-        configFileContent.map { line ->
-            line.split("=").let { pair ->
-                Pair(pair[0], pair.getOrNull(1))
+        configFileContent
+            .map { line ->
+                line.split("=").let { pair ->
+                    Pair(pair[0], pair.getOrNull(1))
+                }
+            }.associate {
+                Pair(it.first, it.second.orEmpty())
             }
-        }.associate {
-            Pair(it.first, it.second.orEmpty())
-        }
     }
 
-    operator fun get(name: String): Path =
-        data[name].toString().toPath()
+    operator fun get(name: String): Path = data[name].toString().toPath()
 
     private val localDir
         get() = homeDirectory[DIR_NAME_DOT_LOCAL]

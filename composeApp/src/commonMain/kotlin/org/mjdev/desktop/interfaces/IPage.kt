@@ -6,7 +6,7 @@ import org.mjdev.desktop.components.controlcenter.base.ControlCenterPageScope
 import org.mjdev.desktop.components.controlcenter.base.PageCache
 import org.mjdev.desktop.context.IDesktopContext
 
-interface IPage: IDisposable {
+interface IPage : IDisposable {
     val context: IDesktopContext
     val name: String
     val icon: ImageVector

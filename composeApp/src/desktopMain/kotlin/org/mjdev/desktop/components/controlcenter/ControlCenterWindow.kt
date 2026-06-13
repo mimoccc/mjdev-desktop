@@ -11,6 +11,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.mjdev.desktop.extensions.Compose.orElse
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
@@ -18,8 +20,6 @@ import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.helpers.animation.Animations.ControlCenterEnterAnimation
 import org.mjdev.desktop.helpers.animation.Animations.ControlCenterExitAnimation
 import org.mjdev.desktop.helpers.mouseevents.MouseRange
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.mjdev.desktop.extensions.Compose.orElse
 import org.mjdev.desktop.windows.ChromeWindow
 import org.mjdev.desktop.windows.ChromeWindowState
 import org.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
@@ -37,7 +37,7 @@ fun ControlCenterWindow(
 ) = withDesktopContext {
     val controlCenterExpandedWidth: Dp by rememberComputed(
         theme.controlCenterExpandedWidthPercent,
-        containerSize.width
+        containerSize.width,
     ) {
         (containerSize.width / 100f) * theme.controlCenterExpandedWidthPercent.orElse { 0 }
     }
@@ -50,22 +50,22 @@ fun ControlCenterWindow(
     }
     val position by rememberComputed(
         size,
-        controlCenterState.isVisible
+        controlCenterState.isVisible,
     ) {
         DpOffset(
             containerSize.width - size.width,
-            0.dp
+            0.dp,
         )
     }
     val mouseRange by rememberCalculated(
         containerSize,
-        size
+        size,
     ) {
         MouseRange(
             x = containerSize.width - controlCenterDividerWidth,
             y = 0.dp,
             width = size.width,
-            height = containerSize.height
+            height = containerSize.height,
         )
     }
     ChromeWindow(
@@ -104,7 +104,7 @@ fun ControlCenterWindow(
                     controlCenterState.showOrFocus()
                 }
             }
-        }
+        },
     ) {
         ControlCenter(
             controlCenterState = controlCenterState,
@@ -119,7 +119,7 @@ fun ControlCenterWindow(
                         controlCenterState.showOrFocus()
                     }
                 }
-            }
+            },
         )
         LaunchedEffect(position, size) {
             controlCenterState.size = size
@@ -131,6 +131,7 @@ fun ControlCenterWindow(
 @Suppress("unused")
 @Preview
 @Composable
-fun PreviewControlCenterWindow() = preview {
-    ControlCenterWindow()
-}
+fun PreviewControlCenterWindow() =
+    preview {
+        ControlCenterWindow()
+    }

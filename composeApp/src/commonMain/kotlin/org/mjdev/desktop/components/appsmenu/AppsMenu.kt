@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.appsmenu.AppsMenuState.Companion.rememberAppsMenuState
 import org.mjdev.desktop.components.appsmenu.components.AppsBottomBar
 import org.mjdev.desktop.components.appsmenu.components.AppsList
@@ -39,23 +40,22 @@ import org.mjdev.desktop.components.sliding.SlidingPanel
 import org.mjdev.desktop.components.sliding.base.VisibilityState
 import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import org.mjdev.desktop.components.user.UserAvatar
+import org.mjdev.desktop.context.DesktopContextScope
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.data.Category
 import org.mjdev.desktop.extensions.Colors.alpha
 import org.mjdev.desktop.extensions.Colors.darker
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
-import org.mjdev.desktop.extensions.MutableStateExt.rememberState
-import org.mjdev.desktop.helpers.compose.Orientation
-import org.mjdev.desktop.helpers.shape.BarShape
-import org.mjdev.desktop.context.DesktopContextScope
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.sortByRelevance
 import org.mjdev.desktop.extensions.Compose.trimIsNotEmpty
 import org.mjdev.desktop.extensions.LaunchedEffect.flowBlock
+import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
+import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import org.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
+import org.mjdev.desktop.helpers.compose.Orientation
+import org.mjdev.desktop.helpers.shape.BarShape
 import org.mjdev.desktop.interfaces.IApp
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -74,34 +74,39 @@ fun AppsMenu(
     onCategoryContextMenuClick: DesktopContextScope.(Category) -> Unit = {},
     onUserAvatarClick: () -> Unit = {},
     onActionClick: () -> Unit = {},
-    onTooltip: (item: Any?) -> Unit = {}
+    onTooltip: (item: Any?) -> Unit = {},
 ) = withDesktopContext {
     val appCategories by flowBlock(emptyList()) { appsManager.categories }
     val items by rememberComputed(
         appsMenuState.searchTextState.value,
-        appsMenuState.categoryState.value
+        appsMenuState.categoryState.value,
     ) {
         when {
             // todo fuzzy sort, simplify
-            appsMenuState.searchTextState.trimIsNotEmpty() -> appsManager.allApps.filter { app ->
-                app.fullTextString.contains(appsMenuState.searchTextState.value, ignoreCase = true)
-            }.sortByRelevance(appsMenuState.searchTextState.value) { name }
+            appsMenuState.searchTextState.trimIsNotEmpty() ->
+                appsManager.allApps
+                    .filter { app ->
+                        app.fullTextString.contains(appsMenuState.searchTextState.value, ignoreCase = true)
+                    }.sortByRelevance(appsMenuState.searchTextState.value) { name }
 
-            appsMenuState.categoryState.value != null -> appsManager.allApps.filter { app ->
-                app.categories.any { it.name.contentEquals(appsMenuState.categoryState.value?.name) }
-            }.sortedBy { app ->
-                app.name
-            }
+            appsMenuState.categoryState.value != null ->
+                appsManager.allApps
+                    .filter { app ->
+                        app.categories.any { it.name.contentEquals(appsMenuState.categoryState.value?.name) }
+                    }.sortedBy { app ->
+                        app.name
+                    }
 
             else -> appCategories
         }
     }
     SlidingPanel(
-        modifier = modifier
-            .size(
-                appMenuMinWidth,
-                appMenuMinHeight
-            )
+        modifier =
+            modifier
+                .size(
+                    appMenuMinWidth,
+                    appMenuMinHeight,
+                )
 //            .widthIn(
 //                min = appMenuMinWidth,
 //                max = containerSize.width
@@ -110,84 +115,95 @@ fun AppsMenu(
 //                min = appMenuMinHeight,
 //                max = containerSize.height
 //            )
-            .padding(
-                bottom = panelState.height
-            ),
+                .padding(
+                    bottom = panelState.height,
+                ),
         enterAnimation = enterAnimation,
         exitAnimation = exitAnimation,
-        state = appsMenuState
+        state = appsMenuState,
     ) {
         BlurPanel(
-            modifier = Modifier.fillMaxSize()
-                .clip(RoundedCornerShape(24.dp))
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(24.dp)),
         )
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(menuPadding)
-                .background(backgroundColor.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
-                .border(2.dp, borderColor, RoundedCornerShape(24.dp))
-                .clip(RoundedCornerShape(24.dp))
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(menuPadding)
+                    .background(backgroundColor.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
+                    .border(2.dp, borderColor, RoundedCornerShape(24.dp))
+                    .clip(RoundedCornerShape(24.dp)),
         ) {
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             ) {
                 Box(
                     modifier = Modifier.clip(RectangleShape),
-                    contentAlignment = Alignment.BottomStart
+                    contentAlignment = Alignment.BottomStart,
                 ) {
-                    val shape = BarShape(
-                        offset = 50.dp,
-                        circleRadius = 32.dp,
-                        cornerRadius = 4.dp,
-                        circleGap = 4.dp,
-                    )
-                    val brush = Brush.horizontalGradient(
-                        listOf(
-                            backgroundColor.darker(0.1f),
-                            backgroundColor.darker(0.1f),
-                            backgroundColor.darker(0.1f),
-                            backgroundColor.alpha(0.9f),
-                            backgroundColor.alpha(0.7f),
-                            backgroundColor.alpha(0.3f),
+                    val shape =
+                        BarShape(
+                            offset = 50.dp,
+                            circleRadius = 32.dp,
+                            cornerRadius = 4.dp,
+                            circleGap = 4.dp,
                         )
-                    )
+                    val brush =
+                        Brush.horizontalGradient(
+                            listOf(
+                                backgroundColor.darker(0.1f),
+                                backgroundColor.darker(0.1f),
+                                backgroundColor.darker(0.1f),
+                                backgroundColor.alpha(0.9f),
+                                backgroundColor.alpha(0.7f),
+                                backgroundColor.alpha(0.3f),
+                            ),
+                        )
                     Box(
-                        modifier = Modifier.fillMaxWidth()
-                            .height(64.dp)
-                            .background(
-                                brush = brush,
-                                shape = shape
-                            )
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(64.dp)
+                                .background(
+                                    brush = brush,
+                                    shape = shape,
+                                ),
                     )
                     UserAvatar(
                         avatarSize = 64.dp,
                         orientation = Orientation.Horizontal,
                         titleVerticalAlignment = Alignment.Bottom,
-                        iconPadding = PaddingValues(
-                            bottom = 16.dp
-                        ),
-                        titlePadding = PaddingValues(
-                            top = 24.dp,
-                            start = 20.dp
-                        ),
+                        iconPadding =
+                            PaddingValues(
+                                bottom = 16.dp,
+                            ),
+                        titlePadding =
+                            PaddingValues(
+                                top = 24.dp,
+                                start = 20.dp,
+                            ),
                         onUserAvatarClick = onUserAvatarClick,
-                        onTooltip = onTooltip
+                        onTooltip = onTooltip,
                     )
                 }
                 HorizontalDivider(
-                    modifier = Modifier.padding(
-                        start = 2.dp,
-                        end = 2.dp
-                    ),
+                    modifier =
+                        Modifier.padding(
+                            start = 2.dp,
+                            end = 2.dp,
+                        ),
                     color = borderColor,
-                    thickness = 2.dp
+                    thickness = 2.dp,
                 )
                 AppsList(
-                    modifier = Modifier
-                        .padding(bottom = 62.dp)
-                        .fillMaxSize()
-                        .padding(24.dp),
+                    modifier =
+                        Modifier
+                            .padding(bottom = 62.dp)
+                            .fillMaxSize()
+                            .padding(24.dp),
                     category = appsMenuState.categoryState.value,
                     listState = appsMenuState.listState,
                     onCategoryClick = { c -> appsMenuState.categoryState.value = c },
@@ -199,24 +215,27 @@ fun AppsMenu(
                 )
             }
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .align(Alignment.BottomStart),
-            ) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(
-                        start = 2.dp,
-                        end = 2.dp
-                    ),
-                    color = borderColor,
-                    thickness = 2.dp
-                )
-                AppsBottomBar(
-                    modifier = Modifier
+                modifier =
+                    Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .background(backgroundColor),
+                        .align(Alignment.BottomStart),
+            ) {
+                HorizontalDivider(
+                    modifier =
+                        Modifier.padding(
+                            start = 2.dp,
+                            end = 2.dp,
+                        ),
+                    color = borderColor,
+                    thickness = 2.dp,
+                )
+                AppsBottomBar(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .background(backgroundColor),
                     onTooltip = onTooltip,
                     backButtonVisible = items.firstOrNull() is IApp,
                     searchTextState = appsMenuState.searchTextState,
@@ -226,7 +245,7 @@ fun AppsMenu(
                     },
                     onContextMenuClick = {
                         // todo : context menu
-                    }
+                    },
                 )
             }
         }
@@ -246,7 +265,7 @@ class AppsMenuState(
     val listState: LazyListState = LazyListState(),
     val categoryState: MutableState<Category?> = mutableStateOf(null),
     val searchTextState: MutableState<String> = mutableStateOf(""),
-    val position: DpOffset = DpOffset.Zero
+    val position: DpOffset = DpOffset.Zero,
 ) : VisibilityState(visible, enabled, hideDelay, scope) {
     companion object {
         @Composable
@@ -265,16 +284,17 @@ class AppsMenuState(
             scope,
             listState,
             categoryState,
-            searchTextState
+            searchTextState,
         )
     }
 }
 
 @Preview
 @Composable
-fun PreviewAppsMenu() = preview {
-    AppsMenu(
-        appsMenuState = rememberAppsMenuState(true),
-        panelState = rememberVisibilityState(true)
-    )
-}
+fun PreviewAppsMenu() =
+    preview {
+        AppsMenu(
+            appsMenuState = rememberAppsMenuState(true),
+            panelState = rememberVisibilityState(true),
+        )
+    }

@@ -9,8 +9,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import org.mjdev.desktop.components.appsmenu.AppsMenuState.Companion.rememberAppsMenuState
+import org.mjdev.desktop.context.DesktopContextScope
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.data.Category
 import org.mjdev.desktop.extensions.Compose.preview
+import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.extensions.MutableStateExt.clear
 import org.mjdev.desktop.extensions.MutableStateExt.plus
 import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
@@ -18,9 +21,6 @@ import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.extensions.MutableStateExt.removeLast
 import org.mjdev.desktop.helpers.animation.Animations.AppsMenuEnterAnimation
 import org.mjdev.desktop.helpers.animation.Animations.AppsMenuExitAnimation
-import org.mjdev.desktop.context.DesktopContextScope
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.interfaces.IApp
 import org.mjdev.desktop.windows.ChromeWindow
 import org.mjdev.desktop.windows.ChromeWindowState
@@ -48,7 +48,7 @@ fun AppsMenuWindow(
     onCategoryContextMenuClick: DesktopContextScope.(Category) -> Unit = {},
     onUserAvatarClick: () -> Unit = {},
     onActionClick: () -> Unit = { runAsync { menuState.hide() } },
-    onTooltip: (item: Any?) -> Unit = {}
+    onTooltip: (item: Any?) -> Unit = {},
 ) = withDesktopContext {
     val size by rememberComputed(
         appMenuMinHeight,
@@ -65,11 +65,11 @@ fun AppsMenuWindow(
         panelState.height,
         menuState.isVisible,
         appsMenuState.isVisible,
-        size
+        size,
     ) {
         DpOffset(
             panelState.x,
-            containerSize.height - (panelState.height + appMenuMinHeight)
+            containerSize.height - (panelState.height + appMenuMinHeight),
         ).apply {
 //            println("Menu position: $this")
 //            println("Menu size: $size")
@@ -87,7 +87,7 @@ fun AppsMenuWindow(
         },
         isGlobalKeyHandlerEnabled = {
             (menuState.isVisible || appsMenuState.isVisible) &&
-                    (menuState.enabled || appsMenuState.enabled)
+                (menuState.enabled || appsMenuState.enabled)
         },
         onGlobalKey = {
             onMenuKey {
@@ -121,7 +121,7 @@ fun AppsMenuWindow(
                 true
             }
         },
-        onFocusChange = onFocusChange
+        onFocusChange = onFocusChange,
     ) {
         AppsMenu(
             appsMenuState = appsMenuState,
@@ -133,7 +133,7 @@ fun AppsMenuWindow(
             onCategoryContextMenuClick = onCategoryContextMenuClick,
             onUserAvatarClick = onUserAvatarClick,
             onActionClick = onActionClick,
-            onTooltip = onTooltip
+            onTooltip = onTooltip,
         )
         LaunchedEffect(menuState.isVisible) {
             if (!menuState.isVisible) {
@@ -144,8 +144,9 @@ fun AppsMenuWindow(
 }
 
 @Suppress("unused")
-//@Preview
+// @Preview
 @Composable
-fun PreviewAppsMenuWindow() = preview {
-    AppsMenuWindow()
-}
+fun PreviewAppsMenuWindow() =
+    preview {
+        AppsMenuWindow()
+    }

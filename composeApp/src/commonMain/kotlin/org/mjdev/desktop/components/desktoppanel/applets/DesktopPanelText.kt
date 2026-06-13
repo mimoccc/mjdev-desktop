@@ -13,14 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.ButtonDefaults.color
 import org.mjdev.desktop.extensions.ButtonDefaults.noElevation
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.onMouseEnter
 import org.mjdev.desktop.extensions.Modifier.onMouseLeave
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DesktopPanelText(
@@ -33,22 +33,22 @@ fun DesktopPanelText(
     onClick: () -> Unit = {},
 ) = withDesktopContext {
     Box(
-        modifier = modifier
-            .wrapContentSize()
-            .onMouseEnter {
-                buttonState.value = true
-                onTooltip(text)
-            }
-            .onMouseLeave {
-                buttonState.value = false
-            }
+        modifier =
+            modifier
+                .wrapContentSize()
+                .onMouseEnter {
+                    buttonState.value = true
+                    onTooltip(text)
+                }.onMouseLeave {
+                    buttonState.value = false
+                },
     ) {
         Button(
             modifier = Modifier.padding(textPadding),
             contentPadding = PaddingValues(0.dp),
             onClick = onClick,
             colors = ButtonDefaults.color(if (buttonState.value) backgroundHover else Color.Transparent),
-            elevation = ButtonDefaults.noElevation()
+            elevation = ButtonDefaults.noElevation(),
         ) {
             Text(
                 textAlign = TextAlign.Center,
@@ -61,6 +61,7 @@ fun DesktopPanelText(
 
 @Preview
 @Composable
-fun PreviewDesktopPanelText() = preview {
-    DesktopPanelText()
-}
+fun PreviewDesktopPanelText() =
+    preview {
+        DesktopPanelText()
+    }

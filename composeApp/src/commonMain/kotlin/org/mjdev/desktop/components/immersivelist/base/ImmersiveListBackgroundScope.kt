@@ -22,9 +22,8 @@ import androidx.compose.ui.Modifier
 
 @Immutable
 class ImmersiveListBackgroundScope(
-    boxScope: BoxScope
+    boxScope: BoxScope,
 ) : BoxScope by boxScope {
-
     @Suppress("unused")
     @Composable
     fun AnimatedVisibility(
@@ -33,7 +32,7 @@ class ImmersiveListBackgroundScope(
         enter: EnterTransition = ImmersiveListDefaults.EnterTransition,
         exit: ExitTransition = ImmersiveListDefaults.ExitTransition,
         label: String = "AnimatedVisibility",
-        content: @Composable AnimatedVisibilityScope.() -> Unit
+        content: @Composable AnimatedVisibilityScope.() -> Unit,
     ) {
         androidx.compose.animation.AnimatedVisibility(
             visible,
@@ -41,7 +40,7 @@ class ImmersiveListBackgroundScope(
             enter,
             exit,
             label,
-            content
+            content,
         )
     }
 
@@ -55,7 +54,7 @@ class ImmersiveListBackgroundScope(
         },
         contentAlignment: Alignment = Alignment.TopStart,
         label: String = "AnimatedContent",
-        content: @Composable AnimatedVisibilityScope.(targetState: Int) -> Unit
+        content: @Composable AnimatedVisibilityScope.(targetState: Int) -> Unit,
     ) {
         androidx.compose.animation.AnimatedContent(
             targetState,
@@ -63,7 +62,7 @@ class ImmersiveListBackgroundScope(
             transitionSpec,
             contentAlignment,
             content = content,
-            label = label
+            label = label,
         )
     }
 }

@@ -35,19 +35,21 @@ object Custom {
         get() {
             val block = Character.UnicodeBlock.of(this)
             return (!Character.isISOControl(this)) &&
-                    this != java.awt.event.KeyEvent.CHAR_UNDEFINED &&
-                    block != null &&
-                    block != Character.UnicodeBlock.SPECIALS
+                this != java.awt.event.KeyEvent.CHAR_UNDEFINED &&
+                block != null &&
+                block != Character.UnicodeBlock.SPECIALS
         }
 
-    fun Path.listDesktopFiles(
-        ext: String = DesktopFile.EXTENSION
-    ): List<DesktopFile> = if (this.exists) listFiles(ext) { f ->
-        DesktopFile(f)
-    } else emptyList()
+    fun Path.listDesktopFiles(ext: String = DesktopFile.EXTENSION): List<DesktopFile> =
+        if (this.exists) {
+            listFiles(ext) { f ->
+                DesktopFile(f)
+            }
+        } else {
+            emptyList()
+        }
 
-    fun Path.readTextAsLocale(): Locale =
-        if (this.exists) text.toLocale() else Locale.ENGLISH
+    fun Path.readTextAsLocale(): Locale = if (this.exists) text.toLocale() else Locale.ENGLISH
 
     val Path.textAsLocale: Locale
         get() = if (this.exists) readTextAsLocale() else Locale.ENGLISH
@@ -55,14 +57,10 @@ object Custom {
     val Path.desktopFiles: List<DesktopFile>
         get() = if (this.exists) listDesktopFiles() else emptyList()
 
-
-    fun NativePaint.setMaskFilter(
-        blurRadius: Float
-    ) {
+    fun NativePaint.setMaskFilter(blurRadius: Float) {
         maskFilter = makeBlur(NORMAL, blurRadius / 2, true)
     }
 
     val Process.command: String?
         get() = info().command().getOrNull()
-
 }

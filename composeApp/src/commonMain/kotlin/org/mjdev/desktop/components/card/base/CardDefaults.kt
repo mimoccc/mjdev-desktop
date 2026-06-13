@@ -40,17 +40,18 @@ object CardDefaults {
     const val SubtitleAlpha = 0.6f
     const val DescriptionAlpha = 0.8f
 
-    val ScrimBrush = Brush.verticalGradient(
-        listOf(
-            Color(red = 28, green = 27, blue = 31, alpha = 0),
-            Color(red = 28, green = 27, blue = 31, alpha = 204)
+    val ScrimBrush =
+        Brush.verticalGradient(
+            listOf(
+                Color(red = 28, green = 27, blue = 31, alpha = 0),
+                Color(red = 28, green = 27, blue = 31, alpha = 204),
+            ),
         )
-    )
 
     fun shape(
         shape: Shape = ContainerShape,
         focusedShape: Shape = shape,
-        pressedShape: Shape = shape
+        pressedShape: Shape = shape,
     ) = CardShape(shape = shape, focusedShape = focusedShape, pressedShape = pressedShape)
 
     @ReadOnlyComposable
@@ -61,14 +62,14 @@ object CardDefaults {
         focusedContainerColor: Color = containerColor,
         focusedContentColor: Color = contentColorFor(focusedContainerColor),
         pressedContainerColor: Color = focusedContainerColor,
-        pressedContentColor: Color = contentColorFor(pressedContainerColor)
+        pressedContentColor: Color = contentColorFor(pressedContainerColor),
     ) = CardColors(
         containerColor = containerColor,
         contentColor = contentColor,
         focusedContainerColor = focusedContainerColor,
         focusedContentColor = focusedContentColor,
         pressedContainerColor = pressedContainerColor,
-        pressedContentColor = pressedContentColor
+        pressedContentColor = pressedContentColor,
     )
 
     @ReadOnlyComposable
@@ -79,14 +80,14 @@ object CardDefaults {
         focusedContainerColor: Color = containerColor,
         focusedContentColor: Color = contentColor,
         pressedContainerColor: Color = focusedContainerColor,
-        pressedContentColor: Color = focusedContentColor
+        pressedContentColor: Color = focusedContentColor,
     ) = CardColors(
         containerColor = containerColor,
         contentColor = contentColor,
         focusedContainerColor = focusedContainerColor,
         focusedContentColor = focusedContentColor,
         pressedContainerColor = pressedContainerColor,
-        pressedContentColor = pressedContentColor
+        pressedContentColor = pressedContentColor,
     )
 
     @Composable
@@ -95,70 +96,81 @@ object CardDefaults {
         colorUnFocused: Color = Color.Black,
         colorPressed: Color = Color.Yellow,
         width: Dp = 1.dp,
-        roundCornerSize: Dp = 8.dp
+        roundCornerSize: Dp = 8.dp,
     ) = border(
-        border = Border(
-            border = BorderStroke(
-                width = width,
-                color = colorUnFocused
+        border =
+            Border(
+                border =
+                    BorderStroke(
+                        width = width,
+                        color = colorUnFocused,
+                    ),
+                shape = RoundedCornerShape(roundCornerSize),
             ),
-            shape = RoundedCornerShape(roundCornerSize)
-        ),
-        focusedBorder = Border(
-            border = BorderStroke(
-                width = width,
-                color = colorFocused
+        focusedBorder =
+            Border(
+                border =
+                    BorderStroke(
+                        width = width,
+                        color = colorFocused,
+                    ),
+                shape = RoundedCornerShape(roundCornerSize),
             ),
-            shape = RoundedCornerShape(roundCornerSize)
-        ),
-        pressedBorder = Border(
-            border = BorderStroke(
-                width = width,
-                color = colorPressed
+        pressedBorder =
+            Border(
+                border =
+                    BorderStroke(
+                        width = width,
+                        color = colorPressed,
+                    ),
+                shape = RoundedCornerShape(roundCornerSize),
             ),
-            shape = RoundedCornerShape(roundCornerSize)
-        )
     )
 
     @Composable
     fun CardDefaults.colorFocusGlow(
         focusColor: Color = Color.Green,
         onUnFocusColor: Color = Color.Transparent,
-        elevation: Dp = 10.dp
-    ): CardGlow = glow(
-        glow = Glow(
-            elevationColor = onUnFocusColor,
-            elevation = elevation
-        ),
-        focusedGlow = Glow(
-            elevationColor = focusColor,
-            elevation = elevation
-        ),
-        pressedGlow = Glow(
-            elevationColor = onUnFocusColor,
-            elevation = elevation
+        elevation: Dp = 10.dp,
+    ): CardGlow =
+        glow(
+            glow =
+                Glow(
+                    elevationColor = onUnFocusColor,
+                    elevation = elevation,
+                ),
+            focusedGlow =
+                Glow(
+                    elevationColor = focusColor,
+                    elevation = elevation,
+                ),
+            pressedGlow =
+                Glow(
+                    elevationColor = onUnFocusColor,
+                    elevation = elevation,
+                ),
         )
-    )
 
     fun scale(
         scale: Float = 1f,
         focusedScale: Float = 1.1f,
-        pressedScale: Float = scale
+        pressedScale: Float = scale,
     ) = CardScale(scale = scale, focusedScale = focusedScale, pressedScale = pressedScale)
 
     @ReadOnlyComposable
     @Composable
     fun border(
         border: Border = Border.None,
-        focusedBorder: Border = Border(
-            border = BorderStroke(width = 3.dp, color = Color.White), // todo theme
-            shape = ContainerShape
-        ),
-        pressedBorder: Border = focusedBorder
+        focusedBorder: Border =
+            Border(
+                border = BorderStroke(width = 3.dp, color = Color.White), // todo theme
+                shape = ContainerShape,
+            ),
+        pressedBorder: Border = focusedBorder,
     ) = CardBorder(
         border = border,
         focusedBorder = focusedBorder,
-        pressedBorder = pressedBorder
+        pressedBorder = pressedBorder,
     )
 
     @ReadOnlyComposable
@@ -166,40 +178,43 @@ object CardDefaults {
     fun border(
         borderWidth: Dp,
         borderColor: Color = Color.Black,
-        border: Border = Border(
-            border = BorderStroke(width = borderWidth, color = borderColor)
-        ),
-        focusedBorder: Border = Border(
-            border = BorderStroke(width = borderWidth + 2.dp, color = borderColor), // todo theme
-            shape = ContainerShape
-        ),
-        pressedBorder: Border = focusedBorder
+        border: Border =
+            Border(
+                border = BorderStroke(width = borderWidth, color = borderColor),
+            ),
+        focusedBorder: Border =
+            Border(
+                border = BorderStroke(width = borderWidth + 2.dp, color = borderColor), // todo theme
+                shape = ContainerShape,
+            ),
+        pressedBorder: Border = focusedBorder,
     ) = CardBorder(
         border = border,
         focusedBorder = focusedBorder,
-        pressedBorder = pressedBorder
+        pressedBorder = pressedBorder,
     )
 
     fun glow(
         glow: Glow = Glow.None,
         focusedGlow: Glow = glow,
-        pressedGlow: Glow = glow
+        pressedGlow: Glow = glow,
     ) = CardGlow(
         glow = glow,
         focusedGlow = focusedGlow,
-        pressedGlow = pressedGlow
+        pressedGlow = pressedGlow,
     )
 
-    fun CardColors.toClickableSurfaceColors() = ClickableSurfaceColors(
-        containerColor = containerColor,
-        contentColor = contentColor,
-        focusedContainerColor = focusedContainerColor,
-        focusedContentColor = focusedContentColor,
-        pressedContainerColor = pressedContainerColor,
-        pressedContentColor = pressedContentColor,
-        disabledContainerColor = containerColor,
-        disabledContentColor = contentColor
-    )
+    fun CardColors.toClickableSurfaceColors() =
+        ClickableSurfaceColors(
+            containerColor = containerColor,
+            contentColor = contentColor,
+            focusedContainerColor = focusedContainerColor,
+            focusedContentColor = focusedContentColor,
+            pressedContainerColor = pressedContainerColor,
+            pressedContentColor = pressedContentColor,
+            disabledContainerColor = containerColor,
+            disabledContentColor = contentColor,
+        )
 
     fun CardShape.toClickableSurfaceShape() =
         ClickableSurfaceShape(
@@ -207,7 +222,7 @@ object CardDefaults {
             focusedShape = focusedShape,
             pressedShape = pressedShape,
             disabledShape = shape,
-            focusedDisabledShape = shape
+            focusedDisabledShape = shape,
         )
 
     fun CardScale.toClickableSurfaceScale() =
@@ -216,7 +231,7 @@ object CardDefaults {
             focusedScale = focusedScale,
             pressedScale = pressedScale,
             disabledScale = scale,
-            focusedDisabledScale = scale
+            focusedDisabledScale = scale,
         )
 
     fun CardBorder.toClickableSurfaceBorder() =
@@ -225,13 +240,13 @@ object CardDefaults {
             focusedBorder = focusedBorder,
             pressedBorder = pressedBorder,
             disabledBorder = border,
-            focusedDisabledBorder = border
+            focusedDisabledBorder = border,
         )
 
     fun CardGlow.toClickableSurfaceGlow() =
         ClickableSurfaceGlow(
             glow = glow,
             focusedGlow = focusedGlow,
-            pressedGlow = pressedGlow
+            pressedGlow = pressedGlow,
         )
 }

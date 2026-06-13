@@ -10,28 +10,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.mjdev.desktop.extensions.Compose.preview
 
 // todo
 @Composable
 fun DesktopPanelTray(
     modifier: Modifier = Modifier,
     round: Dp = 8.dp,
-    padding: PaddingValues = PaddingValues(
-        horizontal = 4.dp
-    ),
-    content: @Composable RowScope.() -> Unit = {}
+    padding: PaddingValues =
+        PaddingValues(
+            horizontal = 4.dp,
+        ),
+    content: @Composable RowScope.() -> Unit = {},
 ) = withDesktopContext {
     Row(
         modifier = modifier.background(backgroundColor, RoundedCornerShape(round)).padding(padding),
-        content = content
+        content = content,
     )
 }
 
 @Preview
 @Composable
-fun PreviewDesktopPanelTray() = preview {
-    DesktopPanelTray()
-}
+fun PreviewDesktopPanelTray() =
+    preview {
+        DesktopPanelTray()
+    }

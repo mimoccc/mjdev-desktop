@@ -4,10 +4,10 @@ import androidx.compose.ui.Alignment
 
 @Suppress("unused")
 enum class PanelLocation(
-    val alignment: Alignment
+    val alignment: Alignment,
 ) {
     Bottom(Alignment.BottomCenter),
     Top(Alignment.TopCenter),
     Left(Alignment.CenterStart),
-    Right(Alignment.CenterEnd);
+    Right(Alignment.CenterEnd),
 }

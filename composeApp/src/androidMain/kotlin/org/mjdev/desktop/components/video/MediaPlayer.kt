@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual class MediaPlayer(
-    private val mediaPlayer: MediaPlayer
+    private val mediaPlayer: MediaPlayer,
 ) {
     private val mediaPlayerCoroutineScope = CoroutineScope(Dispatchers.Main)
     private val isPlayingStateFlow = MutableStateFlow(false)
@@ -28,9 +28,10 @@ actual class MediaPlayer(
 
     actual fun setRate(rate: Float) {
         val wasPaused = !mediaPlayer.isPlaying
-        mediaPlayer.playbackParams = mediaPlayer.playbackParams.apply {
-            speed = rate
-        }
+        mediaPlayer.playbackParams =
+            mediaPlayer.playbackParams.apply {
+                speed = rate
+            }
         if (wasPaused) {
             mediaPlayer.pause()
         }
@@ -43,6 +44,7 @@ actual class MediaPlayer(
             // todo
         }
     }
+
     actual fun setTimeAccurate(millis: Long) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mediaPlayer.seekTo(millis, MediaPlayer.SEEK_CLOSEST)
@@ -51,13 +53,9 @@ actual class MediaPlayer(
         }
     }
 
-    actual fun getTimeMillis(): Long {
-        return mediaPlayer.currentPosition.toLong()
-    }
+    actual fun getTimeMillis(): Long = mediaPlayer.currentPosition.toLong()
 
-    actual fun getLengthMillis(): Long {
-        return mediaPlayer.duration.toLong()
-    }
+    actual fun getLengthMillis(): Long = mediaPlayer.duration.toLong()
 
     actual fun addOnTimeChangedListener(listener: OnTimeChangedListener) {
         mediaPlayerCoroutineScope.launch {

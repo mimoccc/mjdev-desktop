@@ -10,39 +10,44 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.background.BackgroundImage
 import org.mjdev.desktop.components.sliding.base.VisibilityState
 import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun Installer(
     visibleState: VisibilityState = rememberVisibilityState(),
-    onInstallClick: () -> Unit = {}
+    onInstallClick: () -> Unit = {},
 ) = withDesktopContext {
     Box(
-        modifier = Modifier.fillMaxSize().clickable {
-            runAsync {
-                visibleState.hide()
-                onInstallClick()
-            }
-        }
+        modifier =
+            Modifier.fillMaxSize().clickable {
+                runAsync {
+                    visibleState.hide()
+                    onInstallClick()
+                }
+            },
     ) {
         Box(
-            modifier = Modifier.fillMaxSize()
-                .background(backgroundColor),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(backgroundColor),
+            contentAlignment = Alignment.Center,
         ) {
             BackgroundImage(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
             Box(
-                modifier = Modifier.fillMaxWidth()
-                    .height(200.dp)
-                    .background(iconsTintColor)
-                    .align(Alignment.BottomCenter)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .background(iconsTintColor)
+                        .align(Alignment.BottomCenter),
             ) {
                 // todo
             }
@@ -52,6 +57,7 @@ fun Installer(
 
 @Preview
 @Composable
-fun PreviewInstaller() = preview(320, 320) {
-    Installer()
-}
+fun PreviewInstaller() =
+    preview(320, 320) {
+        Installer()
+    }

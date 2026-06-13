@@ -1,7 +1,6 @@
 package org.mjdev.desktop.helpers.adb.adbserver
 
 import org.mjdev.desktop.helpers.adb.IAdb
-
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.IOException
@@ -42,11 +41,12 @@ object AdbServer {
     fun createAdb(
         adbServerHost: String = "localhost",
         adbServerPort: Int = 5037,
-        deviceQuery: String = "host:transport-any"
+        deviceQuery: String = "host:transport-any",
     ): IAdb {
-        val name = deviceQuery
-            .removePrefix("host:") // Use the device query without the host: prefix
-            .removePrefix("transport:") // If it's a serial-number, just show that
+        val name =
+            deviceQuery
+                .removePrefix("host:") // Use the device query without the host: prefix
+                .removePrefix("transport:") // If it's a serial-number, just show that
         return AdbServerAdb(adbServerHost, adbServerPort, deviceQuery, name)
     }
 
@@ -62,11 +62,13 @@ object AdbServer {
         if (!AdbBinary.tryStartServer(adbServerHost, adbServerPort)) {
             return emptyList()
         }
-        val output = Socket(adbServerHost, adbServerPort).use { socket ->
-            send(socket, "host:devices")
-            readString(DataInputStream(socket.getInputStream()))
-        }
-        return output.lines()
+        val output =
+            Socket(adbServerHost, adbServerPort).use { socket ->
+                send(socket, "host:devices")
+                readString(DataInputStream(socket.getInputStream()))
+            }
+        return output
+            .lines()
             .filter { it.isNotBlank() }
             .mapNotNull {
                 val parts = it.split("\t")
@@ -75,7 +77,7 @@ object AdbServer {
                 } else {
                     parts[0]
                 }
-            }.map { createAdb(adbServerHost, adbServerPort, "host:transport:${it}") }
+            }.map { createAdb(adbServerHost, adbServerPort, "host:transport:$it") }
     }
 
     internal fun readString(inputStream: DataInputStream): String {
@@ -84,7 +86,10 @@ object AdbServer {
         return readString(inputStream, length)
     }
 
-    internal fun send(socket: Socket, command: String) {
+    internal fun send(
+        socket: Socket,
+        command: String,
+    ) {
         val inputStream = DataInputStream(socket.getInputStream())
         val outputStream = DataOutputStream(socket.getOutputStream())
 
@@ -97,7 +102,10 @@ object AdbServer {
         }
     }
 
-    private fun writeString(outputStream: DataOutputStream, string: String) {
+    private fun writeString(
+        outputStream: DataOutputStream,
+        string: String,
+    ) {
         OutputStreamWriter(outputStream, StandardCharsets.UTF_8).apply {
             write(String.format("%04x", string.toByteArray().size))
             write(string)
@@ -105,11 +113,12 @@ object AdbServer {
         }
     }
 
-    private fun readString(inputStream: DataInputStream, length: Int): String {
+    private fun readString(
+        inputStream: DataInputStream,
+        length: Int,
+    ): String {
         val responseBuffer = ByteArray(length)
         inputStream.readFully(responseBuffer)
         return String(responseBuffer, StandardCharsets.UTF_8)
     }
 }
-
-

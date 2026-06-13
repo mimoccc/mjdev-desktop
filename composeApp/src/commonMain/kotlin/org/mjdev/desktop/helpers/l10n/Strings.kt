@@ -18,7 +18,7 @@ import kotlin.jvm.JvmInline
 @JvmInline
 value class Strings private constructor(
     @Suppress("unused")
-    private val value: Int
+    private val value: Int,
 ) {
     companion object {
         val Copy = Strings(0)
@@ -35,9 +35,10 @@ value class Strings private constructor(
 fun getString(string: Strings): String {
     val locale = Locale.current
     val tag = localeTag(language = locale.language, region = locale.region)
-    val translation = translationByLocaleTag.getOrPut(tag) {
-        findTranslation(locale)
-    }
+    val translation =
+        translationByLocaleTag.getOrPut(tag) {
+            findTranslation(locale)
+        }
     return translation[string] ?: error("Missing translation for $string")
 }
 
@@ -45,21 +46,25 @@ typealias Translation = Map<Strings, String>
 
 val translationByLocaleTag = mutableMapOf<String, Translation>()
 
-fun localeTag(language: String, region: String) = when {
+fun localeTag(
+    language: String,
+    region: String,
+) = when {
     language == "" -> ""
     region == "" -> language
     else -> "${language}_$region"
 }
 
-fun localeTagChain(locale: Locale) = sequence {
-    if (locale.region != "") {
-        yield(localeTag(language = locale.language, region = locale.region))
+fun localeTagChain(locale: Locale) =
+    sequence {
+        if (locale.region != "") {
+            yield(localeTag(language = locale.language, region = locale.region))
+        }
+        if (locale.language != "") {
+            yield(localeTag(language = locale.language, region = ""))
+        }
+        yield(localeTag("", ""))
     }
-    if (locale.language != "") {
-        yield(localeTag(language = locale.language, region = ""))
-    }
-    yield(localeTag("", ""))
-}
 
 fun findTranslation(locale: Locale): Map<Strings, String> {
     // We don't need to merge translations because each one should contain all the strings.

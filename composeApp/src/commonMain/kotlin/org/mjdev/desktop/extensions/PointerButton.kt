@@ -3,7 +3,9 @@ package org.mjdev.desktop.extensions
 import kotlin.jvm.JvmInline
 
 @JvmInline
-value class PointerButton(val index: Int) {
+value class PointerButton(
+    val index: Int,
+) {
     companion object {
         val Primary = PointerButton(0)
         val Secondary = PointerButton(1)
@@ -14,16 +16,26 @@ value class PointerButton(val index: Int) {
 }
 
 val PointerButton?.isPrimary: Boolean
-    get() { return this == PointerButton.Primary }
+    get() {
+        return this == PointerButton.Primary
+    }
 
 val PointerButton?.isSecondary: Boolean
-    get() { return this == PointerButton.Secondary }
+    get() {
+        return this == PointerButton.Secondary
+    }
 
 val PointerButton?.isTertiary: Boolean
-    get() { return this == PointerButton.Tertiary }
+    get() {
+        return this == PointerButton.Tertiary
+    }
 
 val PointerButton?.isBack: Boolean
-    get() { return this == PointerButton.Back }
+    get() {
+        return this == PointerButton.Back
+    }
 
 val PointerButton?.isForward: Boolean
-    get() { return this == PointerButton.Forward }
+    get() {
+        return this == PointerButton.Forward
+    }

@@ -18,7 +18,7 @@ class CardColors(
     val focusedContainerColor: Color,
     val focusedContentColor: Color,
     val pressedContainerColor: Color,
-    val pressedContentColor: Color
+    val pressedContentColor: Color,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -43,13 +43,12 @@ class CardColors(
         return result
     }
 
-    override fun toString(): String {
-        return "CardColors(" +
-                "containerColor=$containerColor, " +
-                "contentColor=$contentColor, " +
-                "focusedContainerColor=$focusedContainerColor, " +
-                "focusedContentColor=$focusedContentColor, " +
-                "pressedContainerColor=$pressedContainerColor, " +
-                "pressedContentColor=$pressedContentColor)"
-    }
+    override fun toString(): String =
+        "CardColors(" +
+            "containerColor=$containerColor, " +
+            "contentColor=$contentColor, " +
+            "focusedContainerColor=$focusedContainerColor, " +
+            "focusedContentColor=$focusedContentColor, " +
+            "pressedContainerColor=$pressedContainerColor, " +
+            "pressedContentColor=$pressedContentColor)"
 }

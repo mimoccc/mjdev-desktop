@@ -16,7 +16,7 @@ import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 @Stable
 open class ApplicationScope(
     val args: List<String> = emptyList(),
-    var onExitProcess: ApplicationScope.(code: Int) -> Unit
+    var onExitProcess: ApplicationScope.(code: Int) -> Unit,
 ) {
     private val isOpenState = mutableStateOf(true)
 
@@ -30,8 +30,9 @@ open class ApplicationScope(
         exitApplication(0)
     }
 
-    fun exitApplication(code: Int) = runAsync {
-        onExitProcess(code)
-        isOpen = false
-    }
+    fun exitApplication(code: Int) =
+        runAsync {
+            onExitProcess(code)
+            isOpen = false
+        }
 }

@@ -13,8 +13,7 @@ import androidx.compose.ui.graphics.Color
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Immutable
-class ClickableSurfaceColors
-    (
+class ClickableSurfaceColors(
     val containerColor: Color,
     val contentColor: Color,
     val focusedContainerColor: Color,
@@ -22,7 +21,7 @@ class ClickableSurfaceColors
     val pressedContainerColor: Color,
     val pressedContentColor: Color,
     val disabledContainerColor: Color,
-    val disabledContentColor: Color
+    val disabledContentColor: Color,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -51,15 +50,14 @@ class ClickableSurfaceColors
         return result
     }
 
-    override fun toString(): String {
-        return "ClickableSurfaceColors(" +
-                "containerColor=$containerColor, " +
-                "contentColor=$contentColor, " +
-                "focusedContainerColor=$focusedContainerColor, " +
-                "focusedContentColor=$focusedContentColor, " +
-                "pressedContainerColor=$pressedContainerColor, " +
-                "pressedContentColor=$pressedContentColor, " +
-                "disabledContainerColor=$disabledContainerColor, " +
-                "disabledContentColor=$disabledContentColor)"
-    }
+    override fun toString(): String =
+        "ClickableSurfaceColors(" +
+            "containerColor=$containerColor, " +
+            "contentColor=$contentColor, " +
+            "focusedContainerColor=$focusedContainerColor, " +
+            "focusedContentColor=$focusedContentColor, " +
+            "pressedContainerColor=$pressedContainerColor, " +
+            "pressedContentColor=$pressedContentColor, " +
+            "disabledContainerColor=$disabledContainerColor, " +
+            "disabledContentColor=$disabledContentColor)"
 }

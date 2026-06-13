@@ -12,9 +12,7 @@ import androidx.compose.runtime.MonotonicFrameClock
 import kotlinx.coroutines.yield
 
 object YieldFrameClock : MonotonicFrameClock {
-    override suspend fun <R> withFrameNanos(
-        onFrame: (frameTimeNanos: Long) -> R
-    ): R {
+    override suspend fun <R> withFrameNanos(onFrame: (frameTimeNanos: Long) -> R): R {
         yield()
         return onFrame(System.nanoTime())
     }

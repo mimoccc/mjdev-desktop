@@ -32,14 +32,18 @@ fun <T> ExpandableLazyColumn(
     state: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     reverseLayout: Boolean = false,
-    verticalArrangement: Arrangement.Vertical = if (!reverseLayout) Arrangement.Top
-    else Arrangement.Bottom,
+    verticalArrangement: Arrangement.Vertical =
+        if (!reverseLayout) {
+            Arrangement.Top
+        } else {
+            Arrangement.Bottom
+        },
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     flingBehavior: FlingBehavior = ScrollableDefaults.flingBehavior(),
     userScrollEnabled: Boolean = true,
     items: List<T>,
     expandStates: MutableMap<Int, MutableState<Boolean>> = remember { mutableMapOf() },
-    createItem: @Composable (idx: Int, item: T, expanded: MutableState<Boolean>) -> Unit
+    createItem: @Composable (idx: Int, item: T, expanded: MutableState<Boolean>) -> Unit,
 ) = LazyColumn(
     modifier,
     state,
@@ -52,7 +56,7 @@ fun <T> ExpandableLazyColumn(
 ) {
     itemsIndexed(
         items = items,
-        key = { _, item -> item.hashCode() }
+        key = { _, item -> item.hashCode() },
     ) { idx, item ->
         val hash = item.hashCode()
         if (!expandStates.containsKey(hash)) {
@@ -60,7 +64,7 @@ fun <T> ExpandableLazyColumn(
         }
         ExpandableListItem(
             modifier = Modifier.fillMaxWidth(),
-            expanded = expandStates[hash]!!
+            expanded = expandStates[hash]!!,
         ) { expandedState ->
             createItem(idx, item, expandedState)
         }

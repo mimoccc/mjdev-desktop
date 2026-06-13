@@ -11,7 +11,7 @@ import uk.co.caprica.vlcj.player.embedded.videosurface.callback.RenderCallback
 import java.nio.ByteBuffer
 
 class RenderCallback(
-    private val onImageRender: (imageBitmap: ImageBitmap?) -> Unit
+    private val onImageRender: (imageBitmap: ImageBitmap?) -> Unit,
 ) : RenderCallback {
     private var pos: Float = -1f
     private var imageBitmap: ImageBitmap? = null
@@ -25,7 +25,7 @@ class RenderCallback(
         nativeBuffers: Array<out ByteBuffer>?,
         bufferFormat: BufferFormat?,
         displayWidth: Int,
-        displayHeight: Int
+        displayHeight: Int,
     ) {
         val isPlaying = mediaPlayer?.status()?.isPlaying == true
         if (isPlaying) {
@@ -34,18 +34,21 @@ class RenderCallback(
                 get(byteArray)
                 rewind()
             }
-            imageBitmap = Bitmap().apply {
-                allocPixels(
-                    ImageInfo.makeN32(
-                        displayWidth,
-                        displayHeight,
-                        ColorAlphaType.OPAQUE
-                    )
-                )
-                installPixels(byteArray)
-            }.asComposeImageBitmap().apply {
-                onImageRender(this)
-            }
+            imageBitmap =
+                Bitmap()
+                    .apply {
+                        allocPixels(
+                            ImageInfo.makeN32(
+                                displayWidth,
+                                displayHeight,
+                                ColorAlphaType.OPAQUE,
+                            ),
+                        )
+                        installPixels(byteArray)
+                    }.asComposeImageBitmap()
+                    .apply {
+                        onImageRender(this)
+                    }
         }
     }
 

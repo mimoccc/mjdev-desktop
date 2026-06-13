@@ -16,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.fonticon.FontIcon
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.ButtonDefaults.color
 import org.mjdev.desktop.extensions.ButtonDefaults.noElevation
 import org.mjdev.desktop.extensions.Colors.alpha
@@ -30,10 +32,8 @@ import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.extensions.Modifier.onRightClick
 import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.mjdev.desktop.interfaces.IApp
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.PaddingValues.size
+import org.mjdev.desktop.interfaces.IApp
 
 // todo paddings
 @Composable
@@ -55,49 +55,52 @@ fun DesktopPanelIcon(
     onContextMenuClick: () -> Unit = {},
     onClick: () -> Unit = {},
 ) = withDesktopContext {
-    val materialIcon: Int = remember(app, iconName) {
-        val icn = app?.name ?: iconName // todo better guess
-        iconSet.iconForName(icn) ?: 0
-    }
-    val background = when {
-        iconState.value -> iconBackgroundHover
-        else -> Color.Transparent
-    }
+    val materialIcon: Int =
+        remember(app, iconName) {
+            val icn = app?.name ?: iconName // todo better guess
+            iconSet.iconForName(icn) ?: 0
+        }
+    val background =
+        when {
+            iconState.value -> iconBackgroundHover
+            else -> Color.Transparent
+        }
     val isStarting by rememberCalculated(app) { app?.isStarting ?: false }
     val isRunning by rememberCalculated(app) {
         app?.isRunning == true // || processManager.hasAppProcess(app) // todo
     }
     Box(
-        modifier = Modifier
-            .size(iconSize + iconPadding.size + iconOuterPadding.size)
-            .clipRect()
-            .onMouseEnter {
-                iconState.value = true
-                onTooltip(app ?: contentDescription)
-            }
-            .onMouseLeave {
-                iconState.value = false
-            }
-            .onMousePress {
-                iconState.value = false
-                onLeftClick {
-                    onClick()
-                }
-                onRightClick {
-                    onContextMenuClick()
-                }
-            }
+        modifier =
+            Modifier
+                .size(iconSize + iconPadding.size + iconOuterPadding.size)
+                .clipRect()
+                .onMouseEnter {
+                    iconState.value = true
+                    onTooltip(app ?: contentDescription)
+                }.onMouseLeave {
+                    iconState.value = false
+                }.onMousePress {
+                    iconState.value = false
+                    onLeftClick {
+                        onClick()
+                    }
+                    onRightClick {
+                        onContextMenuClick()
+                    }
+                },
     ) {
         Button(
-            modifier = Modifier.fillMaxSize()
-                .circleBorder(
-                    2.dp,
-                    textColor.alpha(0.5f)
-                ),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .circleBorder(
+                        2.dp,
+                        textColor.alpha(0.5f),
+                    ),
             contentPadding = PaddingValues(2.dp),
             colors = ButtonDefaults.color(background),
             elevation = ButtonDefaults.noElevation(),
-            onClick = {}
+            onClick = {},
         ) {
             FontIcon(
                 modifier = Modifier.fillMaxSize(),
@@ -114,7 +117,7 @@ fun DesktopPanelIcon(
                 modifier = Modifier.padding(4.dp).fillMaxSize(),
                 color = iconColor,
                 strokeWidth = 4.dp,
-                backgroundColor = Color.Transparent
+                backgroundColor = Color.Transparent,
             )
         }
     }
@@ -122,8 +125,9 @@ fun DesktopPanelIcon(
 
 @Preview
 @Composable
-fun PreviewDesktopPanelIcon() = preview {
-    DesktopPanelIcon(
-        app = null //App.Test
-    )
-}
+fun PreviewDesktopPanelIcon() =
+    preview {
+        DesktopPanelIcon(
+            app = null, // App.Test
+        )
+    }

@@ -13,16 +13,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.text.TextWithShadow
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.extensions.Modifier.size
 import org.mjdev.desktop.extensions.CustomExt.dateFlow
 import org.mjdev.desktop.extensions.CustomExt.timeFlow
-import org.mjdev.desktop.extensions.MutableStateExt.rememberState
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Modifier.onMousePress
+import org.mjdev.desktop.extensions.Modifier.size
+import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.helpers.parsers.Parsers.ParsedList
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo remove params
 @Composable
@@ -37,7 +37,7 @@ fun Clock(
     showTime: Boolean = true,
     showDate: Boolean = true,
     talkEveryHour: Boolean = true,
-    talkOnClick: Boolean = true
+    talkOnClick: Boolean = true,
 ) = withDesktopContext {
     val time = timeFlow.value
     var lastTalk by rememberState("")
@@ -46,32 +46,37 @@ fun Clock(
         ai.ask("Whats current time?")
     }
     Box(
-        modifier = modifier.onMousePress {
-            if (talkOnClick) {
-                talk()
-            }
-        },
-        contentAlignment = Alignment.Center
+        modifier =
+            modifier.onMousePress {
+                if (talkOnClick) {
+                    talk()
+                }
+            },
+        contentAlignment = Alignment.Center,
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            if (showTime) TextWithShadow(
-                text = time,
-                textAlign = TextAlign.Center,
-                fontWeight = timeTextWeight,
-                fontSize = timeTextSize,
-                color = timeTextColor,
-                singleLine = true
-            )
-            if (showDate) TextWithShadow(
-                text = dateFlow.value,
-                textAlign = TextAlign.Center,
-                fontWeight = dateTextWeight,
-                fontSize = dateTextSize,
-                color = dateTextColor,
-                singleLine = true
-            )
+            if (showTime) {
+                TextWithShadow(
+                    text = time,
+                    textAlign = TextAlign.Center,
+                    fontWeight = timeTextWeight,
+                    fontSize = timeTextSize,
+                    color = timeTextColor,
+                    singleLine = true,
+                )
+            }
+            if (showDate) {
+                TextWithShadow(
+                    text = dateFlow.value,
+                    textAlign = TextAlign.Center,
+                    fontWeight = dateTextWeight,
+                    fontSize = dateTextSize,
+                    color = dateTextColor,
+                    singleLine = true,
+                )
+            }
         }
         LaunchedEffect(time) {
             if (time.isNotEmpty() && lastTalk != time) {
@@ -88,8 +93,9 @@ fun Clock(
 
 @Preview
 @Composable
-fun PreviewClock() = preview {
-    Clock(
-        modifier = Modifier.size(320, 200)
-    )
-}
+fun PreviewClock() =
+    preview {
+        Clock(
+            modifier = Modifier.size(320, 200),
+        )
+    }

@@ -12,14 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 
-fun translationFor(localeTag: String) = when (localeTag) {
-    "" -> Translations.en()
-    "en_AU" -> Translations.enAU()
-    "en_CA" -> Translations.enCA()
-    "en_GB" -> Translations.enGB()
-    "en_IN" -> Translations.enIN()
-    else -> null
-}
+fun translationFor(localeTag: String) =
+    when (localeTag) {
+        "" -> Translations.en()
+        "en_AU" -> Translations.enAU()
+        "en_CA" -> Translations.enCA()
+        "en_GB" -> Translations.enGB()
+        "en_IN" -> Translations.enIN()
+        else -> null
+    }
 
 // todo i18n
 @Composable
@@ -43,6 +44,7 @@ interface PlatformLocalization {
     val selectAll: String
 }
 
-val LocalLocalization: ProvidableCompositionLocal<PlatformLocalization> = staticCompositionLocalOf {
-    error("CompositionLocal PlatformLocalization not present")
-}
+val LocalLocalization: ProvidableCompositionLocal<PlatformLocalization> =
+    staticCompositionLocalOf {
+        error("CompositionLocal PlatformLocalization not present")
+    }

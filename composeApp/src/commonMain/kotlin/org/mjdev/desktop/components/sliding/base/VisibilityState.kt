@@ -65,17 +65,18 @@ open class VisibilityState(
             if (hideDelay == 0L) {
                 visibleState.value = false
             } else {
-                hideJob = scope.launch {
-                    delay(hideDelay)
-                    visibleState.value = false
-                }
+                hideJob =
+                    scope.launch {
+                        delay(hideDelay)
+                        visibleState.value = false
+                    }
             }
         }
     }
 
     open suspend fun toggle(
         force: Boolean = false,
-        onVisibilityChange: (visible: Boolean) -> Unit = {}
+        onVisibilityChange: (visible: Boolean) -> Unit = {},
     ) {
         if (enabledState.value || force) {
             println("Toggle visible state from: ${visibleState.value} to ${!visibleState.value}")
@@ -98,11 +99,10 @@ open class VisibilityState(
         fun rememberVisibilityState(
             visible: Boolean = false,
             enabled: Boolean = true,
-            autoHideDelay: Long = 0L
-        ): VisibilityState {
-            return remember(visible, enabled) {
+            autoHideDelay: Long = 0L,
+        ): VisibilityState =
+            remember(visible, enabled) {
                 VisibilityState(visible, enabled, autoHideDelay)
             }
-        }
     }
 }

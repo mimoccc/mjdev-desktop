@@ -1,9 +1,9 @@
 package org.mjdev.desktop.components.gallery
 
-//import org.jetbrains.compose.ui.tooling.preview.Preview
+// import org.jetbrains.compose.ui.tooling.preview.Preview
 
-//@Composable
-//fun BoxWithControls(
+// @Composable
+// fun BoxWithControls(
 //    modifier: Modifier = Modifier,
 //    src: Any? = null,
 //    contentAlignment: Alignment = Alignment.BottomCenter,
@@ -18,7 +18,7 @@ package org.mjdev.desktop.components.gallery
 //        bckColor: Color,
 //        controlsState: MutableState<Boolean>
 //    ) -> Unit = { _, _, _ -> }
-//) = ImageColoredBackground(
+// ) = ImageColoredBackground(
 //    modifier = modifier.pointerInput(Unit) {
 //        detectTapGestures(
 //            onTap = {
@@ -34,16 +34,16 @@ package org.mjdev.desktop.components.gallery
 //    },
 //    src = src,
 //    contentAlignment = contentAlignment,
-//) { bckColor ->
+// ) { bckColor ->
 //    content(src, bckColor, controlsState)
 //    if (controlsState.value) {
 //        controls(src, bckColor, controlsState)
 //    }
-//}
+// }
 //
-//@Preview
-//@Composable
-//fun PreviewBoxWithControls() = preview {
+// @Preview
+// @Composable
+// fun PreviewBoxWithControls() = preview {
 //    BoxWithControls()
-//}
+// }
 //

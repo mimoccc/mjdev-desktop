@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.fonticon.FontIcon
 import org.mjdev.desktop.components.text.TextAny
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
@@ -31,7 +32,6 @@ import org.mjdev.desktop.extensions.Modifier.onLeftClick
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.extensions.Modifier.onRightClick
 import org.mjdev.desktop.helpers.shape.DottedShape
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("UNUSED_PARAMETER")
 @Composable
@@ -45,20 +45,21 @@ fun AppsMenuCategory(
     dividerColor: Color = Color.Black,
     onClick: (category: Category) -> Unit = {},
     onContextMenuClick: (category: Category) -> Unit = {},
-    onTooltip: (item: Any?) -> Unit = {}
+    onTooltip: (item: Any?) -> Unit = {},
 ) = withDesktopContext {
     val categoryName = remember(category) { category.name }
     val materialIcon = remember(categoryName) { iconSet.iconForName(categoryName) ?: 0 }
     Column(
-        modifier = modifier
-            .padding(vertical = 2.dp)
-            .onMousePress {
-                onLeftClick { onClick(category) }
-                onRightClick { onContextMenuClick(category) }
-            }
+        modifier =
+            modifier
+                .padding(vertical = 2.dp)
+                .onMousePress {
+                    onLeftClick { onClick(category) }
+                    onRightClick { onContextMenuClick(category) }
+                },
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             FontIcon(
                 modifier = Modifier.circleBorder(1.dp, textColor),
@@ -74,19 +75,21 @@ fun AppsMenuCategory(
                 text = category.name,
                 color = textColor,
                 fontSize = titleTextSize,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         }
         if (showDivider) {
             Divider(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(start = dividerPadding)
-                    .height(1.dp)
-                    .background(
-                        color = dividerColor,
-                        shape = DottedShape(5.dp)
-                    ),
-                color = Color.Transparent
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = dividerPadding)
+                        .height(1.dp)
+                        .background(
+                            color = dividerColor,
+                            shape = DottedShape(5.dp),
+                        ),
+                color = Color.Transparent,
             )
         }
     }
@@ -94,14 +97,16 @@ fun AppsMenuCategory(
 
 @Preview
 @Composable
-fun PreviewAppsMenuCategory() = preview {
-    AppsMenuCategory(
-        modifier = Modifier.padding(8.dp)
-            .background(
-                Color.SuperDarkGray,
-                RoundedCornerShape(16.dp)
-            )
-            .padding(8.dp),
-        category = Category("Audio")
-    )
-}
+fun PreviewAppsMenuCategory() =
+    preview {
+        AppsMenuCategory(
+            modifier =
+                Modifier
+                    .padding(8.dp)
+                    .background(
+                        Color.SuperDarkGray,
+                        RoundedCornerShape(16.dp),
+                    ).padding(8.dp),
+            category = Category("Audio"),
+        )
+    }

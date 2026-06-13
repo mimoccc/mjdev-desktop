@@ -12,7 +12,7 @@ import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.managers.os.IOSManager
 
 open class OSManagerStub(
-    val context: IDesktopContext
+    val context: IDesktopContext,
 ) : IOSManager {
     open val prettyName: String = ""
     open val name: String = ""

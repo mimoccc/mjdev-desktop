@@ -7,7 +7,7 @@ import org.mjdev.desktop.context.DesktopContext
 import org.mjdev.desktop.context.IDesktopContext
 
 class MemInfoAndroid(
-    context: IDesktopContext
+    context: IDesktopContext,
 ) : MemInfoStub(context) {
     val aContext: Context?
         get() = (context as? DesktopContext)?.context
@@ -15,9 +15,10 @@ class MemInfoAndroid(
         aContext?.getSystemService(ACTIVITY_SERVICE) as ActivityManager
     }
     private val meminfo: ActivityManager.MemoryInfo
-        get() = ActivityManager.MemoryInfo().apply {
-            activityManager?.getMemoryInfo(this)
-        }
+        get() =
+            ActivityManager.MemoryInfo().apply {
+                activityManager?.getMemoryInfo(this)
+            }
 
     override val free: Double = meminfo.availMem.toDouble()
 

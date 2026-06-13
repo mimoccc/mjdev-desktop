@@ -7,6 +7,6 @@
  */
 package org.mjdev.desktop.data
 
-data class EthNetwork (
-    val name : String = ""
+data class EthNetwork(
+    val name: String = "",
 )

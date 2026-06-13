@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Shape
 class CardShape(
     val shape: Shape,
     val focusedShape: Shape,
-    val pressedShape: Shape
+    val pressedShape: Shape,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -34,8 +34,5 @@ class CardShape(
         return result
     }
 
-    override fun toString(): String {
-        return "CardShape(shape=$shape, focusedShape=$focusedShape, pressedShape=$pressedShape)"
-    }
+    override fun toString(): String = "CardShape(shape=$shape, focusedShape=$focusedShape, pressedShape=$pressedShape)"
 }
-

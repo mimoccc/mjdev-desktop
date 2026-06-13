@@ -18,26 +18,25 @@ import java.nio.charset.Charset
 
 class DesktopFileParser(
     stream: InputStream,
-    charset: Charset = Charsets.UTF_8
+    charset: Charset = Charsets.UTF_8,
 ) : Wini(stream) {
     constructor() : this("")
     constructor(data: String) : this(StringBufferInputStream(data))
 
     init {
-        config = Config().apply {
-            fileEncoding = Charset.defaultCharset()
-            isPropertyFirstUpper = true
-            isEscape = false
-            isStrictOperator = true
-            fileEncoding = charset
-            isEmptyOption = true
-            isEmptySection = true
-        }
+        config =
+            Config().apply {
+                fileEncoding = Charset.defaultCharset()
+                isPropertyFirstUpper = true
+                isEscape = false
+                isStrictOperator = true
+                fileEncoding = charset
+                isEmptyOption = true
+                isEmptySection = true
+            }
     }
 
-    override fun load(
-        input: InputStream?
-    ) {
+    override fun load(input: InputStream?) {
         try {
             super.load(input)
         } catch (e: Exception) {

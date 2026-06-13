@@ -1,0 +1,18 @@
+## 2026-06-13 21:36:25 — Create the AI agent buildSrc plugin
+Implemented in buildSrc/src/main/kotlin/ai/ (AiAgentPlugin, RunAiAgentTask, AiProvider). Providers: ollama, claude-code, mistral. Reads ai-todo.txt; writes ai-done.txt / ai-suggestions.txt; credentials from ai-credentials.txt. Task `runAiAgent` runs the file.
+
+## 2026-06-13 21:36:25 — Ensure folder 'screenshots' exists at project root
+screenshots/ already existed — no change.
+
+## 2026-06-13 21:36:25 — Ensure folder 'screenshots-1' exists at project root
+Created screenshots-1/.
+
+## 2026-06-13 21:36:25 — Attach the AI agent plugin to the project
+Plugin `AiAgentPlugin` applied on the root project; `runAiAgent` task is registered.
+
+## 2026-06-13 21:36:25 — Provider selection policy (cloud-first, ollama fallback)
+Implemented in AiProviders.select(): prefers cloud (claude-code, then mistral); falls back to local ollama and runs `ollama serve` on demand when no cloud credentials are available.
+
+## 2026-06-13 21:36:25 — Autonomy / security policy
+Implemented in SecurityPolicy: all operations auto-approved except git write/create/commit/push and project->internet file transfers, which stay gated for human approval.
+

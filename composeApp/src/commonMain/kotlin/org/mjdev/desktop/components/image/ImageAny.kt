@@ -25,16 +25,16 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import okio.Path
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.components.video.VideoView
 import org.mjdev.desktop.extensions.Compose.preview
+import org.mjdev.desktop.extensions.Compose.runAsync
+import org.mjdev.desktop.extensions.MimeTypeExt.isGif
+import org.mjdev.desktop.extensions.MimeTypeExt.isVideo
+import org.mjdev.desktop.extensions.PathExt.absolutePath
 import org.mjdev.desktop.helpers.image.ImageLoader.asyncImageLoader
 import org.mjdev.desktop.icons.image.BrokenImage
 import androidx.compose.foundation.Image as ComposeImage
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.mjdev.desktop.components.video.VideoView
-import org.mjdev.desktop.extensions.Compose.runAsync
-import org.mjdev.desktop.extensions.PathExt.absolutePath
-import org.mjdev.desktop.extensions.MimeTypeExt.isGif
-import org.mjdev.desktop.extensions.MimeTypeExt.isVideo
 
 @Suppress("FunctionName", "UNUSED_PARAMETER", "ModifierParameter")
 @Composable
@@ -47,12 +47,12 @@ fun ImageAny(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DefaultFilterQuality,
-    imageLoader: ImageLoader? = asyncImageLoader(),// todo?
+    imageLoader: ImageLoader? = asyncImageLoader(), // todo?
     placeholder: @Composable () -> Unit = {}, // todo
     onLoading: () -> Unit = {},
     onLoaded: (duration: Long) -> Unit = {},
     onFail: (error: Throwable) -> Unit = {},
-    onAnimationFinish: () -> Unit = {}
+    onAnimationFinish: () -> Unit = {},
 ) {
     when {
         src == null -> {
@@ -64,14 +64,14 @@ fun ImageAny(
                 alpha = alpha,
                 contentDescription = contentDescription,
                 colorFilter = colorFilter,
-                contentScale = contentScale
+                contentScale = contentScale,
             )
         }
 
         src is Color -> {
             runAsync { onLoaded(0L) }
             Box(
-                modifier = modifier.background(src)
+                modifier = modifier.background(src),
             )
         }
 
@@ -84,7 +84,7 @@ fun ImageAny(
                 alpha = alpha,
                 contentDescription = contentDescription,
                 colorFilter = colorFilter,
-                contentScale = contentScale
+                contentScale = contentScale,
             )
         }
 //        src is Bitmap -> ComposeImage(
@@ -106,7 +106,7 @@ fun ImageAny(
                 alpha = alpha,
                 contentDescription = contentDescription,
                 colorFilter = colorFilter,
-                contentScale = contentScale
+                contentScale = contentScale,
             )
         }
 
@@ -119,49 +119,55 @@ fun ImageAny(
                 alpha = alpha,
                 contentDescription = contentDescription,
                 colorFilter = colorFilter,
-                contentScale = contentScale
+                contentScale = contentScale,
             )
         }
 
-        src.isGif -> GifView(
-            modifier = modifier,
-            src = when {
-                src is Path -> src.absolutePath
-                else -> src.toString()
-            },
-            onLoading = onLoading,
-            onLoaded = onLoaded,
-            onAnimationFinish = onAnimationFinish,
-            onFail = onFail
-        )
+        src.isGif ->
+            GifView(
+                modifier = modifier,
+                src =
+                    when {
+                        src is Path -> src.absolutePath
+                        else -> src.toString()
+                    },
+                onLoading = onLoading,
+                onLoaded = onLoaded,
+                onAnimationFinish = onAnimationFinish,
+                onFail = onFail,
+            )
 
-        src.isVideo -> VideoView(
-            modifier = modifier,
-            src = when {
-                src is Path -> src.absolutePath
-                else -> src.toString()
-            },
-            onLoading = { onLoading() },
-            onLoaded = onLoaded,
-            onFail = onFail
-        )
+        src.isVideo ->
+            VideoView(
+                modifier = modifier,
+                src =
+                    when {
+                        src is Path -> src.absolutePath
+                        else -> src.toString()
+                    },
+                onLoading = { onLoading() },
+                onLoaded = onLoaded,
+                onFail = onFail,
+            )
 
-        else -> AsyncImage(
-            modifier = modifier,
-            model = src,
-            contentDescription = contentDescription,
-            contentScale = contentScale,
-            filterQuality = filterQuality,
-            imageLoader = imageLoader ?: asyncImageLoader(),
-            onLoading = { onLoading() },
-            onSuccess = { onLoaded(0L) },
-            onError = { e -> onFail(e.result.throwable) },
-        )
+        else ->
+            AsyncImage(
+                modifier = modifier,
+                model = src,
+                contentDescription = contentDescription,
+                contentScale = contentScale,
+                filterQuality = filterQuality,
+                imageLoader = imageLoader ?: asyncImageLoader(),
+                onLoading = { onLoading() },
+                onSuccess = { onLoaded(0L) },
+                onError = { e -> onFail(e.result.throwable) },
+            )
     }
 }
 
 @Preview
 @Composable
-fun PreviewImageAny() = preview {
-    ImageAny()
-}
+fun PreviewImageAny() =
+    preview {
+        ImageAny()
+    }

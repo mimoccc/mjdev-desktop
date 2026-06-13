@@ -19,25 +19,30 @@ import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Constraints
 
 @Stable
-fun Modifier.zIndex(
-    zIndex: Float
-): Modifier = this then ZIndexElement(zIndex = zIndex)
+fun Modifier.zIndex(zIndex: Float): Modifier = this then ZIndexElement(zIndex = zIndex)
 
-data class ZIndexElement(val zIndex: Float) : ModifierNodeElement<ZIndexNode>() {
+data class ZIndexElement(
+    val zIndex: Float,
+) : ModifierNodeElement<ZIndexNode>() {
     override fun create() = ZIndexNode(zIndex)
+
     override fun update(node: ZIndexNode) {
         node.zIndex = zIndex
     }
+
     override fun InspectorInfo.inspectableProperties() {
         name = "zIndex"
         properties["zIndex"] = zIndex
     }
 }
 
-class ZIndexNode(var zIndex: Float) : LayoutModifierNode, Modifier.Node() {
+class ZIndexNode(
+    var zIndex: Float,
+) : Modifier.Node(),
+    LayoutModifierNode {
     override fun MeasureScope.measure(
         measurable: Measurable,
-        constraints: Constraints
+        constraints: Constraints,
     ): MeasureResult {
         val placeable = measurable.measure(constraints)
         return layout(placeable.width, placeable.height) {

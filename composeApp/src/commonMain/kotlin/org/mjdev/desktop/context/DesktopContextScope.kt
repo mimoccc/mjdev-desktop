@@ -11,19 +11,19 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import org.mjdev.desktop.data.Category
 import org.mjdev.desktop.interfaces.IApp
-import org.mjdev.desktop.managers.apps.IAppsManager
 import org.mjdev.desktop.interfaces.ILocale
-import org.mjdev.desktop.managers.palette.IPalette
-import org.mjdev.desktop.managers.process.IProcessManager
 import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
+import org.mjdev.desktop.managers.apps.IAppsManager
+import org.mjdev.desktop.managers.palette.IPalette
+import org.mjdev.desktop.managers.process.IProcessManager
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 // todo theme user support
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class DesktopContextScope(
-    val context: IDesktopContext
+    val context: IDesktopContext,
 ) {
     val isDebug: Boolean
         get() = context.isDebug
@@ -159,7 +159,7 @@ open class DesktopContextScope(
     fun runAsync(
         coroutineContext: CoroutineContext = EmptyCoroutineContext,
         start: CoroutineStart = CoroutineStart.DEFAULT,
-        block: suspend CoroutineScope.() -> Unit
+        block: suspend CoroutineScope.() -> Unit,
     ) = context.runAsync(coroutineContext, start, block)
 
     companion object {
@@ -167,7 +167,7 @@ open class DesktopContextScope(
         @Composable
         fun withDesktopContext(
             context: IDesktopContext = LocalDesktopContext.current,
-            block: @Composable DesktopContextScope.() -> Unit
+            block: @Composable DesktopContextScope.() -> Unit,
         ) {
             block(DesktopContextScope(context))
         }

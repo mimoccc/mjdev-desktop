@@ -8,29 +8,29 @@
 
 package org.mjdev.desktop.managers.apps
 
-import org.mjdev.desktop.data.App
-import org.mjdev.desktop.extensions.Custom.desktopFiles
-import org.mjdev.desktop.extensions.Custom.textAsLocale
-import org.mjdev.desktop.extensions.PathExt.get
-import org.mjdev.desktop.helpers.system.shell.Shell
 import kotlinx.coroutines.CoroutineScope
 import okio.Path
 import okio.Path.Companion.toPath
+import org.mjdev.desktop.context.IDesktopContext
+import org.mjdev.desktop.data.App
+import org.mjdev.desktop.extensions.Custom.desktopFiles
+import org.mjdev.desktop.extensions.Custom.textAsLocale
 import org.mjdev.desktop.extensions.CustomExt.jsonToList
 import org.mjdev.desktop.extensions.PathExt.dirsOnly
 import org.mjdev.desktop.extensions.PathExt.filesOnly
+import org.mjdev.desktop.extensions.PathExt.get
 import org.mjdev.desktop.extensions.PathExt.lines
 import org.mjdev.desktop.extensions.PathExt.sortedByName
 import org.mjdev.desktop.extensions.PathExt.text
+import org.mjdev.desktop.helpers.system.shell.Shell
 import org.mjdev.desktop.interfaces.IApp
-import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.interfaces.ILocale
 import java.util.Locale
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class AppsManager(
     val context: IDesktopContext,
-    val scope: CoroutineScope = context.scope
+    val scope: CoroutineScope = context.scope,
 ) : IAppsManager {
     companion object {
         const val DIR_NAME_ROOT = "/"
@@ -103,7 +103,7 @@ class AppsManager(
 
     private val userDirsLocale by lazy {
         configDir[FILE_NAME_USER_DIRS_LOCALE].textAsLocale
-    } //SK_sk
+    } // SK_sk
 
     private val menusItems by lazy {
         menusDir[FILE_NAME_GNOME_APPS_MENU].text
@@ -135,11 +135,12 @@ class AppsManager(
     }
 
     private val allAppsDesktopFiles by lazy {
-        (allAppsDesktopFilesLocal +
+        (
+            allAppsDesktopFilesLocal +
                 allAppsDesktopFilesShared +
                 allAppsDesktopFilesFlatPack +
                 allAppsDesktopFilesSnap
-                ).distinctBy { it.file.name }
+        ).distinctBy { it.file.name }
     }
 
     override val currentLocale: ILocale
@@ -156,33 +157,39 @@ class AppsManager(
     }
 
     override val categories
-        get() = allApps.asSequence().flatMap { app ->
-            app.categories
-        }.distinct().toList().sortedBy { c ->
-            c.name
-        }.sortedByDescending { c ->
-            c.priority
-        }.toList()
+        get() =
+            allApps
+                .asSequence()
+                .flatMap { app ->
+                    app.categories
+                }.distinct()
+                .toList()
+                .sortedBy { c ->
+                    c.name
+                }.sortedByDescending { c ->
+                    c.priority
+                }.toList()
 
     override val favoriteApps: List<App>
-        get() = Shell.executeAndRead(
-            "gsettings",
-            "get",
-            "org.gnome.shell",
-            "favorite-apps"
-        ).replace("'", "\"") // todo ?
-            .jsonToList<String>()
-            .flatMap { deskFileName ->
-                findDesktopFileByName(deskFileName).map { deskFile ->
-                    App(deskFile)
+        get() =
+            Shell
+                .executeAndRead(
+                    "gsettings",
+                    "get",
+                    "org.gnome.shell",
+                    "favorite-apps",
+                ).replace("'", "\"") // todo ?
+                .jsonToList<String>()
+                .flatMap { deskFileName ->
+                    findDesktopFileByName(deskFileName).map { deskFile ->
+                        App(deskFile)
+                    }
                 }
-            }
 
-    fun findDesktopFileByName(
-        deskFileName: String
-    ) = allAppsDesktopFiles.filter { deskFile ->
-        deskFile.fileName.contentEquals(deskFileName)
-    }
+    fun findDesktopFileByName(deskFileName: String) =
+        allAppsDesktopFiles.filter { deskFile ->
+            deskFile.fileName.contentEquals(deskFileName)
+        }
 
     override suspend fun startApp(app: IApp) {
         app.start()
@@ -197,7 +204,7 @@ class AppsManager(
 //            else Category(name)
 //        }
 //    }
-//}
+// }
 }
 
 @Suppress("UnusedReceiverParameter")

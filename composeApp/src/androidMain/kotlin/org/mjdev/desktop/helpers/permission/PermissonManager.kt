@@ -19,8 +19,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -32,10 +32,11 @@ fun manifestPermissions(): List<String> {
         try {
             val packageManager = context.packageManager
             arrayListOf<String>().apply {
-                val pkgInfo: PackageInfo = packageManager.getPackageInfo(
-                    context.packageName,
-                    PackageManager.GET_PERMISSIONS
-                )
+                val pkgInfo: PackageInfo =
+                    packageManager.getPackageInfo(
+                        context.packageName,
+                        PackageManager.GET_PERMISSIONS,
+                    )
                 pkgInfo.requestedPermissions?.forEach { p -> add(p) }
             }
         } catch (e: Exception) {
@@ -51,40 +52,43 @@ fun manifestPermissions(): List<String> {
 @Composable
 fun rememberPermissionManager(
     permissions: List<String> = manifestPermissions(),
-    onNeedToGrant: (MultiplePermissionsState.(permissions: List<String>) -> Unit)? = null
+    onNeedToGrant: (MultiplePermissionsState.(permissions: List<String>) -> Unit)? = null,
 ) {
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
         var _ps: MultiplePermissionsState? = null
         val lifecycleOwner = LocalLifecycleOwner.current
         val onPermissionsResult: (Map<String, Boolean>) -> Unit = { map ->
-            map.filter { p ->
-                !p.value
-            }.filter { p ->
-                permissions.contains(p.key)
-            }.also { ps ->
-                _ps?.also { mps ->
-                    onNeedToGrant?.invoke(mps, ps.map { p -> p.key })
+            map
+                .filter { p ->
+                    !p.value
+                }.filter { p ->
+                    permissions.contains(p.key)
+                }.also { ps ->
+                    _ps?.also { mps ->
+                        onNeedToGrant?.invoke(mps, ps.map { p -> p.key })
+                    }
                 }
-            }
         }
-        val permissionsState = rememberMultiplePermissionsState(
-            permissions = permissions,
-            onPermissionsResult = onPermissionsResult
-        )
+        val permissionsState =
+            rememberMultiplePermissionsState(
+                permissions = permissions,
+                onPermissionsResult = onPermissionsResult,
+            )
         _ps = permissionsState
         DisposableEffect(
             key1 = lifecycleOwner,
             effect = {
-                val observer = LifecycleEventObserver { _, event ->
-                    if (event == Lifecycle.Event.ON_RESUME) {
-                        permissionsState.launchMultiplePermissionRequest()
+                val observer =
+                    LifecycleEventObserver { _, event ->
+                        if (event == Lifecycle.Event.ON_RESUME) {
+                            permissionsState.launchMultiplePermissionRequest()
+                        }
                     }
-                }
                 lifecycleOwner.lifecycle.addObserver(observer)
                 onDispose {
                     lifecycleOwner.lifecycle.removeObserver(observer)
                 }
-            }
+            },
         )
     }
 }

@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.mjdev.desktop.extensions.Compose.preview
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
 
 @Suppress("FunctionName")
 @Composable
@@ -35,16 +35,18 @@ fun TextWithShadow(
     singleLine: Boolean = false,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
-    text: Any? = "test"
+    text: Any? = "test",
 ) = TextAny(
     modifier = modifier,
-    style = MaterialTheme.typography.body1.copy(
-        shadow = Shadow(
-            color = shadowColor,
-            offset = Offset(offsetX.value, offsetY.value),
-            blurRadius = shadowSize.value
-        )
-    ),
+    style =
+        MaterialTheme.typography.body1.copy(
+            shadow =
+                Shadow(
+                    color = shadowColor,
+                    offset = Offset(offsetX.value, offsetY.value),
+                    blurRadius = shadowSize.value,
+                ),
+        ),
     text = text,
     textAlign = textAlign,
     fontWeight = fontWeight,
@@ -52,14 +54,15 @@ fun TextWithShadow(
     color = color,
     overflow = overflow,
     minLines = minLines,
-    maxLines = maxLines
+    maxLines = maxLines,
 )
 
 @Preview
 @Composable
-fun PreviewTextWithShadow() = preview {
-    TextWithShadow(
-        modifier = Modifier.height(48.dp).background(Color.White),
-        text = "...Test..." // App.Test
-    )
-}
+fun PreviewTextWithShadow() =
+    preview {
+        TextWithShadow(
+            modifier = Modifier.height(48.dp).background(Color.White),
+            text = "...Test...", // App.Test
+        )
+    }

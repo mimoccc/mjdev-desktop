@@ -7,13 +7,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.aay.compose.baseComponents.model.LegendPosition
 import com.aay.compose.donutChart.model.PieChartData
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.chart.DonutChart
 import org.mjdev.desktop.components.draggable.DraggableView
-import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.DoubleExt.toMemorySizeReadable
 import org.mjdev.desktop.helpers.system.meminfo.MemInfo
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -31,7 +31,7 @@ fun MemoryChart(
 ) = withDesktopContext {
     DraggableView(
         modifier = modifier,
-        dragEnabled = dragEnabled
+        dragEnabled = dragEnabled,
     ) {
         DonutChart(
             modifier = modifier,
@@ -43,7 +43,7 @@ fun MemoryChart(
             refreshTimeout = updateTimeOut,
             animation = animation,
             animationDuration = animationDuration,
-            legendPosition = legendPosition
+            legendPosition = legendPosition,
         ) {
             // todo
             MemInfo(context).let { mem ->
@@ -53,7 +53,7 @@ fun MemoryChart(
                 val firstTitle = usedTitle.plus(": ").plus(mem.used.toMemorySizeReadable())
                 listOf(
                     PieChartData(firstValue, iconsTintColor, firstTitle),
-                    PieChartData(secondValue, backgroundColor, secondTitle)
+                    PieChartData(secondValue, backgroundColor, secondTitle),
                 )
             }
         }
@@ -63,6 +63,7 @@ fun MemoryChart(
 // todo
 @Preview
 @Composable
-fun PreviewMemoryChart() = preview {
-    MemoryChart()
-}
+fun PreviewMemoryChart() =
+    preview {
+        MemoryChart()
+    }

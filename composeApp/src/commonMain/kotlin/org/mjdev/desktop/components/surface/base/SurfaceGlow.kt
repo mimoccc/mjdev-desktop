@@ -21,22 +21,24 @@ import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.debugInspectorInfo
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.surface.surfaceColorAtElevation
 import org.mjdev.desktop.extensions.Colors.alpha
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun Modifier.surfaceGlow(
     shape: Shape,
     glow: Glow,
 ): Modifier {
-    val color = surfaceColorAtElevation(
-        color = glow.elevationColor,
+    val color =
+        surfaceColorAtElevation(
+            color = glow.elevationColor,
 //        elevation = glow.elevation
-    )
-    val glowBlurRadiusPx = with(LocalDensity.current) {
-        glow.elevation.toPx()
-    }
+        )
+    val glowBlurRadiusPx =
+        with(LocalDensity.current) {
+            glow.elevation.toPx()
+        }
     return then(
         SurfaceGlowElement(
             shape = shape,
@@ -47,8 +49,8 @@ internal fun Modifier.surfaceGlow(
                     name = "tvSurfaceGlow"
                     properties["shape"] = shape
                     properties["glow"] = glow
-                }
-        )
+                },
+        ),
     )
 }
 
@@ -56,21 +58,20 @@ private class SurfaceGlowElement(
     private val shape: Shape,
     private val glowBlurRadiusPx: Float,
     private val color: Color,
-    private val inspectorInfo: InspectorInfo.() -> Unit
+    private val inspectorInfo: InspectorInfo.() -> Unit,
 ) : ModifierNodeElement<SurfaceGlowNode>() {
-    override fun create(): SurfaceGlowNode {
-        return SurfaceGlowNode(
+    override fun create(): SurfaceGlowNode =
+        SurfaceGlowNode(
             shape = shape,
             glowBlurRadiusPx = glowBlurRadiusPx,
             color = color,
         )
-    }
 
     override fun update(node: SurfaceGlowNode) {
         node.reactToUpdates(
             newShape = shape,
             newGlowBlurRadiusPx = glowBlurRadiusPx,
-            newColor = color
+            newColor = color,
         )
     }
 
@@ -88,8 +89,8 @@ private class SurfaceGlowElement(
     override fun equals(other: Any?): Boolean {
         val otherTyped = other as? SurfaceGlowElement ?: return false
         return shape == otherTyped.shape &&
-                glowBlurRadiusPx == otherTyped.glowBlurRadiusPx &&
-                color == otherTyped.color
+            glowBlurRadiusPx == otherTyped.glowBlurRadiusPx &&
+            color == otherTyped.color
     }
 }
 
@@ -97,7 +98,8 @@ private class SurfaceGlowNode(
     private var shape: Shape,
     private var glowBlurRadiusPx: Float,
     private var color: Color,
-) : DrawModifierNode, Modifier.Node() {
+) : Modifier.Node(),
+    DrawModifierNode {
     private var paint: Paint? = null
     private var frameworkPaint: Paint? = null
     private var shapeOutlineCache: SurfaceShapeOutlineCache? = null
@@ -128,7 +130,7 @@ private class SurfaceGlowNode(
                         shape = shape,
                         size = size,
                         layoutDirection = layoutDirection,
-                        density = this
+                        density = this,
                     )
             }
             when (
@@ -137,7 +139,7 @@ private class SurfaceGlowNode(
                         shape = shape,
                         size = size,
                         layoutDirection = layoutDirection,
-                        density = this
+                        density = this,
                     )
             ) {
                 is Outline.Rectangle -> canvas.drawRect(shapeOutline.rect, paint!!)
@@ -151,7 +153,7 @@ private class SurfaceGlowNode(
                         bottom = size.height,
                         radiusX = shapeCornerRadiusX,
                         radiusY = shapeCornerRadiusY,
-                        paint = paint!!
+                        paint = paint!!,
                     )
                 }
 
@@ -171,16 +173,25 @@ private class SurfaceGlowNode(
         val shadowColor = color
         frameworkPaint?.color = transparentColor
         frameworkPaint?.setShadowLayer(
-            /* radius= */ glowBlurRadiusPx,
-            /* dx= */ 0f,
-            /* dy= */ 0f,
-            /* shadowColor= */ shadowColor
+            // radius=
+            glowBlurRadiusPx,
+            // dx=
+            0f,
+            // dy=
+            0f,
+            // shadowColor=
+            shadowColor,
         )
     }
 
     // todo
     @Suppress("UNUSED_PARAMETER", "UnusedReceiverParameter")
-    fun Paint.setShadowLayer(radius: Float, dx: Float, dy: Float, shadowColor: Color) {
+    fun Paint.setShadowLayer(
+        radius: Float,
+        dx: Float,
+        dy: Float,
+        shadowColor: Color,
+    ) {
 //        this.setShadowLayer(radius, dx, dy, shadowColor)
     }
 }

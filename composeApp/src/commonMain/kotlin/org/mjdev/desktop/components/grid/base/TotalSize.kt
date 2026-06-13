@@ -12,5 +12,5 @@ import androidx.compose.ui.unit.Dp
 
 data class TotalSize(
     val weight: Float,
-    val fixed: Dp
+    val fixed: Dp,
 )

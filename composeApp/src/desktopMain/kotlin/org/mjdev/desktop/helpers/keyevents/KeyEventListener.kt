@@ -14,10 +14,10 @@ interface KeyEventListener
 
 class KeyEventListenerCompose(
     val key: Key?,
-    val block: (Char) -> Boolean
+    val block: (Char) -> Boolean,
 ) : KeyEventListener
 
 class KeyEventListenerAwt(
     val key: Int,
-    val block: (Int) -> Boolean
+    val block: (Int) -> Boolean,
 ) : KeyEventListener

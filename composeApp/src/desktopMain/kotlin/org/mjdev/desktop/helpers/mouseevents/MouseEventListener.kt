@@ -14,11 +14,9 @@ import androidx.compose.ui.unit.DpOffset
 class MouseEventListener(
     val type: MouseEventType,
     val range: MouseRange,
-    val block: (offset: DpOffset) -> Unit
+    val block: (offset: DpOffset) -> Unit,
 ) {
-    fun isInRange(
-        offset: DpOffset
-    ): Boolean {
+    fun isInRange(offset: DpOffset): Boolean {
         val inX = offset.x >= range.x && offset.x <= (range.x + range.width)
         val inY = offset.y >= range.y && offset.y <= (range.y + range.height)
         return inX && inY

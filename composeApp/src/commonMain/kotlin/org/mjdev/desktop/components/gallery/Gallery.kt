@@ -1,50 +1,50 @@
 package org.mjdev.desktop.components.gallery
 
-//import androidx.compose.foundation.focusable
-//import androidx.compose.foundation.layout.Arrangement
-//import androidx.compose.foundation.layout.Box
-//import androidx.compose.foundation.layout.PaddingValues
-//import androidx.compose.foundation.layout.Spacer
-//import androidx.compose.foundation.layout.fillMaxSize
-//import androidx.compose.foundation.layout.fillMaxWidth
-//import androidx.compose.foundation.layout.height
-//import androidx.compose.foundation.layout.padding
-//import androidx.compose.foundation.lazy.LazyListState
-//import androidx.compose.foundation.lazy.LazyRow
-//import androidx.compose.foundation.lazy.itemsIndexed
-//import androidx.compose.foundation.lazy.rememberLazyListState
-//import androidx.compose.runtime.Composable
-//import androidx.compose.runtime.LaunchedEffect
-//import androidx.compose.runtime.MutableIntState
-//import androidx.compose.runtime.MutableState
-//import androidx.compose.runtime.SideEffect
-//import androidx.compose.runtime.State
-//import androidx.compose.runtime.derivedStateOf
-//import androidx.compose.runtime.mutableIntStateOf
-//import androidx.compose.runtime.mutableStateOf
-//import androidx.compose.runtime.remember
-//import androidx.compose.runtime.saveable.Saver
-//import androidx.compose.runtime.saveable.rememberSaveable
-//import androidx.compose.ui.Alignment
-//import androidx.compose.ui.Modifier
-//import androidx.compose.ui.focus.FocusRequester
-//import androidx.compose.ui.focus.focusRequester
-//import androidx.compose.ui.graphics.Color
-//import androidx.compose.ui.layout.ContentScale
-//import androidx.compose.ui.unit.dp
-//import kotlinx.coroutines.delay
-//import org.mjdev.desktop.components.card.PhotoCard
-//import org.mjdev.desktop.components.image.ImageAny
-//import org.mjdev.desktop.components.immersivelist.ImmersiveList
-//import org.mjdev.desktop.components.immersivelist.base.ImmersiveInnerList
-//import org.mjdev.desktop.extensions.Compose.preview
-//import org.mjdev.desktop.extensions.FocusState.rememberFocusRequester
-//import org.mjdev.desktop.extensions.MutableStateExt.rememberDerivedState
+// import androidx.compose.foundation.focusable
+// import androidx.compose.foundation.layout.Arrangement
+// import androidx.compose.foundation.layout.Box
+// import androidx.compose.foundation.layout.PaddingValues
+// import androidx.compose.foundation.layout.Spacer
+// import androidx.compose.foundation.layout.fillMaxSize
+// import androidx.compose.foundation.layout.fillMaxWidth
+// import androidx.compose.foundation.layout.height
+// import androidx.compose.foundation.layout.padding
+// import androidx.compose.foundation.lazy.LazyListState
+// import androidx.compose.foundation.lazy.LazyRow
+// import androidx.compose.foundation.lazy.itemsIndexed
+// import androidx.compose.foundation.lazy.rememberLazyListState
+// import androidx.compose.runtime.Composable
+// import androidx.compose.runtime.LaunchedEffect
+// import androidx.compose.runtime.MutableIntState
+// import androidx.compose.runtime.MutableState
+// import androidx.compose.runtime.SideEffect
+// import androidx.compose.runtime.State
+// import androidx.compose.runtime.derivedStateOf
+// import androidx.compose.runtime.mutableIntStateOf
+// import androidx.compose.runtime.mutableStateOf
+// import androidx.compose.runtime.remember
+// import androidx.compose.runtime.saveable.Saver
+// import androidx.compose.runtime.saveable.rememberSaveable
+// import androidx.compose.ui.Alignment
+// import androidx.compose.ui.Modifier
+// import androidx.compose.ui.focus.FocusRequester
+// import androidx.compose.ui.focus.focusRequester
+// import androidx.compose.ui.graphics.Color
+// import androidx.compose.ui.layout.ContentScale
+// import androidx.compose.ui.unit.dp
+// import kotlinx.coroutines.delay
+// import org.mjdev.desktop.components.card.PhotoCard
+// import org.mjdev.desktop.components.image.ImageAny
+// import org.mjdev.desktop.components.immersivelist.ImmersiveList
+// import org.mjdev.desktop.components.immersivelist.base.ImmersiveInnerList
+// import org.mjdev.desktop.extensions.Compose.preview
+// import org.mjdev.desktop.extensions.FocusState.rememberFocusRequester
+// import org.mjdev.desktop.extensions.MutableStateExt.rememberDerivedState
 // import org.jetbrains.compose.ui.tooling.preview.Preview
 //
-//// todo
-//@Composable
-//fun Gallery(
+// // todo
+// @Composable
+// fun Gallery(
 //    modifier: Modifier = Modifier,
 //    list: List<Any?> = listOf(),
 //    index: Int = 0,
@@ -58,32 +58,32 @@ package org.mjdev.desktop.components.gallery
 //        mutableStateOf(ContentScale.Crop)
 //    },
 //    listState: LazyListState = rememberLazyListState(),
-////    switchImageScale: () -> Unit = {
-////        imageScaleType.value = when (imageScaleType.value) {
-////            ContentScale.Fit -> ContentScale.Crop
-////            ContentScale.Crop -> ContentScale.Fit
-////            else -> ContentScale.Fit
-////        }
-////    },
+// //    switchImageScale: () -> Unit = {
+// //        imageScaleType.value = when (imageScaleType.value) {
+// //            ContentScale.Fit -> ContentScale.Crop
+// //            ContentScale.Crop -> ContentScale.Fit
+// //            else -> ContentScale.Fit
+// //        }
+// //    },
 //    customContentViewer: @Composable (
 //        src: Any?,
 //        type: Any?,
 //        list: List<Any?>
 //    ) -> Unit = { _, _, _ -> },
-//) {
+// ) {
 //    val initialized = remember(list, index) { mutableStateOf(false) }
-////    val nextItem: () -> Unit = {
-////        if (currentItemIndex.intValue < (list.size - 1)) {
-////            currentItemIndex.intValue += 1
-////        }
-////        controlsState.value = true
-////    }
-////    val prevItem: () -> Unit = {
-////        if (currentItemIndex.intValue > 0) {
-////            currentItemIndex.intValue -= 1
-////        }
-////        controlsState.value = true
-////    }
+// //    val nextItem: () -> Unit = {
+// //        if (currentItemIndex.intValue < (list.size - 1)) {
+// //            currentItemIndex.intValue += 1
+// //        }
+// //        controlsState.value = true
+// //    }
+// //    val prevItem: () -> Unit = {
+// //        if (currentItemIndex.intValue > 0) {
+// //            currentItemIndex.intValue -= 1
+// //        }
+// //        controlsState.value = true
+// //    }
 //    val itemState = rememberDerivedState(0, currentItemIndex.intValue) {
 //        list[currentItemIndex.intValue]
 //    }
@@ -121,14 +121,14 @@ package org.mjdev.desktop.components.gallery
 //                        .fillMaxSize()
 //                        .focusable()
 //                        .focusRequester(focusRequester)
-////                        .swipeGestures(
-////                            onTap = { state.toggle() },
-////                            onDoubleTap = { switchImageScale() },
-////                            onSwipeLeft = { nextItem() },
-////                            onSwipeRight = { prevItem() },
-////                            onSwipeUp = { nextItem() },
-////                            onSwipeDown = { prevItem() },
-////                        )
+// //                        .swipeGestures(
+// //                            onTap = { state.toggle() },
+// //                            onDoubleTap = { switchImageScale() },
+// //                            onSwipeLeft = { nextItem() },
+// //                            onSwipeRight = { prevItem() },
+// //                            onSwipeUp = { nextItem() },
+// //                            onSwipeDown = { prevItem() },
+// //                        )
 //                )
 //                customContentViewer(imageSrc.value, itemType, list)
 //            }
@@ -180,13 +180,13 @@ package org.mjdev.desktop.components.gallery
 //            }
 //        }
 //    }
-//}
+// }
 //
-//@Composable
-//fun rememberItemType(item: Any?): Any? = remember(item) { item }
+// @Composable
+// fun rememberItemType(item: Any?): Any? = remember(item) { item }
 //
-//@Composable
-//fun rememberImageFromItem(image: Any?): State<Any?> = remember(image) {
+// @Composable
+// fun rememberImageFromItem(image: Any?): State<Any?> = remember(image) {
 //    derivedStateOf {
 //        val color = image as? Color
 //        val file = image as? File
@@ -195,9 +195,9 @@ package org.mjdev.desktop.components.gallery
 //        // todo more types & gif
 //        file ?: bitmap ?: color ?: string
 //    }
-//}
+// }
 //
-//val contentScaleSaver = Saver<MutableState<ContentScale>, String>(
+// val contentScaleSaver = Saver<MutableState<ContentScale>, String>(
 //    save = { value -> value.value.toString() },
 //    restore = { str ->
 //        mutableStateOf(
@@ -208,12 +208,12 @@ package org.mjdev.desktop.components.gallery
 //            }
 //        )
 //    }
-//)
+// )
 //
-//@Preview
-//@Composable
-//fun PreviewGallery() = preview {
+// @Preview
+// @Composable
+// fun PreviewGallery() = preview {
 //    Gallery(
 //        list = listOf(App.Test, App.Test, App.Test),
 //    )
-//}
+// }

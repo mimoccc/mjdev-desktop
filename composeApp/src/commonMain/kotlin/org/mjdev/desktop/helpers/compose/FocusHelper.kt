@@ -11,7 +11,7 @@ package org.mjdev.desktop.helpers.compose
 import androidx.compose.ui.focus.FocusState
 
 class FocusHelper(
-    private var focused: Boolean
+    private var focused: Boolean,
 ) : FocusState {
     override val hasFocus: Boolean get() = focused
     override val isCaptured: Boolean get() = focused

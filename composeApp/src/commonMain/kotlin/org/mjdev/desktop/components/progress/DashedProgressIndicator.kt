@@ -16,8 +16,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
-import org.mjdev.desktop.extensions.Compose.preview
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun DashedProgressIndicator(
@@ -25,9 +25,9 @@ fun DashedProgressIndicator(
     progress: Int = 3,
     totalNumberOfBars: Int = 10,
     dashColor: Color = Color.LightGray,
-    strokeWidth: Float = 13f
+    strokeWidth: Float = 13f,
 ) = Canvas(
-    modifier = modifier
+    modifier = modifier,
 ) {
     val barArea = size.width / totalNumberOfBars
     val barLength = barArea - 10.dp.toPx()
@@ -42,7 +42,7 @@ fun DashedProgressIndicator(
             color = if (i < progress) dashColor else dashColor.copy(alpha = .5F),
             start = start,
             end = end,
-            strokeWidth = strokeWidth
+            strokeWidth = strokeWidth,
         )
         nextBarStartPosition = barEndPosition + 5.dp.toPx()
     }
@@ -50,8 +50,9 @@ fun DashedProgressIndicator(
 
 @Preview
 @Composable
-fun PreviewDashedProgressIndicator() = preview {
-    DashedProgressIndicator(
-        modifier = Modifier.fillMaxWidth()
-    )
-}
+fun PreviewDashedProgressIndicator() =
+    preview {
+        DashedProgressIndicator(
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }

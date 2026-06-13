@@ -10,9 +10,7 @@ import org.mjdev.desktop.helpers.decodeImage
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 expect object ImageBitmapExt {
-    suspend fun IDesktopContext.loadPicture(
-        src: Any?
-    ): ImageBitmap?
+    suspend fun IDesktopContext.loadPicture(src: Any?): ImageBitmap?
 }
 
 fun ByteArray.decodeImage(): DecodedImage? = decodeImage(this)
@@ -26,14 +24,14 @@ fun ImageBitmap.fillRect(
     y: Int,
     width: Int,
     height: Int,
-    c: Color
+    c: Color,
 ) {
     Canvas(this).drawRect(
         x.toFloat(),
         y.toFloat(),
         width.toFloat(),
         height.toFloat(),
-        Paint().apply { color = c }
+        Paint().apply { color = c },
     )
 }
 
@@ -42,7 +40,7 @@ fun ImageBitmap.writePixels(
     x: Int,
     y: Int,
     width: Int,
-    height: Int
+    height: Int,
 ) {
     val paint = Paint()
     val canvas = Canvas(this)
@@ -56,7 +54,7 @@ fun ImageBitmap.writePixels(
                 (y + j).toFloat(),
                 (x + i + 1).toFloat(),
                 (y + j + 1).toFloat(),
-                paint
+                paint,
             )
         }
     }
@@ -66,7 +64,7 @@ fun ImageBitmap.cut(
     x: Int,
     y: Int,
     width: Int,
-    height: Int
+    height: Int,
 ): ImageBitmap {
     val srcPixels = this.pixels
     val result = ImageBitmap(width, height)

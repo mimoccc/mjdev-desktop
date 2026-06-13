@@ -1,16 +1,15 @@
 package org.mjdev.desktop.helpers.adb
 
+import okio.*
 import org.mjdev.desktop.helpers.adb.adbserver.AdbServer
 import org.mjdev.desktop.helpers.adb.forwarding.TcpForwardDescriptor
 import org.mjdev.desktop.helpers.adb.forwarding.TcpForwarder
 import org.mjdev.desktop.helpers.adb.helpers.*
-import okio.*
 import java.io.File
 import java.nio.file.Files
 
 @Suppress("unused")
 interface IAdb : AutoCloseable {
-
     val host: String
     val port: Int
     val deviceQuery: String
@@ -35,24 +34,40 @@ interface IAdb : AutoCloseable {
     }
 
     @Throws(IOException::class)
-    fun push(src: File, remotePath: String, mode: Int = readMode(src), lastModifiedMs: Long = src.lastModified()) {
+    fun push(
+        src: File,
+        remotePath: String,
+        mode: Int = readMode(src),
+        lastModifiedMs: Long = src.lastModified(),
+    ) {
         push(src.source(), remotePath, mode, lastModifiedMs)
     }
 
     @Throws(IOException::class)
-    fun push(source: Source, remotePath: String, mode: Int, lastModifiedMs: Long) {
+    fun push(
+        source: Source,
+        remotePath: String,
+        mode: Int,
+        lastModifiedMs: Long,
+    ) {
         openSync().use { stream ->
             stream.send(source, remotePath, mode, lastModifiedMs)
         }
     }
 
     @Throws(IOException::class)
-    fun pull(dst: File, remotePath: String) {
+    fun pull(
+        dst: File,
+        remotePath: String,
+    ) {
         pull(dst.sink(append = false), remotePath)
     }
 
     @Throws(IOException::class)
-    fun pull(sink: Sink, remotePath: String) {
+    fun pull(
+        sink: Sink,
+        remotePath: String,
+    ) {
         openSync().use { stream ->
             stream.recv(sink, remotePath)
         }
@@ -65,7 +80,10 @@ interface IAdb : AutoCloseable {
     }
 
     @Throws(IOException::class)
-    fun install(file: File, vararg options: String) {
+    fun install(
+        file: File,
+        vararg options: String,
+    ) {
         if (supportsFeature("cmd")) {
             install(file.source(), file.length(), *options)
         } else {
@@ -74,7 +92,11 @@ interface IAdb : AutoCloseable {
     }
 
     @Throws(IOException::class)
-    fun install(source: Source, size: Long, vararg options: String) {
+    fun install(
+        source: Source,
+        size: Long,
+        vararg options: String,
+    ) {
         if (supportsFeature("cmd")) {
             execCmd("package", "install", "-S", size.toString(), *options).use { stream ->
                 stream.sink.writeAll(source)
@@ -93,7 +115,10 @@ interface IAdb : AutoCloseable {
         }
     }
 
-    private fun pmInstall(file: File, vararg options: String) {
+    private fun pmInstall(
+        file: File,
+        vararg options: String,
+    ) {
         val fileName = file.name
         val remotePath = "/data/local/tmp/$fileName"
         push(file, remotePath)
@@ -101,7 +126,10 @@ interface IAdb : AutoCloseable {
     }
 
     @Throws(IOException::class)
-    fun installMultiple(apks: List<File>, vararg options: String) {
+    fun installMultiple(
+        apks: List<File>,
+        vararg options: String,
+    ) {
         if (supportsFeature("cmd")) {
             val totalLength = apks.map { it.length() }.reduce { acc, l -> acc + l }
             execCmd("package", "install-create", "-S", totalLength.toString(), *options).use { createStream ->
@@ -111,7 +139,11 @@ interface IAdb : AutoCloseable {
                 }
                 val pattern = """\[(\w+)]""".toRegex()
                 val sessionId =
-                    pattern.find(response)?.groups?.get(1)?.value ?: throw IOException("failed to create session")
+                    pattern
+                        .find(response)
+                        ?.groups
+                        ?.get(1)
+                        ?.value ?: throw IOException("failed to create session")
                 var error: String? = null
                 apks.forEach { apk ->
                     execCmd(
@@ -122,7 +154,7 @@ interface IAdb : AutoCloseable {
                         sessionId,
                         apk.name,
                         "-",
-                        *options
+                        *options,
                     ).use { writeStream ->
                         writeStream.sink.writeAll(apk.source())
                         writeStream.sink.flush()
@@ -152,7 +184,11 @@ interface IAdb : AutoCloseable {
             }
             val pattern = """\[(\w+)]""".toRegex()
             val sessionId =
-                pattern.find(response.allOutput)?.groups?.get(1)?.value ?: throw IOException("failed to create session")
+                pattern
+                    .find(response.allOutput)
+                    ?.groups
+                    ?.get(1)
+                    ?.value ?: throw IOException("failed to create session")
             var error: String? = null
             val fileNames = apks.map { it.name }
             val remotePaths = fileNames.map { "/data/local/tmp/$it" }
@@ -223,7 +259,10 @@ interface IAdb : AutoCloseable {
     }
 
     @Throws(InterruptedException::class)
-    fun tcpForward(targetPort: Int, hostPort: Int): TcpForwardDescriptor {
+    fun tcpForward(
+        targetPort: Int,
+        hostPort: Int,
+    ): TcpForwardDescriptor {
         val forwarder = TcpForwarder(this, targetPort, hostPort)
         val localPort = forwarder.start()
         return TcpForwardDescriptor(forwarder, localPort)
@@ -247,30 +286,32 @@ interface IAdb : AutoCloseable {
             port: Int,
             keyPair: AdbKeyPair? = AdbKeyPair.readDefault(),
             connectTimeout: Int = 0,
-            socketTimeout: Int = 0
+            socketTimeout: Int = 0,
         ): IAdb = AdbImpl(host, port, keyPair, connectTimeout, socketTimeout)
 
         @JvmStatic
         @JvmOverloads
         fun discover(
             host: String = "localhost",
-            keyPair: AdbKeyPair? = AdbKeyPair.readDefault()
-        ): List<IAdb> {
-            return list(host, keyPair)
-        }
+            keyPair: AdbKeyPair? = AdbKeyPair.readDefault(),
+        ): List<IAdb> = list(host, keyPair)
 
         @JvmStatic
         @JvmOverloads
-        fun list(host: String = "localhost", keyPair: AdbKeyPair? = AdbKeyPair.readDefault()): List<IAdb> {
+        fun list(
+            host: String = "localhost",
+            keyPair: AdbKeyPair? = AdbKeyPair.readDefault(),
+        ): List<IAdb> {
             val dadbs = AdbServer.listAdbs(adbServerHost = host)
             if (dadbs.isNotEmpty()) return dadbs
             return (MIN_EMULATOR_PORT..MAX_EMULATOR_PORT).mapNotNull { port ->
                 val dadb = create(host, port, keyPair)
-                val response = try {
-                    dadb.shell("echo success").allOutput
-                } catch (ignore: Throwable) {
-                    null
-                }
+                val response =
+                    try {
+                        dadb.shell("echo success").allOutput
+                    } catch (ignore: Throwable) {
+                        null
+                    }
                 if (response == "success\n") {
                     dadb
                 } else {
@@ -279,7 +320,10 @@ interface IAdb : AutoCloseable {
             }
         }
 
-        private fun waitRootOrClose(dadb: IAdb, root: Boolean) {
+        private fun waitRootOrClose(
+            dadb: IAdb,
+            root: Boolean,
+        ) {
             while (true) {
                 try {
                     val response = dadb.shell("getprop service.adb.root")
@@ -291,7 +335,10 @@ interface IAdb : AutoCloseable {
             }
         }
 
-        private fun restartAdb(dadb: IAdb, destination: String): String {
+        private fun restartAdb(
+            dadb: IAdb,
+            destination: String,
+        ): String {
             dadb.open(destination).use { stream ->
                 return stream.source.readUntil('\n'.code.toByte()).readString(Charsets.UTF_8)
             }
@@ -306,9 +353,8 @@ interface IAdb : AutoCloseable {
             }
         }
 
-        private fun readMode(file: File): Int {
-            return Files.getAttribute(file.toPath(), "unix:mode") as? Int
+        private fun readMode(file: File): Int =
+            Files.getAttribute(file.toPath(), "unix:mode") as? Int
                 ?: throw RuntimeException("Unable to read file mode")
-        }
     }
 }

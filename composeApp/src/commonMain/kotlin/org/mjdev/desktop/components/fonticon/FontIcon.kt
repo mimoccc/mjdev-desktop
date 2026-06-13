@@ -17,12 +17,12 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.icon.ShapedIcon
 import org.mjdev.desktop.components.text.AutoResizeText
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.interfaces.IFont
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -38,7 +38,7 @@ fun FontIcon(
     iconShape: Shape = CircleShape,
     contentDescription: String = "",
     onRightClick: () -> Unit = {},
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) = withDesktopContext {
     ShapedIcon(
         modifier = modifier,
@@ -54,11 +54,11 @@ fun FontIcon(
                 text = iconId.toChar().toString(),
                 color = iconColor,
                 fontFamily = (iconicFont ?: theme.iconSet).fontFamily,
-                minFontSize = (iconSize.height.value * 0.7).sp
+                minFontSize = (iconSize.height.value * 0.7).sp,
             )
         },
         onClick = onClick,
-        onRightClick = onRightClick
+        onRightClick = onRightClick,
     )
 }
 
@@ -75,7 +75,7 @@ fun FontIcon(
     outerPadding: PaddingValues = PaddingValues(2.dp),
     iconShape: Shape = CircleShape,
     onRightClick: () -> Unit = {},
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) = withDesktopContext {
     ShapedIcon(
         modifier = modifier,
@@ -95,26 +95,27 @@ fun FontIcon(
             )
         },
         onClick = onClick,
-        onRightClick = onRightClick
+        onRightClick = onRightClick,
     )
 }
 
 @Preview
 @Composable
-fun PreviewFontIcon() = preview {
-    Column {
+fun PreviewFontIcon() =
+    preview {
         Column {
-            FontIcon(iconId = 0)
-            FontIcon(iconName = "")
-            FontIcon(iconName = "tv")
-            FontIcon(iconName = "browser")
-        }
-        Spacer(modifier = Modifier.height(32.dp).fillMaxWidth())
-        Row {
-            FontIcon(iconId = 0)
-            FontIcon(iconName = "")
-            FontIcon(iconName = "tv")
-            FontIcon(iconName = "browser")
+            Column {
+                FontIcon(iconId = 0)
+                FontIcon(iconName = "")
+                FontIcon(iconName = "tv")
+                FontIcon(iconName = "browser")
+            }
+            Spacer(modifier = Modifier.height(32.dp).fillMaxWidth())
+            Row {
+                FontIcon(iconId = 0)
+                FontIcon(iconName = "")
+                FontIcon(iconName = "tv")
+                FontIcon(iconName = "browser")
+            }
         }
     }
-}

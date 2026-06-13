@@ -31,7 +31,7 @@ class GifImage(
         width: Int,
         height: Int,
         bufferOffset: Int,
-        stride: Int
+        stride: Int,
     ) {
         decoder.getFrame(currentFrame)?.readPixels(
             buffer,
@@ -40,11 +40,9 @@ class GifImage(
             width,
             height,
             bufferOffset,
-            stride
+            stride,
         )
     }
 
-    override fun toString(): String {
-        return "GifImage(src='$src')"
-    }
+    override fun toString(): String = "GifImage(src='$src')"
 }

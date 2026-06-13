@@ -26,17 +26,18 @@ interface IUserDirs {
         const val VIDEOS_DIR = "Videos"
         const val BACKGROUNDS_DIR = "Backgrounds"
 
-        val DEFAULT = object : IUserDirs {
-            override val homeDirectory: Path = "~".toPath()
-            override val desktopDirectory: Path = homeDirectory.resolve(DESKTOP_DIR)
-            override val downloadDirectory: Path = homeDirectory.resolve(DOWNLOAD_DIR)
-            override val templatesDirectory: Path = homeDirectory.resolve(TEMPLATES_DIR)
-            override val publicShareDirectory: Path = homeDirectory.resolve(PUBLICSHARE_DIR)
-            override val documentsDirectory: Path = homeDirectory.resolve(DOCUMENTS_DIR)
-            override val musicDirectory: Path = homeDirectory.resolve(MUSIC_DIR)
-            override val picturesDirectory: Path = homeDirectory.resolve(PICTURES_DIR)
-            override val videosDirectory: Path = homeDirectory.resolve(VIDEOS_DIR)
-            override val backgroundsDirectory: Path = homeDirectory.resolve(BACKGROUNDS_DIR)
-        }
+        val DEFAULT =
+            object : IUserDirs {
+                override val homeDirectory: Path = "~".toPath()
+                override val desktopDirectory: Path = homeDirectory.resolve(DESKTOP_DIR)
+                override val downloadDirectory: Path = homeDirectory.resolve(DOWNLOAD_DIR)
+                override val templatesDirectory: Path = homeDirectory.resolve(TEMPLATES_DIR)
+                override val publicShareDirectory: Path = homeDirectory.resolve(PUBLICSHARE_DIR)
+                override val documentsDirectory: Path = homeDirectory.resolve(DOCUMENTS_DIR)
+                override val musicDirectory: Path = homeDirectory.resolve(MUSIC_DIR)
+                override val picturesDirectory: Path = homeDirectory.resolve(PICTURES_DIR)
+                override val videosDirectory: Path = homeDirectory.resolve(VIDEOS_DIR)
+                override val backgroundsDirectory: Path = homeDirectory.resolve(BACKGROUNDS_DIR)
+            }
     }
 }

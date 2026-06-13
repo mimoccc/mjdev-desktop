@@ -21,19 +21,24 @@ actual class MaterialIconFont actual constructor(
 
     private val cache: MutableMap<String, Int> = mutableMapOf()
 
-    override fun iconForName(
-        iconName: String?,
-    ): Int? = runCatching {
-        if (iconName != null) {
-            if (cache.containsKey(iconName)) {
-                cache[iconName]
-            } else {
-                codePointsFile.icons.map { icon ->
-                    Pair(FuzzySearch.ratio(iconName, icon.key), icon)
-                }.maxByOrNull { it.first }?.second?.value?.also {
-                    cache[iconName] = it
+    override fun iconForName(iconName: String?): Int? =
+        runCatching {
+            if (iconName != null) {
+                if (cache.containsKey(iconName)) {
+                    cache[iconName]
+                } else {
+                    codePointsFile.icons
+                        .map { icon ->
+                            Pair(FuzzySearch.ratio(iconName, icon.key), icon)
+                        }.maxByOrNull { it.first }
+                        ?.second
+                        ?.value
+                        ?.also {
+                            cache[iconName] = it
+                        }
                 }
+            } else {
+                null
             }
-        } else null
-    }.getOrNull()
+        }.getOrNull()
 }

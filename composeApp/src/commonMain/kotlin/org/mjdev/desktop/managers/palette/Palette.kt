@@ -14,15 +14,15 @@ import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.extensions.Colors.SuperDarkGray
 import org.mjdev.desktop.extensions.Colors.darker
 import org.mjdev.desktop.extensions.Colors.isLightColor
 import org.mjdev.desktop.extensions.Colors.lighter
 import org.mjdev.desktop.extensions.Colors.nonAlphaValue
 import org.mjdev.desktop.extensions.ImageBitmapExt.loadPicture
-import org.mjdev.desktop.helpers.image.ImageUtils.topMostColor
-import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.extensions.cut
+import org.mjdev.desktop.helpers.image.ImageUtils.topMostColor
 
 @Suppress("CanBeParameter", "MemberVisibilityCanBePrivate", "unused")
 class Palette(
@@ -62,12 +62,20 @@ class Palette(
         get() = backgroundColor.isLightColor
 
     override val borderColor
-        get() = if (isLight) backgroundColor.darker(borderFactor)
-        else backgroundColor.lighter(borderFactor)
+        get() =
+            if (isLight) {
+                backgroundColor.darker(borderFactor)
+            } else {
+                backgroundColor.lighter(borderFactor)
+            }
 
     override val iconsTintColor
-        get() = if (textColor.isLightColor) textColor
-        else backgroundColor.lighter(textFactor)
+        get() =
+            if (textColor.isLightColor) {
+                textColor
+            } else {
+                backgroundColor.lighter(textFactor)
+            }
 
     override val baseColor
         get() = backgroundColor
@@ -77,8 +85,12 @@ class Palette(
 
     // todo
     override val selectedFgColor
-        get() = if (selectedBgColor.isLightColor) textColor
-        else backgroundColor
+        get() =
+            if (selectedBgColor.isLightColor) {
+                textColor
+            } else {
+                backgroundColor
+            }
 
     override val tooltipBgColor
         get() = backgroundColor
@@ -93,9 +105,7 @@ class Palette(
         get() = selectedFgColor
 
     // todo cutPartPercent to user prefs as precision
-    override fun update(
-        src: Any?
-    ) {
+    override fun update(src: Any?) {
         scope.launch(Dispatchers.Default) {
             context.loadPicture(src)?.let { image ->
                 val width = image.width
@@ -107,15 +117,20 @@ class Palette(
                 val rightTopPart = image.cut(width - cutWidth, 0, cutWidth, cutHeight)
                 val leftBottomPart = image.cut(0, height - cutHeight, cutWidth, cutHeight)
                 val rightBottomPart = image.cut(width - cutWidth, height - cutHeight, cutWidth, cutHeight)
-                val colors = PaletteColors(
-                    leftTopPart.topMostColor,
-                    rightTopPart.topMostColor,
-                    leftBottomPart.topMostColor,
-                    rightBottomPart.topMostColor,
-                )
+                val colors =
+                    PaletteColors(
+                        leftTopPart.topMostColor,
+                        rightTopPart.topMostColor,
+                        leftBottomPart.topMostColor,
+                        rightBottomPart.topMostColor,
+                    )
                 val background = colors.darkestColor
-                val text = if (isLight) backgroundColor.darker(textFactor)
-                else backgroundColor.lighter(textFactor)
+                val text =
+                    if (isLight) {
+                        backgroundColor.darker(textFactor)
+                    } else {
+                        backgroundColor.lighter(textFactor)
+                    }
                 backgroundColorState.value = background
                 textColorState.value = text
             }
@@ -125,11 +140,9 @@ class Palette(
 
     override fun dispose() = clearSystemTheme()
 
-    fun createFromPalette() =
-        context.themeManager.createFromPalette()
+    fun createFromPalette() = context.themeManager.createFromPalette()
 
-    fun clearSystemTheme() =
-        context.themeManager.clearSystemTheme()
+    fun clearSystemTheme() = context.themeManager.clearSystemTheme()
 
     data class PaletteColors(
         val leftTopDominantColor: Color,
@@ -137,15 +150,15 @@ class Palette(
         val leftBottomDominantColor: Color,
         val rightBottomDominantColor: Color,
     ) {
-        fun toList(): List<Color> = listOf(
-            leftTopDominantColor,
-            rightTopDominantColor,
-            leftBottomDominantColor,
-            rightBottomDominantColor
-        )
+        fun toList(): List<Color> =
+            listOf(
+                leftTopDominantColor,
+                rightTopDominantColor,
+                leftBottomDominantColor,
+                rightBottomDominantColor,
+            )
 
         val darkestColor: Color get() = toList().minBy { c -> c.nonAlphaValue }
         val lightestColor: Color get() = toList().maxBy { c -> c.nonAlphaValue }
     }
-
 }

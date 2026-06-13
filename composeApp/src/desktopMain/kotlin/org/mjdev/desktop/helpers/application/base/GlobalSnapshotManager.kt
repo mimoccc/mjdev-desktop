@@ -8,7 +8,6 @@
 
 package org.mjdev.desktop.helpers.application.base
 
-import java.util.concurrent.atomic.AtomicLong
 import androidx.compose.runtime.snapshots.Snapshot
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +15,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import org.jetbrains.skiko.MainUIDispatcher
+import java.util.concurrent.atomic.AtomicLong
 
 val GlobalSnapshotManagerDispatcher: CoroutineDispatcher = MainUIDispatcher
 

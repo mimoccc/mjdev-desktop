@@ -35,10 +35,10 @@ fun DesktopWindow(
                 window?.toBack()
                 window?.isFocusable = false
             }
-        }
+        },
     ) {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
             content()
         }

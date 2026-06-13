@@ -17,7 +17,7 @@ import java.awt.event.KeyEvent.VK_TAB
 import java.awt.event.KeyEvent as AwtKeyEvent
 
 class GlobalKeyListener(
-    val onEvent: (event: AwtKeyEvent) -> Unit
+    val onEvent: (event: AwtKeyEvent) -> Unit,
 ) : AWTEventListener {
     init {
         Toolkit.getDefaultToolkit().addAWTEventListener(this, AWTEvent.KEY_EVENT_MASK)
@@ -46,9 +46,10 @@ class GlobalKeyListener(
         ) {
             DisposableEffect(Unit) {
                 val handler = KeyEventHandler(isEnabled, block)
-                val globalHandler = GlobalKeyListener { event ->
-                    handler.onEvent(event)
-                }
+                val globalHandler =
+                    GlobalKeyListener { event ->
+                        handler.onEvent(event)
+                    }
                 onDispose {
                     globalHandler.dispose()
                 }

@@ -36,11 +36,9 @@ data class WifiNetwork(
     val isActive: Boolean = ParsedBoolean(data.getOrNull(20).orEmpty()),
     val isInUse: Boolean = ParsedBoolean(data.getOrNull(21).orEmpty()),
     val dbusPath: String = data.getOrNull(17).orEmpty(),
-    val password: String = ""
+    val password: String = "",
 ) {
-    override fun hashCode(): Int {
-        return ssid.hashCode()
-    }
+    override fun hashCode(): Int = ssid.hashCode()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

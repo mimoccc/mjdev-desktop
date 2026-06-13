@@ -23,9 +23,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.image.BrokenImage
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo
 @Composable
@@ -38,7 +38,7 @@ fun PhotoImage(
         ImageAny(
             modifier = modifier,
             src = BrokenImage,
-            contentScale = contentScale
+            contentScale = contentScale,
         )
     },
     alpha: Float = DefaultAlpha,
@@ -58,13 +58,15 @@ fun PhotoImage(
     } else {
         ImageAny(
             src = src,
-            modifier = modifier.border(
-                BorderStroke(borderSize, borderColor),
-                shape
-            ).background(
-                backgroundColor,
-                shape
-            ).alpha(alpha),
+            modifier =
+                modifier
+                    .border(
+                        BorderStroke(borderSize, borderColor),
+                        shape,
+                    ).background(
+                        backgroundColor,
+                        shape,
+                    ).alpha(alpha),
             alignment = alignment,
             contentScale = contentScale,
             alpha = alpha,
@@ -73,7 +75,7 @@ fun PhotoImage(
             placeholder = placeholder,
             contentDescription = contentDescription,
             onLoading = {},
-            onFail = {}
+            onFail = {},
         )
 //        GlideImage(
 //            imageModel = { src },
@@ -127,6 +129,7 @@ fun PhotoImage(
 
 @Preview
 @Composable
-fun PreviewPhotoImage() = preview {
-    PhotoImage()
-}
+fun PreviewPhotoImage() =
+    preview {
+        PhotoImage()
+    }

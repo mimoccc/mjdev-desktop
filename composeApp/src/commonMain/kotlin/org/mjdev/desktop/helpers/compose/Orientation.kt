@@ -6,9 +6,9 @@
  *  w: https://mjdev.org
  */
 
-package org.mjdev.desktop.helpers.compose;
+package org.mjdev.desktop.helpers.compose
 
 enum class Orientation {
     Vertical,
-    Horizontal
+    Horizontal,
 }

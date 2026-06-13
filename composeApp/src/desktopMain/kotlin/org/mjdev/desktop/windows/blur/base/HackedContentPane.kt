@@ -5,7 +5,7 @@ import javax.swing.JPanel
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class HackedContentPane(
-    val window: JFrame?
+    val window: JFrame?,
 ) : JPanel() {
 //    val glassPanel = GlassPanel(window)
 //    var blurImage: BufferedImage? = null

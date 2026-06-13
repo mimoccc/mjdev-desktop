@@ -14,22 +14,21 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 object MutableStateExt {
-
     @Composable
     fun <T> rememberDerivedState(
         key: Any? = Unit,
         initialValue: T,
-        block: suspend () -> T
+        block: suspend () -> T,
     ) = produceStateInCoroutine(initialValue, key, block)
 
     @Composable
     fun <T> produceStateInCoroutine(
         initialValue: T,
         key: Any? = null,
-        block: suspend () -> T
+        block: suspend () -> T,
     ) = produceState(
         initialValue = initialValue,
-        key1 = key
+        key1 = key,
     ) {
         withContext(Dispatchers.Default) {
             value = block()
@@ -39,19 +38,19 @@ object MutableStateExt {
     @Composable
     fun <T> rememberState(
         value: T,
-        policy: SnapshotMutationPolicy<T> = structuralEqualityPolicy()
+        policy: SnapshotMutationPolicy<T> = structuralEqualityPolicy(),
     ) = remember { mutableStateOf(value, policy) }
 
     @Composable
     fun <T> rememberCalculated(
         vararg key: Any?,
-        calculation: () -> T
+        calculation: () -> T,
     ) = remember(*key) { derivedStateOf { calculation() } }
 
     @Composable
     fun <T> rememberComputed(
         vararg key: Any?,
-        calculation: () -> T
+        calculation: () -> T,
     ) = remember(*key) { derivedStateOf { calculation() } }
 
     fun MutableState<String>.clear() {
@@ -74,9 +73,8 @@ object MutableStateExt {
         value = !value
     }
 
-    fun <T> mutableStateListFlow(
-        function: (List<T>) -> List<T>
-    ) = MutableStateFlow<List<T>>(emptyList()).apply {
-        update(function)
-    }
+    fun <T> mutableStateListFlow(function: (List<T>) -> List<T>) =
+        MutableStateFlow<List<T>>(emptyList()).apply {
+            update(function)
+        }
 }

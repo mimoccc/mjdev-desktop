@@ -8,13 +8,13 @@
 
 package org.mjdev.desktop.managers.ai.stt
 
-import org.mjdev.desktop.managers.ai.stt.base.STTPlugin
-import org.mjdev.desktop.managers.ai.stt.base.STTListener
 import org.mjdev.desktop.context.IDesktopContext
+import org.mjdev.desktop.managers.ai.stt.base.STTListener
+import org.mjdev.desktop.managers.ai.stt.base.STTPlugin
 
 @Suppress("UNUSED_PARAMETER")
 class STTPluginEmpty(
-    context: IDesktopContext
+    context: IDesktopContext,
 ) : STTPlugin {
     override val listeners: List<STTListener> = mutableListOf()
 }

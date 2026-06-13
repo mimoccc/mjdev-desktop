@@ -9,11 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import org.mjdev.desktop.components.controlcenter.base.ControlCenterPageScope.Companion.withControlCenterPageScope
-import org.mjdev.desktop.interfaces.IControlCenterPageDataSaver
-import org.mjdev.desktop.context.IDesktopContext
-import org.mjdev.desktop.interfaces.IPage
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.components.controlcenter.base.ControlCenterPageScope.Companion.withControlCenterPageScope
+import org.mjdev.desktop.context.IDesktopContext
+import org.mjdev.desktop.interfaces.IControlCenterPageDataSaver
+import org.mjdev.desktop.interfaces.IPage
 
 @Suppress("MemberVisibilityCanBePrivate")
 class ControlCenterPage(
@@ -33,10 +33,10 @@ class ControlCenterPage(
     override fun Render() {
         withControlCenterPageScope(cache) {
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             ) {
                 PageHeader(
-                    page = this@ControlCenterPage
+                    page = this@ControlCenterPage,
                 )
                 Box(
                     modifier = Modifier.weight(1f),

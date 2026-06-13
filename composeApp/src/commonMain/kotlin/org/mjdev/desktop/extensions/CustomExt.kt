@@ -6,20 +6,19 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
-import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.TimeZone.Companion.currentSystemDefault
+import kotlinx.datetime.toLocalDateTime
 import org.mjdev.desktop.extensions.System.currentTime
+import org.mjdev.desktop.helpers.generic.JsonHelper.fromJson
+import org.mjdev.desktop.helpers.generic.JsonHelper.toJson
 import org.mjdev.desktop.log.Log
 import kotlin.coroutines.suspendCoroutine
 import kotlin.time.ExperimentalTime
-import org.mjdev.desktop.helpers.generic.JsonHelper.toJson
-import org.mjdev.desktop.helpers.generic.JsonHelper.fromJson
 
 @OptIn(ExperimentalTime::class)
 @Suppress("unused")
 object CustomExt {
-
-//    fun runSafe(
+    //    fun runSafe(
 //        shouldLog: Boolean = true,
 //        block: () -> Unit
 //    ) = runCatching {
@@ -32,8 +31,14 @@ object CustomExt {
 
     private fun Instant.formatDate(): String {
         val localDateTime = toLocalDateTime(currentSystemDefault())
-        val day = localDateTime.date.dayOfMonth.toString().padStart(2, '0')
-        val month = localDateTime.date.monthNumber.toString().padStart(2, '0')
+        val day =
+            localDateTime.date.dayOfMonth
+                .toString()
+                .padStart(2, '0')
+        val month =
+            localDateTime.date.monthNumber
+                .toString()
+                .padStart(2, '0')
         val year = localDateTime.date.year.toString()
         return "$day.$month.$year"
     }
@@ -49,38 +54,40 @@ object CustomExt {
 
     val dateFlow
         @Composable
-        get() = channelFlow {
-            launch {
-                var date = "1.1.1970"
-                do {
-                    // todo
-                    currentTime.formatDate().also { t ->
-                        if (date != t) {
-                            date = t
-                            send(date)
+        get() =
+            channelFlow {
+                launch {
+                    var date = "1.1.1970"
+                    do {
+                        // todo
+                        currentTime.formatDate().also { t ->
+                            if (date != t) {
+                                date = t
+                                send(date)
+                            }
                         }
-                    }
-                    delay(5000L)
-                } while (true)
-            }
-        }.collectAsState(initial = "")
+                        delay(5000L)
+                    } while (true)
+                }
+            }.collectAsState(initial = "")
 
     val timeFlow
         @Composable
-        get() = channelFlow {
-            launch {
-                var time = "00:00:00"
-                do {
-                    currentTime.formatTime().also { t ->
-                        if (time != t) {
-                            time = t
-                            send(time)
+        get() =
+            channelFlow {
+                launch {
+                    var time = "00:00:00"
+                    do {
+                        currentTime.formatTime().also { t ->
+                            if (time != t) {
+                                time = t
+                                send(time)
+                            }
                         }
-                    }
-                    delay(200L)
-                } while (true)
-            }
-        }.collectAsState(initial = "")
+                        delay(200L)
+                    } while (true)
+                }
+            }.collectAsState(initial = "")
 
     //    inline fun <T, K> distinctList(
 //        vararg lists: List<T>,
@@ -113,35 +120,37 @@ object CustomExt {
 //        ignoreCase: Boolean = false
 //    ) = !trim().startsWith(prefix, ignoreCase)
 
-    suspend fun <T : Any> getAsync(
-        block: () -> T
-    ): T = suspendCoroutine { continuation ->
-        runCatching {
-            block()
-        }.onSuccess { result ->
-            continuation.resumeWith(Result.success(result))
-        }.onFailure { e ->
-            continuation.resumeWith(Result.failure(e))
+    suspend fun <T : Any> getAsync(block: () -> T): T =
+        suspendCoroutine { continuation ->
+            runCatching {
+                block()
+            }.onSuccess { result ->
+                continuation.resumeWith(Result.success(result))
+            }.onFailure { e ->
+                continuation.resumeWith(Result.failure(e))
+            }
         }
-    }
 
-    inline fun <reified T> String.jsonToList(): List<T> = runCatching {
-        fromJson<List<T>>(this)
-    }.onFailure { err ->
-        Log.e(err)
-    }.getOrNull() ?: emptyList()
+    inline fun <reified T> String.jsonToList(): List<T> =
+        runCatching {
+            fromJson<List<T>>(this)
+        }.onFailure { err ->
+            Log.e(err)
+        }.getOrNull() ?: emptyList()
 
-    inline fun <reified T> String.to(): T? = runCatching {
-        fromJson<T>(this)
-    }.onFailure { err ->
-        Log.e(err)
-    }.getOrNull()
+    inline fun <reified T> String.to(): T? =
+        runCatching {
+            fromJson<T>(this)
+        }.onFailure { err ->
+            Log.e(err)
+        }.getOrNull()
 
-    inline fun <reified T> T.asJson(): String = runCatching {
-        toJson()
-    }.onFailure { err ->
-        Log.e(err)
-    }.getOrDefault("")
+    inline fun <reified T> T.asJson(): String =
+        runCatching {
+            toJson()
+        }.onFailure { err ->
+            Log.e(err)
+        }.getOrDefault("")
 
 //    @ExperimentalSerializationApi
 //    class DynamicLookupSerializer : KSerializer<Any> {
@@ -178,5 +187,4 @@ object CustomExt {
 //            error("Unsupported")
 //        }
 //    }
-
 }

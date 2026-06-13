@@ -6,7 +6,7 @@
  *  w: https://mjdev.org
  */
 
-//<editor-fold desc="imports">----------------------------------------------------------------------
+// <editor-fold desc="imports">----------------------------------------------------------------------
 
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.desktop.DesktopExtension
@@ -18,9 +18,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithPresetFunctions
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
-//</editor-fold>------------------------------------------------------------------------------------
+// </editor-fold>------------------------------------------------------------------------------------
 
-//<editor-fold desc="plugins">----------------------------------------------------------------------
+// <editor-fold desc="plugins">----------------------------------------------------------------------
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -31,49 +31,43 @@ plugins {
 //    alias(libs.plugins.devtools.ksp)
 }
 
-//</editor-fold>------------------------------------------------------------------------------------
+// </editor-fold>------------------------------------------------------------------------------------
 
-//<editor-fold desc="helpers">----------------------------------------------------------------------
+// <editor-fold desc="helpers">----------------------------------------------------------------------
 
-fun NamedDomainObjectContainer<KotlinSourceSet>.getOrCreate(
-    name: String
-): KotlinSourceSet = findByName(name) ?: create(name)
+fun NamedDomainObjectContainer<KotlinSourceSet>.getOrCreate(name: String): KotlinSourceSet = findByName(name) ?: create(name)
 
-fun NamedDomainObjectContainer<KotlinSourceSet>.desktopMain(
-    block: KotlinSourceSet.() -> Unit = {}
-): KotlinSourceSet = getOrCreate("desktopMain").apply(block)
+fun NamedDomainObjectContainer<KotlinSourceSet>.desktopMain(block: KotlinSourceSet.() -> Unit = {}): KotlinSourceSet =
+    getOrCreate("desktopMain").apply(block)
 
-fun KotlinTargetContainerWithPresetFunctions.desktopTarget(
-    configure: Action<KotlinJvmTarget>
-) = jvm("desktop").apply {
-    configure.execute(this)
-}
+fun KotlinTargetContainerWithPresetFunctions.desktopTarget(configure: Action<KotlinJvmTarget>) =
+    jvm("desktop").apply {
+        configure.execute(this)
+    }
 
 val Project.compose: ComposeExtension
     get() = extensions.getByType()
 
-fun Project.desktop(
-    config: DesktopExtension.() -> Unit
-) = compose.desktop(config)
+fun Project.desktop(config: DesktopExtension.() -> Unit) = compose.desktop(config)
 
-fun Project.composeResources(
-    config: ResourcesExtension.() -> Unit
-) = compose.resources(config)
+fun Project.composeResources(config: ResourcesExtension.() -> Unit) = compose.resources(config)
 
-fun targets(
-    config: Action<KotlinMultiplatformExtension>
-) = kotlin(config)
+fun targets(config: Action<KotlinMultiplatformExtension>) = kotlin(config)
 
-//</editor-fold>------------------------------------------------------------------------------------
+// </editor-fold>------------------------------------------------------------------------------------
 
-//<editor-fold desc="configurations">---------------------------------------------------------------
+// <editor-fold desc="configurations">---------------------------------------------------------------
 
 // java version
 setJavaLanguageVersion(libs.versions.java.language.version)
 
 // kotlin toolchain java version
 kotlin {
-    jvmToolchain(libs.versions.java.language.version.get().toInt())
+    jvmToolchain(
+        libs.versions.java.language.version
+            .get()
+            .toInt(),
+    )
 }
 
 // resources config
@@ -85,8 +79,12 @@ composeResources {
 
 // setup vlc plugin configuration
 vlcSetup {
-    val appVlcDir: String = libs.versions.vlc.dir.get()
-    val appVlcVersion: String = libs.versions.vlc.version.get()
+    val appVlcDir: String =
+        libs.versions.vlc.dir
+            .get()
+    val appVlcVersion: String =
+        libs.versions.vlc.version
+            .get()
     vlcVersion.set(appVlcVersion)
     shouldCompressVlcFiles = true
     shouldIncludeAllVlcFiles = false
@@ -95,9 +93,9 @@ vlcSetup {
 //        pathToCopyVlcWindowsFilesTo = rootDir.resolve(appVlcDir)
 }
 
-//</editor-fold>------------------------------------------------------------------------------------
+// </editor-fold>------------------------------------------------------------------------------------
 
-//<editor-fold desc="targets">----------------------------------------------------------------------
+// <editor-fold desc="targets">----------------------------------------------------------------------
 
 targets {
     desktopTarget {
@@ -110,9 +108,9 @@ targets {
     }
 }
 
-//</editor-fold>------------------------------------------------------------------------------------
+// </editor-fold>------------------------------------------------------------------------------------
 
-//<editor-fold desc="source sets / dependencies">---------------------------------------------------
+// <editor-fold desc="source sets / dependencies">---------------------------------------------------
 
 kotlin {
 //    linuxX64 {
@@ -235,7 +233,7 @@ kotlin {
                 // notification
                 // implementation("io.github.shadmanadman:knotif:0.56.0")
                 // sensors
-                //implementation("io.github.shadmanadman:KSensor:0.59.0")
+                // implementation("io.github.shadmanadman:KSensor:0.59.0")
                 // locale
 //            implementation(libs.i18n4k)
                 // anims kottie
@@ -280,7 +278,7 @@ kotlin {
                 // permissions
                 implementation(libs.accompanist.permissions)
                 // sensors
-                //implementation("io.github.shadmanadman:KSensor:0.59.0")
+                // implementation("io.github.shadmanadman:KSensor:0.59.0")
                 // adb
                 // implementation("dev.mobile:dadb:1.2.10")
             }
@@ -320,25 +318,45 @@ kotlin {
     }
 }
 
-//</editor-fold>------------------------------------------------------------------------------------
+// </editor-fold>------------------------------------------------------------------------------------
 
-//<editor-fold desc="platforms">--------------------------------------------------------------------
+// <editor-fold desc="platforms">--------------------------------------------------------------------
 
 // android app config
 android {
     namespace = "org.mjdev.desktop"
-    compileSdk = libs.versions.android.compile.sdk.get().toInt()
+    compileSdk =
+        libs.versions.android.compile.sdk
+            .get()
+            .toInt()
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
     sourceSets["main"].resources.srcDirs("src/commonMain/composeResources")
     sourceSets["main"].assets.srcDirs("src/commonMain/resources")
     defaultConfig {
         applicationId = "org.mjdev.desktop"
-        minSdk = libs.versions.android.min.sdk.get().toInt()
-        targetSdk = libs.versions.android.target.sdk.get().toInt()
-        versionCode = libs.versions.app.pkg.version.get().replace(".", "").toInt()
-        versionName = libs.versions.app.pkg.version.get()
-        resValue("string", "app_name", libs.versions.app.name.get())
+        minSdk =
+            libs.versions.android.min.sdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.android.target.sdk
+                .get()
+                .toInt()
+        versionCode =
+            libs.versions.app.pkg.version
+                .get()
+                .replace(".", "")
+                .toInt()
+        versionName =
+            libs.versions.app.pkg.version
+                .get()
+        resValue(
+            "string",
+            "app_name",
+            libs.versions.app.name
+                .get(),
+        )
     }
     packaging {
         resources {
@@ -374,16 +392,28 @@ android {
 
 // desktop app config
 desktop {
-    group = libs.versions.app.pkg.name.get()
-    version = libs.versions.app.pkg.version.get()
+    group =
+        libs.versions.app.pkg.name
+            .get()
+    version =
+        libs.versions.app.pkg.version
+            .get()
     application {
         jvmArgs("-Dprism.order=sw")
         mainClass = "org.mjdev.desktop.main.MainKt"
         nativeDistributions {
-            packageName = libs.versions.app.name.get()
-            packageVersion = libs.versions.app.pkg.version.get()
-            description = libs.versions.app.description.get()
-            copyright = libs.versions.app.copyright.get()
+            packageName =
+                libs.versions.app.name
+                    .get()
+            packageVersion =
+                libs.versions.app.pkg.version
+                    .get()
+            description =
+                libs.versions.app.description
+                    .get()
+            copyright =
+                libs.versions.app.copyright
+                    .get()
             outputBaseDir.set(project.rootDir.resolve("packages"))
 //                macOS {
 //                    iconFile.set(project.rootDir.resolve("icons").resolve("icon.icns"))
@@ -404,26 +434,38 @@ desktop {
 //                            .resolve("icon.png")
 //                    )
 //                    licenseFile.set(project.rootDir.resolve("LICENSE.txt"))
-                appCategory = libs.versions.app.category.get()
-                debMaintainer = libs.versions.app.maintainer.get()
-                menuGroup = libs.versions.app.menu.group.get()
-                vendor = libs.versions.app.vendor.get()
+                appCategory =
+                    libs.versions.app.category
+                        .get()
+                debMaintainer =
+                    libs.versions.app.maintainer
+                        .get()
+                menuGroup =
+                    libs.versions.app.menu.group
+                        .get()
+                vendor =
+                    libs.versions.app.vendor
+                        .get()
             }
             targetFormats(
 //                TargetFormat.Dmg,
 //                TargetFormat.Msi,
                 TargetFormat.Deb,
-//                TargetFormat.Exe,
+                TargetFormat.Exe, // Windows installer — only built when running on a Windows host
                 TargetFormat.AppImage,
 //                TargetFormat.Pkg,
-                TargetFormat.Rpm
+                TargetFormat.Rpm,
             )
             buildTypes.release.proguard {
                 configurationFiles.from("composeApp.pro")
+                // The optimization pass can't resolve the class hierarchy of optional
+                // transitive deps (e.g. netty's Log4J2Logger -> log4j2, absent at runtime),
+                // throwing IncompleteClassHierarchyException. Shrinking + obfuscation stay on.
+                optimize.set(false)
             }
 //            appResourcesRootDir.set(project.rootDir.resolve("resources"))
         }
     }
 }
 
-//</editor-fold>------------------------------------------------------------------------------------
+// </editor-fold>------------------------------------------------------------------------------------

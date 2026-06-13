@@ -12,21 +12,20 @@ package org.mjdev.desktop.managers.ai.actions.base
 open class ActionException(
     message: String = "",
     t: Throwable? = null,
-    val isError: Boolean = false
+    val isError: Boolean = false,
 ) : Exception(message, t) {
-
     object ActionNone : ActionException(
-        isError = false
+        isError = false,
     )
 
     class ActionSuccess(
         message: String = "",
-        t: Throwable? = null
+        t: Throwable? = null,
     ) : ActionException(message, t, isError = false)
 
     class ActionFail(
         message: String = "",
-        t: Throwable? = null
+        t: Throwable? = null,
     ) : ActionException(message, t, true) {
         constructor(t: Throwable) : this(t.message ?: "Error", t)
     }

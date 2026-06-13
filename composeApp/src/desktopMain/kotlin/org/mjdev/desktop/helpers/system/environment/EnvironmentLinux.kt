@@ -2,9 +2,10 @@ package org.mjdev.desktop.helpers.system.environment
 
 import org.mjdev.desktop.managers.theme.linux.ThemeManagerLinux.Companion.THEME_MJDEV
 
-class EnvironmentLinux : EnvironmentStub(
-    getenv = { System.getenv() }
-) {
+class EnvironmentLinux :
+    EnvironmentStub(
+        getenv = { System.getenv() },
+    ) {
     init {
         data[DBUS_SESSION_BUS_ADDRESS] = DBUS_SESSION_BUS_ADDRESS_DEFAULT
         data[XDG_CURRENT_DESKTOP] = DESKTOP_UBUNTU_GNOME

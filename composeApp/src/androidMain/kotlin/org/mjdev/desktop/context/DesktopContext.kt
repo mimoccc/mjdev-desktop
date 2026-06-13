@@ -17,34 +17,34 @@ import org.mjdev.desktop.data.User
 import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.helpers.image.ImageLoader.asyncImageLoader
 import org.mjdev.desktop.interfaces.IApp
-import org.mjdev.desktop.managers.apps.IAppsManager
-import org.mjdev.desktop.managers.connectivity.IConnectivityManager
 import org.mjdev.desktop.interfaces.ILocale
-import org.mjdev.desktop.managers.palette.IPalette
-import org.mjdev.desktop.managers.process.IProcessManager
 import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
-import org.mjdev.desktop.managers.language.Translator
 import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.ai.AiManager
 import org.mjdev.desktop.managers.ai.IAiManager
-import org.mjdev.desktop.managers.os.IOSManager
-import org.mjdev.desktop.managers.theme.IThemeManager
-import org.mjdev.desktop.managers.translations.ITranslator
 import org.mjdev.desktop.managers.ai.plugins.AiPluginGemini
 import org.mjdev.desktop.managers.ai.plugins.AiPluginOpenAi
 import org.mjdev.desktop.managers.ai.stt.STTPluginEmpty
 import org.mjdev.desktop.managers.ai.tts.TTSPluginAndroid
+import org.mjdev.desktop.managers.apps.AppsManager
+import org.mjdev.desktop.managers.apps.IAppsManager
 import org.mjdev.desktop.managers.base.IDelegate
 import org.mjdev.desktop.managers.connectivity.ConnectivityManager
-import org.mjdev.desktop.managers.os.OsManager
-import org.mjdev.desktop.managers.processes.ProcessManager
-import kotlin.reflect.KClass
-import org.mjdev.desktop.managers.apps.AppsManager
+import org.mjdev.desktop.managers.connectivity.IConnectivityManager
 import org.mjdev.desktop.managers.keys.IKeyManager
 import org.mjdev.desktop.managers.keys.KeysManager
+import org.mjdev.desktop.managers.language.Translator
+import org.mjdev.desktop.managers.os.IOSManager
+import org.mjdev.desktop.managers.os.OsManager
+import org.mjdev.desktop.managers.palette.IPalette
 import org.mjdev.desktop.managers.palette.Palette
+import org.mjdev.desktop.managers.process.IProcessManager
+import org.mjdev.desktop.managers.processes.ProcessManager
+import org.mjdev.desktop.managers.theme.IThemeManager
 import org.mjdev.desktop.managers.theme.ThemeManager
+import org.mjdev.desktop.managers.translations.ITranslator
+import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -54,9 +54,8 @@ class DesktopContext(
     override val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     override val imageLoader: ImageLoader? = null,
     val isInDesign: Boolean = false,
-    override val platformContext: PlatformContext? = null
+    override val platformContext: PlatformContext? = null,
 ) : IDesktopContext() {
-
     val androidContext
         get() = context
 
@@ -88,16 +87,19 @@ class DesktopContext(
     override val favoriteApps: List<IApp>
         get() = appsManager.favoriteApps
 
-    override val containerSize: DpSize = androidContext?.resources
-        ?.displayMetrics
-        ?.let { dm ->
-            DpSize(dm.widthPixels.dp, dm.heightPixels.dp)
-        } ?: DpSize(1024.dp, 640.dp)
+    override val containerSize: DpSize =
+        androidContext
+            ?.resources
+            ?.displayMetrics
+            ?.let { dm ->
+                DpSize(dm.widthPixels.dp, dm.heightPixels.dp)
+            } ?: DpSize(1024.dp, 640.dp)
 
     val allUsers
-        get() = runCatching {
-            User.allUsers(this)
-        }.getOrNull() ?: emptyList()
+        get() =
+            runCatching {
+                User.allUsers(this)
+            }.getOrNull() ?: emptyList()
 
     override suspend fun logOut() {
     }
@@ -114,38 +116,42 @@ class DesktopContext(
     override suspend fun open(what: Any?) {
     }
 
-    override suspend fun login(uName: String, uPasswd: String): Boolean {
-        return false
-    }
+    override suspend fun login(
+        uName: String,
+        uPasswd: String,
+    ): Boolean = false
 
-    override suspend fun logout(): Boolean {
-        return false
-    }
+    override suspend fun logout(): Boolean = false
 
     override fun dispose() {
     }
 
-    override fun createManager(cls: KClass<*>): IDelegate = when (cls) {
-        IOSManager::class -> OsManager(this)
-        IPalette::class -> Palette(this)
-        ITranslator::class -> Translator(this)
-        IConnectivityManager::class -> ConnectivityManager(this)
-        IAiManager::class -> AiManager(
-            context = this,
-            // todo user can configure
-            pluginAI = AiPluginOpenAi(this@DesktopContext),
-            pluginTTS = TTSPluginAndroid(this@DesktopContext),
-            pluginSTT = STTPluginEmpty(this@DesktopContext)
-        )
+    override fun createManager(cls: KClass<*>): IDelegate =
+        when (cls) {
+            IOSManager::class -> OsManager(this)
+            IPalette::class -> Palette(this)
+            ITranslator::class -> Translator(this)
+            IConnectivityManager::class -> ConnectivityManager(this)
+            IAiManager::class ->
+                AiManager(
+                    context = this,
+                    // todo user can configure
+                    pluginAI = AiPluginOpenAi(this@DesktopContext),
+                    pluginTTS = TTSPluginAndroid(this@DesktopContext),
+                    pluginSTT = STTPluginEmpty(this@DesktopContext),
+                )
 
-        IAppsManager::class -> AppsManager(this)
-        IThemeManager::class -> ThemeManager(this)
-        IProcessManager::class -> ProcessManager(this)
-        IKeyManager::class -> KeysManager(this)
-        else -> cls.companionObject?.members?.first {
-            it.name == "EMPTY"
-        }?.call() as IDelegate
-    }
+            IAppsManager::class -> AppsManager(this)
+            IThemeManager::class -> ThemeManager(this)
+            IProcessManager::class -> ProcessManager(this)
+            IKeyManager::class -> KeysManager(this)
+            else ->
+                cls.companionObject
+                    ?.members
+                    ?.first {
+                        it.name == "EMPTY"
+                    }?.call() as IDelegate
+        }
 
     companion object {
         @Composable
@@ -163,7 +169,7 @@ class DesktopContext(
                 scope = scope,
                 imageLoader = imageLoader,
                 isInDesign = isInDesign,
-                platformContext = platformContext
+                platformContext = platformContext,
             )
         }
     }

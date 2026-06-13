@@ -9,5 +9,5 @@
 package org.mjdev.desktop.data
 
 data class BthDevice(
-    val name:String = ""
+    val name: String = "",
 )

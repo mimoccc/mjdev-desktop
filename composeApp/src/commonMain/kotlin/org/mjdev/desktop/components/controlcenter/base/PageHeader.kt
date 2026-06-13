@@ -22,15 +22,15 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.appbar.AppBar
 import org.mjdev.desktop.components.image.ImageAny
 import org.mjdev.desktop.components.text.TextAny
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.mjdev.desktop.context.LocalDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.circleBorder
 import org.mjdev.desktop.extensions.Modifier.clipCircle
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.mjdev.desktop.context.LocalDesktopContext
 
 @Composable
 fun PageHeader(
@@ -42,21 +42,25 @@ fun PageHeader(
 ) = withDesktopContext {
     if (page.showHeader) {
         AppBar(
-            modifier = modifier.fillMaxWidth()
-                .wrapContentHeight()
-                .background(backgroundColor),
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .background(backgroundColor),
             contentPadding = contentPadding,
             icon = {
                 Box(
-                    modifier = Modifier.size(iconSize + 4.dp)
-                        .circleBorder(2.dp, textColor)
-                        .padding(4.dp)
+                    modifier =
+                        Modifier
+                            .size(iconSize + 4.dp)
+                            .circleBorder(2.dp, textColor)
+                            .padding(4.dp),
                 ) {
                     ImageAny(
                         modifier = Modifier.size(iconSize).background(backgroundColor).clipCircle(),
                         src = page.icon,
                         colorFilter = ColorFilter.tint(textColor),
-                        contentDescription = ""
+                        contentDescription = "",
                     )
                 }
             },
@@ -65,18 +69,19 @@ fun PageHeader(
                     modifier = Modifier.fillMaxWidth().padding(start = 16.dp),
                     text = page.name,
                     color = textColor,
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
                 )
             },
-            actions = actions
+            actions = actions,
         )
     }
 }
 
 @Preview
 @Composable
-fun PreviewPageHeader() = preview {
-    PageHeader(
-        page = ControlCenterPage(context)
-    )
-}
+fun PreviewPageHeader() =
+    preview {
+        PageHeader(
+            page = ControlCenterPage(context),
+        )
+    }

@@ -5,5 +5,5 @@ import kotlin.jvm.JvmField
 
 class GifFrame(
     @JvmField val image: ImageBitmap?,
-    @JvmField val delay: Int
+    @JvmField val delay: Int,
 )

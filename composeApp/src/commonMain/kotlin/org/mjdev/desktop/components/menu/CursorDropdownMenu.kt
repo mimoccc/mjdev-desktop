@@ -11,10 +11,10 @@ fun CursorDropdownMenu(
     modifier: Modifier = Modifier,
     expanded: Boolean = false,
     onDismissRequest: () -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) = AnimatedVisibility(
     visible = expanded,
-    modifier = modifier
+    modifier = modifier,
 ) {
     content()
 }

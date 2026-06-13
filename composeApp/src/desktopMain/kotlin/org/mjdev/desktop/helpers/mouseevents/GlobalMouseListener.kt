@@ -18,23 +18,24 @@ import java.awt.Point
 class GlobalMouseListener(
     val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     val delay: Long = 200L,
-    val onEvent: (event: Point) -> Unit
+    val onEvent: (event: Point) -> Unit,
 ) {
     private var job: Job? = null
     private var lastPoint: Point? = null
 
     init {
-        job = scope.launch {
-            while (isActive) {
-                MouseInfo.getPointerInfo().location.also { point ->
-                    if (!point.equals(lastPoint)) {
-                        lastPoint = point
-                        onEvent(point)
+        job =
+            scope.launch {
+                while (isActive) {
+                    MouseInfo.getPointerInfo().location.also { point ->
+                        if (!point.equals(lastPoint)) {
+                            lastPoint = point
+                            onEvent(point)
+                        }
                     }
+                    delay(delay)
                 }
-                delay(delay)
             }
-        }
     }
 
     fun dispose() {
@@ -50,11 +51,12 @@ class GlobalMouseListener(
         ) {
             DisposableEffect(Unit) {
                 val handler = MouseEventHandler(enabled, block)
-                val globalHandler = GlobalMouseListener(
-                    scope = scope
-                ) { event ->
-                    handler.onEvent(event)
-                }
+                val globalHandler =
+                    GlobalMouseListener(
+                        scope = scope,
+                    ) { event ->
+                        handler.onEvent(event)
+                    }
                 onDispose {
                     globalHandler.dispose()
                 }

@@ -4,7 +4,7 @@ import androidx.compose.runtime.DisallowComposableCalls
 import org.mjdev.desktop.interfaces.IControlCenterPageDataSaver
 
 class PageCache(
-    private val saver: IControlCenterPageDataSaver? = null
+    private val saver: IControlCenterPageDataSaver? = null,
 ) {
     private val _data: MutableMap<Int, Any> = mutableMapOf()
 
@@ -21,7 +21,7 @@ class PageCache(
     @Suppress("UNCHECKED_CAST")
     fun <T> cache(
         invalid: Boolean,
-        block: @DisallowComposableCalls () -> T
+        block: @DisallowComposableCalls () -> T,
     ): T {
         val hash = block.hashCode()
         var data: T = _data[hash] as T

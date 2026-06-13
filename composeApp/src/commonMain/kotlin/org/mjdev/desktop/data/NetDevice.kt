@@ -11,14 +11,15 @@ package org.mjdev.desktop.data
 import okio.Path
 import org.mjdev.desktop.extensions.PathExt.exists
 import org.mjdev.desktop.extensions.PathExt.get
-import org.mjdev.desktop.extensions.PathExt.text
 import org.mjdev.desktop.extensions.PathExt.nameWithoutExtension
+import org.mjdev.desktop.extensions.PathExt.text
 
 class NetDevice(
-    val path: Path
+    val path: Path,
 ) {
     val name
         get() = path.nameWithoutExtension
+
     // todo
     val isEth
         get() = path["ethernet"].exists

@@ -20,8 +20,8 @@ import io.github.alexzhirkevich.qrose.options.circle
 import io.github.alexzhirkevich.qrose.options.roundCorners
 import io.github.alexzhirkevich.qrose.options.solid
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
-import org.mjdev.desktop.extensions.Compose.preview
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
 
 // todo : params
 @Suppress("unused", "FunctionName")
@@ -33,40 +33,42 @@ fun QrCodeView(
     contentPadding: PaddingValues = PaddingValues(8.dp, 48.dp),
     contentDescription: String = data,
     framesColor: Color = Color.Black,
-    pointColor: Color = Color.Black
+    pointColor: Color = Color.Black,
 ) {
-    val qrcodePainter = rememberQrCodePainter(data) {
-        if (logoPainter != null) {
-            logo {
-                painter = logoPainter
-                padding = QrLogoPadding.Natural(.1f)
-                shape = QrLogoShape.circle()
-                size = 0.2f
+    val qrcodePainter =
+        rememberQrCodePainter(data) {
+            if (logoPainter != null) {
+                logo {
+                    painter = logoPainter
+                    padding = QrLogoPadding.Natural(.1f)
+                    shape = QrLogoShape.circle()
+                    size = 0.2f
+                }
+            }
+            shapes {
+                ball = QrBallShape.circle()
+                darkPixel = QrPixelShape.roundCorners()
+                frame = QrFrameShape.roundCorners(.25f)
+            }
+            colors {
+                dark = QrBrush.solid(pointColor)
+                frame = QrBrush.solid(framesColor)
             }
         }
-        shapes {
-            ball = QrBallShape.circle()
-            darkPixel = QrPixelShape.roundCorners()
-            frame = QrFrameShape.roundCorners(.25f)
-        }
-        colors {
-            dark = QrBrush.solid(pointColor)
-            frame = QrBrush.solid(framesColor)
-        }
-    }
     Box(
-        modifier = modifier.padding(contentPadding)
+        modifier = modifier.padding(contentPadding),
     ) {
         Image(
             modifier = Modifier.fillMaxSize(),
             painter = qrcodePainter,
-            contentDescription = contentDescription
+            contentDescription = contentDescription,
         )
     }
 }
 
 @Preview
 @Composable
-fun PreviewQrCodeView() = preview(320, 320) {
-    QrCodeView()
-}
+fun PreviewQrCodeView() =
+    preview(320, 320) {
+        QrCodeView()
+    }

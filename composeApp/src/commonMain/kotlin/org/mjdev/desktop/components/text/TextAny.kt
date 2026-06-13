@@ -17,9 +17,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Text.textFrom
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo weight does not work when selectable enabled
 @Suppress("FunctionName")
@@ -43,7 +43,7 @@ fun TextAny(
     minLines: Int = 1,
     onTextLayout: ((TextLayoutResult) -> Unit)? = null,
     style: TextStyle = TextStyle.Default,
-    textSelectionEnabled: Boolean = false
+    textSelectionEnabled: Boolean = false,
 ) {
     val content: @Composable () -> Unit = {
         Text(
@@ -69,7 +69,7 @@ fun TextAny(
     if (textSelectionEnabled) {
         SelectionContainer(
             modifier = modifier,
-            content = content
+            content = content,
         )
     } else {
         content()
@@ -78,9 +78,10 @@ fun TextAny(
 
 @Preview
 @Composable
-fun PreviewTextAny() = preview {
-    TextAny(
-        modifier = Modifier.height(48.dp).background(Color.White),
-        text = "test" // App.Test
-    )
-}
+fun PreviewTextAny() =
+    preview {
+        TextAny(
+            modifier = Modifier.height(48.dp).background(Color.White),
+            text = "test", // App.Test
+        )
+    }

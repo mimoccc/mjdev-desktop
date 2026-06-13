@@ -4,7 +4,7 @@ package org.mjdev.desktop.helpers.adb.helpers
 class AdbShellResponse(
     val output: String,
     val errorOutput: String,
-    val exitCode: Int
+    val exitCode: Int,
 ) {
     val allOutput: String by lazy { "$output$errorOutput" }
 

@@ -18,19 +18,20 @@ import org.mjdev.desktop.context.IDesktopContext
 @Composable
 fun ChromeWindow(
     modifier: Modifier = Modifier,
-    content: @Composable ChromeWindowState.() -> Unit
+    content: @Composable ChromeWindowState.() -> Unit,
 ) = withDesktopContext {
     val windowState = ChromeWindowState(context)
     Box(
-        modifier = modifier
-            .alpha(0f)
-            .onPlaced { coords ->
-                windowState.onPlaced(coords)
-            },
-        content = { content(windowState) }
+        modifier =
+            modifier
+                .alpha(0f)
+                .onPlaced { coords ->
+                    windowState.onPlaced(coords)
+                },
+        content = { content(windowState) },
     )
     ChromeWindowInternal(
-        state = windowState
+        state = windowState,
     ) {
         content(windowState)
     }
@@ -39,7 +40,7 @@ fun ChromeWindow(
 @Composable
 fun ChromeWindowInternal(
     state: ChromeWindowState,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     // todo
     content()

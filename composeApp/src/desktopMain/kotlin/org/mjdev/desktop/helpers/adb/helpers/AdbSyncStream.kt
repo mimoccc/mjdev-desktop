@@ -8,12 +8,17 @@ import java.nio.charset.StandardCharsets
 
 @Suppress("MemberVisibilityCanBePrivate")
 class AdbSyncStream(
-    private val stream: IAdbStream
+    private val stream: IAdbStream,
 ) : AutoCloseable {
     private val buffer = Buffer()
 
     @Throws(IOException::class)
-    fun send(source: Source, remotePath: String, mode: Int, lastModifiedMs: Long) {
+    fun send(
+        source: Source,
+        remotePath: String,
+        mode: Int,
+        lastModifiedMs: Long,
+    ) {
         val remote = "$remotePath,$mode"
         writePacket(SEND, remote.length)
         stream.sink.apply {
@@ -35,7 +40,10 @@ class AdbSyncStream(
     }
 
     @Throws(IOException::class)
-    fun recv(sink: Sink, remotePath: String) {
+    fun recv(
+        sink: Sink,
+        remotePath: String,
+    ) {
         writePacket(RECV, remotePath.length)
         stream.sink.apply {
             writeString(remotePath, StandardCharsets.UTF_8)
@@ -57,7 +65,10 @@ class AdbSyncStream(
         sink.flush()
     }
 
-    private fun writePacket(id: String, arg: Int) {
+    private fun writePacket(
+        id: String,
+        arg: Int,
+    ) {
         stream.sink.apply {
             writeString(id, StandardCharsets.UTF_8)
             writeIntLe(arg)

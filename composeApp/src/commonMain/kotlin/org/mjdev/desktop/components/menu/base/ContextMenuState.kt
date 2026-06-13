@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 class ContextMenuState(
     val menuExpanded: MutableState<Boolean> = mutableStateOf(false),
     val menuRenderCount: MutableState<Int> = mutableStateOf(0),
-    val items: List<String> = listOf()
+    val items: List<String> = listOf(),
 ) {
     fun show() {
         menuExpanded.value = true
@@ -20,10 +20,11 @@ class ContextMenuState(
 
     companion object {
         @Composable
-        fun rememberContextMenuState(vararg items: String) = remember {
-            ContextMenuState(
-                items = items.asList()
-            )
-        }
+        fun rememberContextMenuState(vararg items: String) =
+            remember {
+                ContextMenuState(
+                    items = items.asList(),
+                )
+            }
     }
 }

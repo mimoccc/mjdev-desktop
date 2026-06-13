@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.card.base.CardBorder
 import org.mjdev.desktop.components.card.base.CardColors
 import org.mjdev.desktop.components.card.base.CardDefaults
@@ -37,7 +38,6 @@ import org.mjdev.desktop.extensions.FocusState.rememberFocusRequester
 import org.mjdev.desktop.extensions.FocusState.rememberFocusState
 import org.mjdev.desktop.helpers.compose.FocusHelper
 import org.mjdev.desktop.icons.image.BrokenImage
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo calculate
 @Composable
@@ -56,7 +56,7 @@ fun ItemCard(
         Image(
             imageVector = BrokenImage,
             "",
-            modifier
+            modifier,
         )
     },
     imageRenderer: @Composable () -> Unit = {
@@ -70,10 +70,11 @@ fun ItemCard(
     },
     cardWidth: Dp = 0.dp, // computeCardWidth(),
     focused: Boolean = false,
-    focusState: MutableState<FocusState> = rememberFocusState(
-        item,
-        FocusHelper(focused)
-    ),
+    focusState: MutableState<FocusState> =
+        rememberFocusState(
+            item,
+            FocusHelper(focused),
+        ),
     focusRequester: FocusRequester = rememberFocusRequester(item),
     titlePadding: PaddingValues = PaddingValues(8.dp),
     showTitle: Boolean = true,
@@ -99,25 +100,27 @@ fun ItemCard(
     onFocus = onFocus,
     onClick = onClick,
     showTitle = showTitle,
-    placeholder = placeholder
+    placeholder = placeholder,
 )
 
 @Preview
 @Composable
-fun PreviewItemCard() = preview {
-    ItemCard(
-        item = "test",
-        modifier = Modifier.size(200.dp, 128.dp),
-        colors = CardDefaults.colors(
-            containerColor = Color.White
-        ),
-        border = CardDefaults.border(),
-        glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
-        scale = CardDefaults.scale(1f),
-        contentScale = ContentScale.Crop,
-        textColor = Color.Black,
-        showTitle = true,
-        focused = true,
-        aspectRatio = HorizontalImageAspectRatio,
-    )
-}
+fun PreviewItemCard() =
+    preview {
+        ItemCard(
+            item = "test",
+            modifier = Modifier.size(200.dp, 128.dp),
+            colors =
+                CardDefaults.colors(
+                    containerColor = Color.White,
+                ),
+            border = CardDefaults.border(),
+            glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
+            scale = CardDefaults.scale(1f),
+            contentScale = ContentScale.Crop,
+            textColor = Color.Black,
+            showTitle = true,
+            focused = true,
+            aspectRatio = HorizontalImageAspectRatio,
+        )
+    }

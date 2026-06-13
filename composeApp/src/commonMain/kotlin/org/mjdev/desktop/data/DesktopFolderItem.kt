@@ -7,5 +7,5 @@ data class DesktopFolderItem(
     val path: Path,
     val customName: String? = null,
     var priority: Int = Int.MIN_VALUE,
-    var position: DpOffset = DpOffset.Zero
+    var position: DpOffset = DpOffset.Zero,
 )

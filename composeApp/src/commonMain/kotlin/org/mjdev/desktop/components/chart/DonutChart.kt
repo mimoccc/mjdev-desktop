@@ -9,11 +9,11 @@ import androidx.compose.ui.text.TextStyle
 import com.aay.compose.baseComponents.model.LegendPosition
 import com.aay.compose.donutChart.DonutChart
 import com.aay.compose.donutChart.model.PieChartData
-import org.mjdev.desktop.extensions.Compose.preview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import org.mjdev.desktop.extensions.System.currentTimeMillis
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
+import org.mjdev.desktop.extensions.System.currentTimeMillis
 
 @Suppress("FunctionName")
 @Composable
@@ -28,7 +28,7 @@ fun DonutChart(
     refreshTimeout: Long = 5000L,
     animation: AnimationSpec<Float> = TweenSpec(durationMillis = animationDuration),
     legendPosition: LegendPosition = LegendPosition.BOTTOM,
-    dataHandler: () -> List<PieChartData> = { emptyList() }
+    dataHandler: () -> List<PieChartData> = { emptyList() },
 ) {
     var needRefresh by remember { mutableStateOf(0L) }
     val textStyle = TextStyle(color = textColor)
@@ -43,9 +43,9 @@ fun DonutChart(
         animation,
         legendPosition,
         dataHandler,
-        needRefresh
+        needRefresh,
     ) { mutableStateOf(dataHandler()) }
-   DonutChart(
+    DonutChart(
         modifier = modifier,
         pieChartData = data,
         centerTitle = title,
@@ -56,7 +56,7 @@ fun DonutChart(
         innerCircularColor = innerCircularColor,
         ratioLineColor = ratioLineColor,
         animation = TweenSpec(1),
-        legendPosition = legendPosition
+        legendPosition = legendPosition,
     )
     LaunchedEffect(Unit) {
         while (isActive) {
@@ -68,19 +68,20 @@ fun DonutChart(
 
 @Preview
 @Composable
-fun PreviewDonutChart() = preview(480) {
-    DonutChart(
-        textColor = Color.White,
-        outerCircularColor = Color.White,
-        innerCircularColor = Color.White,
-        ratioLineColor = Color.White,
-        title = "Donut Chart",
-        legendPosition = LegendPosition.BOTTOM,
-        dataHandler = {
-            listOf(
-                PieChartData(24.0, Color.Blue, "test1"),
-                PieChartData(32.0, Color.Gray, "test2")
-            )
-        }
-    )
-}
+fun PreviewDonutChart() =
+    preview(480) {
+        DonutChart(
+            textColor = Color.White,
+            outerCircularColor = Color.White,
+            innerCircularColor = Color.White,
+            ratioLineColor = Color.White,
+            title = "Donut Chart",
+            legendPosition = LegendPosition.BOTTOM,
+            dataHandler = {
+                listOf(
+                    PieChartData(24.0, Color.Blue, "test1"),
+                    PieChartData(32.0, Color.Gray, "test2"),
+                )
+            },
+        )
+    }

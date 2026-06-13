@@ -26,8 +26,8 @@ import org.mjdev.desktop.components.surface.base.SurfaceShapeOutlineCache
 internal fun Modifier.surfaceBorder(
     shape: Shape,
     border: Border,
-): Modifier {
-    return then(
+): Modifier =
+    then(
         SurfaceBorderElement(
             shape = shape,
             border = border,
@@ -36,22 +36,20 @@ internal fun Modifier.surfaceBorder(
                     name = "tvSurfaceBorder"
                     properties["shape"] = shape
                     properties["border"] = border
-                }
-        )
+                },
+        ),
     )
-}
 
 private class SurfaceBorderElement(
     private val shape: Shape,
     private val border: Border,
-    private val inspectorInfo: InspectorInfo.() -> Unit
+    private val inspectorInfo: InspectorInfo.() -> Unit,
 ) : ModifierNodeElement<SurfaceBorderNode>() {
-    override fun create(): SurfaceBorderNode {
-        return SurfaceBorderNode(
+    override fun create(): SurfaceBorderNode =
+        SurfaceBorderNode(
             shape = shape,
             border = border,
         )
-    }
 
     override fun update(node: SurfaceBorderNode) {
         node.reactToUpdates(
@@ -79,8 +77,8 @@ private class SurfaceBorderElement(
 private class SurfaceBorderNode(
     private var shape: Shape,
     private var border: Border,
-) : DrawModifierNode, Modifier.Node() {
-
+) : Modifier.Node(),
+    DrawModifierNode {
     private var shapeOutlineCache: SurfaceShapeOutlineCache? = null
     private var outlineStrokeCache: OutlineStrokeCache? = null
 
@@ -102,7 +100,7 @@ private class SurfaceBorderNode(
                     shape = borderShape,
                     size = size,
                     layoutDirection = layoutDirection,
-                    density = this
+                    density = this,
                 )
         }
         if (outlineStrokeCache == null) {
@@ -114,20 +112,22 @@ private class SurfaceBorderNode(
                     shape = borderShape,
                     size = size,
                     layoutDirection = layoutDirection,
-                    density = this
+                    density = this,
                 )
             val outlineStroke = outlineStrokeCache!!.updatedOutlineStroke(widthPx = borderStroke.width.toPx())
             drawOutline(
                 outline = shapeOutline,
                 brush = borderStroke.brush,
                 alpha = 1f,
-                style = outlineStroke
+                style = outlineStroke,
             )
         }
     }
 }
 
-private class OutlineStrokeCache(private var widthPx: Float) {
+private class OutlineStrokeCache(
+    private var widthPx: Float,
+) {
     private var outlineStroke: Stroke? = null
 
     fun updatedOutlineStroke(widthPx: Float): Stroke {

@@ -19,14 +19,10 @@ import org.mjdev.desktop.data.User
 import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.helpers.application.ApplicationScope
 import org.mjdev.desktop.helpers.image.ImageLoader.asyncImageLoader
-import org.mjdev.desktop.managers.palette.Palette
 import org.mjdev.desktop.helpers.system.shell.Shell
 import org.mjdev.desktop.interfaces.IApp
-import org.mjdev.desktop.managers.connectivity.IConnectivityManager
-import org.mjdev.desktop.managers.palette.IPalette
 import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
-import org.mjdev.desktop.managers.language.Translator
 import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.ai.AiManager
 import org.mjdev.desktop.managers.ai.IAiManager
@@ -34,25 +30,29 @@ import org.mjdev.desktop.managers.ai.plugins.AiPluginGemini
 import org.mjdev.desktop.managers.ai.plugins.AiPluginOpenAi
 import org.mjdev.desktop.managers.ai.stt.STTPluginEmpty
 import org.mjdev.desktop.managers.ai.tts.TTSPluginSwift
-import org.mjdev.desktop.managers.apps.IAppsManager
-import org.mjdev.desktop.managers.os.IOSManager
-import org.mjdev.desktop.managers.process.IProcessManager
-import org.mjdev.desktop.managers.theme.IThemeManager
-import org.mjdev.desktop.managers.translations.ITranslator
 import org.mjdev.desktop.managers.apps.AppsManager
+import org.mjdev.desktop.managers.apps.IAppsManager
 import org.mjdev.desktop.managers.base.IDelegate
 import org.mjdev.desktop.managers.connectivity.ConnectivityManager
+import org.mjdev.desktop.managers.connectivity.IConnectivityManager
 import org.mjdev.desktop.managers.keys.IKeyManager
+import org.mjdev.desktop.managers.keys.KeysManager
+import org.mjdev.desktop.managers.language.Translator
+import org.mjdev.desktop.managers.os.IOSManager
 import org.mjdev.desktop.managers.os.OsManager
+import org.mjdev.desktop.managers.palette.IPalette
+import org.mjdev.desktop.managers.palette.Palette
+import org.mjdev.desktop.managers.process.IProcessManager
 import org.mjdev.desktop.managers.processes.ProcessManager
+import org.mjdev.desktop.managers.theme.IThemeManager
 import org.mjdev.desktop.managers.theme.ThemeManager
+import org.mjdev.desktop.managers.translations.ITranslator
 import java.awt.Desktop
 import java.awt.Toolkit
 import java.io.File
 import java.net.URI
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
-import org.mjdev.desktop.managers.keys.KeysManager
 
 @Suppress("RedundantSuspendModifier", "unused", "MemberVisibilityCanBePrivate")
 class DesktopContext(
@@ -60,7 +60,7 @@ class DesktopContext(
     override val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     override val imageLoader: ImageLoader? = null,
     val isInDesign: Boolean = false,
-    override val platformContext: PlatformContext? = null
+    override val platformContext: PlatformContext? = null,
 ) : IDesktopContext() {
     private val toolkit: Toolkit by lazy { Toolkit.getDefaultToolkit() }
     private val desktopUtils: Desktop by lazy { Desktop.getDesktop() }
@@ -98,9 +98,10 @@ class DesktopContext(
     override val theme: ITheme
         get() = currentUser.theme
     override val containerSize: DpSize
-        get() = runCatching {
-            toolkit.screenSize.let { screen -> DpSize(screen.width.dp, screen.height.dp) }
-        }.getOrNull() ?: DpSize.Zero
+        get() =
+            runCatching {
+                toolkit.screenSize.let { screen -> DpSize(screen.width.dp, screen.height.dp) }
+            }.getOrNull() ?: DpSize.Zero
 
     init {
         // sudo apt-get update
@@ -148,38 +149,45 @@ class DesktopContext(
 //        }
     }
 
-    suspend fun openMail(emailAddress: String) = runCatching {
-        desktopUtils.mail(URI.create("mailto:$emailAddress"))
-    }
+    suspend fun openMail(emailAddress: String) =
+        runCatching {
+            desktopUtils.mail(URI.create("mailto:$emailAddress"))
+        }
 
-    suspend fun openBrowser(url: String) = runCatching {
-        desktopUtils.browse(URI.create(url))
-    }
+    suspend fun openBrowser(url: String) =
+        runCatching {
+            desktopUtils.browse(URI.create(url))
+        }
 
-    suspend fun openDirectoryForFile(path: String) = runCatching {
-        desktopUtils.browseFileDirectory(File(path))
-    }
+    suspend fun openDirectoryForFile(path: String) =
+        runCatching {
+            desktopUtils.browseFileDirectory(File(path))
+        }
 
-    suspend fun moveToTrash(file: File) = runCatching {
-        desktopUtils.moveToTrash(file)
-    }
+    suspend fun moveToTrash(file: File) =
+        runCatching {
+            desktopUtils.moveToTrash(file)
+        }
 
-    suspend fun moveToTrash(filePath: String) = runCatching {
-        moveToTrash(File(filePath))
-    }
+    suspend fun moveToTrash(filePath: String) =
+        runCatching {
+            moveToTrash(File(filePath))
+        }
 
     // todo, may be need another function
     suspend fun open(what: String) {
         Shell.executeAndRead("xdg-open", what)
     }
 
-    suspend fun openFileInAssociated(file: File) = runCatching {
-        desktopUtils.open(file)
-    }
+    suspend fun openFileInAssociated(file: File) =
+        runCatching {
+            desktopUtils.open(file)
+        }
 
-    suspend fun openFileInAssociated(filePath: String) = runCatching {
-        openFileInAssociated(File(filePath))
-    }
+    suspend fun openFileInAssociated(filePath: String) =
+        runCatching {
+            openFileInAssociated(File(filePath))
+        }
 
 //    suspend fun beep() = runCatching {
 //        toolkit.beep()
@@ -212,10 +220,10 @@ class DesktopContext(
 
 //    override suspend fun logout() : Boolean = true // todo
 
-
-    fun lock() = runAsync {
-        Shell.executeAndRead("/usr/bin/loginctl", "lock-sessions")
-    }
+    fun lock() =
+        runAsync {
+            Shell.executeAndRead("/usr/bin/loginctl", "lock-sessions")
+        }
 
     override suspend fun logOut() {
         runAsync {
@@ -231,7 +239,10 @@ class DesktopContext(
         Shell.executeAndRead("/usr/sbin/halt", "--poweroff")
     }
 
-    override suspend fun login(uName: String, uPasswd: String): Boolean {
+    override suspend fun login(
+        uName: String,
+        uPasswd: String,
+    ): Boolean {
         return false // todo
     }
 
@@ -239,25 +250,31 @@ class DesktopContext(
         return false // todo
     }
 
-    override fun createManager(cls: KClass<*>): IDelegate = when (cls) {
-        IOSManager::class -> OsManager(this)
-        IPalette::class -> Palette(this)
-        ITranslator::class -> Translator(this)
-        IConnectivityManager::class -> ConnectivityManager(this)
-        IAiManager::class -> AiManager(
-            context = this,
-            // todo user can configure
-            pluginAI = AiPluginOpenAi(this@DesktopContext),
-            pluginTTS = TTSPluginSwift(this@DesktopContext),
-            pluginSTT = STTPluginEmpty(this@DesktopContext)
-        )
+    override fun createManager(cls: KClass<*>): IDelegate =
+        when (cls) {
+            IOSManager::class -> OsManager(this)
+            IPalette::class -> Palette(this)
+            ITranslator::class -> Translator(this)
+            IConnectivityManager::class -> ConnectivityManager(this)
+            IAiManager::class ->
+                AiManager(
+                    context = this,
+                    // todo user can configure
+                    pluginAI = AiPluginOpenAi(this@DesktopContext),
+                    pluginTTS = TTSPluginSwift(this@DesktopContext),
+                    pluginSTT = STTPluginEmpty(this@DesktopContext),
+                )
 
-        IAppsManager::class -> AppsManager(this)
-        IThemeManager::class -> ThemeManager(this)
-        IProcessManager::class -> ProcessManager(this)
-        IKeyManager::class -> KeysManager(this)
-        else -> cls.companionObject?.members?.first { it.name == "EMPTY" }?.call() as IDelegate
-    }
+            IAppsManager::class -> AppsManager(this)
+            IThemeManager::class -> ThemeManager(this)
+            IProcessManager::class -> ProcessManager(this)
+            IKeyManager::class -> KeysManager(this)
+            else ->
+                cls.companionObject
+                    ?.members
+                    ?.first { it.name == "EMPTY" }
+                    ?.call() as IDelegate
+        }
 
     override suspend fun restart() {
         Shell.executeAndRead("/usr/sbin/halt", "--reboot")
@@ -289,23 +306,23 @@ class DesktopContext(
                 scope = scope,
                 imageLoader = imageLoader,
                 isInDesign = isInDesign,
-                platformContext = platformContext
+                platformContext = platformContext,
             )
         }
 
-        suspend fun IDesktopContext.loadPicture(
-            src: Any?
-        ): Bitmap? = runCatching {
-            ImageRequest.Builder(platformContext!!)
-                .data(
-                    when (src) {
-                        is Path -> src.toFile()
-                        else -> src.toString()
+        suspend fun IDesktopContext.loadPicture(src: Any?): Bitmap? =
+            runCatching {
+                ImageRequest
+                    .Builder(platformContext!!)
+                    .data(
+                        when (src) {
+                            is Path -> src.toFile()
+                            else -> src.toString()
+                        },
+                    ).build()
+                    .let { req ->
+                        imageLoader?.execute(req)?.image?.toBitmap()
                     }
-                )
-                .build().let { req ->
-                    imageLoader?.execute(req)?.image?.toBitmap()
-                }
-        }.getOrNull()
+            }.getOrNull()
     }
 }

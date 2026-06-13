@@ -7,19 +7,28 @@ interface IAiManager : IDelegate {
 
     fun ask(
         question: String,
-        block: IAiManager.(question: String, result: String) -> Unit = { _, r -> say(r) }
+        block: IAiManager.(question: String, result: String) -> Unit = { _, r -> say(r) },
     )
 
     fun say(
         text: String,
-        clearQueue: Boolean = false
+        clearQueue: Boolean = false,
     )
 
     companion object {
-        val EMPTY = object : IAiManager {
-            override val isAvailable: () -> Boolean = { false }
-            override fun ask(question: String, block: IAiManager.(question: String, result: String) -> Unit) {}
-            override fun say(text: String, clearQueue: Boolean) {}
-        }
+        val EMPTY =
+            object : IAiManager {
+                override val isAvailable: () -> Boolean = { false }
+
+                override fun ask(
+                    question: String,
+                    block: IAiManager.(question: String, result: String) -> Unit,
+                ) {}
+
+                override fun say(
+                    text: String,
+                    clearQueue: Boolean,
+                ) {}
+            }
     }
 }

@@ -12,7 +12,6 @@ class WindowStateListener(
     val onOpened: org.mjdev.desktop.windows.WindowStateListener.(window: Window) -> Unit = {},
     val onClosed: org.mjdev.desktop.windows.WindowStateListener.(window: Window) -> Unit = {},
 ) : WindowStateListener {
-
     fun register(window: Window) {
         window.addWindowStateListener(this)
         onOpened(window)

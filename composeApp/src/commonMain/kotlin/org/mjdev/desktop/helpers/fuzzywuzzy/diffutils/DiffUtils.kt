@@ -1,7 +1,11 @@
 package org.mjdev.desktop.helpers.fuzzywuzzy.diffutils
 
 object DiffUtils {
-    private fun levEditDistance(s1: String, s2: String, xcost: Int): Int {
+    private fun levEditDistance(
+        s1: String,
+        s2: String,
+        xcost: Int,
+    ): Int {
         var i: Int
         val half: Int
         var c1 = s1.toCharArray()
@@ -126,7 +130,12 @@ object DiffUtils {
         return i
     }
 
-    private fun memchr(haystack: CharArray, offset: Int, needle: Char, inum: Int): Int {
+    private fun memchr(
+        haystack: CharArray,
+        offset: Int,
+        needle: Char,
+        inum: Int,
+    ): Int {
         var num = inum
         if (num != 0) {
             var p = 0
@@ -138,7 +147,10 @@ object DiffUtils {
         return 0
     }
 
-    fun getRatio(s1: String, s2: String): Double {
+    fun getRatio(
+        s1: String,
+        s2: String,
+    ): Double {
         val len1 = s1.length
         val len2 = s2.length
         val lensum = len1 + len2

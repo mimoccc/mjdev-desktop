@@ -8,6 +8,10 @@ class TTSPluginEmpty(
     context: IDesktopContext,
 ) : TTSPlugin {
     override val isPresent: Boolean = true
-    override fun talk(text: String, clearQueue: Boolean) {
+
+    override fun talk(
+        text: String,
+        clearQueue: Boolean,
+    ) {
     }
 }

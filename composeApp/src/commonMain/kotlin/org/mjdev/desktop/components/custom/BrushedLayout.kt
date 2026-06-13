@@ -13,8 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import org.mjdev.desktop.extensions.Compose.preview
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun BrushedLayout(
@@ -22,16 +22,17 @@ fun BrushedLayout(
     alpha: Float = 1f,
     colorStart: Color = Color.Black.copy(alpha = if (alpha.isNaN()) 1f else alpha),
     colorEnd: Color = Color.Transparent,
-    brush: Brush = Brush.radialGradient(listOf(colorStart, colorEnd))
+    brush: Brush = Brush.radialGradient(listOf(colorStart, colorEnd)),
 ) = Canvas(
     modifier = modifier,
     onDraw = {
         drawRect(brush)
-    }
+    },
 )
 
 @Preview
 @Composable
-fun PreviewBrushedLayout() = preview(320) {
-    BrushedLayout()
-}
+fun PreviewBrushedLayout() =
+    preview(320) {
+        BrushedLayout()
+    }

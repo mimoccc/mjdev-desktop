@@ -6,12 +6,9 @@ import org.mjdev.desktop.interfaces.IUserDirs
 
 @Suppress("unused")
 class UserDirs(
-    override val homeDirectory: Path
+    override val homeDirectory: Path,
 ) : IUserDirs {
-
-    operator fun get(
-        name: String
-    ): Path = homeDirectory.resolve(name)
+    operator fun get(name: String): Path = homeDirectory.resolve(name)
 
     init {
         runCatching { desktopDirectory.mkdirs() }

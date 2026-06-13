@@ -30,10 +30,10 @@ import androidx.compose.ui.UiComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.conditional
 import org.mjdev.desktop.helpers.compose.Orientation
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo alignment scopes
 @Composable
@@ -61,180 +61,226 @@ fun AppBar(
         println("Recomposition AppBar")
     }
     when (orientation) {
-        Orientation.Horizontal -> Row(
-            modifier = modifier.wrapContentHeight()
-                .padding(contentPadding),
-            verticalAlignment = contentAlignment,
-        ) {
+        Orientation.Horizontal ->
             Row(
-                modifier = Modifier.wrapContentHeight()
-                    .padding(iconPadding),
-                verticalAlignment = iconVerticalAlignment,
-                horizontalArrangement = iconHorizontalArrangement,
-                content = icon
-            )
-            Row(
-                modifier = Modifier
-                    .conditional(fillCenter) {
-                        weight(1f)
-                    }
-                    .wrapContentHeight()
-                    .padding(titlePadding),
-                verticalAlignment = titleVerticalAlignment,
-                horizontalArrangement = titleHorizontalArrangement,
-                content = title
-            )
-            Row(
-                modifier = Modifier.wrapContentHeight()
-                    .padding(actionsPadding),
-                verticalAlignment = actionsVerticalAlignment,
-                horizontalArrangement = actionsHorizontalArrangement,
-                content = actions
-            )
-        }
+                modifier =
+                    modifier
+                        .wrapContentHeight()
+                        .padding(contentPadding),
+                verticalAlignment = contentAlignment,
+            ) {
+                Row(
+                    modifier =
+                        Modifier
+                            .wrapContentHeight()
+                            .padding(iconPadding),
+                    verticalAlignment = iconVerticalAlignment,
+                    horizontalArrangement = iconHorizontalArrangement,
+                    content = icon,
+                )
+                Row(
+                    modifier =
+                        Modifier
+                            .conditional(fillCenter) {
+                                weight(1f)
+                            }.wrapContentHeight()
+                            .padding(titlePadding),
+                    verticalAlignment = titleVerticalAlignment,
+                    horizontalArrangement = titleHorizontalArrangement,
+                    content = title,
+                )
+                Row(
+                    modifier =
+                        Modifier
+                            .wrapContentHeight()
+                            .padding(actionsPadding),
+                    verticalAlignment = actionsVerticalAlignment,
+                    horizontalArrangement = actionsHorizontalArrangement,
+                    content = actions,
+                )
+            }
 
-        Orientation.Vertical -> Column(
-            modifier = modifier
-                .width(IntrinsicSize.Min)
-                .padding(contentPadding),
-        ) {
-            Row(
-                modifier = Modifier.width(IntrinsicSize.Min)
-                    .padding(iconPadding),
-                verticalAlignment = iconVerticalAlignment,
-                content = icon
-            )
-            Row(
-                modifier = Modifier
-                    .conditional(fillCenter) {
-                        weight(1f)
-                    }
-                    .wrapContentHeight()
-                    .padding(titlePadding),
-                verticalAlignment = titleVerticalAlignment,
-                content = title
-            )
-            Row(
-                modifier = Modifier.width(IntrinsicSize.Min)
-                    .padding(actionsPadding),
-                verticalAlignment = actionsVerticalAlignment,
-                content = actions
-            )
-        }
+        Orientation.Vertical ->
+            Column(
+                modifier =
+                    modifier
+                        .width(IntrinsicSize.Min)
+                        .padding(contentPadding),
+            ) {
+                Row(
+                    modifier =
+                        Modifier
+                            .width(IntrinsicSize.Min)
+                            .padding(iconPadding),
+                    verticalAlignment = iconVerticalAlignment,
+                    content = icon,
+                )
+                Row(
+                    modifier =
+                        Modifier
+                            .conditional(fillCenter) {
+                                weight(1f)
+                            }.wrapContentHeight()
+                            .padding(titlePadding),
+                    verticalAlignment = titleVerticalAlignment,
+                    content = title,
+                )
+                Row(
+                    modifier =
+                        Modifier
+                            .width(IntrinsicSize.Min)
+                            .padding(actionsPadding),
+                    verticalAlignment = actionsVerticalAlignment,
+                    content = actions,
+                )
+            }
     }
 }
 
 @Preview
 @Composable
-fun PreviewAppBarHorizontal() = preview {
-    AppBar(
-        modifier = Modifier.height(48.dp)
-            .background(Color.Green),
-        orientation = Orientation.Horizontal,
-        fillCenter = false,
-        icon = {
-            Box(
-                modifier = Modifier.size(24.dp)
-                    .background(Color.Red)
-            )
-        },
-        title = {
-            Box(
-                modifier = Modifier.size(24.dp)
-                    .background(Color.Blue)
-            )
-        },
-        actions = {
-            Box(
-                modifier = Modifier.size(24.dp, 24.dp)
-                    .background(Color.Yellow)
-            )
-        }
-    )
-}
+fun PreviewAppBarHorizontal() =
+    preview {
+        AppBar(
+            modifier =
+                Modifier
+                    .height(48.dp)
+                    .background(Color.Green),
+            orientation = Orientation.Horizontal,
+            fillCenter = false,
+            icon = {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(24.dp)
+                            .background(Color.Red),
+                )
+            },
+            title = {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(24.dp)
+                            .background(Color.Blue),
+                )
+            },
+            actions = {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(24.dp, 24.dp)
+                            .background(Color.Yellow),
+                )
+            },
+        )
+    }
 
 @Preview
 @Composable
-fun PreviewAppBarHorizontalFill() = preview {
-    AppBar(
-        modifier = Modifier.height(48.dp)
-            .background(Color.Green),
-        orientation = Orientation.Horizontal,
-        fillCenter = true,
-        icon = {
-            Box(
-                modifier = Modifier.size(24.dp)
-                    .background(Color.Red)
-            )
-        },
-        title = {
-            Box(
-                modifier = Modifier.fillMaxWidth()
-                    .height(24.dp)
-                    .background(Color.Blue)
-            )
-        },
-        actions = {
-            Box(
-                modifier = Modifier.size(24.dp, 24.dp)
-                    .background(Color.Yellow)
-            )
-        }
-    )
-}
+fun PreviewAppBarHorizontalFill() =
+    preview {
+        AppBar(
+            modifier =
+                Modifier
+                    .height(48.dp)
+                    .background(Color.Green),
+            orientation = Orientation.Horizontal,
+            fillCenter = true,
+            icon = {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(24.dp)
+                            .background(Color.Red),
+                )
+            },
+            title = {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(24.dp)
+                            .background(Color.Blue),
+                )
+            },
+            actions = {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(24.dp, 24.dp)
+                            .background(Color.Yellow),
+                )
+            },
+        )
+    }
 
 @Preview
 @Composable
-fun PreviewAppBarVertical() = preview {
-    AppBar(
-        modifier = Modifier.background(Color.Green),
-        orientation = Orientation.Vertical,
-        fillCenter = false,
-        icon = {
-            Box(
-                modifier = Modifier.size(24.dp)
-                    .background(Color.Red)
-            )
-        },
-        title = {
-            Box(
-                modifier = Modifier.size(24.dp)
-                    .background(Color.Blue)
-            )
-        },
-        actions = {
-            Box(
-                modifier = Modifier.size(24.dp)
-                    .background(Color.Yellow)
-            )
-        }
-    )
-}
+fun PreviewAppBarVertical() =
+    preview {
+        AppBar(
+            modifier = Modifier.background(Color.Green),
+            orientation = Orientation.Vertical,
+            fillCenter = false,
+            icon = {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(24.dp)
+                            .background(Color.Red),
+                )
+            },
+            title = {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(24.dp)
+                            .background(Color.Blue),
+                )
+            },
+            actions = {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(24.dp)
+                            .background(Color.Yellow),
+                )
+            },
+        )
+    }
 
 @Preview
 @Composable
-fun PreviewAppBarVerticalFill() = preview {
-    AppBar(
-        modifier = Modifier.background(Color.Green),
-        orientation = Orientation.Vertical,
-        fillCenter = true,
-        icon = {
-            Box(
-                modifier = Modifier.size(24.dp)
-                    .background(Color.Red)
-            )
-        },
-        title = {
-            Box(
-                modifier = Modifier.width(24.dp).fillMaxHeight()
-                    .background(Color.Blue)
-            )
-        },
-        actions = {
-            Box(
-                modifier = Modifier.size(24.dp)
-                    .background(Color.Yellow)
-            )
-        }
-    )
-}
+fun PreviewAppBarVerticalFill() =
+    preview {
+        AppBar(
+            modifier = Modifier.background(Color.Green),
+            orientation = Orientation.Vertical,
+            fillCenter = true,
+            icon = {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(24.dp)
+                            .background(Color.Red),
+                )
+            },
+            title = {
+                Box(
+                    modifier =
+                        Modifier
+                            .width(24.dp)
+                            .fillMaxHeight()
+                            .background(Color.Blue),
+                )
+            },
+            actions = {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(24.dp)
+                            .background(Color.Yellow),
+                )
+            },
+        )
+    }

@@ -11,15 +11,15 @@ package org.mjdev.desktop.managers.language
 import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.managers.base.IDelegate
 
-//import  org.mini2Dx.gettext.GetText
-//import org.mini2Dx.gettext.PoFile
-//import org.mjdev.desktop.interfaces.ILocale
-//import java.io.File
-//import java.util.*
+// import  org.mini2Dx.gettext.GetText
+// import org.mini2Dx.gettext.PoFile
+// import org.mjdev.desktop.interfaces.ILocale
+// import java.io.File
+// import java.util.*
 
-//@Suppress("HasPlatformType", "unused")
+// @Suppress("HasPlatformType", "unused")
 class Translator(
-    context: IDesktopContext
+    context: IDesktopContext,
 //    private val locale: ILocale = Locale.ENGLISH,
 //    private val file: File = File("${locale.displayName}.po"),
 //    private val poFile: PoFile = PoFile(locale, file)
@@ -37,5 +37,4 @@ class Translator(
 //    translation = GetText.trc("contextName", "Close Application");
 //    translation = GetText.trn("Close Application", "Close Applications", 1)
 //    translation = GetText.trn("contextName", "Close Application", "Close Applications", 1)
-
 }

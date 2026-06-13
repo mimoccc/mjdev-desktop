@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.card.base.CardBorder
 import org.mjdev.desktop.components.card.base.CardColors
 import org.mjdev.desktop.components.card.base.CardDefaults
@@ -32,7 +33,6 @@ import org.mjdev.desktop.components.surface.base.Glow
 import org.mjdev.desktop.components.text.TextAny
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.user.AccountCircle
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo
 @Composable
@@ -50,7 +50,7 @@ fun CompactCard(
     border: CardBorder = CardDefaults.border(),
     glow: CardGlow = CardDefaults.glow(),
     scrimBrush: Brush = CardDefaults.ScrimBrush,
-    interactionSource: MutableInteractionSource? = null
+    interactionSource: MutableInteractionSource? = null,
 ) = Card(
     onClick = onClick,
     onLongClick = onLongClick,
@@ -60,26 +60,27 @@ fun CompactCard(
     colors = colors,
     scale = scale,
     border = border,
-    glow = glow
+    glow = glow,
 ) {
     Box(
-        contentAlignment = Alignment.BottomStart
+        contentAlignment = Alignment.BottomStart,
     ) {
         Box(
-            modifier = Modifier.drawWithCache {
-                onDrawWithContent {
-                    drawContent()
-                    drawRect(brush = scrimBrush)
-                }
-            },
+            modifier =
+                Modifier.drawWithCache {
+                    onDrawWithContent {
+                        drawContent()
+                        drawRect(brush = scrimBrush)
+                    }
+                },
             contentAlignment = CardDefaults.ContentImageAlignment,
-            content = image
+            content = image,
         )
         Column {
             CardContent(
                 title = title,
                 subtitle = subtitle,
-                description = description
+                description = description,
             )
         }
     }
@@ -87,31 +88,33 @@ fun CompactCard(
 
 @Preview
 @Composable
-fun CompactCardPreview() = preview {
-    CompactCard(
-        modifier = Modifier.size(200.dp, 128.dp),
-        colors = CardDefaults.colors(
-            containerColor = Color.White
-        ),
-        border = CardDefaults.border(),
-        glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
-        scale = CardDefaults.scale(1f),
-        scrimBrush = CardDefaults.ScrimBrush,
-        image = {
-            ImageAny(
-                modifier = Modifier.fillMaxSize(),
-                src = AccountCircle,
-                contentDescription = ""
-            )
-        },
-        title = {
-            TextAny("title")
-        },
-        subtitle = {
-            TextAny("subtitle")
-        },
-        description = {
-            TextAny("description")
-        }
-    )
-}
+fun CompactCardPreview() =
+    preview {
+        CompactCard(
+            modifier = Modifier.size(200.dp, 128.dp),
+            colors =
+                CardDefaults.colors(
+                    containerColor = Color.White,
+                ),
+            border = CardDefaults.border(),
+            glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
+            scale = CardDefaults.scale(1f),
+            scrimBrush = CardDefaults.ScrimBrush,
+            image = {
+                ImageAny(
+                    modifier = Modifier.fillMaxSize(),
+                    src = AccountCircle,
+                    contentDescription = "",
+                )
+            },
+            title = {
+                TextAny("title")
+            },
+            subtitle = {
+                TextAny("subtitle")
+            },
+            description = {
+                TextAny("description")
+            },
+        )
+    }

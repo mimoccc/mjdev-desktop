@@ -8,8 +8,8 @@ import org.mjdev.desktop.context.IDesktopContext
 class TTSPluginDesktop(
     context: IDesktopContext,
 ) : TTSPluginMain(context, {
-    TextToSpeechFactory().createOrNull()
-}) {
+        TextToSpeechFactory().createOrNull()
+    }) {
     // todo
     override val isPresent: Boolean = true
 }

@@ -1,10 +1,10 @@
 package org.mjdev.desktop.windows.blur.linux
 
-//@Suppress("MemberVisibilityCanBePrivate")
-//class LinuxWindowBlurManager(
+// @Suppress("MemberVisibilityCanBePrivate")
+// class LinuxWindowBlurManager(
 //    val window: Window,
 //    blurEnabled: Boolean = false,
-//) : WindowBlurManager {
+// ) : WindowBlurManager {
 //    override var blurEnabled: Boolean = blurEnabled
 //        set(value) {
 //            if (field != value) {
@@ -101,4 +101,4 @@ package org.mjdev.desktop.windows.blur.linux
 //            contentPane = newContentPane
 //        }
 //    }
-//}
+// }

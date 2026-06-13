@@ -8,34 +8,36 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.card.base.CardDefaults.DescriptionAlpha
 import org.mjdev.desktop.components.card.base.CardDefaults.SubtitleAlpha
 import org.mjdev.desktop.extensions.Compose.preview
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun CardContent(
     title: @Composable () -> Unit = {},
     subtitle: @Composable () -> Unit = {},
-    description: @Composable () -> Unit = {}
+    description: @Composable () -> Unit = {},
 ) = Column {
     ProvideTextStyle(MaterialTheme.typography.subtitle2) {
         title()
     }
     ProvideTextStyle(MaterialTheme.typography.body2) {
         Box(
-            modifier = Modifier.graphicsLayer {
-                alpha = SubtitleAlpha
-            }
+            modifier =
+                Modifier.graphicsLayer {
+                    alpha = SubtitleAlpha
+                },
         ) {
             subtitle()
         }
     }
     ProvideTextStyle(MaterialTheme.typography.body2) {
         Box(
-            modifier = Modifier.graphicsLayer {
-                alpha = DescriptionAlpha
-            }
+            modifier =
+                Modifier.graphicsLayer {
+                    alpha = DescriptionAlpha
+                },
         ) {
             description()
         }
@@ -44,16 +46,17 @@ fun CardContent(
 
 @Preview
 @Composable
-fun PreviewCardContent() = preview {
-    CardContent(
-        title = {
-            Text("title")
-        },
-        subtitle = {
-            Text("subtitle")
-        },
-        description = {
-            Text("description")
-        }
-    )
-}
+fun PreviewCardContent() =
+    preview {
+        CardContent(
+            title = {
+                Text("title")
+            },
+            subtitle = {
+                Text("subtitle")
+            },
+            description = {
+                Text("description")
+            },
+        )
+    }

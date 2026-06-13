@@ -51,6 +51,12 @@ gradlePlugin {
             description = "Common library plugin to handle all stuffs needed."
             implementationClass = "MultiPlatformPlugin"
         }
+        register("AiAgentPlugin") {
+            id = "AiAgentPlugin"
+            displayName = "AiAgentPlugin"
+            description = "Runs file-driven AI tasks (runAiAgent) with pluggable providers: ollama, claude-code, mistral."
+            implementationClass = "ai.AiAgentPlugin"
+        }
     }
 }
 

@@ -60,3 +60,6 @@ composeApp/src/commonMain/resources/keys/*.key
 
 ### reports
 /reports/
+
+### releases
+/releases/

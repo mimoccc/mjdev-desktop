@@ -28,11 +28,12 @@ open class ChromeWindowState(
     hideDelay: Long = 0L,
     scope: CoroutineScope = CoroutineScope(Dispatchers.Main),
 ) : VisibilityState(
-    visible = visible,
-    enabled = enabled,
-    hideDelay = hideDelay,
-    scope = scope
-), WindowState {
+        visible = visible,
+        enabled = enabled,
+        hideDelay = hideDelay,
+        scope = scope,
+    ),
+    WindowState {
     private var isCreated = false
 
     private var onFocusChange: MutableList<ChromeWindowState.(focus: Boolean) -> Unit> =
@@ -43,10 +44,11 @@ open class ChromeWindowState(
         mutableStateListOf()
 
     var window: Window? = null
-        get() = field ?: run {
-            Log.e("Window is empty, implementation error.")
-            null
-        }
+        get() =
+            field ?: run {
+                Log.e("Window is empty, implementation error.")
+                null
+            }
         set(value) {
             if (value != null) {
                 field = value
@@ -56,21 +58,23 @@ open class ChromeWindowState(
             }
         }
 
-    val focusHelper: WindowFocusListener = WindowFocusListener { _, focus ->
-        this@ChromeWindowState.onFocusChange.forEach { listener ->
-            listener.invoke(this@ChromeWindowState, focus)
+    val focusHelper: WindowFocusListener =
+        WindowFocusListener { _, focus ->
+            this@ChromeWindowState.onFocusChange.forEach { listener ->
+                listener.invoke(this@ChromeWindowState, focus)
+            }
         }
-    }
 
-    val stateHelper: WindowStateListener = WindowStateListener({
-        this@ChromeWindowState.onOpened.forEach { state ->
-            state.invoke(this@ChromeWindowState)
-        }
-    }, {
-        this@ChromeWindowState.onClosed.forEach { state ->
-            state.invoke(this@ChromeWindowState)
-        }
-    })
+    val stateHelper: WindowStateListener =
+        WindowStateListener({
+            this@ChromeWindowState.onOpened.forEach { state ->
+                state.invoke(this@ChromeWindowState)
+            }
+        }, {
+            this@ChromeWindowState.onClosed.forEach { state ->
+                state.invoke(this@ChromeWindowState)
+            }
+        })
 
     @Suppress("CanBePrimaryConstructorProperty")
     val closeAction: WindowCloseAction = closeAction
@@ -98,7 +102,7 @@ open class ChromeWindowState(
                 scope.launch {
                     moveBy(
                         value.width - oldSize.width,
-                        value.height - oldSize.height
+                        value.height - oldSize.height,
                     )
                     setSize(value)
                 }
@@ -125,28 +129,33 @@ open class ChromeWindowState(
         onFocusChange.add(block)
     }
 
-    suspend fun moveBy(x: Dp, y: Dp) = runCatching {
+    suspend fun moveBy(
+        x: Dp,
+        y: Dp,
+    ) = runCatching {
 //        Log.i("moveBy called ($x, $y)")
         setPosition(
             DpOffset(
                 position.x - x,
-                position.y - y
-            )
+                position.y - y,
+            ),
         )
     }.onFailure { e -> Log.e(e) }
 
-    suspend fun setSize(size: DpSize) = runCatching {
+    suspend fun setSize(size: DpSize) =
+        runCatching {
 //        Log.i("Setting window size : ${window?.name} to $size")
-        window?.setSizeSafely(size, WindowPlacement.Floating)
-    }.onFailure { e -> Log.e(e) }
+            window?.setSizeSafely(size, WindowPlacement.Floating)
+        }.onFailure { e -> Log.e(e) }
 
-    suspend fun setPosition(position: DpOffset) = runCatching {
+    suspend fun setPosition(position: DpOffset) =
+        runCatching {
 //        Log.i("Setting window position : ${window?.name} to $position")
-        window?.setPosition(
-            WindowPosition.Absolute(position.x, position.y),
-            WindowPlacement.Floating
-        )
-    }.onFailure { e -> Log.e(e) }
+            window?.setPosition(
+                WindowPosition.Absolute(position.x, position.y),
+                WindowPlacement.Floating,
+            )
+        }.onFailure { e -> Log.e(e) }
 
     override suspend fun focus() {
         runCatching {
@@ -167,7 +176,6 @@ open class ChromeWindowState(
     }
 
     companion object {
-
         @Composable
         fun rememberChromeWindowState(
             position: DpOffset = DpOffset.Unspecified,
@@ -177,7 +185,7 @@ open class ChromeWindowState(
             visible: Boolean = false,
             enabled: Boolean = true,
             hideDelay: Long = 0L,
-            scope: CoroutineScope = rememberCoroutineScope()
+            scope: CoroutineScope = rememberCoroutineScope(),
         ) = remember(
             position,
             size,
@@ -206,7 +214,7 @@ open class ChromeWindowState(
         fun updateWindowState(
             visible: Boolean,
             wnState: MutableState<Boolean>,
-            state: ChromeWindowState
+            state: ChromeWindowState,
         ) = LaunchedEffect {
             if (wnState.value == wnState.value && !visible) {
                 if (state.closeAction == WindowCloseAction.CLOSE) {

@@ -8,10 +8,10 @@
 
 package org.mjdev.desktop.components.surface
 
-//import androidx.compose.material3.LocalAbsoluteTonalElevation
-//import androidx.compose.material3.LocalContentColor
-//import androidx.compose.material3.MaterialTheme
-//import androidx.compose.material3.surfaceColorAtElevation
+// import androidx.compose.material3.LocalAbsoluteTonalElevation
+// import androidx.compose.material3.LocalContentColor
+// import androidx.compose.material3.MaterialTheme
+// import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateFloatAsState
@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.surface.base.Border
 import org.mjdev.desktop.components.surface.base.ClickableSurfaceBorder
 import org.mjdev.desktop.components.surface.base.ClickableSurfaceColors
@@ -53,7 +54,6 @@ import org.mjdev.desktop.extensions.Modifier.onMouseLongPress
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.helpers.compose.surfaceBorder
 import org.mjdev.desktop.helpers.compose.zIndex
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("SameParameterValue")
 @Composable
@@ -69,40 +69,67 @@ fun Surface(
     border: ClickableSurfaceBorder = ClickableSurfaceDefaults.border(),
     glow: ClickableSurfaceGlow = ClickableSurfaceDefaults.glow(),
     interactionSource: MutableInteractionSource? = null,
-    content: @Composable BoxScope.() -> Unit = {}
+    content: @Composable BoxScope.() -> Unit = {},
 ) {
-    @Suppress("NAME_SHADOWING") val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
     val focused by interactionSource.collectIsFocusedAsState()
     val pressed by interactionSource.collectIsPressedAsState()
     SurfaceImpl(
-        modifier = modifier.onMousePress {
-            if (enabled) onClick()
-        }.onMouseLongPress {
-            if (enabled) onLongClick?.invoke()
-        },
+        modifier =
+            modifier
+                .onMousePress {
+                    if (enabled) onClick()
+                }.onMouseLongPress {
+                    if (enabled) onLongClick?.invoke()
+                },
         selected = false,
         enabled = enabled,
         tonalElevation = tonalElevation,
-        shape = ClickableSurfaceDefaults.shape(
-            enabled = enabled, focused = focused, pressed = pressed, shape = shape
-        ),
-        color = ClickableSurfaceDefaults.containerColor(
-            enabled = enabled, focused = focused, pressed = pressed, colors = colors
-        ),
-        contentColor = ClickableSurfaceDefaults.contentColor(
-            enabled = enabled, focused = focused, pressed = pressed, colors = colors
-        ),
-        scale = ClickableSurfaceDefaults.scale(
-            enabled = enabled, focused = focused, pressed = pressed, scale = scale
-        ),
-        border = ClickableSurfaceDefaults.border(
-            enabled = enabled, focused = focused, pressed = pressed, border = border
-        ),
-        glow = ClickableSurfaceDefaults.glow(
-            enabled = enabled, focused = focused, pressed = pressed, glow = glow
-        ),
+        shape =
+            ClickableSurfaceDefaults.shape(
+                enabled = enabled,
+                focused = focused,
+                pressed = pressed,
+                shape = shape,
+            ),
+        color =
+            ClickableSurfaceDefaults.containerColor(
+                enabled = enabled,
+                focused = focused,
+                pressed = pressed,
+                colors = colors,
+            ),
+        contentColor =
+            ClickableSurfaceDefaults.contentColor(
+                enabled = enabled,
+                focused = focused,
+                pressed = pressed,
+                colors = colors,
+            ),
+        scale =
+            ClickableSurfaceDefaults.scale(
+                enabled = enabled,
+                focused = focused,
+                pressed = pressed,
+                scale = scale,
+            ),
+        border =
+            ClickableSurfaceDefaults.border(
+                enabled = enabled,
+                focused = focused,
+                pressed = pressed,
+                border = border,
+            ),
+        glow =
+            ClickableSurfaceDefaults.glow(
+                enabled = enabled,
+                focused = focused,
+                pressed = pressed,
+                glow = glow,
+            ),
         interactionSource = interactionSource,
-        content = content
+        content = content,
     )
 }
 
@@ -120,9 +147,10 @@ private fun SurfaceImpl(
     glow: Glow,
     tonalElevation: Dp,
     interactionSource: MutableInteractionSource? = null,
-    content: @Composable (BoxScope.() -> Unit)
+    content: @Composable (BoxScope.() -> Unit),
 ) {
-    @Suppress("NAME_SHADOWING") val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
     val focused by interactionSource.collectIsFocusedAsState()
     val pressed by interactionSource.collectIsPressedAsState()
     val surfaceAlpha = stateAlpha(enabled = enabled, focused = focused, pressed = pressed, selected = selected)
@@ -133,29 +161,39 @@ private fun SurfaceImpl(
 //        LocalAbsoluteTonalElevation provides absoluteElevation
     ) {
         val zIndex by animateFloatAsState(
-            targetValue = if (focused) FocusedZIndex else NonFocusedZIndex, label = "zIndex"
+            targetValue = if (focused) FocusedZIndex else NonFocusedZIndex,
+            label = "zIndex",
         )
-        val backgroundColorByState = surfaceColorAtElevation(
-            color = color,
+        val backgroundColorByState =
+            surfaceColorAtElevation(
+                color = color,
 //            elevation = tonalElevation, // LocalAbsoluteTonalElevation.current
-        )
+            )
         Box(
-            modifier = modifier.tvSurfaceScale(
-                scale = scale,
-                interactionSource = interactionSource,
-            ).surfaceGlow(shape, glow).zIndex(zIndex).conditional(border != Border.None) {
-                surfaceBorder(shape, border)
-            }.background(backgroundColorByState, shape).graphicsLayer {
-                this.alpha = surfaceAlpha
-                this.shape = shape
-                this.clip = true
-                this.compositingStrategy = CompositingStrategy.Offscreen
-            }, propagateMinConstraints = true
+            modifier =
+                modifier
+                    .tvSurfaceScale(
+                        scale = scale,
+                        interactionSource = interactionSource,
+                    ).surfaceGlow(shape, glow)
+                    .zIndex(zIndex)
+                    .conditional(border != Border.None) {
+                        surfaceBorder(shape, border)
+                    }.background(backgroundColorByState, shape)
+                    .graphicsLayer {
+                        this.alpha = surfaceAlpha
+                        this.shape = shape
+                        this.clip = true
+                        this.compositingStrategy = CompositingStrategy.Offscreen
+                    },
+            propagateMinConstraints = true,
         ) {
             Box(
-                modifier = Modifier.graphicsLayer {
-                    this.alpha = if (!enabled) DisabledContentAlpha else EnabledContentAlpha
-                }, content = content
+                modifier =
+                    Modifier.graphicsLayer {
+                        this.alpha = if (!enabled) DisabledContentAlpha else EnabledContentAlpha
+                    },
+                content = content,
             )
         }
     }
@@ -191,33 +229,40 @@ fun Modifier.tvSurfaceScale(
     val interaction by interactionSource.interactions.collectAsState(initial = FocusInteraction.Focus())
     val animationSpec = defaultScaleAnimationSpec(interaction)
     val animatedScale by animateFloatAsState(
-        targetValue = scale, animationSpec = animationSpec, label = "tv-surface-scale"
+        targetValue = scale,
+        animationSpec = animationSpec,
+        label = "tv-surface-scale",
     )
     return this.graphicsLayer(scaleX = animatedScale, scaleY = animatedScale)
 }
 
-fun defaultScaleAnimationSpec(interaction: Interaction): TweenSpec<Float> = tween(
-    durationMillis = when (interaction) {
-        is FocusInteraction.Focus -> SurfaceScaleTokens.focusDuration
-        is FocusInteraction.Unfocus -> SurfaceScaleTokens.unFocusDuration
-        is PressInteraction.Press -> SurfaceScaleTokens.pressedDuration
-        is PressInteraction.Release -> SurfaceScaleTokens.releaseDuration
-        is PressInteraction.Cancel -> SurfaceScaleTokens.releaseDuration
-        else -> SurfaceScaleTokens.releaseDuration
-    }, easing = SurfaceScaleTokens.enterEasing
-)
+fun defaultScaleAnimationSpec(interaction: Interaction): TweenSpec<Float> =
+    tween(
+        durationMillis =
+            when (interaction) {
+                is FocusInteraction.Focus -> SurfaceScaleTokens.focusDuration
+                is FocusInteraction.Unfocus -> SurfaceScaleTokens.unFocusDuration
+                is PressInteraction.Press -> SurfaceScaleTokens.pressedDuration
+                is PressInteraction.Release -> SurfaceScaleTokens.releaseDuration
+                is PressInteraction.Cancel -> SurfaceScaleTokens.releaseDuration
+                else -> SurfaceScaleTokens.releaseDuration
+            },
+        easing = SurfaceScaleTokens.enterEasing,
+    )
 
 fun stateAlpha(
-    enabled: Boolean, focused: Boolean, pressed: Boolean, selected: Boolean
-): Float {
-    return when {
+    enabled: Boolean,
+    focused: Boolean,
+    pressed: Boolean,
+    selected: Boolean,
+): Float =
+    when {
         !enabled && pressed -> DisabledPressedStateAlpha
         !enabled && focused -> DisabledFocusedStateAlpha
         !enabled && selected -> DisabledSelectedStateAlpha
         enabled -> EnabledContentAlpha
         else -> DisabledDefaultStateAlpha
     }
-}
 
 private const val DisabledPressedStateAlpha = 0.8f
 private const val DisabledFocusedStateAlpha = 0.8f
@@ -232,6 +277,7 @@ private const val NonFocusedZIndex = 0f
 
 @Preview
 @Composable
-fun PreviewSurface() = preview {
-    Surface()
-}
+fun PreviewSurface() =
+    preview {
+        Surface()
+    }

@@ -27,8 +27,8 @@ import org.mjdev.desktop.extensions.Colors.alpha
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.circleBorder
 import org.mjdev.desktop.extensions.Modifier.clipCircle
-//import org.mjdev.desktop.extensions.circleShadow
-//import org.mjdev.desktop.extensions.rectShadow
+// import org.mjdev.desktop.extensions.circleShadow
+// import org.mjdev.desktop.extensions.rectShadow
 import org.mjdev.desktop.helpers.shape.BarShape
 import org.mjdev.desktop.icons.system.PowerOff
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -39,51 +39,56 @@ fun PowerBlock(
     shadowColor: Color = Color.Black.copy(alpha = 0.3f),
     bottomBoxHeight: Dp = 128.dp,
     iconHeight: Dp = 64.dp,
-    onPowerButtonClick: () -> Unit = {}
+    onPowerButtonClick: () -> Unit = {},
 ) = withDesktopContext {
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
     ) {
         BoxWithConstraints(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(bottomBoxHeight),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            val shape = BarShape(
-                offset = (minWidth / 2),
-                circleRadius = 24.dp,
-                cornerRadius = 4.dp,
-                circleGap = 8.dp,
-            )
-            Box(
-                modifier = Modifier
+            modifier =
+                Modifier
                     .fillMaxWidth()
-                    .height(iconHeight)
+                    .height(bottomBoxHeight),
+            contentAlignment = Alignment.BottomCenter,
+        ) {
+            val shape =
+                BarShape(
+                    offset = (minWidth / 2),
+                    circleRadius = 24.dp,
+                    cornerRadius = 4.dp,
+                    circleGap = 8.dp,
+                )
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(iconHeight)
 //                    .rectShadow(color = shadowColor, shape = shape)
-                    .background(backgroundColor, shape)
+                        .background(backgroundColor, shape),
             )
             Button(
-                modifier = Modifier
-                    .padding(bottom = 36.dp)
-                    .size(64.dp)
-                    .clipCircle()
-                    .circleBorder(2.dp, textColor.alpha(0.5f)),
-//                    .circleShadow(4.dp, shadowColor),
+                modifier =
+                    Modifier
+                        .padding(bottom = 36.dp)
+                        .size(64.dp)
+                        .clipCircle()
+                        .circleBorder(2.dp, textColor.alpha(0.5f)),
+                //                    .circleShadow(4.dp, shadowColor),
                 contentPadding = PaddingValues(1.dp),
                 onClick = onPowerButtonClick,
                 colors = ButtonDefaults.transparent(),
-                elevation = ButtonDefaults.noElevation()
+                elevation = ButtonDefaults.noElevation(),
             ) {
                 Image(
-                    modifier = Modifier
-                        .size(64.dp)
-                        .background(backgroundColor, CircleShape)
-                        .clipCircle()
-                        .padding(8.dp),
+                    modifier =
+                        Modifier
+                            .size(64.dp)
+                            .background(backgroundColor, CircleShape)
+                            .clipCircle()
+                            .padding(8.dp),
                     imageVector = PowerOff,
                     contentDescription = "",
-                    colorFilter = ColorFilter.tint(textColor)
+                    colorFilter = ColorFilter.tint(textColor),
                 )
             }
         }
@@ -92,6 +97,7 @@ fun PowerBlock(
 
 @Preview
 @Composable
-fun PreviewPowerBlock() = preview {
-    PowerBlock()
-}
+fun PreviewPowerBlock() =
+    preview {
+        PowerBlock()
+    }

@@ -8,9 +8,11 @@ interface IFont {
     fun iconForName(iconName: String?): Int?
 
     companion object {
-        val Empty = object : IFont {
-            override val fontFamily: FontFamily = FontFamily.Default
-            override fun iconForName(iconName: String?): Int? = null
-        }
+        val Empty =
+            object : IFont {
+                override val fontFamily: FontFamily = FontFamily.Default
+
+                override fun iconForName(iconName: String?): Int? = null
+            }
     }
 }

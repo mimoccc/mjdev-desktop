@@ -2,14 +2,12 @@
 
 package org.mjdev.desktop.extensions
 
-//import java.lang.reflect.Modifier.isStatic
+// import java.lang.reflect.Modifier.isStatic
 import androidx.compose.ui.graphics.Color
 
-//import kotlin.reflect.KFunction
-//import kotlin.reflect.jvm.javaMethod
-//import kotlin.reflect.jvm.kotlinFunction
-
-
+// import kotlin.reflect.KFunction
+// import kotlin.reflect.jvm.javaMethod
+// import kotlin.reflect.jvm.kotlinFunction
 
 //    fun getFunctionFromFile(
 //        fileName: String,

@@ -9,7 +9,7 @@
 package org.mjdev.desktop.helpers.compose
 
 interface ImagesProvider {
-    val size:Int
+    val size: Int
 
     suspend fun get(): Any?
 

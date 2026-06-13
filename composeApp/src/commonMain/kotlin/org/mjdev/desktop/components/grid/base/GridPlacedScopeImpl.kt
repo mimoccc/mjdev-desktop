@@ -20,7 +20,7 @@ import org.mjdev.desktop.components.grid.base.GridPlacedSpanAnchor.Companion.top
 
 class GridPlacedScopeImpl(
     private val cells: GridPlacedCells,
-    private val placementPolicy: GridPlacedPlacementPolicy
+    private val placementPolicy: GridPlacedPlacementPolicy,
 ) : GridPlacedScope {
     val data: MutableList<GridPlacedContent> = mutableListOf()
 
@@ -29,7 +29,7 @@ class GridPlacedScopeImpl(
         column: Int,
         rowSpan: Int,
         columnSpan: Int,
-        itemContent: @Composable GridPlacedItemScope.() -> Unit
+        itemContent: @Composable GridPlacedItemScope.() -> Unit,
     ) {
         checkSpan(rowSpan = rowSpan, columnSpan = columnSpan)
         placeExplicitly(
@@ -37,24 +37,27 @@ class GridPlacedScopeImpl(
             column = column,
             rowSpan = rowSpan,
             columnSpan = columnSpan,
-            itemContent = itemContent
+            itemContent = itemContent,
         )
     }
 
     override fun item(
         rowSpan: Int,
         columnSpan: Int,
-        itemContent: @Composable GridPlacedItemScope.() -> Unit
+        itemContent: @Composable GridPlacedItemScope.() -> Unit,
     ) {
         checkSpan(rowSpan = rowSpan, columnSpan = columnSpan)
         placeImplicitly(
             rowSpan = rowSpan,
             columnSpan = columnSpan,
-            itemContent = itemContent
+            itemContent = itemContent,
         )
     }
 
-    private fun checkSpan(rowSpan: Int, columnSpan: Int) {
+    private fun checkSpan(
+        rowSpan: Int,
+        columnSpan: Int,
+    ) {
         check(rowSpan > 0) { "`rowSpan` must be > 0" }
         check(columnSpan > 0) { "`columnSpan` must be > 0" }
     }
@@ -62,7 +65,7 @@ class GridPlacedScopeImpl(
     private fun placeImplicitly(
         rowSpan: Int,
         columnSpan: Int,
-        itemContent: @Composable GridPlacedItemScope.() -> Unit
+        itemContent: @Composable GridPlacedItemScope.() -> Unit,
     ) {
         val anchor = placementPolicy.anchor
         val lastItem = data.lastOrNull()
@@ -92,7 +95,7 @@ class GridPlacedScopeImpl(
             column = column,
             rowSpan = rowSpan,
             columnSpan = columnSpan,
-            itemContent = itemContent
+            itemContent = itemContent,
         )
     }
 
@@ -101,7 +104,7 @@ class GridPlacedScopeImpl(
         column: Int,
         rowSpan: Int,
         columnSpan: Int,
-        itemContent: @Composable GridPlacedItemScope.() -> Unit
+        itemContent: @Composable GridPlacedItemScope.() -> Unit,
     ) {
         val anchor = placementPolicy.anchor
         val rowOutside = cells.isRowOutsideOfGrid(row, rowSpan, anchor)
@@ -114,12 +117,17 @@ class GridPlacedScopeImpl(
                 top = anchor.topBound(row, rowSpan),
                 right = anchor.rightBound(column, columnSpan),
                 bottom = anchor.bottomBound(row, rowSpan),
-                itemContent = itemContent
+                itemContent = itemContent,
             )
         }
     }
 
-    private fun onSkipped(row: Int?, column: Int?, rowSpan: Int, columnSpan: Int) {
+    private fun onSkipped(
+        row: Int?,
+        column: Int?,
+        rowSpan: Int,
+        columnSpan: Int,
+    ) {
 //        Log.i(
 //            """
 //                Skipped position: [${row}x$column], span size: [${rowSpan}x$columnSpan]
@@ -133,7 +141,7 @@ class GridPlacedScopeImpl(
         top: Int,
         right: Int,
         bottom: Int,
-        itemContent: @Composable GridPlacedItemScope.() -> Unit
+        itemContent: @Composable GridPlacedItemScope.() -> Unit,
     ) {
         data.add(
             GridPlacedContent(
@@ -141,17 +149,17 @@ class GridPlacedScopeImpl(
                 left = left,
                 right = right,
                 bottom = bottom,
-                item = { itemContent() }
-            )
+                item = { itemContent() },
+            ),
         )
     }
 
     private fun findCurrentRow(
         cells: GridPlacedCells,
         placementPolicy: GridPlacedPlacementPolicy,
-        lastItem: GridPlacedContent?
-    ): Int {
-        return if (lastItem != null) {
+        lastItem: GridPlacedContent?,
+    ): Int =
+        if (lastItem != null) {
             when (placementPolicy.verticalDirection) {
                 GridPlacedPlacementPolicy.VerticalDirection.TOP_BOTTOM -> lastItem.top
                 GridPlacedPlacementPolicy.VerticalDirection.BOTTOM_TOP -> lastItem.bottom
@@ -159,12 +167,11 @@ class GridPlacedScopeImpl(
         } else {
             cells.firstRow(placementPolicy)
         }
-    }
 
     private fun findNextRow(
         cells: GridPlacedCells,
         placementPolicy: GridPlacedPlacementPolicy,
-        lastItem: GridPlacedContent?
+        lastItem: GridPlacedContent?,
     ): Int {
         val lastRow = findCurrentRow(cells, placementPolicy, lastItem)
         val lastRowSpan = lastItem?.rowSpan ?: 0
@@ -177,9 +184,9 @@ class GridPlacedScopeImpl(
     private fun findCurrentColumn(
         cells: GridPlacedCells,
         placementPolicy: GridPlacedPlacementPolicy,
-        lastItem: GridPlacedContent?
-    ): Int {
-        return if (lastItem != null) {
+        lastItem: GridPlacedContent?,
+    ): Int =
+        if (lastItem != null) {
             when (placementPolicy.horizontalDirection) {
                 GridPlacedPlacementPolicy.HorizontalDirection.START_END -> lastItem.left
                 GridPlacedPlacementPolicy.HorizontalDirection.END_START -> lastItem.right
@@ -187,12 +194,11 @@ class GridPlacedScopeImpl(
         } else {
             cells.firstColumn(placementPolicy)
         }
-    }
 
     private fun findNextColumn(
         cells: GridPlacedCells,
         placementPolicy: GridPlacedPlacementPolicy,
-        lastItem: GridPlacedContent?
+        lastItem: GridPlacedContent?,
     ): Int {
         val lastColumn = findCurrentColumn(cells, placementPolicy, lastItem)
         val lastColumnSpan = lastItem?.columnSpan ?: 0

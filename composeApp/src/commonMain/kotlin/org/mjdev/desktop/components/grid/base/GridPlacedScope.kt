@@ -17,12 +17,12 @@ sealed interface GridPlacedScope {
         column: Int,
         rowSpan: Int = 1,
         columnSpan: Int = 1,
-        itemContent: @Composable GridPlacedItemScope.() -> Unit
+        itemContent: @Composable GridPlacedItemScope.() -> Unit,
     )
 
     fun item(
         rowSpan: Int = 1,
         columnSpan: Int = 1,
-        itemContent: @Composable GridPlacedItemScope.() -> Unit
+        itemContent: @Composable GridPlacedItemScope.() -> Unit,
     )
 }

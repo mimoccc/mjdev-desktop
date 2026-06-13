@@ -16,12 +16,10 @@ import org.mjdev.desktop.interfaces.IUser
 class Theme(
     backgroundColor: Color,
     backgroundRotationDelay: Long,
-
     panelLocation: PanelLocation,
     panelDividerWidth: Dp,
     panelContentPadding: Dp,
     panelHideDelay: Long,
-
     controlCenterLocation: ControlCenterLocation,
     controlPanelHideDelay: Long,
     controlCenterExpandedWidthPercent: Int,
@@ -30,14 +28,11 @@ class Theme(
     controlCenterIconColor: Color,
     controlCenterIconSize: DpSize,
     controlCenterBackgroundAlpha: Float,
-
     iconSet: IFont,
-
-    appMenuMinWidthRatio:Float,
-    appMenuMinHeightRatio:Float,
+    appMenuMinWidthRatio: Float,
+    appMenuMinHeightRatio: Float,
     appMenuOuterPadding: Dp,
 ) : ITheme {
-
     val backgroundColorState = mutableStateOf(backgroundColor)
     val backgroundRotationDelayState = mutableStateOf(backgroundRotationDelay)
 
@@ -88,7 +83,7 @@ class Theme(
 
     override var controlCenterBackgroundAlpha = controlCenterBackgroundAlphaState.value
 
-    override var iconSet : IFont = iconSetState.value
+    override var iconSet: IFont = iconSetState.value
 
     override var backgroundRotationDelay = backgroundRotationDelayState.value
 
@@ -105,36 +100,32 @@ class Theme(
     companion object {
         val themeCache = mutableMapOf<String, Theme>()
 
-        val DEFAULT = Theme(
-            iconSet = MaterialSymbolsSharp,
-
-            backgroundColor = Color.SuperDarkGray,
-            backgroundRotationDelay = 60000,
-
-            panelLocation = PanelLocation.Bottom,
-            panelDividerWidth = 16.dp,
-            panelContentPadding = 4.dp,
-            panelHideDelay = 2000L,
-
-            controlCenterLocation = ControlCenterLocation.Right,
-            controlPanelHideDelay = 2000L,
-            controlCenterExpandedWidthPercent = 25,
-            controlCenterDividerColor = Color.SuperDarkGray,
-            controlCenterDividerWidth = 4.dp,
-            controlCenterIconColor = Color.White,
-            controlCenterIconSize = DpSize(32.dp, 32.dp),
-            controlCenterBackgroundAlpha = 0.6f,
-
-            appMenuMinWidthRatio = 0.3f,
-            appMenuMinHeightRatio = 0.8f,
-            appMenuOuterPadding = 2.dp
-        )
+        val DEFAULT =
+            Theme(
+                iconSet = MaterialSymbolsSharp,
+                backgroundColor = Color.SuperDarkGray,
+                backgroundRotationDelay = 60000,
+                panelLocation = PanelLocation.Bottom,
+                panelDividerWidth = 16.dp,
+                panelContentPadding = 4.dp,
+                panelHideDelay = 2000L,
+                controlCenterLocation = ControlCenterLocation.Right,
+                controlPanelHideDelay = 2000L,
+                controlCenterExpandedWidthPercent = 25,
+                controlCenterDividerColor = Color.SuperDarkGray,
+                controlCenterDividerWidth = 4.dp,
+                controlCenterIconColor = Color.White,
+                controlCenterIconSize = DpSize(32.dp, 32.dp),
+                controlCenterBackgroundAlpha = 0.6f,
+                appMenuMinWidthRatio = 0.3f,
+                appMenuMinHeightRatio = 0.8f,
+                appMenuOuterPadding = 2.dp,
+            )
 
         // todo load from user settings
-        fun load(
-            user: IUser
-        ): Theme = themeCache[user.userName] ?: DEFAULT.apply {
-            themeCache[user.userName] = this
-        }
+        fun load(user: IUser): Theme =
+            themeCache[user.userName] ?: DEFAULT.apply {
+                themeCache[user.userName] = this
+            }
     }
 }

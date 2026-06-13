@@ -13,13 +13,13 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.onLeftClick
-import org.mjdev.desktop.extensions.Modifier.onRightClick
 import org.mjdev.desktop.extensions.Modifier.onMousePress
-import org.mjdev.desktop.icons.user.AccountCircle
+import org.mjdev.desktop.extensions.Modifier.onRightClick
 import org.mjdev.desktop.extensions.PaddingValues.size
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.icons.user.AccountCircle
 
 @Suppress("UNUSED_PARAMETER")
 @Composable
@@ -37,23 +37,25 @@ fun ShapedIcon(
     visible: Boolean = true,
     onRightClick: () -> Unit = {},
     onClick: () -> Unit = {},
-    onTooltip: (item: Any?) -> Unit = {}
+    onTooltip: (item: Any?) -> Unit = {},
 ) = AnimatedVisibility(
     visible = visible,
-    modifier = modifier
-        .padding(outerPadding)
-        .size(iconSize + innerPadding.size + outerPadding.size)
-        .background(iconBackgroundColor, iconShape)
-        .clip(iconShape)
-        .onMousePress {
-            onLeftClick { onClick() }
-            onRightClick { onRightClick() }
-        }
+    modifier =
+        modifier
+            .padding(outerPadding)
+            .size(iconSize + innerPadding.size + outerPadding.size)
+            .background(iconBackgroundColor, iconShape)
+            .clip(iconShape)
+            .onMousePress {
+                onLeftClick { onClick() }
+                onRightClick { onRightClick() }
+            },
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
     ) {
         if (customContent != null) {
             customContent()
@@ -62,7 +64,7 @@ fun ShapedIcon(
                 modifier = Modifier.fillMaxSize(),
                 imageVector = imageVector,
                 contentDescription = contentDescription,
-                tint = iconColor
+                tint = iconColor,
             )
         }
     }
@@ -70,6 +72,7 @@ fun ShapedIcon(
 
 @Preview
 @Composable
-fun PreviewShapedIcon() = preview {
-    ShapedIcon()
-}
+fun PreviewShapedIcon() =
+    preview {
+        ShapedIcon()
+    }

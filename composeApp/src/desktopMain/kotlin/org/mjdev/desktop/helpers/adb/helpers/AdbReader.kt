@@ -1,11 +1,11 @@
 package org.mjdev.desktop.helpers.adb.helpers
 
-import org.mjdev.desktop.log.Log
 import okio.Source
 import okio.buffer
+import org.mjdev.desktop.log.Log
 
 internal class AdbReader(
-    source: Source
+    source: Source,
 ) : AutoCloseable {
     private val bufferedSource = source.buffer()
 

@@ -15,7 +15,7 @@ import org.mjdev.desktop.components.surface.base.Border
 class CardBorder(
     val border: Border,
     val focusedBorder: Border,
-    val pressedBorder: Border
+    val pressedBorder: Border,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -34,8 +34,7 @@ class CardBorder(
         return result
     }
 
-    override fun toString(): String {
-        return "CardBorder(border=$border, focusedBorder=$focusedBorder, " +
-                "pressedBorder=$pressedBorder)"
-    }
+    override fun toString(): String =
+        "CardBorder(border=$border, focusedBorder=$focusedBorder, " +
+            "pressedBorder=$pressedBorder)"
 }

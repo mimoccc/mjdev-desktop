@@ -8,14 +8,14 @@
 
 package org.mjdev.desktop.managers.connectivity
 
-import org.mjdev.desktop.data.EthNetwork
-import org.mjdev.desktop.data.WifiNetwork
-import org.mjdev.desktop.data.BthDevice
-import org.mjdev.desktop.data.NetDevice
 import org.mjdev.desktop.context.IDesktopContext
+import org.mjdev.desktop.data.BthDevice
+import org.mjdev.desktop.data.EthNetwork
+import org.mjdev.desktop.data.NetDevice
+import org.mjdev.desktop.data.WifiNetwork
 
 open class ConnectivityManagerStub(
-    private val context: IDesktopContext
+    private val context: IDesktopContext,
 ) : IConnectivityManager {
     override val allDevices: MutableMap<String, NetDevice> = mutableMapOf()
 
@@ -45,14 +45,12 @@ open class ConnectivityManagerStub(
     override val hasConnectedDevices
         get() = connectedDevices.isNotEmpty()
 
-    override fun connectWifi(
-        ssid: String
-    ) : Result<Boolean> = Result.success(false)
+    override fun connectWifi(ssid: String): Result<Boolean> = Result.success(false)
 
     override fun connectWifi(
         ssid: String,
         password: String,
         deviceName: String,
-        store: Boolean
-    ) : Result<Boolean> = Result.success(false)
+        store: Boolean,
+    ): Result<Boolean> = Result.success(false)
 }

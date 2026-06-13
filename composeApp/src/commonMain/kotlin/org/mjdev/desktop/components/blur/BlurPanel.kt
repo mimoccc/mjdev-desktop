@@ -26,11 +26,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.image.ImageAny
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Colors.alpha
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.resources.Res
 import org.mjdev.desktop.resources.blur4
 
@@ -43,37 +43,43 @@ fun BlurPanel(
     propagateMinConstraints: Boolean = false,
     blurRadius: Dp = 12.dp,
     alpha: Float = 0.3f,
-    content: @Composable BoxScope.() -> Unit = {}
+    content: @Composable BoxScope.() -> Unit = {},
 ) = withDesktopContext {
-    val transparentGradientBrush = Brush.linearGradient(
-        colors = listOf(
-            Color(0x66FFFFFF),
-            Color(0x1AFFFFFF)
+    val transparentGradientBrush =
+        Brush.linearGradient(
+            colors =
+                listOf(
+                    Color(0x66FFFFFF),
+                    Color(0x1AFFFFFF),
+                ),
         )
-    )
     BoxWithConstraints(
         modifier = modifier,
         contentAlignment = contentAlignment,
-        propagateMinConstraints = propagateMinConstraints
+        propagateMinConstraints = propagateMinConstraints,
     ) {
         ImageAny(
-            modifier = modifier.fillMaxSize()
-                .alpha(alpha)
-                .background(transparentGradientBrush)
-                .blur(blurRadius, edgeTreatment = BlurredEdgeTreatment.Unbounded),
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .alpha(alpha)
+                    .background(transparentGradientBrush)
+                    .blur(blurRadius, edgeTreatment = BlurredEdgeTreatment.Unbounded),
             src = painterResource(resourceId),
-            contentScale = if (maxHeight > maxWidth) ContentScale.FillHeight else ContentScale.FillWidth
+            contentScale = if (maxHeight > maxWidth) ContentScale.FillHeight else ContentScale.FillWidth,
         )
         Box(
-            modifier = Modifier.fillMaxSize()
-                .background(
-                    Brush.radialGradient(
-                        listOf(
-                            Color.Transparent,
-                            backgroundColor.alpha(alpha + 0.2f)
-                        )
-                    )
-                )
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.radialGradient(
+                            listOf(
+                                Color.Transparent,
+                                backgroundColor.alpha(alpha + 0.2f),
+                            ),
+                        ),
+                    ),
         )
         content()
     }
@@ -81,6 +87,7 @@ fun BlurPanel(
 
 @Preview
 @Composable
-fun PreviewBlurPanel() = preview(480, 800) {
-    BlurPanel()
-}
+fun PreviewBlurPanel() =
+    preview(480, 800) {
+        BlurPanel()
+    }

@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.extensions.Custom.setMaskFilter
 
 @Suppress("unused")
-
 @Stable
 @Composable
 fun Modifier.shadow(
@@ -42,7 +41,7 @@ fun Modifier.shadow(
 fun Modifier.rectShadow(
     size: Dp = 8.dp,
     color: Color = Color.Black,
-    shape: Shape = RectangleShape
+    shape: Shape = RectangleShape,
 ) = shadow(size, shape, color)
 
 @Stable
@@ -50,7 +49,7 @@ fun Modifier.rectShadow(
 fun Modifier.circleShadow(
     size: Dp = 8.dp,
     color: Color = Color.Black,
-    shape: Shape = CircleShape
+    shape: Shape = CircleShape,
 ) = shadow(size, shape, color)
 
 @Stable
@@ -74,7 +73,7 @@ fun Modifier.coloredCircleShadow(
             val radius = size.width.coerceAtLeast(size.height) / 2
             canvas.drawCircle(Offset(centerX, centerY), radius, paint)
         }
-    }
+    },
 )
 
 fun Modifier.rightShadow(
@@ -93,7 +92,7 @@ fun Modifier.rightShadow(
 fun Modifier.leftShadow(
     color: Color,
     offsetX: Dp = 0.dp,
-    blur: Dp = 8.dp
+    blur: Dp = 8.dp,
 ) = dropShadow(
     shape = RectangleShape,
     color = color,
@@ -106,7 +105,7 @@ fun Modifier.leftShadow(
 fun Modifier.topShadow(
     color: Color,
     offsetY: Dp = 0.dp,
-    blur: Dp = 8.dp
+    blur: Dp = 8.dp,
 ) = dropShadow(
     shape = RectangleShape,
     color = color,
@@ -119,7 +118,7 @@ fun Modifier.topShadow(
 fun Modifier.bottomShadow(
     color: Color,
     offsetY: Dp = 0.dp,
-    blur: Dp = 8.dp
+    blur: Dp = 8.dp,
 ) = dropShadow(
     shape = RectangleShape,
     color = color,
@@ -135,10 +134,8 @@ fun Modifier.dropShadow(
     offsetX: Dp = 0.dp,
     offsetY: Dp = 4.dp,
     blur: Dp = 4.dp,
-    spread: Dp = 0.dp
-): Modifier {
-    return this then DropShadowNodeElement(shape, color, offsetX, offsetY, blur, spread)
-}
+    spread: Dp = 0.dp,
+): Modifier = this then DropShadowNodeElement(shape, color, offsetX, offsetY, blur, spread)
 
 private data class DropShadowNodeElement(
     val shape: Shape,
@@ -148,18 +145,17 @@ private data class DropShadowNodeElement(
     val blur: Dp,
     val spread: Dp,
 ) : ModifierNodeElement<DropShadowNode>() {
-    override fun create() = DropShadowNode(
-        shape,
-        color,
-        offsetX,
-        offsetY,
-        blur,
-        spread
-    )
+    override fun create() =
+        DropShadowNode(
+            shape,
+            color,
+            offsetX,
+            offsetY,
+            blur,
+            spread,
+        )
 
-    override fun update(
-        node: DropShadowNode
-    ) {
+    override fun update(node: DropShadowNode) {
         node.shape = shape
         node.color = color
         node.offsetX = offsetX
@@ -176,7 +172,8 @@ private class DropShadowNode(
     var offsetY: Dp,
     var blur: Dp,
     var spread: Dp,
-) : DrawModifierNode, Node() {
+) : Node(),
+    DrawModifierNode {
     override fun ContentDrawScope.draw() {
         val shadowSize = Size(size.width + spread.toPx(), size.height + spread.toPx())
         val shadowOutline = shape.createOutline(shadowSize, layoutDirection, this)

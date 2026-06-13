@@ -29,29 +29,31 @@ actual fun VideoPlayer(
         AndroidView(
             factory = { context ->
                 TextureView(context).also { it ->
-                    it.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
-                        lateinit var mediaPlayer: MediaPlayer
-                        override fun onSurfaceTextureAvailable(
-                            surfaceTexture: SurfaceTexture,
-                            p1: Int,
-                            p2: Int
-                        ) {
-                            val surface = Surface(surfaceTexture)
-                            try {
-                                mediaPlayer = MediaPlayer()
-                                mediaPlayer.setDataSource(context, mrl.toUri())
-                                mediaPlayer.setSurface(surface)
-                                mediaPlayer.prepareAsync()
-                                mediaPlayer.setOnPreparedListener { mediaPlayer ->
-                                    if (time.intValue != -1) {
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                            mediaPlayer.seekTo(time.intValue.toLong(), SEEK_CLOSEST)
-                                        } else {
-                                            // todo
+                    it.surfaceTextureListener =
+                        object : TextureView.SurfaceTextureListener {
+                            lateinit var mediaPlayer: MediaPlayer
+
+                            override fun onSurfaceTextureAvailable(
+                                surfaceTexture: SurfaceTexture,
+                                p1: Int,
+                                p2: Int,
+                            ) {
+                                val surface = Surface(surfaceTexture)
+                                try {
+                                    mediaPlayer = MediaPlayer()
+                                    mediaPlayer.setDataSource(context, mrl.toUri())
+                                    mediaPlayer.setSurface(surface)
+                                    mediaPlayer.prepareAsync()
+                                    mediaPlayer.setOnPreparedListener { mediaPlayer ->
+                                        if (time.intValue != -1) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                mediaPlayer.seekTo(time.intValue.toLong(), SEEK_CLOSEST)
+                                            } else {
+                                                // todo
+                                            }
                                         }
-                                    }
-                                    videoRatio =
-                                        mediaPlayer.videoWidth.toFloat() / mediaPlayer.videoHeight
+                                        videoRatio =
+                                            mediaPlayer.videoWidth.toFloat() / mediaPlayer.videoHeight
 //                                val containerRatio =
 //                                    binding.constraintContainer.width.toDouble() / binding.constraintContainer.height.toDouble()
 //                                val videoRatio = mediaPlayer.videoWidth.toDouble() / mediaPlayer.videoHeight.toDouble()
@@ -70,35 +72,39 @@ actual fun VideoPlayer(
 //                                }
 //                                binding.textureView.layoutParams = constraintLayoutParams
 //                                initViewModel(projectItem, mediaPlayer.duration.toLong(), mediaPlayer)
-                                    state.onMediaPlayerReady(mediaPlayer)
+                                        state.onMediaPlayerReady(mediaPlayer)
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
                                 }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
                             }
-                        }
-                        override fun onSurfaceTextureSizeChanged(
-                            p0: SurfaceTexture,
-                            p1: Int,
-                            p2: Int
-                        ) {}
-                        override fun onSurfaceTextureDestroyed(p0: SurfaceTexture): Boolean {
-                            time.value = mediaPlayer.currentPosition
-                            state.doWithMediaPlayer { mp ->
-                                mp.dispose()
+
+                            override fun onSurfaceTextureSizeChanged(
+                                p0: SurfaceTexture,
+                                p1: Int,
+                                p2: Int,
+                            ) {}
+
+                            override fun onSurfaceTextureDestroyed(p0: SurfaceTexture): Boolean {
+                                time.value = mediaPlayer.currentPosition
+                                state.doWithMediaPlayer { mp ->
+                                    mp.dispose()
+                                }
+                                return false
                             }
-                            return false
+
+                            override fun onSurfaceTextureUpdated(p0: SurfaceTexture) {}
                         }
-                        override fun onSurfaceTextureUpdated(p0: SurfaceTexture) {}
-                    }
                 }
             },
-            modifier = Modifier.let {
-                if (videoRatio != -1f) {
-                    it.aspectRatio(videoRatio).align(Alignment.Center)
-                } else {
-                    it
-                }
-            }
+            modifier =
+                Modifier.let {
+                    if (videoRatio != -1f) {
+                        it.aspectRatio(videoRatio).align(Alignment.Center)
+                    } else {
+                        it
+                    }
+                },
         )
     }
 }

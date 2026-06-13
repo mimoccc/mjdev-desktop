@@ -8,19 +8,19 @@
 
 package org.mjdev.desktop.managers.ai
 
-import org.mjdev.desktop.managers.ai.plugins.AiPluginEmpty
-import org.mjdev.desktop.managers.ai.stt.STTPluginEmpty
-import org.mjdev.desktop.managers.ai.stt.base.STTPlugin
-import org.mjdev.desktop.managers.ai.tts.base.TTSPlugin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.managers.ai.actions.ActionCalculator
-import org.mjdev.desktop.managers.ai.actions.base.ActionsProvider
 import org.mjdev.desktop.managers.ai.actions.ActionCurrentTime
 import org.mjdev.desktop.managers.ai.actions.base.ActionException.ActionNone
+import org.mjdev.desktop.managers.ai.actions.base.ActionsProvider
+import org.mjdev.desktop.managers.ai.plugins.AiPluginEmpty
 import org.mjdev.desktop.managers.ai.plugins.base.AIPlugin
+import org.mjdev.desktop.managers.ai.stt.STTPluginEmpty
+import org.mjdev.desktop.managers.ai.stt.base.STTPlugin
 import org.mjdev.desktop.managers.ai.tts.TTSPluginEmpty
+import org.mjdev.desktop.managers.ai.tts.base.TTSPlugin
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class AiManager(
@@ -28,16 +28,17 @@ class AiManager(
     var pluginAI: AIPlugin = AiPluginEmpty(context),
     var pluginSTT: STTPlugin = STTPluginEmpty(context),
     var pluginTTS: TTSPlugin = TTSPluginEmpty(context),
-    var actions: ActionsProvider = ActionsProvider(context) {
-        ActionCalculator // todo infix fnc
-        ActionCurrentTime
-    }
+    var actions: ActionsProvider =
+        ActionsProvider(context) {
+            ActionCalculator // todo infix fnc
+            ActionCurrentTime
+        },
 ) : IAiManager {
     override val isAvailable: () -> Boolean = { pluginAI !is AiPluginEmpty }
 
     override fun ask(
         question: String,
-        block: IAiManager.(question: String, result: String) -> Unit
+        block: IAiManager.(question: String, result: String) -> Unit,
     ) {
         context.scope.launch(Dispatchers.Default) {
             val actResult = actions.tryAction(question)
@@ -55,6 +56,6 @@ class AiManager(
 
     override fun say(
         text: String,
-        clearQueue: Boolean
+        clearQueue: Boolean,
     ) = pluginTTS.talk(text, clearQueue)
 }

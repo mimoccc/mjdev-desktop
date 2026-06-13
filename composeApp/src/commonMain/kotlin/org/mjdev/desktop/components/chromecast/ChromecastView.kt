@@ -8,9 +8,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo
 @Composable
-fun ChromecastView(
-    modifier: Modifier = Modifier
-) {
+fun ChromecastView(modifier: Modifier = Modifier) {
     Box(modifier) {
         Text(text = "ChromecastView")
     }

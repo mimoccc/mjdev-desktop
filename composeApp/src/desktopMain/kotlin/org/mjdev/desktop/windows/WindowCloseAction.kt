@@ -11,5 +11,5 @@ package org.mjdev.desktop.windows
 @Suppress("unused")
 enum class WindowCloseAction {
     CLOSE,
-    MOVE
+    MOVE,
 }

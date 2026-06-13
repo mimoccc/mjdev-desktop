@@ -11,33 +11,36 @@ package org.mjdev.desktop.components.grid.base
 data class GridPlacedPlacementPolicy(
     val mainAxis: MainAxis = MainAxis.HORIZONTAL,
     val horizontalDirection: HorizontalDirection = HorizontalDirection.START_END,
-    val verticalDirection: VerticalDirection = VerticalDirection.TOP_BOTTOM
+    val verticalDirection: VerticalDirection = VerticalDirection.TOP_BOTTOM,
 ) {
-    internal val anchor: GridPlacedSpanAnchor = run {
-        val horizontalDirection = when (this.horizontalDirection) {
-            HorizontalDirection.START_END -> GridPlacedSpanAnchor.Horizontal.START
-            HorizontalDirection.END_START -> GridPlacedSpanAnchor.Horizontal.END
+    internal val anchor: GridPlacedSpanAnchor =
+        run {
+            val horizontalDirection =
+                when (this.horizontalDirection) {
+                    HorizontalDirection.START_END -> GridPlacedSpanAnchor.Horizontal.START
+                    HorizontalDirection.END_START -> GridPlacedSpanAnchor.Horizontal.END
+                }
+            val verticalDirection =
+                when (this.verticalDirection) {
+                    VerticalDirection.TOP_BOTTOM -> GridPlacedSpanAnchor.Vertical.TOP
+                    VerticalDirection.BOTTOM_TOP -> GridPlacedSpanAnchor.Vertical.BOTTOM
+                }
+            GridPlacedSpanAnchor(horizontalDirection, verticalDirection)
         }
-        val verticalDirection = when (this.verticalDirection) {
-            VerticalDirection.TOP_BOTTOM -> GridPlacedSpanAnchor.Vertical.TOP
-            VerticalDirection.BOTTOM_TOP -> GridPlacedSpanAnchor.Vertical.BOTTOM
-        }
-        GridPlacedSpanAnchor(horizontalDirection, verticalDirection)
-    }
 
     enum class MainAxis {
         HORIZONTAL,
-        VERTICAL
+        VERTICAL,
     }
 
     enum class HorizontalDirection {
         START_END,
-        END_START
+        END_START,
     }
 
     enum class VerticalDirection {
         TOP_BOTTOM,
-        BOTTOM_TOP
+        BOTTOM_TOP,
     }
 
     companion object {

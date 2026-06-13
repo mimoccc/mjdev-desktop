@@ -8,9 +8,9 @@ import java.awt.event.WindowStateListener
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class WindowFocusListener(
-    val onFocusChange: (window: Window, focus: Boolean) -> Unit
-) : WindowFocusListener, WindowStateListener {
-
+    val onFocusChange: (window: Window, focus: Boolean) -> Unit,
+) : WindowFocusListener,
+    WindowStateListener {
     fun register(window: Window) {
         window.addWindowFocusListener(this)
         window.addWindowStateListener(this)

@@ -13,19 +13,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.extensions.MutableStateExt.toggle
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ExpandableListItem(
     modifier: Modifier = Modifier,
     expanded: MutableState<Boolean> = mutableStateOf(false),
     content: @Composable (
-        expandedState: MutableState<Boolean>
-    ) -> Unit
+        expandedState: MutableState<Boolean>,
+    ) -> Unit,
 ) = Box(
-    modifier = modifier
+    modifier = modifier,
 ) {
     content(expanded)
 }

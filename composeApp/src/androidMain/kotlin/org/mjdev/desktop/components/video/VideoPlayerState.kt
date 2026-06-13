@@ -11,12 +11,12 @@ actual class VideoPlayerState {
     actual fun doWithMediaPlayer(block: (MediaPlayer) -> Unit) {
         mediaPlayer?.let {
             block(it)
-        }?:run {
+        } ?: run {
             defferredEffects.add(block)
         }
     }
 
-    internal fun onMediaPlayerReady(mediaPlayer:  android.media.MediaPlayer) {
+    internal fun onMediaPlayerReady(mediaPlayer: android.media.MediaPlayer) {
         val mp = MediaPlayer(mediaPlayer)
         this.mediaPlayer = mp
         defferredEffects.forEach { block ->

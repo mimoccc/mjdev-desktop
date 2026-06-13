@@ -11,6 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.components.adb.AdbScreenMirror
 import org.mjdev.desktop.components.background.BackgroundImage
 import org.mjdev.desktop.components.file.FolderView
 import org.mjdev.desktop.components.tooltip.Tooltip
@@ -23,8 +25,6 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.onLeftClick
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.extensions.Modifier.onRightClick
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.mjdev.desktop.components.adb.AdbScreenMirror
 
 @Suppress("FunctionName", "UNUSED_PARAMETER")
 @Composable
@@ -40,43 +40,46 @@ fun Desktop(
     TooltipArea(
         modifier = Modifier.fillMaxSize(),
         delayMillis = 2000,
-        tooltipPlacement = TooltipPlacement.CursorPoint(
-            alignment = Alignment.TopStart,
-            offset = DpOffset(0.dp, 16.dp)
-        ),
+        tooltipPlacement =
+            TooltipPlacement.CursorPoint(
+                alignment = Alignment.TopStart,
+                offset = DpOffset(0.dp, 16.dp),
+            ),
         tooltip = {
             Tooltip(
-                tooltipState = tooltipState
+                tooltipState = tooltipState,
             )
-        }
+        },
     ) {
         BackgroundImage(
-            modifier = Modifier
-                .fillMaxSize()
-                .onMousePress {
-                    onLeftClick {
-                        onLeftMouseClick()
-                    }
-                    onRightClick {
-                        onRightMouseClick()
-                    }
-                },
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .onMousePress {
+                        onLeftClick {
+                            onLeftMouseClick()
+                        }
+                        onRightClick {
+                            onRightMouseClick()
+                        }
+                    },
             switchDelay = theme.backgroundRotationDelay,
             images = backgrounds,
             onChange = { src ->
-                context.palette.apply {
-                    update(src)
-                }.also { p ->
-                    context.currentUser.theme.backgroundColor = p.backgroundColor
-                }
-            }
+                context.palette
+                    .apply {
+                        update(src)
+                    }.also { p ->
+                        context.currentUser.theme.backgroundColor = p.backgroundColor
+                    }
+            },
         )
         Box(
             modifier = Modifier.padding(16.dp),
-            contentAlignment = Alignment.CenterEnd
+            contentAlignment = Alignment.CenterEnd,
         ) {
             Box(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             ) {
                 FolderView(
                     modifier = Modifier.fillMaxSize(),
@@ -90,10 +93,11 @@ fun Desktop(
 //                modifier = Modifier.align(Alignment.Center).size(640.dp, 480.dp)
 //            )
                 AdbScreenMirror(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxHeight()
-                        .wrapContentWidth()
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .fillMaxHeight()
+                            .wrapContentWidth(),
                 )
             }
         }
@@ -103,6 +107,7 @@ fun Desktop(
 // todo
 @Preview
 @Composable
-fun PreviewDesktop() = preview {
-    Desktop()
-}
+fun PreviewDesktop() =
+    preview {
+        Desktop()
+    }

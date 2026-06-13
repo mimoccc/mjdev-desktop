@@ -1,21 +1,21 @@
 package org.mjdev.desktop.components.custom
 
-//import androidx.compose.runtime.Composable
-//import androidx.compose.ui.Modifier
-//import androidx.compose.ui.graphics.Color
-//import androidx.compose.ui.unit.Dp
-//import androidx.compose.ui.unit.dp
-//import org.jetbrains.compose.ui.tooling.preview.Preview
+// import androidx.compose.runtime.Composable
+// import androidx.compose.ui.Modifier
+// import androidx.compose.ui.graphics.Color
+// import androidx.compose.ui.unit.Dp
+// import androidx.compose.ui.unit.dp
+// import org.jetbrains.compose.ui.tooling.preview.Preview
 
-//@Composable
-//fun NeonCircle(
+// @Composable
+// fun NeonCircle(
 //    modifier: Modifier = Modifier,
 //    colorCircle: Color = Color.White,
 //    colorStroke: Color = Color.Red,
 //    padding: Dp = 20.dp,
 //    strokeWidth: Dp = 30.dp,
 //    circleWidth: Dp = 3.dp
-//) {
+// ) {
 //    val paint = remember {
 //        Paint().apply {
 //            style = PaintingStyle.Stroke
@@ -62,4 +62,4 @@ package org.mjdev.desktop.components.custom
 //            }
 //        }
 //    }
-//}
+// }

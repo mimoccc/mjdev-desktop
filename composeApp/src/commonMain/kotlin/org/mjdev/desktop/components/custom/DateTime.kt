@@ -11,9 +11,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.size
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DateTime(
@@ -29,11 +29,12 @@ fun DateTime(
     showTime: Boolean = true,
     showDate: Boolean = true,
     talkEveryHour: Boolean = false,
-    talkOnClick: Boolean = true
+    talkOnClick: Boolean = true,
 ) = Box(
-    modifier = modifier
-        .background(backgroundColor)
-        .padding(padding)
+    modifier =
+        modifier
+            .background(backgroundColor)
+            .padding(padding),
 ) {
     Clock(
         modifier = modifier,
@@ -46,14 +47,15 @@ fun DateTime(
         showTime = showTime,
         showDate = showDate,
         talkEveryHour = talkEveryHour,
-        talkOnClick = talkOnClick
+        talkOnClick = talkOnClick,
     )
 }
 
 @Preview
 @Composable
-fun PreviewDateTime() = preview {
-    DateTime(
-        modifier = Modifier.size(320, 200)
-    )
-}
+fun PreviewDateTime() =
+    preview {
+        DateTime(
+            modifier = Modifier.size(320, 200),
+        )
+    }

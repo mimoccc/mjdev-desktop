@@ -19,19 +19,18 @@ class AiPluginOpenAi(
             AIAgent(
                 executor = simpleOpenAIExecutor(apiKey),
                 systemPrompt = "You are a helpful assistant. Answer user questions concisely.",
-                llmModel = model
+                llmModel = model,
             )
         }
     }
 
     @Suppress("USELESS_CAST")
-    override suspend fun ask(
-        question: String
-    ): String = runCatching {
-        agent.getOrThrow().let { agent ->
-            (agent as AIAgent<String, String>).run("Hello! How can you help me?")
+    override suspend fun ask(question: String): String =
+        runCatching {
+            agent.getOrThrow().let { agent ->
+                (agent as AIAgent<String, String>).run("Hello! How can you help me?")
+            }
+        }.getOrElse { e ->
+            "Error at: ${e.stackTraceToString()}"
         }
-    }.getOrElse { e ->
-        "Error at: ${e.stackTraceToString()}"
-    }
 }

@@ -22,29 +22,33 @@ actual fun VideoPlayer(
 ) = withDesktopContext {
     var imageBitmap by remember(mrl) { mutableStateOf<ImageBitmap?>(null) }
     val renderCallback = remember(mrl) { RenderCallback { img -> imageBitmap = img } }
-    val callbackVideoSurface = remember(mrl) {
-        CallbackVideoSurface(
-            CallbackVideoSurface(renderCallback),
-            renderCallback,
-            true,
-            VideoSurfaceAdapters.getVideoSurfaceAdapter(),
+    val callbackVideoSurface =
+        remember(mrl) {
+            CallbackVideoSurface(
+                CallbackVideoSurface(renderCallback),
+                renderCallback,
+                true,
+                VideoSurfaceAdapters.getVideoSurfaceAdapter(),
+            )
+        }
+    val mediaPlayer: EmbeddedMediaPlayer? =
+        remember(mrl) {
+            runCatching {
+                MediaPlayerFactory().mediaPlayers().newEmbeddedMediaPlayer().apply {
+                    videoSurface().set(callbackVideoSurface)
+                }
+            }.onFailure { e ->
+                Log.e(e)
+            }.getOrNull()
+        }
+    val eventsHandler = remember(mrl) { MediaPlayerEvents(mediaPlayer) }
+    if (imageBitmap != null) {
+        Image(
+            modifier = modifier.background(Color.Black),
+            bitmap = imageBitmap!!,
+            contentDescription = null,
         )
     }
-    val mediaPlayer: EmbeddedMediaPlayer? = remember(mrl) {
-        runCatching {
-            MediaPlayerFactory().mediaPlayers().newEmbeddedMediaPlayer().apply {
-                videoSurface().set(callbackVideoSurface)
-            }
-        }.onFailure { e ->
-            Log.e(e)
-        }.getOrNull()
-    }
-    val eventsHandler = remember(mrl) { MediaPlayerEvents(mediaPlayer) }
-    if (imageBitmap != null) Image(
-        modifier = modifier.background(Color.Black),
-        bitmap = imageBitmap!!,
-        contentDescription = null
-    )
     DisposableEffect(mrl) {
         mediaPlayer?.audio()?.mute()
         mediaPlayer?.media()?.play(mrl)

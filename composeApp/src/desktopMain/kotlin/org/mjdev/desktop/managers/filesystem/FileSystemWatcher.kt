@@ -1,18 +1,18 @@
 package org.mjdev.desktop.managers.filesystem
 
-//import io.github.irgaly.kfswatch.KfsDirectoryWatcher
-//import io.github.irgaly.kfswatch.KfsDirectoryWatcherEvent
-//import kotlinx.coroutines.CoroutineScope
-//import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.launch
+// import io.github.irgaly.kfswatch.KfsDirectoryWatcher
+// import io.github.irgaly.kfswatch.KfsDirectoryWatcherEvent
+// import kotlinx.coroutines.CoroutineScope
+// import kotlinx.coroutines.Dispatchers
+// import kotlinx.coroutines.launch
 
-//@Suppress("MemberVisibilityCanBePrivate")
-//class FileSystemWatcher(
+// @Suppress("MemberVisibilityCanBePrivate")
+// class FileSystemWatcher(
 //    val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
 //    val mountpoints: List<String> = listOf("/mnt", "/media"),
 //    val watcher: KfsDirectoryWatcher = KfsDirectoryWatcher(scope),
 //    val onEvent: KfsDirectoryWatcherEvent.() -> Unit = {}
-//) {
+// ) {
 //    fun init() = scope.launch(Dispatchers.Default) {
 //        mountpoints.forEach {
 //            watcher.add(it)
@@ -26,4 +26,4 @@ package org.mjdev.desktop.managers.filesystem
 //        watcher.removeAll()
 //        watcher.close()
 //    }
-//}
+// }

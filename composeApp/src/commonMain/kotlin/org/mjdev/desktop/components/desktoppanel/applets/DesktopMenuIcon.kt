@@ -8,8 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import org.mjdev.desktop.extensions.Compose.preview
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
 
 @Suppress("FunctionName")
 @Composable
@@ -20,10 +20,10 @@ fun DesktopMenuIcon(
     iconSize: DpSize = DpSize(56.dp, 56.dp),
     iconPadding: PaddingValues = PaddingValues(2.dp),
     iconOuterPadding: PaddingValues = PaddingValues(2.dp),
-    iconName :String = "menu" ,
+    iconName: String = "menu",
     onTooltip: (item: Any?) -> Unit = {},
     onClick: () -> Unit = {},
-    onContextMenuClick: () -> Unit = {}
+    onContextMenuClick: () -> Unit = {},
 ) = Row(
     modifier = modifier,
     verticalAlignment = Alignment.CenterVertically,
@@ -39,12 +39,13 @@ fun DesktopMenuIcon(
         iconOuterPadding = iconOuterPadding,
         onTooltip = onTooltip,
         onClick = onClick,
-        onContextMenuClick = onContextMenuClick
+        onContextMenuClick = onContextMenuClick,
     )
 }
 
 @Preview
 @Composable
-fun PreviewDesktopMenuIcon() = preview {
-    DesktopMenuIcon()
-}
+fun PreviewDesktopMenuIcon() =
+    preview {
+        DesktopMenuIcon()
+    }

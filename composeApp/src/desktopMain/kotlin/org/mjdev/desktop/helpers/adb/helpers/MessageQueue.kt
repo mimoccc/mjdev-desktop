@@ -13,7 +13,10 @@ abstract class MessageQueue<V> {
     private val queues = ConcurrentHashMap<Int, ConcurrentHashMap<Int, Queue<V>>>()
     private val openStreams = ConcurrentHashMap<Int, Boolean>().keySet(true)
 
-    fun take(localId: Int, command: Int): V {
+    fun take(
+        localId: Int,
+        command: Int,
+    ): V {
         while (true) {
             queueLock.lock {
                 poll(localId, command)?.let { return it }
@@ -51,7 +54,10 @@ abstract class MessageQueue<V> {
 
     protected abstract fun isCloseCommand(message: V): Boolean
 
-    private fun poll(localId: Int, command: Int): V? {
+    private fun poll(
+        localId: Int,
+        command: Int,
+    ): V? {
         val streamQueues = queues[localId] ?: throw IllegalStateException("Not listening for localId: $localId")
         val message = streamQueues[command]?.poll()
         if (message == null && !openStreams.contains(localId)) {
@@ -83,14 +89,15 @@ private inline fun <T> ReentrantLock.lock(body: () -> T) {
     }
 }
 
-private inline fun ReentrantLock.tryLock(body: () -> Unit, elseBody: () -> Unit) {
-    return if (tryLock()) {
-        try {
-            body()
-        } finally {
-            if (isHeldByCurrentThread) unlock()
-        }
-    } else {
-        elseBody()
+private inline fun ReentrantLock.tryLock(
+    body: () -> Unit,
+    elseBody: () -> Unit,
+) = if (tryLock()) {
+    try {
+        body()
+    } finally {
+        if (isHeldByCurrentThread) unlock()
     }
+} else {
+    elseBody()
 }

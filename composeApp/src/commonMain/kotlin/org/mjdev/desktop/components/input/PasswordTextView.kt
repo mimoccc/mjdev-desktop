@@ -19,12 +19,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.icons.text.Send
 import org.mjdev.desktop.icons.visibility.VisibilityOff
 import org.mjdev.desktop.icons.visibility.VisibilityOn
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo check colors
 @Suppress("FunctionName")
@@ -45,12 +45,15 @@ fun PasswordTextView(
     contentDescription: String = "Enter password",
     hidePasswordDescription: String = "Hide password",
     showPasswordDescription: String = "Show password",
-    onDone: (password: String) -> Unit = {}
+    onDone: (password: String) -> Unit = {},
 ) {
     val iconVisible by remember {
         derivedStateOf {
-            if (passwordVisible.value) VisibilityOn
-            else VisibilityOff
+            if (passwordVisible.value) {
+                VisibilityOn
+            } else {
+                VisibilityOff
+            }
         }
     }
     val iconSend by remember {
@@ -72,13 +75,14 @@ fun PasswordTextView(
         label = label,
         singleLine = true,
         shape = shape,
-        colors = TextFieldDefaults.textFieldColors(
-            cursorColor = cursorColor,
-            backgroundColor = backgroundColor,
-            focusedIndicatorColor = focusedBorderColor,
-            unfocusedIndicatorColor = unfocusedBorderColor,
-            textColor = textColor
-        ),
+        colors =
+            TextFieldDefaults.textFieldColors(
+                cursorColor = cursorColor,
+                backgroundColor = backgroundColor,
+                focusedIndicatorColor = focusedBorderColor,
+                unfocusedIndicatorColor = unfocusedBorderColor,
+                textColor = textColor,
+            ),
         placeholder = placeholder,
         visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -87,30 +91,36 @@ fun PasswordTextView(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    modifier = Modifier.size(iconSize)
-                        .onMousePress { passwordVisible.value = !passwordVisible.value },
+                    modifier =
+                        Modifier
+                            .size(iconSize)
+                            .onMousePress { passwordVisible.value = !passwordVisible.value },
                     imageVector = iconVisible,
-                    tint = textColor, //colors.textColor(true).value,
-                    contentDescription = description
+                    tint = textColor, // colors.textColor(true).value,
+                    contentDescription = description,
                 )
                 if (iconSend != null) {
                     Icon(
-                        modifier = Modifier.padding(4.dp).size(iconSize)
-                            .onMousePress { onDone(password.value) },
+                        modifier =
+                            Modifier
+                                .padding(4.dp)
+                                .size(iconSize)
+                                .onMousePress { onDone(password.value) },
                         imageVector = iconSend!!,
-                        tint = textColor, //colors.textColor(true).value,
-                        contentDescription = contentDescription
+                        tint = textColor, // colors.textColor(true).value,
+                        contentDescription = contentDescription,
                     )
                 }
             }
-        }
+        },
     )
 }
 
 @Preview
 @Composable
-fun PreviewPasswordTextView() = preview {
-    PasswordTextView(
-        password = mutableStateOf("test")
-    )
-}
+fun PreviewPasswordTextView() =
+    preview {
+        PasswordTextView(
+            password = mutableStateOf("test"),
+        )
+    }

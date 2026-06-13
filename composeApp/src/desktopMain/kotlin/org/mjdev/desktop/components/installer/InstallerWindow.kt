@@ -13,23 +13,23 @@ import org.mjdev.desktop.windows.ChromeWindow
 
 @Suppress("FunctionName")
 @Composable
-fun InstallerWindow(
-    visibleState: VisibilityState = rememberVisibilityState()
-) = withDesktopContext {
-    ChromeWindow(
-        visible = visibleState.isVisible,
-        size = DpSize(808.dp, 608.dp),
-        position = DpOffset.Zero
-    ) {
-        Installer(
-            visibleState = visibleState
-        )
+fun InstallerWindow(visibleState: VisibilityState = rememberVisibilityState()) =
+    withDesktopContext {
+        ChromeWindow(
+            visible = visibleState.isVisible,
+            size = DpSize(808.dp, 608.dp),
+            position = DpOffset.Zero,
+        ) {
+            Installer(
+                visibleState = visibleState,
+            )
+        }
     }
-}
 
 @Suppress("unused")
 @Preview
 @Composable
-fun PreviewInstallerWindow() = preview {
-    InstallerWindow()
-}
+fun PreviewInstallerWindow() =
+    preview {
+        InstallerWindow()
+    }

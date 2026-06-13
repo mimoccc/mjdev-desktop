@@ -15,7 +15,7 @@ class GridPlacedContent(
     val top: Int,
     val right: Int,
     val bottom: Int,
-    val item: @Composable GridPlacedItemScope.() -> Unit
+    val item: @Composable GridPlacedItemScope.() -> Unit,
 ) {
     val rowSpan: Int = bottom - top + 1
     val columnSpan: Int = right - left + 1

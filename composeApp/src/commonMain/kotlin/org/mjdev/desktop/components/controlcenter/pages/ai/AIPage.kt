@@ -27,11 +27,14 @@ import com.pushpal.jetlime.JetLimeColumn
 import com.pushpal.jetlime.JetLimeDefaults
 import com.pushpal.jetlime.JetLimeEvent
 import com.pushpal.jetlime.JetLimeEventDefaults
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.button.TransparentButton
 import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import org.mjdev.desktop.components.controlcenter.base.ControlCenterPageScope.Companion.remember
+import org.mjdev.desktop.components.controlcenter.base.PersistentPageSaver
 import org.mjdev.desktop.components.text.TextAny
 import org.mjdev.desktop.components.text.TextArea
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.extensions.Colors.alpha
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Compose.replaceLast
@@ -41,115 +44,121 @@ import org.mjdev.desktop.extensions.Modifier.clipCircle
 import org.mjdev.desktop.helpers.compose.rememberForeverLazyListState
 import org.mjdev.desktop.icons.chat.Chat
 import org.mjdev.desktop.icons.system.ContentCopy
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.mjdev.desktop.components.controlcenter.base.PersistentPageSaver
-import org.mjdev.desktop.context.IDesktopContext
 
 @Suppress("FunctionName")
-fun AIPage(
-    context: IDesktopContext,
-) = ControlCenterPage(
-    context = context,
-    icon = Chat,
-    name = "Assistant",
-    condition = {
-        ai.isAvailable()
-    },
-    saver = { ctx ->
-        PersistentPageSaver(ctx, "Assistant") // todo name
-    }
-) {
-    val scrollState = rememberForeverLazyListState("Assistant")
-    val questionsList = remember { mutableStateListOf<Pair<String, String>>() }
-    val request = remember { mutableStateOf("") }
-    val onDone: () -> Unit = {
-        val what = request.value.replace("\n", "")
-        if (what.isNotEmpty()) {
-            questionsList.add(Pair(what, ""))
-            request.value = ""
-            scrollState.scrollWithAnimToLast(scope)
-            context.ai.ask(what) { _, res ->
-                res.replace("* **", "")
-                    .replace("**", "")
-                    .trim()
-                    .let { resx ->
-                        questionsList.replaceLast(Pair(what, resx))
-                        scrollState.scrollWithAnimToLast(scope)
-                        context.ai.say(resx)
-                    }
-            }
-        }
-    }
-    Box(
-        modifier = Modifier.fillMaxSize()
+fun AIPage(context: IDesktopContext) =
+    ControlCenterPage(
+        context = context,
+        icon = Chat,
+        name = "Assistant",
+        condition = {
+            ai.isAvailable()
+        },
+        saver = { ctx ->
+            PersistentPageSaver(ctx, "Assistant") // todo name
+        },
     ) {
-        Row {
-            Column(
-                modifier = Modifier.fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                JetLimeColumn(
-                    modifier = Modifier.fillMaxWidth()
-                        .weight(1f)
-                        .background(
-                            Color.Black.copy(alpha = 0.3f),
-                            RoundedCornerShape(8.dp)
-                        ).verticalTouchScrollable(scrollState),
-                    itemsList = ItemsList(questionsList),
-                    style = JetLimeDefaults.columnStyle(
-                        lineThickness = 2.dp,
-                        lineBrush = JetLimeDefaults.lineSolidBrush(
-                            color = Color.White.alpha(0.6f)
-                        )
-                    ),
-                ) { idx, item, position ->
-                    JetLimeEvent(
-                        style = JetLimeEventDefaults.eventStyle(
-                            pointColor = Color.Black,
-                            pointFillColor = Color.White.alpha(0.5f),
-                            pointRadius = 8.dp,
-                            position = position,
-                            pointAnimation = JetLimeEventDefaults.pointAnimation(),
-                            pointType = EventPointType.filled(0.8f),
-                            pointStrokeWidth = 2.dp,
-                            pointStrokeColor = Color.Black,
-                        ),
-                    ) {
-                        TimeLineItem(
-                            idx = idx,
-                            item = item
-                        )
-                    }
+        val scrollState = rememberForeverLazyListState("Assistant")
+        val questionsList = remember { mutableStateListOf<Pair<String, String>>() }
+        val request = remember { mutableStateOf("") }
+        val onDone: () -> Unit = {
+            val what = request.value.replace("\n", "")
+            if (what.isNotEmpty()) {
+                questionsList.add(Pair(what, ""))
+                request.value = ""
+                scrollState.scrollWithAnimToLast(scope)
+                context.ai.ask(what) { _, res ->
+                    res
+                        .replace("* **", "")
+                        .replace("**", "")
+                        .trim()
+                        .let { resx ->
+                            questionsList.replaceLast(Pair(what, resx))
+                            scrollState.scrollWithAnimToLast(scope)
+                            context.ai.say(resx)
+                        }
                 }
-                TextArea(
-                    modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
-                    textState = request,
-                    onDone = onDone
-                )
+            }
+        }
+        Box(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Row {
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                ) {
+                    JetLimeColumn(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .background(
+                                    Color.Black.copy(alpha = 0.3f),
+                                    RoundedCornerShape(8.dp),
+                                ).verticalTouchScrollable(scrollState),
+                        itemsList = ItemsList(questionsList),
+                        style =
+                            JetLimeDefaults.columnStyle(
+                                lineThickness = 2.dp,
+                                lineBrush =
+                                    JetLimeDefaults.lineSolidBrush(
+                                        color = Color.White.alpha(0.6f),
+                                    ),
+                            ),
+                    ) { idx, item, position ->
+                        JetLimeEvent(
+                            style =
+                                JetLimeEventDefaults.eventStyle(
+                                    pointColor = Color.Black,
+                                    pointFillColor = Color.White.alpha(0.5f),
+                                    pointRadius = 8.dp,
+                                    position = position,
+                                    pointAnimation = JetLimeEventDefaults.pointAnimation(),
+                                    pointType = EventPointType.filled(0.8f),
+                                    pointStrokeWidth = 2.dp,
+                                    pointStrokeColor = Color.Black,
+                                ),
+                        ) {
+                            TimeLineItem(
+                                idx = idx,
+                                item = item,
+                            )
+                        }
+                    }
+                    TextArea(
+                        modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
+                        textState = request,
+                        onDone = onDone,
+                    )
+                }
             }
         }
     }
-}
 
 @Composable
 fun TimeLineItem(
     idx: Int,
-    item: Pair<String, String>
+    item: Pair<String, String>,
 ) {
     Column(
-        modifier = Modifier.padding(4.dp)
-            .fillMaxWidth()
-            .background(
-                Color.White.copy(alpha = 0.1f),
-                RoundedCornerShape(8.dp)
-            ),
+        modifier =
+            Modifier
+                .padding(4.dp)
+                .fillMaxWidth()
+                .background(
+                    Color.White.copy(alpha = 0.1f),
+                    RoundedCornerShape(8.dp),
+                ),
     ) {
         TextBlock(
             idx = idx,
-            text = item.first
+            text = item.first,
         )
         TextBlock(
-            text = item.second
+            text = item.second,
         )
     }
 }
@@ -157,30 +166,34 @@ fun TimeLineItem(
 @Composable
 fun TextBlock(
     idx: Int = -1,
-    text: String = ""
+    text: String = "",
 ) {
     val clipboard: ClipboardManager = LocalClipboardManager.current
     Box(
-        Modifier.padding(4.dp)
+        Modifier
+            .padding(4.dp)
             .fillMaxWidth()
             .background(
                 Color.White.copy(alpha = 0.1f),
-                RoundedCornerShape(8.dp)
-            )
-            .padding(8.dp)
+                RoundedCornerShape(8.dp),
+            ).padding(8.dp),
     ) {
         TextAny(
-            modifier = Modifier.fillMaxWidth()
-                .padding(end = 24.dp),
-            text = "${if (idx >= 0) "${idx + 1}. " else ""}${text}",
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(end = 24.dp),
+            text = "${if (idx >= 0) "${idx + 1}. " else ""}$text",
             color = Color.White,
             textAlign = TextAlign.Start,
-            textSelectionEnabled = true
+            textSelectionEnabled = true,
         )
         TransparentButton(
-            modifier = Modifier.size(32.dp)
-                .clipCircle()
-                .align(Alignment.TopEnd),
+            modifier =
+                Modifier
+                    .size(32.dp)
+                    .clipCircle()
+                    .align(Alignment.TopEnd),
             onClick = {
                 clipboard.setText(AnnotatedString(text))
             },
@@ -189,7 +202,7 @@ fun TextBlock(
                 modifier = Modifier.size(24.dp),
                 imageVector = ContentCopy,
                 tint = Color.White.copy(alpha = 0.9f),
-                contentDescription = ""
+                contentDescription = "",
             )
         }
     }
@@ -197,6 +210,7 @@ fun TextBlock(
 
 @Preview
 @Composable
-fun PreviewAIPage() = preview {
-    AIPage(context).Render()
-}
+fun PreviewAIPage() =
+    preview {
+        AIPage(context).Render()
+    }

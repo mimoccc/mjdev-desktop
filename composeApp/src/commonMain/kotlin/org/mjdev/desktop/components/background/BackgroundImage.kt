@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.layout.ContentScale
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.image.ImageAny
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Colors.ContrastColorFilter
@@ -24,9 +25,8 @@ import org.mjdev.desktop.extensions.Compose.Crossfade
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
 import org.mjdev.desktop.helpers.generic.Queue
-import kotlin.math.min
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.log.Log
+import kotlin.math.min
 
 @Suppress("FunctionName", "CoroutineCreationDuringComposition")
 @Composable
@@ -38,10 +38,10 @@ fun BackgroundImage(
     backgroundColor: Color = Color.SuperDarkGray,
     images: MutableList<Any> = mutableListOf(),
     onError: (Throwable) -> Unit = { e -> Log.e(e) },
-    onChange: (bck: Any?) -> Unit = {}
+    onChange: (bck: Any?) -> Unit = {},
 ) = withDesktopContext {
     Box(
-        modifier = modifier.background(backgroundColor)
+        modifier = modifier.background(backgroundColor),
     ) {
         val imagesSize by rememberComputed(images.size) { images.size }
         val backgroundQueue by rememberComputed(imagesSize) { Queue(images) }
@@ -49,7 +49,7 @@ fun BackgroundImage(
         Crossfade(
             targetState = currentBackground,
             fadeInDuration = fadeInDuration,
-            fadeOutDuration = fadeOutDuration
+            fadeOutDuration = fadeOutDuration,
         ) { imageValue ->
             ImageAny(
                 modifier = modifier,
@@ -66,30 +66,34 @@ fun BackgroundImage(
                 },
                 onAnimationFinish = {
                     Log.d("Background image finished: $imageValue")
-                }
+                },
             )
             Box(
-                modifier = modifier.background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            Transparent,
-                            Transparent,
-                            Transparent,
-                            Transparent,
-                            backgroundColor.alpha(0.1f),
-                            backgroundColor.alpha(0.3f),
-                            backgroundColor
+                modifier =
+                    modifier.background(
+                        Brush.radialGradient(
+                            colors =
+                                listOf(
+                                    Transparent,
+                                    Transparent,
+                                    Transparent,
+                                    Transparent,
+                                    backgroundColor.alpha(0.1f),
+                                    backgroundColor.alpha(0.3f),
+                                    backgroundColor,
+                                ),
+                            center =
+                                Offset(
+                                    containerSize.width.value / 2,
+                                    containerSize.height.value / 2,
+                                ),
+                            radius =
+                                min(
+                                    containerSize.width.value,
+                                    containerSize.height.value,
+                                ) * 1.2f,
                         ),
-                        center = Offset(
-                            containerSize.width.value / 2,
-                            containerSize.height.value / 2
-                        ),
-                        radius = min(
-                            containerSize.width.value,
-                            containerSize.height.value
-                        ) * 1.2f
-                    )
-                )
+                    ),
             )
         }
         LaunchedEffect(imagesSize) {
@@ -109,6 +113,7 @@ fun BackgroundImage(
 @Suppress("unused")
 @Preview
 @Composable
-fun PreviewBackgroundImage() = preview {
-    BackgroundImage()
-}
+fun PreviewBackgroundImage() =
+    preview {
+        BackgroundImage()
+    }

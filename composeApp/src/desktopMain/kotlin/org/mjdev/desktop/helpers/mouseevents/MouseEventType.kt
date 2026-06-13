@@ -10,5 +10,5 @@ package org.mjdev.desktop.helpers.mouseevents
 
 enum class MouseEventType {
     ENTER,
-    LEAVE
+    LEAVE,
 }

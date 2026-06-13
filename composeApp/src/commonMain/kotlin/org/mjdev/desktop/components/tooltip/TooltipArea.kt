@@ -24,8 +24,8 @@ import androidx.compose.ui.window.Popup
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.mjdev.desktop.extensions.Modifier.onPointerEvent
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Modifier.onPointerEvent
 
 val PointerEvent.position get() = changes.first().position
 
@@ -34,10 +34,11 @@ fun TooltipArea(
     tooltip: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     delayMillis: Int = 500,
-    tooltipPlacement: TooltipPlacement = TooltipPlacement.ComponentRect(
-        offset = DpOffset(0.dp, 16.dp)
-    ),
-    content: @Composable BoxScope.() -> Unit
+    tooltipPlacement: TooltipPlacement =
+        TooltipPlacement.ComponentRect(
+            offset = DpOffset(0.dp, 16.dp),
+        ),
+    content: @Composable BoxScope.() -> Unit,
 ) {
     var parentBounds by remember { mutableStateOf(Rect.Zero) }
     var cursorPosition by remember { mutableStateOf(Offset.Zero) }
@@ -47,10 +48,11 @@ fun TooltipArea(
 
     fun startShowing() {
         if (job?.isActive == true) return
-        job = scope.launch {
-            delay(delayMillis.toLong())
-            isVisible = true
-        }
+        job =
+            scope.launch {
+                delay(delayMillis.toLong())
+                isVisible = true
+            }
     }
 
     fun hide() {
@@ -66,32 +68,30 @@ fun TooltipArea(
     }
 
     Box(
-        modifier = modifier
-            .onGloballyPositioned { parentBounds = it.boundsInWindow() }
-            .onPointerEvent(PointerEventType.Enter) {
-                cursorPosition = it.position
-                if (!isVisible && !it.buttons.areAnyPressed) {
-                    startShowing()
-                }
-            }
-            .onPointerEvent(PointerEventType.Move) {
-                cursorPosition = it.position
-                if (!isVisible && !it.buttons.areAnyPressed) {
-                    startShowing()
-                }
-            }
-            .onPointerEvent(PointerEventType.Exit) {
-                hideIfNotHovered(parentBounds.topLeft + it.position)
-            }
-            .onPointerEvent(PointerEventType.Press, pass = PointerEventPass.Initial) {
-                hide()
-            }
+        modifier =
+            modifier
+                .onGloballyPositioned { parentBounds = it.boundsInWindow() }
+                .onPointerEvent(PointerEventType.Enter) {
+                    cursorPosition = it.position
+                    if (!isVisible && !it.buttons.areAnyPressed) {
+                        startShowing()
+                    }
+                }.onPointerEvent(PointerEventType.Move) {
+                    cursorPosition = it.position
+                    if (!isVisible && !it.buttons.areAnyPressed) {
+                        startShowing()
+                    }
+                }.onPointerEvent(PointerEventType.Exit) {
+                    hideIfNotHovered(parentBounds.topLeft + it.position)
+                }.onPointerEvent(PointerEventType.Press, pass = PointerEventPass.Initial) {
+                    hide()
+                },
     ) {
         content()
         if (isVisible) {
             Popup(
                 popupPositionProvider = tooltipPlacement.positionProvider(cursorPosition),
-                onDismissRequest = { isVisible = false }
+                onDismissRequest = { isVisible = false },
             ) {
                 var popupPosition by remember { mutableStateOf(Offset.Zero) }
                 Box(
@@ -99,10 +99,9 @@ fun TooltipArea(
                         .onGloballyPositioned { popupPosition = it.positionInWindow() }
                         .onPointerEvent(PointerEventType.Move) {
                             hideIfNotHovered(popupPosition + it.position)
-                        }
-                        .onPointerEvent(PointerEventType.Exit) {
+                        }.onPointerEvent(PointerEventType.Exit) {
                             hideIfNotHovered(popupPosition + it.position)
-                        }
+                        },
                 ) {
                     tooltip()
                 }

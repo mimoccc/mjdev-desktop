@@ -17,8 +17,8 @@ import okio.Path
 import okio.Path.Companion.toPath
 import okio.buffer
 import okio.source
-import org.mjdev.desktop.extensions.pixels
 import org.mjdev.desktop.extensions.fillRect
+import org.mjdev.desktop.extensions.pixels
 import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.system.Filesystem.source
 
@@ -65,13 +65,16 @@ class GifDecoder {
 
     private val frames = mutableListOf<GifFrame>()
 
-    fun getWidth() : Int = width
+    fun getWidth(): Int = width
 
-    fun getHeight() : Int = height
+    fun getHeight(): Int = height
 
-    fun getDuration(): Long = frames.sumOf { f ->
-        f.delay
-    }.times(loopCount).toLong()
+    fun getDuration(): Long =
+        frames
+            .sumOf { f ->
+                f.delay
+            }.times(loopCount)
+            .toLong()
 
     fun getDelay(n: Int): Long {
         delay = -1
@@ -83,12 +86,14 @@ class GifDecoder {
 
     fun getFrameCount(): Int = frameCount
 
-    fun getFrame(n: Int): ImageBitmap? = if (n in 0..<frameCount) frames[n].image
-    else null
+    fun getFrame(n: Int): ImageBitmap? =
+        if (n in 0..<frameCount) {
+            frames[n].image
+        } else {
+            null
+        }
 
-    fun fromSource(
-        inp: BufferedSource?
-    ): Int {
+    fun fromSource(inp: BufferedSource?): Int {
         init()
         if (inp != null) {
             input = inp
@@ -108,9 +113,7 @@ class GifDecoder {
         return status
     }
 
-    fun fromFile(
-        path: String
-    ): Int = fromPath(path.toPath())
+    fun fromFile(path: String): Int = fromPath(path.toPath())
 
     fun fromPath(path: Path): Int {
         status = STATUS_OK
@@ -123,10 +126,8 @@ class GifDecoder {
         return status
     }
 
-    fun fromUrl(
-        url: String
-    ): Int {
-        return try {
+    fun fromUrl(url: String): Int =
+        try {
             val connection = java.net.URL(url).openConnection()
             connection.connect()
             fromSource(connection.getInputStream().source().buffer())
@@ -135,19 +136,17 @@ class GifDecoder {
             status = STATUS_OPEN_ERROR
             status
         }
-    }
 
-    fun from(
-        pathOrUrl: String
-    ) : Int {
-        status = when {
-            pathOrUrl.startsWith("http://") || pathOrUrl.startsWith("https://") -> {
-                fromUrl(pathOrUrl)
+    fun from(pathOrUrl: String): Int {
+        status =
+            when {
+                pathOrUrl.startsWith("http://") || pathOrUrl.startsWith("https://") -> {
+                    fromUrl(pathOrUrl)
+                }
+                else -> {
+                    fromFile(pathOrUrl)
+                }
             }
-            else -> {
-                fromFile(pathOrUrl)
-            }
-        }
         return status
     }
 
@@ -167,8 +166,11 @@ class GifDecoder {
                         lastRect.top,
                         lastRect.width,
                         lastRect.height,
-                        if (transparency) Color(0, 0, 0, 0)
-                        else Color(lastBackgroundColor)
+                        if (transparency) {
+                            Color(0, 0, 0, 0)
+                        } else {
+                            Color(lastBackgroundColor)
+                        },
                     )
                 }
             }
@@ -328,13 +330,14 @@ class GifDecoder {
     }
 
     private fun readByte(): Int {
-        val curByte = try {
-            input!!.readByte()
-        } catch (e: IOException) {
-            Log.e(e)
-            status = STATUS_FORMAT_ERROR
-            -1
-        }
+        val curByte =
+            try {
+                input!!.readByte()
+            } catch (e: IOException) {
+                Log.e(e)
+                status = STATUS_FORMAT_ERROR
+                -1
+            }
         return curByte.toInt() and 0xff
     }
 
@@ -524,34 +527,29 @@ class GifDecoder {
         const val STATUS_FORMAT_ERROR = 1
         const val STATUS_OPEN_ERROR = 2
 
-        fun fromSource(
-            source: BufferedSource?
-        ): GifDecoder = GifDecoder().apply {
-            fromSource(source)
-        }
+        fun fromSource(source: BufferedSource?): GifDecoder =
+            GifDecoder().apply {
+                fromSource(source)
+            }
 
-        fun fromPath(
-            source: Path
-        ): GifDecoder = GifDecoder().apply {
-            fromPath(source)
-        }
+        fun fromPath(source: Path): GifDecoder =
+            GifDecoder().apply {
+                fromPath(source)
+            }
 
-        fun fromUrl(
-            source: String
-        ): GifDecoder = GifDecoder().apply {
-            fromUrl(source)
-        }
+        fun fromUrl(source: String): GifDecoder =
+            GifDecoder().apply {
+                fromUrl(source)
+            }
 
-        fun fromPathOrUrl(
-            source: String
-        ): GifDecoder = GifDecoder().apply {
-            fromPathOrUrl(source)
-        }
+        fun fromPathOrUrl(source: String): GifDecoder =
+            GifDecoder().apply {
+                fromPathOrUrl(source)
+            }
 
-        fun fromFile(
-            source: String
-        ): GifDecoder = GifDecoder().apply {
-            fromFile(source)
-        }
+        fun fromFile(source: String): GifDecoder =
+            GifDecoder().apply {
+                fromFile(source)
+            }
     }
 }

@@ -15,7 +15,7 @@ import org.mjdev.desktop.components.surface.base.Glow
 class CardGlow(
     val glow: Glow,
     val focusedGlow: Glow,
-    val pressedGlow: Glow
+    val pressedGlow: Glow,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -34,7 +34,5 @@ class CardGlow(
         return result
     }
 
-    override fun toString(): String {
-        return "CardGlow(glow=$glow, focusedGlow=$focusedGlow, pressedGlow=$pressedGlow)"
-    }
+    override fun toString(): String = "CardGlow(glow=$glow, focusedGlow=$focusedGlow, pressedGlow=$pressedGlow)"
 }

@@ -20,71 +20,80 @@ object Measure {
     fun List<Measurable>.measure(
         content: List<GridPlacedContent>,
         cellPlaces: Array<Array<CellPlacedInfo>>,
-        constraints: Constraints
-    ): List<Placeable> = mapIndexed { index, measurable ->
-        val contentMetaInfo = content[index]
-        val maxWidth = (contentMetaInfo.left..contentMetaInfo.right).sumOf { column ->
-            cellPlaces[contentMetaInfo.top][column].width
-        }
-        val maxHeight = (contentMetaInfo.top..contentMetaInfo.bottom).sumOf { row ->
-            cellPlaces[row][contentMetaInfo.left].height
-        }
-        measurable.measure(
-            constraints.copy(
-                minWidth = min(constraints.minWidth, maxWidth),
-                maxWidth = maxWidth,
-                minHeight = min(constraints.minHeight, maxHeight),
-                maxHeight = maxHeight
+        constraints: Constraints,
+    ): List<Placeable> =
+        mapIndexed { index, measurable ->
+            val contentMetaInfo = content[index]
+            val maxWidth =
+                (contentMetaInfo.left..contentMetaInfo.right).sumOf { column ->
+                    cellPlaces[contentMetaInfo.top][column].width
+                }
+            val maxHeight =
+                (contentMetaInfo.top..contentMetaInfo.bottom).sumOf { row ->
+                    cellPlaces[row][contentMetaInfo.left].height
+                }
+            measurable.measure(
+                constraints.copy(
+                    minWidth = min(constraints.minWidth, maxWidth),
+                    maxWidth = maxWidth,
+                    minHeight = min(constraints.minHeight, maxHeight),
+                    maxHeight = maxHeight,
+                ),
             )
-        )
-    }
+        }
 
     fun MeasureScope.calculateCellPlaces(
-        cells: GridPlacedCells, width: Int, height: Int
+        cells: GridPlacedCells,
+        width: Int,
+        height: Int,
     ): Array<Array<CellPlacedInfo>> {
         val columnWidths = calculateSizesForDimension(width, cells.columnSizes, cells.columnsTotalSize)
         val columnHeights = calculateSizesForDimension(height, cells.rowSizes, cells.rowsTotalSize)
         var y = 0f
-        val cellPlaces = columnHeights.map { columnHeight ->
-            var x = 0f
-            val cellY = y
-            y += columnHeight
-            columnWidths.map { columnWidth ->
-                val cellX = x
-                x += columnWidth
-                CellPlacedInfo(
-                    x = cellX.roundToInt(),
-                    y = cellY.roundToInt(),
-                    width = columnWidth,
-                    height = columnHeight
-                )
+        val cellPlaces =
+            columnHeights.map { columnHeight ->
+                var x = 0f
+                val cellY = y
+                y += columnHeight
+                columnWidths.map { columnWidth ->
+                    val cellX = x
+                    x += columnWidth
+                    CellPlacedInfo(
+                        x = cellX.roundToInt(),
+                        y = cellY.roundToInt(),
+                        width = columnWidth,
+                        height = columnHeight,
+                    )
+                }
             }
-        }
         return cellPlaces.map { it.toTypedArray() }.toTypedArray()
     }
 
     private fun MeasureScope.calculateSizesForDimension(
-        availableSize: Int, cellSizes: List<GridPlacedCellSize>, totalSize: TotalSize
+        availableSize: Int,
+        cellSizes: List<GridPlacedCellSize>,
+        totalSize: TotalSize,
     ): List<Int> {
         val availableWeight = availableSize - totalSize.fixed.toPx()
         var reminder = 0f
-        return cellSizes.map { cellSize ->
-            when (cellSize) {
-                is GridPlacedCellSize.Fixed -> {
-                    val floatSize = cellSize.size.toPx() + reminder
-                    val size = floatSize.roundToInt()
-                    reminder = floatSize - size
-                    size
-                }
+        return cellSizes
+            .map { cellSize ->
+                when (cellSize) {
+                    is GridPlacedCellSize.Fixed -> {
+                        val floatSize = cellSize.size.toPx() + reminder
+                        val size = floatSize.roundToInt()
+                        reminder = floatSize - size
+                        size
+                    }
 
-                is GridPlacedCellSize.Weight -> {
-                    val floatSize = availableWeight * cellSize.size / totalSize.weight + reminder
-                    val size = floatSize.roundToInt()
-                    reminder = floatSize - size
-                    size
+                    is GridPlacedCellSize.Weight -> {
+                        val floatSize = availableWeight * cellSize.size / totalSize.weight + reminder
+                        val size = floatSize.roundToInt()
+                        reminder = floatSize - size
+                        size
+                    }
                 }
-            }
-        }.toMutableList()
+            }.toMutableList()
     }
 
     fun Iterable<GridPlacedCellSize>.calculateTotalSize(): TotalSize {

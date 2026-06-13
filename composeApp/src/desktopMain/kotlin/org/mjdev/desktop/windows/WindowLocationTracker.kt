@@ -9,14 +9,15 @@ object WindowLocationTracker {
 
     private var lastFocusedWindows = mutableSetOf<Window>()
 
-    private val focusListener = object : WindowFocusListener {
-        override fun windowGainedFocus(e: WindowEvent) {
-            lastFocusedWindows.remove(e.window)
-            lastFocusedWindows.add(e.window)
-        }
+    private val focusListener =
+        object : WindowFocusListener {
+            override fun windowGainedFocus(e: WindowEvent) {
+                lastFocusedWindows.remove(e.window)
+                lastFocusedWindows.add(e.window)
+            }
 
-        override fun windowLostFocus(e: WindowEvent) = Unit
-    }
+            override fun windowLostFocus(e: WindowEvent) = Unit
+        }
 
     fun onWindowCreated(window: Window) {
         window.addWindowFocusListener(focusListener)
@@ -32,8 +33,9 @@ object WindowLocationTracker {
 
     fun getCascadeLocationFor(window: Window): Point {
         val lastWindow = lastFocusedWindows.lastOrNull()
-        val graphicsConfiguration = lastWindow?.graphicsConfiguration ?:
-            GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice?.defaultConfiguration
+        val graphicsConfiguration =
+            lastWindow?.graphicsConfiguration
+                ?: GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice?.defaultConfiguration
         return if (graphicsConfiguration != null) {
             val screenBounds = graphicsConfiguration.bounds
             val screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(graphicsConfiguration)
@@ -56,5 +58,6 @@ object WindowLocationTracker {
     val Dimension.rightBottom get() = Point(width, height)
 
     operator fun Point.plus(other: Point) = Point(x + other.x, y + other.y)
+
     operator fun Point.minus(other: Point) = Point(x - other.x, y - other.y)
 }

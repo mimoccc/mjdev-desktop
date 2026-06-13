@@ -3,7 +3,7 @@ package org.mjdev.desktop.helpers.parsers
 object Parsers {
     fun ParsedList(
         value: String?,
-        delimiter: String = ";"
+        delimiter: String = ";",
     ): MutableList<String> = value?.split(delimiter)?.toMutableList() ?: mutableListOf()
 
     fun ParsedBoolean(
@@ -23,6 +23,6 @@ object Parsers {
 
     fun ParsedString(
         value: Any?,
-        defaultValue: String = ""
+        defaultValue: String = "",
     ) = value?.toString() ?: defaultValue
 }

@@ -33,10 +33,14 @@ object PathExt {
         get() = this.parent ?: cwd
 
     val Path.nameWithoutExtension
-        get() = name.let {
-            if (it.contains(".$extension")) it.replace(".$extension", "")
-            else it
-        }
+        get() =
+            name.let {
+                if (it.contains(".$extension")) {
+                    it.replace(".$extension", "")
+                } else {
+                    it
+                }
+            }
 
     val Path.all
         get() = listFiles()
@@ -48,51 +52,58 @@ object PathExt {
         get() = listFiles().filter { it.isDirectory }
 
     val Path.lines: List<String>
-        get() = runCatching {
-            if (this.exists) Filesystem.readLines(this)
-            else null
-        }.getOrNull() ?: emptyList()
+        get() =
+            runCatching {
+                if (this.exists) {
+                    Filesystem.readLines(this)
+                } else {
+                    null
+                }
+            }.getOrNull() ?: emptyList()
 
     val Path.text: String
-        get() = runCatching {
-            if (this.exists) Filesystem.readText(this)
-            else null
-        }.getOrNull().orEmpty()
+        get() =
+            runCatching {
+                if (this.exists) {
+                    Filesystem.readText(this)
+                } else {
+                    null
+                }
+            }.getOrNull().orEmpty()
 
-    operator fun Path.get(name: String) =
-        resolve(name, true)
+    operator fun Path.get(name: String) = resolve(name, true)
 
-    fun Path.listFilesOnly(
-        ext: String? = null,
-    ) = listFilesFiltered(ext) { f -> f.isFile && !f.isDirectory }
+    fun Path.listFilesOnly(ext: String? = null) = listFilesFiltered(ext) { f -> f.isFile && !f.isDirectory }
 
     fun Path.listFilesFiltered(
         ext: String? = null,
-        predicate: (Path) -> Boolean
+        predicate: (Path) -> Boolean,
     ) = listFiles(ext).filter(predicate)
 
-    fun Path.listFiles(
-        ext: String? = null
-    ): List<Path> = if (exists) Filesystem.listFiles(this).let { list ->
-        when {
-            ext != null -> list.filter { f -> f.extension == ext }
-            else -> list.toList()
+    fun Path.listFiles(ext: String? = null): List<Path> =
+        if (exists) {
+            Filesystem.listFiles(this).let { list ->
+                when {
+                    ext != null -> list.filter { f -> f.extension == ext }
+                    else -> list.toList()
+                }
+            }
+        } else {
+            emptyList()
         }
-    } else emptyList()
 
-    fun Path.writeText(text: String) =
-        Filesystem.writeText(this, text)
+    fun Path.writeText(text: String) = Filesystem.writeText(this, text)
 
-    fun Path.mkdirs() =
-        Filesystem.createDirectories(this)
+    fun Path.mkdirs() = Filesystem.createDirectories(this)
 
-    fun Path.delete() = if (isDirectory)
-        Filesystem.deleteDir(this)
-    else
-        Filesystem.delete(this)
+    fun Path.delete() =
+        if (isDirectory) {
+            Filesystem.deleteDir(this)
+        } else {
+            Filesystem.delete(this)
+        }
 
-    fun Path.createNewFile() =
-        Filesystem.createNewFile(this)
+    fun Path.createNewFile() = Filesystem.createNewFile(this)
 
 //    fun Path.listFiles(
 //        ext: String? = null
@@ -113,20 +124,17 @@ object PathExt {
 //        ext: String? = null,
 //    ) = listFilesFiltered(ext) { f -> !f.isDirectory }
 
-    fun List<Path>.sortedByName() =
-        sortedBy { f -> f.name }
+    fun List<Path>.sortedByName() = sortedBy { f -> f.name }
 
-    fun List<Path>.sortedByNameDescending() =
-        sortedByDescending { f -> f.name }
+    fun List<Path>.sortedByNameDescending() = sortedByDescending { f -> f.name }
 
     inline fun <R> Path.listFiles(
         ext: String? = null,
-        mapper: (Path) -> R
+        mapper: (Path) -> R,
     ): List<R> = listFiles(ext).map(mapper)
 
     inline fun <R : Comparable<R>> Path.listFilesSortedBy(
         ext: String? = null,
-        crossinline selector: (Path) -> R?
+        crossinline selector: (Path) -> R?,
     ): List<Path> = listFiles(ext).sortedBy(selector)
-
 }

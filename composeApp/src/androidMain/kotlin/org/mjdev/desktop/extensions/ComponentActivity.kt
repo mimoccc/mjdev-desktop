@@ -6,20 +6,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ComponentActivity
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import org.mjdev.desktop.BuildConfig
 import org.mjdev.desktop.helpers.WakeLockHelper
-import androidx.core.graphics.drawable.toDrawable
 import org.mjdev.desktop.log.Log
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object ComponentActivityExt {
-
     const val WAKE_LOCK_TAG = 1
 
-    val TRANSPARENT : Int = Color.Transparent.toArgb()
+    val TRANSPARENT: Int = Color.Transparent.toArgb()
 
     val ComponentActivity.decorView
         get() = window.decorView
@@ -51,18 +50,18 @@ object ComponentActivityExt {
         }
     }
 
-    fun ComponentActivity.setKeepScreenOn() = with(window) {
-        addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-    }
+    fun ComponentActivity.setKeepScreenOn() =
+        with(window) {
+            addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
 
-    fun ComponentActivity.resetKeepScreenOn() = with(window) {
-        clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-    }
+    fun ComponentActivity.resetKeepScreenOn() =
+        with(window) {
+            clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
 
     // todo : black is white ?
-    fun ComponentActivity.setBackgroundColor(
-        color: Color = Color.Black
-    ) {
+    fun ComponentActivity.setBackgroundColor(color: Color = Color.Black) {
         decorView.background = color.toArgb().toDrawable()
     }
 
@@ -71,6 +70,6 @@ object ComponentActivityExt {
         enabled: Boolean = !BuildConfig.DEBUG,
         action: () -> Unit = {
             Log.d("OnBackPressed")
-        }
+        },
     ) = BackHandler(enabled, action)
 }

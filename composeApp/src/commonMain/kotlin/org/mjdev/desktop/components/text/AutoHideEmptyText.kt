@@ -14,9 +14,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Text.textFrom
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AutoHideEmptyText(
@@ -37,7 +37,7 @@ fun AutoHideEmptyText(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     onTextLayout: (TextLayoutResult) -> Unit = {},
-    style: TextStyle = LocalTextStyle.current
+    style: TextStyle = LocalTextStyle.current,
 ) = textFrom(text).also { textAny ->
     if (textAny.isNotEmpty()) {
         TextAny(
@@ -57,25 +57,27 @@ fun AutoHideEmptyText(
             minLines = minLines,
             maxLines = maxLines,
             onTextLayout = onTextLayout,
-            style = style
+            style = style,
         )
     }
 }
 
 @Preview
 @Composable
-fun PreviewAutoHideEmptyText() = preview {
-    AutoHideEmptyText(
-        modifier = Modifier.background(Color.White),
-        text = "test"
-    )
-}
+fun PreviewAutoHideEmptyText() =
+    preview {
+        AutoHideEmptyText(
+            modifier = Modifier.background(Color.White),
+            text = "test",
+        )
+    }
 
 @Preview
 @Composable
-fun PreviewAutoHideEmptyTextEmpty() = preview {
-    AutoHideEmptyText(
-        modifier = Modifier.background(Color.White),
-        text = ""
-    )
-}
+fun PreviewAutoHideEmptyTextEmpty() =
+    preview {
+        AutoHideEmptyText(
+            modifier = Modifier.background(Color.White),
+            text = "",
+        )
+    }

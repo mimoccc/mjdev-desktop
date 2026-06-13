@@ -26,28 +26,25 @@ class AiPluginGemini(
     private val apiKey: String = context.keysManager.loadKey("gemini"),
     private val model: GeminiModelIdentifier = Gemini1_5Pro,
 ) : AIPlugin {
-
-    override suspend fun ask(
-        question: String
-    ): String = agent {
+    override suspend fun ask(question: String): String =
+        agent {
 //        Log.d("Using api key : $apiKey")
-        geminiModel {
-            apiKey(apiKey)
-            modelIdentifier(model)
+            geminiModel {
+                apiKey(apiKey)
+                modelIdentifier(model)
+            }
+            task("Provide information") {
+                addInstruction("Respond to user queries with relevant information.")
+            }
+            context {
+                addText(question)
+            }
+            finishResponse()
+        }.start().result.let { result ->
+            when (result) {
+                is Finished<*> -> result.response.toString()
+                is Stuck -> result.reason
+                is Fatal -> result.message
+            }
         }
-        task("Provide information") {
-            addInstruction("Respond to user queries with relevant information.")
-        }
-        context {
-            addText(question)
-        }
-        finishResponse()
-    }.start().result.let { result ->
-        when (result) {
-            is Finished<*> -> result.response.toString()
-            is Stuck -> result.reason
-            is Fatal -> result.message
-        }
-    }
-
 }

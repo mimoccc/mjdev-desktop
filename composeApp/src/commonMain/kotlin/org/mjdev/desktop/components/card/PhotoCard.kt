@@ -13,19 +13,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.card.base.CardDefaults
 import org.mjdev.desktop.components.card.base.CardDefaults.HorizontalImageAspectRatio
 import org.mjdev.desktop.components.card.base.CardScale
 import org.mjdev.desktop.components.image.ImageAny
+import org.mjdev.desktop.components.image.PhotoImage
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.context.LocalDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.FocusState.isFocused
 import org.mjdev.desktop.extensions.FocusState.rememberFocusRequester
 import org.mjdev.desktop.extensions.FocusState.rememberFocusState
 import org.mjdev.desktop.helpers.compose.FocusHelper
-import org.mjdev.desktop.components.image.PhotoImage
-import org.mjdev.desktop.context.IDesktopContext
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PhotoCard(
@@ -34,10 +34,11 @@ fun PhotoCard(
     contentScale: ContentScale = ContentScale.Fit,
     textColor: Color = Color.White,
     focused: Boolean = false,
-    focusState: MutableState<FocusState> = rememberFocusState(
-        item,
-        FocusHelper(focused)
-    ),
+    focusState: MutableState<FocusState> =
+        rememberFocusState(
+            item,
+            FocusHelper(focused),
+        ),
     focusRequester: FocusRequester = rememberFocusRequester(item),
     contrast: Float = 5f,
     brightness: Float = -255f,
@@ -45,7 +46,7 @@ fun PhotoCard(
         ImageAny(
             modifier = Modifier.fillMaxSize().padding(64.dp),
             src = null,
-            contentScale = contentScale
+            contentScale = contentScale,
         )
     },
     imageRenderer: @Composable () -> Unit = {
@@ -82,29 +83,32 @@ fun PhotoCard(
     titlePadding = titlePadding,
     onFocus = onFocus,
     onClick = onClick,
-    showTitle = showTitle
+    showTitle = showTitle,
 )
 
 @Composable
 fun computeCardWidth(
     api: IDesktopContext = LocalDesktopContext.current,
-    ratio: Float = 2.5f
-): Dp {
-    return if (api.containerSize.let { it.height > it.width }) api.containerSize.width / ratio
-    else api.containerSize.height / ratio
-}
+    ratio: Float = 2.5f,
+): Dp =
+    if (api.containerSize.let { it.height > it.width }) {
+        api.containerSize.width / ratio
+    } else {
+        api.containerSize.height / ratio
+    }
 
 @Preview
 @Composable
-fun PreviewPhotoCard() = preview {
-    PhotoCard(
-        item = "test",
-        modifier = Modifier.size(200.dp, 128.dp),
-        scale = CardDefaults.scale(1f),
-        contentScale = ContentScale.Crop,
-        textColor = Color.Black,
-        showTitle = true,
-        focused = true,
-        aspectRatio = HorizontalImageAspectRatio,
-    )
-}
+fun PreviewPhotoCard() =
+    preview {
+        PhotoCard(
+            item = "test",
+            modifier = Modifier.size(200.dp, 128.dp),
+            scale = CardDefaults.scale(1f),
+            contentScale = ContentScale.Crop,
+            textColor = Color.Black,
+            showTitle = true,
+            focused = true,
+            aspectRatio = HorizontalImageAspectRatio,
+        )
+    }

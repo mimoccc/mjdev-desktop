@@ -15,53 +15,62 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.background.BackgroundImage
 import org.mjdev.desktop.components.button.ButtonPrimary
 import org.mjdev.desktop.components.sliding.base.VisibilityState
 import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import org.mjdev.desktop.components.text.AutoResizeText
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun Info(
     visibleState: VisibilityState = rememberVisibilityState(),
-    onInstallClick: () -> Unit = {}
+    onInstallClick: () -> Unit = {},
 ) = withDesktopContext {
     Box(
-        modifier = Modifier.fillMaxSize().clickable {
-            runAsync {
-                visibleState.hide()
-            }
-        }
+        modifier =
+            Modifier.fillMaxSize().clickable {
+                runAsync {
+                    visibleState.hide()
+                }
+            },
     ) {
         Box(
-            modifier = Modifier.fillMaxSize()
-                .background(backgroundColor),
-            contentAlignment = Alignment.BottomStart
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(backgroundColor),
+            contentAlignment = Alignment.BottomStart,
         ) {
             BackgroundImage(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
             AutoResizeText(
-                modifier = Modifier.padding(bottom = 128.dp, start = 16.dp)
-                    .height(32.dp),
+                modifier =
+                    Modifier
+                        .padding(bottom = 128.dp, start = 16.dp)
+                        .height(32.dp),
                 text = "Welcome to mjdev desktop",
                 fontStyle = FontStyle.Italic,
                 fontWeight = FontWeight.Bold,
             )
             Box(
-                modifier = Modifier.fillMaxWidth()
-                    .height(128.dp)
-                    .background(iconsTintColor)
-                    .align(Alignment.BottomCenter),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(128.dp)
+                        .background(iconsTintColor)
+                        .align(Alignment.BottomCenter),
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(16.dp)
-                        .align(Alignment.BottomEnd),
-                    horizontalArrangement = Arrangement.End
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .align(Alignment.BottomEnd),
+                    horizontalArrangement = Arrangement.End,
                 ) {
                     ButtonPrimary(
                         text = "install mjdev desktop",
@@ -76,6 +85,7 @@ fun Info(
 
 @Preview
 @Composable
-fun PreviewInfo() = preview(320, 320) {
-    Info()
-}
+fun PreviewInfo() =
+    preview(320, 320) {
+        Info()
+    }

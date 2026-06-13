@@ -13,10 +13,10 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.*
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.context.LocalDesktopContext
 import org.mjdev.desktop.extensions.Compose.orElse
 import org.mjdev.desktop.interfaces.IApp
-import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.interfaces.IProcessListener
 import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.process.IProcessManager
@@ -26,41 +26,42 @@ import kotlin.jvm.optionals.getOrNull
 @Suppress("unused")
 class ProcessManager(
     context: IDesktopContext,
-    private val checkDelay: Long = 1000L
+    private val checkDelay: Long = 1000L,
 ) : IProcessManager {
-
     private val listeners = mutableListOf<IProcessListener>()
 
     override val size: Int
-        get() = runCatching {
-            processes.size
-        }.onFailure { e ->
-            Log.e(e)
-        }.getOrElse { 0 }
+        get() =
+            runCatching {
+                processes.size
+            }.onFailure { e ->
+                Log.e(e)
+            }.getOrElse { 0 }
 
     private var job: Job? = null
 
     private val processes = mutableStateListOf<ProcessWrapper>()
 
     init {
-        job = context.scope.launch(Dispatchers.Default) {
-            while (isActive) {
-                ProcessHandle.allProcesses().toList().filterNotNull().let { phList ->
-                    phList.forEach { ph ->
-                        if (!processes.containsProcess(ph)) {
-                            ProcessWrapper(ph).also { pw ->
-                                processes.add(pw)
-                            }
-                            listeners.filterIsInstance<ProcessAddListener>().forEach { l ->
-                                l.onProcessAdded(ph)
+        job =
+            context.scope.launch(Dispatchers.Default) {
+                while (isActive) {
+                    ProcessHandle.allProcesses().toList().filterNotNull().let { phList ->
+                        phList.forEach { ph ->
+                            if (!processes.containsProcess(ph)) {
+                                ProcessWrapper(ph).also { pw ->
+                                    processes.add(pw)
+                                }
+                                listeners.filterIsInstance<ProcessAddListener>().forEach { l ->
+                                    l.onProcessAdded(ph)
+                                }
                             }
                         }
+                        cleanup()
                     }
-                    cleanup()
+                    delay(checkDelay)
                 }
-                delay(checkDelay)
             }
-        }
     }
 
     private fun cleanup() {
@@ -90,56 +91,54 @@ class ProcessManager(
     }
 
     // todo : something raises error
-    override fun hasAppProcess(app: IApp?): Boolean = runCatching {
-        val appCmd = app?.cmd
-        val appName = app?.name
-        val appFullName = app?.fullAppName
-        processes.any { pw ->
-            (appName != null && pw.command.contains(appName)) ||
+    override fun hasAppProcess(app: IApp?): Boolean =
+        runCatching {
+            val appCmd = app?.cmd
+            val appName = app?.name
+            val appFullName = app?.fullAppName
+            processes.any { pw ->
+                (appName != null && pw.command.contains(appName)) ||
                     (appCmd != null && pw.command.contains(appCmd)) ||
                     (appFullName != null && pw.command.contains(appFullName)) ||
                     (appName != null && pw.commandLine.contains(appName)) ||
                     (appCmd != null && pw.commandLine.contains(appCmd)) ||
                     (appFullName != null && pw.commandLine.contains(appFullName))
-
-        }
-    }.onFailure { e ->
-        Log.e(e)
-    }.getOrNull() ?: false
+            }
+        }.onFailure { e ->
+            Log.e(e)
+        }.getOrNull() ?: false
 
     companion object {
-        fun SnapshotStateList<ProcessWrapper>.containsProcess(
-            ph: ProcessHandle
-        ) = ph.pid().let { pid ->
-            any { p -> p.pid == pid }
-        }
+        fun SnapshotStateList<ProcessWrapper>.containsProcess(ph: ProcessHandle) =
+            ph.pid().let { pid ->
+                any { p -> p.pid == pid }
+            }
 
-        fun SnapshotStateList<ProcessWrapper>.containsProcess(
-            ph: ProcessWrapper
-        ) = any { p -> p.pid == ph.pid }
+        fun SnapshotStateList<ProcessWrapper>.containsProcess(ph: ProcessWrapper) = any { p -> p.pid == ph.pid }
 
         @Composable
-        fun processManagerListener(
-            onChanged: IProcessManager?.(processHandle: ProcessHandle?) -> Unit = {},
-        ) = processManagerListener(onChanged, onChanged)
+        fun processManagerListener(onChanged: IProcessManager?.(processHandle: ProcessHandle?) -> Unit = {}) =
+            processManagerListener(onChanged, onChanged)
 
         @Composable
         fun processManagerListener(
             onAdd: IProcessManager?.(processHandle: ProcessHandle?) -> Unit,
             onRemove: IProcessManager?.(processHandle: ProcessHandle?) -> Unit,
             context: IDesktopContext = LocalDesktopContext.current,
-            processManger: IProcessManager? = context.processManager // todo
+            processManger: IProcessManager? = context.processManager, // todo
         ): IProcessManager? {
-            val addListener = object : ProcessAddListener {
-                override fun onProcessAdded(processHandle: ProcessHandle?) {
-                    onAdd.invoke(processManger, processHandle)
+            val addListener =
+                object : ProcessAddListener {
+                    override fun onProcessAdded(processHandle: ProcessHandle?) {
+                        onAdd.invoke(processManger, processHandle)
+                    }
                 }
-            }
-            val removeListener = object : ProcessRemoveListener {
-                override fun onProcessRemoved(processHandle: ProcessHandle?) {
-                    onRemove.invoke(processManger, processHandle)
+            val removeListener =
+                object : ProcessRemoveListener {
+                    override fun onProcessRemoved(processHandle: ProcessHandle?) {
+                        onRemove.invoke(processManger, processHandle)
+                    }
                 }
-            }
             DisposableEffect(Unit) {
                 processManger?.addListener(addListener)
                 processManger?.addListener(removeListener)
@@ -165,10 +164,8 @@ class ProcessManager(
         val pid: Long = processHandle?.pid().orElse { -1L },
         val info: ProcessHandle.Info? = processHandle?.info(),
         val command: String = info?.command()?.getOrNull().orEmpty(),
-        val commandLine: String = info?.commandLine()?.getOrNull().orEmpty()
+        val commandLine: String = info?.commandLine()?.getOrNull().orEmpty(),
     ) {
-        override fun toString(): String {
-            return "$pid | $command | $commandLine"
-        }
+        override fun toString(): String = "$pid | $command | $commandLine"
     }
 }

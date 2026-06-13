@@ -28,15 +28,15 @@ import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
 import org.mjdev.desktop.managers.ai.IAiManager
 import org.mjdev.desktop.managers.apps.IAppsManager
+import org.mjdev.desktop.managers.base.IDelegate
+import org.mjdev.desktop.managers.base.ManagerCache
 import org.mjdev.desktop.managers.connectivity.IConnectivityManager
+import org.mjdev.desktop.managers.keys.IKeyManager
 import org.mjdev.desktop.managers.os.IOSManager
+import org.mjdev.desktop.managers.palette.IPalette
 import org.mjdev.desktop.managers.process.IProcessManager
 import org.mjdev.desktop.managers.theme.IThemeManager
 import org.mjdev.desktop.managers.translations.ITranslator
-import org.mjdev.desktop.managers.base.IDelegate
-import org.mjdev.desktop.managers.base.ManagerCache
-import org.mjdev.desktop.managers.keys.IKeyManager
-import org.mjdev.desktop.managers.palette.IPalette
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.reflect.KClass
@@ -46,19 +46,20 @@ import kotlin.reflect.KProperty
 abstract class IDesktopContext : IDisposable {
     open val managersCache: ManagerCache = ManagerCache(this)
 
-    open val controlCenterPages: MutableList<IPage> = mutableListOf(
-        MainSettingsPage(this),
-        WifiSettingsPage(this),
-        EthSettingsPage(this),
-        SoundSettingsPage(this),
-        BluetoothSettingsPage(this),
-        DisplaySettingsPage(this),
-        DevicesPage(this),
-        RemotesSettingsPage(this),
-        ThemeSettingsPage(this),
-        AIPage(this),
-        AboutPage(this)
-    )
+    open val controlCenterPages: MutableList<IPage> =
+        mutableListOf(
+            MainSettingsPage(this),
+            WifiSettingsPage(this),
+            EthSettingsPage(this),
+            SoundSettingsPage(this),
+            BluetoothSettingsPage(this),
+            DisplaySettingsPage(this),
+            DevicesPage(this),
+            RemotesSettingsPage(this),
+            ThemeSettingsPage(this),
+            AIPage(this),
+            AboutPage(this),
+        )
 
     val storageProvider = StorageProvider(this)
 
@@ -93,11 +94,20 @@ abstract class IDesktopContext : IDisposable {
     abstract val platformContext: PlatformContext?
 
     abstract suspend fun open(what: Any?)
+
     abstract suspend fun logOut()
+
     abstract suspend fun restart()
+
     abstract suspend fun suspend()
+
     abstract suspend fun shutdown()
-    abstract suspend fun login(uName: String, uPasswd: String): Boolean
+
+    abstract suspend fun login(
+        uName: String,
+        uPasswd: String,
+    ): Boolean
+
     abstract suspend fun logout(): Boolean
 
     abstract fun createManager(cls: KClass<*>): IDelegate?
@@ -105,7 +115,7 @@ abstract class IDesktopContext : IDisposable {
     fun runAsync(
         context: CoroutineContext = EmptyCoroutineContext,
         start: CoroutineStart = CoroutineStart.DEFAULT,
-        block: suspend CoroutineScope.() -> Unit
+        block: suspend CoroutineScope.() -> Unit,
     ) = scope.launch(context, start, block)
 
     fun notify(
@@ -139,6 +149,6 @@ abstract class IDesktopContext : IDisposable {
 
     inline operator fun <reified T : IDelegate> IDesktopContext.getValue(
         desktopContext: IDesktopContext,
-        property: KProperty<*>
+        property: KProperty<*>,
     ): T = managersCache.get()
 }

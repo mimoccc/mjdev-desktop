@@ -2,19 +2,19 @@ package org.mjdev.desktop.data
 
 import okio.Path
 import okio.Path.Companion.toPath
-import org.mjdev.desktop.helpers.desktopparser.DesktopFileParser
-import org.mjdev.desktop.log.Log
 import org.ini4j.Ini
 import org.ini4j.Profile.Section
 import org.mjdev.desktop.extensions.PathExt.absolutePath
 import org.mjdev.desktop.extensions.PathExt.createNewFile
 import org.mjdev.desktop.extensions.PathExt.cwd
-import org.mjdev.desktop.extensions.PathExt.exists
-import org.mjdev.desktop.extensions.PathExt.text
 import org.mjdev.desktop.extensions.PathExt.delete
+import org.mjdev.desktop.extensions.PathExt.exists
 import org.mjdev.desktop.extensions.PathExt.mkdirs
 import org.mjdev.desktop.extensions.PathExt.nameWithoutExtension
 import org.mjdev.desktop.extensions.PathExt.parentFile
+import org.mjdev.desktop.extensions.PathExt.text
+import org.mjdev.desktop.helpers.desktopparser.DesktopFileParser
+import org.mjdev.desktop.log.Log
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class DesktopFile(
@@ -22,11 +22,13 @@ class DesktopFile(
     val correctDir: Path = "/var/tmp/mjdev-desktop/corrected-desktop-files/".toPath(),
     val correctedFile: Path = correctDir.absolutePath.toPath().resolve(file.name),
     var fileData: String = (if (correctedFile.exists) correctedFile else file).text,
-    private var content: DesktopFileParser = (runCatching {
-        DesktopFileParser(fileData)
-    }.onFailure { e ->
-        Log.e(e)
-    }.getOrNull() ?: DesktopFileParser())
+    private var content: DesktopFileParser = (
+        runCatching {
+            DesktopFileParser(fileData)
+        }.onFailure { e ->
+            Log.e(e)
+        }.getOrNull() ?: DesktopFileParser()
+    ),
 ) {
     val fileName: String
         get() = if (correctedFile.exists) correctedFile.name else file.name
@@ -35,15 +37,22 @@ class DesktopFile(
         get() = if (correctedFile.exists) correctedFile.absolutePath else file.absolutePath
 
     val fullAppName
-        get() = if (correctedFile.exists) correctedFile.nameWithoutExtension
-        else file.nameWithoutExtension
+        get() =
+            if (correctedFile.exists) {
+                correctedFile.nameWithoutExtension
+            } else {
+                file.nameWithoutExtension
+            }
 
     val sections: Map<String, Section>
-        get() = content.map {
-            if (it is Section) it else null
-        }.filterNotNull().associateBy {
-            it.value.toString()
-        }
+        get() =
+            content
+                .map {
+                    if (it is Section) it else null
+                }.filterNotNull()
+                .associateBy {
+                    it.value.toString()
+                }
 
     val desktopSection: DesktopSectionScope?
         get() = content[DesktopEntryType.DesktopEntry]?.let { DesktopSectionScope(it) }
@@ -77,20 +86,18 @@ class DesktopFile(
 
     fun section(
         type: DesktopEntryType,
-        block: Section.() -> Unit
+        block: Section.() -> Unit,
     ) = (content[type.text] ?: content.add(type.text))?.apply(block)
 
-    fun desktopSection(
-        block: DesktopSectionScope.() -> Unit
-    ) = section(DesktopEntryType.DesktopEntry) {
-        DesktopSectionScope(this).apply(block)
-    }
+    fun desktopSection(block: DesktopSectionScope.() -> Unit) =
+        section(DesktopEntryType.DesktopEntry) {
+            DesktopSectionScope(this).apply(block)
+        }
 
-    fun themeSection(
-        block: ThemeSectionScope.() -> Unit
-    ) = section(DesktopEntryType.Theme) {
-        ThemeSectionScope(this).apply(block)
-    }
+    fun themeSection(block: ThemeSectionScope.() -> Unit) =
+        section(DesktopEntryType.Theme) {
+            ThemeSectionScope(this).apply(block)
+        }
 
     fun mkDirs(): DesktopFile {
         if (file.parent?.exists == false) file.parent?.mkdirs()
@@ -172,8 +179,10 @@ class DesktopFile(
         const val Prop_X_Ubuntu_UseOverlayScrollbars = "X-Ubuntu-UseOverlayScrollbars"
 
         val Empty = DesktopFile()
-        val Test = DesktopFile(
-            fileData = """
+        val Test =
+            DesktopFile(
+                fileData =
+                    """
                 [Desktop Entry]
                 Name=mjdev-desktop
                 Comment=MJDev desktop environment
@@ -183,16 +192,14 @@ class DesktopFile(
                 Type=Application
                 Categories=Desktop
                 MimeType=
-                """.trimMargin()
-        )
+                    """.trimMargin(),
+            )
 
-        operator fun Ini.get(
-            type: DesktopEntryType
-        ): Section? = get(type.text)
+        operator fun Ini.get(type: DesktopEntryType): Section? = get(type.text)
 
         fun desktopFile(
             file: Path,
-            block: DesktopFile.() -> Unit
+            block: DesktopFile.() -> Unit,
         ) = DesktopFile(file).apply(block)
     }
 }

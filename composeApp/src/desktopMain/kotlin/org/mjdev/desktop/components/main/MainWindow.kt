@@ -34,149 +34,161 @@ import org.mjdev.desktop.windows.DesktopWindow
 
 // todo focus manager
 @Composable
-fun MainWindow() = withDesktopContext {
-    val tooltipState: TooltipState = rememberTooltipState()
-    val controlCenterState = rememberChromeWindowState(
-        visible = isDesign
-    )
-    val panelState = rememberChromeWindowState(
-        hideDelay = panelHideDelay,
-        visible = isDesign || !panelAutoHideEnabled,
-        enabled = panelAutoHideEnabled,
-    )
-    val menuState = rememberChromeWindowState(
-        visible = isDesign
-    )
-    val appsMenuState = rememberAppsMenuState(
-        visible = isDesign
-    )
-    val installWindowState = rememberVisibilityState()
-    val infoWindowState = rememberVisibilityState(false) //(api.isFirstStart || api.isDebug) // todo
-    val bottomPadding by rememberCalculated(
-        panelState.enabled,
-        panelState.height
-    ) {
-        if (panelState.enabled) 0.dp
-        else max(0.dp, panelState.height)
-    }
-    val onTooltip: (item: Any?) -> Unit = { item ->
+fun MainWindow() =
+    withDesktopContext {
+        val tooltipState: TooltipState = rememberTooltipState()
+        val controlCenterState =
+            rememberChromeWindowState(
+                visible = isDesign,
+            )
+        val panelState =
+            rememberChromeWindowState(
+                hideDelay = panelHideDelay,
+                visible = isDesign || !panelAutoHideEnabled,
+                enabled = panelAutoHideEnabled,
+            )
+        val menuState =
+            rememberChromeWindowState(
+                visible = isDesign,
+            )
+        val appsMenuState =
+            rememberAppsMenuState(
+                visible = isDesign,
+            )
+        val installWindowState = rememberVisibilityState()
+        val infoWindowState = rememberVisibilityState(false) // (api.isFirstStart || api.isDebug) // todo
+        val bottomPadding by rememberCalculated(
+            panelState.enabled,
+            panelState.height,
+        ) {
+            if (panelState.enabled) {
+                0.dp
+            } else {
+                max(0.dp, panelState.height)
+            }
+        }
+        val onTooltip: (item: Any?) -> Unit = { item ->
 //        println("Tooltip: $item")
-        tooltipState.show(item)
-    }
-    DesktopWindow(
-        panelState = panelState,
-        controlCenterState = controlCenterState,
-        menuState = menuState,
-    ) {
-        Desktop(
-            tooltipState = tooltipState,
-            onTooltip = onTooltip,
-            padding = PaddingValues(
-                bottom = bottomPadding
-            ),
-            widgets = {
-                MemoryChart(
-                    modifier = Modifier.size(350.dp, 300.dp)
-                        .align(Alignment.BottomEnd)
-                )
+            tooltipState.show(item)
+        }
+        DesktopWindow(
+            panelState = panelState,
+            controlCenterState = controlCenterState,
+            menuState = menuState,
+        ) {
+            Desktop(
+                tooltipState = tooltipState,
+                onTooltip = onTooltip,
+                padding =
+                    PaddingValues(
+                        bottom = bottomPadding,
+                    ),
+                widgets = {
+                    MemoryChart(
+                        modifier =
+                            Modifier
+                                .size(350.dp, 300.dp)
+                                .align(Alignment.BottomEnd),
+                    )
 //                WebView(
 //                    modifier = Modifier
 //                        .size(800.dp, 600.dp)
 //                        .align(Alignment.Center),
 //                    url = "https://www.google.com"
 //                )
-            },
-            onLeftMouseClick = {
-                runAsync {
-                    panelState.hide()
-                    menuState.hide()
-                    controlCenterState.hide()
-                }
-            },
-            onRightMouseClick = {
-//                contextMenuState.show()
-            }
-        )
-    }
-    DesktopPanelWindow(
-        onTooltip = onTooltip,
-        panelState = panelState,
-        menuState = menuState,
-        onFocusChange = { focused ->
-//            Log.d("panel focus : $focused")
-            val menuIsVisible = appsMenuState.isVisible || menuState.isVisible
-            if (panelState.enabled) {
-                if (!menuIsVisible && !focused) {
+                },
+                onLeftMouseClick = {
                     runAsync {
                         panelState.hide()
+                        menuState.hide()
+                        controlCenterState.hide()
+                    }
+                },
+                onRightMouseClick = {
+//                contextMenuState.show()
+                },
+            )
+        }
+        DesktopPanelWindow(
+            onTooltip = onTooltip,
+            panelState = panelState,
+            menuState = menuState,
+            onFocusChange = { focused ->
+//            Log.d("panel focus : $focused")
+                val menuIsVisible = appsMenuState.isVisible || menuState.isVisible
+                if (panelState.enabled) {
+                    if (!menuIsVisible && !focused) {
+                        runAsync {
+                            panelState.hide()
+                        }
                     }
                 }
-            }
-        }
-    )
-    AppsMenuWindow(
-        menuState = menuState,
-        panelState = panelState,
-        appsMenuState = appsMenuState,
-        onTooltip = onTooltip,
-        onFocusChange = { focused ->
-            Log.d("menu focus : $focused")
+            },
+        )
+        AppsMenuWindow(
+            menuState = menuState,
+            panelState = panelState,
+            appsMenuState = appsMenuState,
+            onTooltip = onTooltip,
+            onFocusChange = { focused ->
+                Log.d("menu focus : $focused")
 //            if (!focused) {
 //                menuState.hide()
 //            }
-        }
-    )
-    ControlCenterWindow(
-        onTooltip = onTooltip,
-        controlCenterState = controlCenterState,
-        onFocusChange = { focused ->
+            },
+        )
+        ControlCenterWindow(
+            onTooltip = onTooltip,
+            controlCenterState = controlCenterState,
+            onFocusChange = { focused ->
 //            Log.d("control center focus : $focused")
-            if (!focused) {
+                if (!focused) {
+                    runAsync {
+                        controlCenterState.hide()
+                    }
+                }
+            },
+        )
+        GreeterWindow()
+        InfoWindow(
+            visibleState = infoWindowState,
+            showInstallWindow = {
                 runAsync {
-                    controlCenterState.hide()
+                    infoWindowState.hide()
+                    installWindowState.show()
+                }
+            },
+        )
+        InstallerWindow(
+            visibleState = installWindowState,
+        )
+        DisposableEffect(Unit) {
+            Log.i("App started with args: $appArgs")
+            Log.i("First start : $isFirstStart")
+            Log.i("Debug mode : $isDebug")
+            Shell {
+                if (!isDebug) {
+                    Log.i("Starting autostart apps")
+//                autoStartApps()
+                } else {
+                    Log.i("Starting autostart apps omitted in debug mode.")
                 }
             }
-        }
-    )
-    GreeterWindow()
-    InfoWindow(
-        visibleState = infoWindowState,
-        showInstallWindow = {
-            runAsync {
-                infoWindowState.hide()
-                installWindowState.show()
+            onDispose {
+                dispose()
+                Log.i("App ended.")
             }
         }
-    )
-    InstallerWindow(
-        visibleState = installWindowState
-    )
-    DisposableEffect(Unit) {
-        Log.i("App started with args: $appArgs")
-        Log.i("First start : $isFirstStart")
-        Log.i("Debug mode : $isDebug")
-        Shell {
-            if (!isDebug) {
-                Log.i("Starting autostart apps")
-//                autoStartApps()
-            } else {
-                Log.i("Starting autostart apps omitted in debug mode.")
-            }
-        }
-        onDispose {
-            dispose()
-            Log.i("App ended.")
+        LaunchedEffect(menuState.isVisible) {
+            appsMenuState.isVisible = menuState.isVisible
         }
     }
-    LaunchedEffect(menuState.isVisible) {
-        appsMenuState.isVisible = menuState.isVisible
-    }
-}
 
 // todo
 @Suppress("unused")
 @Preview
 @Composable
-fun PreviewMainWindow() = preview {
-    MainWindow()
-}
+fun PreviewMainWindow() =
+    preview {
+        MainWindow()
+    }

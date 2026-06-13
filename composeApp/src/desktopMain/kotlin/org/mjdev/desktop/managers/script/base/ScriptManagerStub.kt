@@ -12,7 +12,7 @@ import org.mjdev.desktop.context.DesktopContext
 
 // todo
 open class ScriptManagerStub(
-    val api: DesktopContext
+    val api: DesktopContext,
 ) {
 //    val scriptManager: ScriptEngineManager by lazy { ScriptEngineManager() }
 //    val scriptEngine: ScriptEngine by lazy {

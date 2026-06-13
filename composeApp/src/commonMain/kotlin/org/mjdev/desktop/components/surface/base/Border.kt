@@ -21,7 +21,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 class Border(
     val border: BorderStroke,
     val inset: Dp = 0.dp,
-    val shape: Shape = ShapeTokens.BorderDefaultShape
+    val shape: Shape = ShapeTokens.BorderDefaultShape,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -40,15 +40,17 @@ class Border(
         return result
     }
 
-    override fun toString(): String {
-        return "Border(border=$border, inset=$inset, shape=$shape)"
-    }
+    override fun toString(): String = "Border(border=$border, inset=$inset, shape=$shape)"
 
-    fun copy(border: BorderStroke? = null, inset: Dp? = null, shape: Shape? = null): Border =
+    fun copy(
+        border: BorderStroke? = null,
+        inset: Dp? = null,
+        shape: Shape? = null,
+    ): Border =
         Border(
             border = border ?: this.border,
             inset = inset ?: this.inset,
-            shape = shape ?: this.shape
+            shape = shape ?: this.shape,
         )
 
     companion object {
@@ -56,7 +58,7 @@ class Border(
             Border(
                 border = BorderStroke(width = 0.dp, color = Color.Transparent),
                 inset = 0.dp,
-                shape = RectangleShape
+                shape = RectangleShape,
             )
     }
 }

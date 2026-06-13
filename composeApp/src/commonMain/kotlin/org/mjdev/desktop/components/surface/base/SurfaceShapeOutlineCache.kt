@@ -19,7 +19,7 @@ internal class SurfaceShapeOutlineCache(
     private var shape: Shape,
     private var size: Size,
     private var layoutDirection: LayoutDirection,
-    private var density: Density
+    private var density: Density,
 ) {
     private var outline: Outline? = null
 
@@ -27,7 +27,7 @@ internal class SurfaceShapeOutlineCache(
         shape: Shape,
         size: Size,
         layoutDirection: LayoutDirection,
-        density: Density
+        density: Density,
     ): Outline {
         if (outline == null || hasUpdates(shape, size, layoutDirection, density)) {
             syncUpdates(shape, size, layoutDirection, density)
@@ -44,7 +44,7 @@ internal class SurfaceShapeOutlineCache(
         shape: Shape,
         size: Size,
         layoutDirection: LayoutDirection,
-        density: Density
+        density: Density,
     ) {
         this.shape = shape
         this.size = size
@@ -56,7 +56,7 @@ internal class SurfaceShapeOutlineCache(
         shape: Shape,
         size: Size,
         layoutDirection: LayoutDirection,
-        density: Density
+        density: Density,
     ): Boolean {
         if (shape != this.shape) return true
         if (size != this.size) return true

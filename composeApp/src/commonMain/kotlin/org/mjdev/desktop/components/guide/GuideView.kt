@@ -19,9 +19,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 import kotlin.math.max
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @UiComposable
@@ -30,9 +30,9 @@ fun GuideLines(
     color: Color = Color.Black,
     lineSize: Dp = 1.dp,
     visible: Boolean = true,
-    cellSize: DpSize = DpSize(10.dp, 10.dp)
+    cellSize: DpSize = DpSize(10.dp, 10.dp),
 ) = Canvas(
-    modifier = modifier
+    modifier = modifier,
 ) {
     val rows = max(1, size.height.div(cellSize.height.value).toInt())
     val columns = max(1, size.width.div(cellSize.width.value).toInt())
@@ -43,7 +43,7 @@ fun GuideLines(
             end = Offset(x, size.height),
             color = if (visible) color else Color.Transparent,
             strokeWidth = lineSize.toPx(),
-            cap = StrokeCap.Round
+            cap = StrokeCap.Round,
         )
     }
     (0..rows).forEach { i ->
@@ -53,17 +53,18 @@ fun GuideLines(
             end = Offset(size.width, y),
             color = if (visible) color else Color.Transparent,
             strokeWidth = lineSize.toPx(),
-            cap = StrokeCap.Round
+            cap = StrokeCap.Round,
         )
     }
 }
 
 @Preview
 @Composable
-fun PreviewGuideLines() = preview(320, 320) {
-    GuideLines(
-        modifier = Modifier.fillMaxSize(),
-        cellSize = DpSize(32.dp, 32.dp),
-        color = Color.White
-    )
-}
+fun PreviewGuideLines() =
+    preview(320, 320) {
+        GuideLines(
+            modifier = Modifier.fillMaxSize(),
+            cellSize = DpSize(32.dp, 32.dp),
+            color = Color.White,
+        )
+    }

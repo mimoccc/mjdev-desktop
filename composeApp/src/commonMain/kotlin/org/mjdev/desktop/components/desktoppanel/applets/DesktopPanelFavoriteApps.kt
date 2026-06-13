@@ -15,11 +15,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.LaunchedEffect.flowBlock
 import org.mjdev.desktop.interfaces.IApp
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -38,7 +38,7 @@ fun DesktopPanelFavoriteApps(
 ) = withDesktopContext {
     val apps: List<IApp> by flowBlock(
         emptyList(),
-        processManager.size
+        processManager.size,
     ) {
         appsManager.favoriteApps
     }
@@ -46,7 +46,7 @@ fun DesktopPanelFavoriteApps(
         LazyRow(
             modifier = Modifier.wrapContentHeight(),
             horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             itemsIndexed(apps) { idx, app ->
                 DesktopPanelIcon(
@@ -62,12 +62,12 @@ fun DesktopPanelFavoriteApps(
                     onClick = {
                         onAppClick(app)
                     },
-                    onContextMenuClick = { onContextMenuClick(app) }
+                    onContextMenuClick = { onContextMenuClick(app) },
                 )
                 if (idx < apps.size - 1) {
                     VerticalDivider(
                         color = Color.Transparent,
-                        thickness = iconSpace
+                        thickness = iconSpace,
                     )
                 }
             }
@@ -78,6 +78,7 @@ fun DesktopPanelFavoriteApps(
 // todo
 @Preview
 @Composable
-fun PreviewDesktopPanelFavoriteApps() = preview {
-    DesktopPanelFavoriteApps()
-}
+fun PreviewDesktopPanelFavoriteApps() =
+    preview {
+        DesktopPanelFavoriteApps()
+    }

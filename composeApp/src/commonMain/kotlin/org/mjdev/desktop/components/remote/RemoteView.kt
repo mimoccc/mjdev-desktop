@@ -8,9 +8,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // todo
 @Composable
-fun RemoteView(
-    modifier: Modifier = Modifier
-) {
+fun RemoteView(modifier: Modifier = Modifier) {
     Box(modifier) {
         Text(text = "RemoteView")
     }

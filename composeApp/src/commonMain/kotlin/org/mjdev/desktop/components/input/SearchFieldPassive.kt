@@ -22,11 +22,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Colors.alpha
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.icons.text.Clear
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("UNUSED_PARAMETER")
 @Composable
@@ -38,7 +38,7 @@ fun SearchFieldPassive(
     textStyle: TextStyle = TextStyle.Default,
     textSize: TextUnit = 18.sp,
     onClearClick: () -> Unit = {},
-    onTooltip: (item: Any?) -> Unit = {}
+    onTooltip: (item: Any?) -> Unit = {},
 ) = SelectableOutlineEditText(
     value = textState.value,
     modifier = modifier.focusable(false),
@@ -46,35 +46,39 @@ fun SearchFieldPassive(
     singleLine = true,
     textStyle = textStyle,
     textSize = textSize,
-    colors = TextFieldDefaults.outlinedTextFieldColors(
-        backgroundColor = backgroundColor,
-        textColor = textColor,
-        disabledTextColor = textColor,
-        cursorColor = Color.Transparent,
-        errorCursorColor = Color.Transparent,
-        focusedBorderColor = Color.Transparent,
-        unfocusedBorderColor = Color.Transparent,
-        disabledBorderColor = Color.Transparent,
-        errorBorderColor = Color.Transparent
-    ),
+    colors =
+        TextFieldDefaults.outlinedTextFieldColors(
+            backgroundColor = backgroundColor,
+            textColor = textColor,
+            disabledTextColor = textColor,
+            cursorColor = Color.Transparent,
+            errorCursorColor = Color.Transparent,
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
+            disabledBorderColor = Color.Transparent,
+            errorBorderColor = Color.Transparent,
+        ),
     trailingIcon = {
         if (textState.value.isNotEmpty()) {
             Icon(
-                modifier = Modifier.padding(4.dp)
-                    .size(24.dp)
-                    .onMousePress { onClearClick() },
+                modifier =
+                    Modifier
+                        .padding(4.dp)
+                        .size(24.dp)
+                        .onMousePress { onClearClick() },
                 imageVector = Clear,
                 tint = textColor,
-                contentDescription = ""
+                contentDescription = "",
             )
         }
-    }
+    },
 )
 
 @Preview
 @Composable
-fun PreviewSearchFieldPassive() = preview {
-    SearchFieldPassive(
-        textState = mutableStateOf("test")
-    )
-}
+fun PreviewSearchFieldPassive() =
+    preview {
+        SearchFieldPassive(
+            textState = mutableStateOf("test"),
+        )
+    }

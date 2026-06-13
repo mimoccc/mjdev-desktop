@@ -14,8 +14,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.TextUnit
-import org.mjdev.desktop.extensions.Compose.preview
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.extensions.Compose.preview
 
 @Composable
 fun SelectableOutlineEditText(
@@ -38,9 +38,9 @@ fun SelectableOutlineEditText(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     shape: Shape = TextFieldDefaults.OutlinedTextFieldShape,
-    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
 ) = SelectionContainer(
-    modifier = modifier
+    modifier = modifier,
 ) {
     OutlinedTextField(
         value = value,
@@ -59,7 +59,7 @@ fun SelectableOutlineEditText(
         maxLines = maxLines,
         minLines = minLines,
         shape = shape,
-        colors = colors
+        colors = colors,
     )
 }
 
@@ -84,9 +84,9 @@ fun SelectableOutlineEditText(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     shape: Shape = TextFieldDefaults.OutlinedTextFieldShape,
-    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
 ) = SelectionContainer(
-    modifier = modifier
+    modifier = modifier,
 ) {
     OutlinedTextField(
         value = value,
@@ -105,14 +105,15 @@ fun SelectableOutlineEditText(
         maxLines = maxLines,
         minLines = minLines,
         shape = shape,
-        colors = colors
+        colors = colors,
     )
 }
 
 @Preview
 @Composable
-fun PreviewSelectableOutlineEditText() = preview {
-    SelectableOutlineEditText(
-        value = "test"
-    )
-}
+fun PreviewSelectableOutlineEditText() =
+    preview {
+        SelectableOutlineEditText(
+            value = "test",
+        )
+    }

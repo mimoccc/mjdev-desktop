@@ -9,9 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.log.Log
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 
 @Composable
 fun VideoView(
@@ -26,25 +26,30 @@ fun VideoView(
     onFail: (Throwable) -> Unit = { e -> Log.e(e) },
     onLoading: () -> Unit = {},
     onVideoFinish: () -> Unit = {},
-    onLoaded: (duration: Long) -> Unit = {}
+    onLoaded: (duration: Long) -> Unit = {},
 ) = withDesktopContext {
     BoxWithConstraints(
         modifier = modifier,
-        contentAlignment = alignment
+        contentAlignment = alignment,
     ) {
-        val url = remember(src) {
-            src.toString().let { s ->
-                if (s.startsWith("http://") || s.startsWith("https://")) s
-                else "file://$s"
+        val url =
+            remember(src) {
+                src.toString().let { s ->
+                    if (s.startsWith("http://") || s.startsWith("https://")) {
+                        s
+                    } else {
+                        "file://$s"
+                    }
+                }
             }
-        }
         VideoPlayer(
             modifier = Modifier.fillMaxSize(),
             mrl = url,
-            videoInfo = VideoInfo(
-                videoWidth = maxWidth.value.toInt(),
-                videoHeight = maxHeight.value.toInt(),
-            ),
+            videoInfo =
+                VideoInfo(
+                    videoWidth = maxWidth.value.toInt(),
+                    videoHeight = maxHeight.value.toInt(),
+                ),
             state = state,
         )
     }
@@ -52,6 +57,7 @@ fun VideoView(
 
 @Preview
 @Composable
-fun PreviewVideoView() = preview {
-    VideoView()
-}
+fun PreviewVideoView() =
+    preview {
+        VideoView()
+    }

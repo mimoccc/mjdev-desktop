@@ -4,7 +4,7 @@ import org.mjdev.desktop.helpers.adb.helpers.AdbShellPacket.*
 import java.io.IOException
 
 class AdbShellStream(
-    private val stream: IAdbStream
+    private val stream: IAdbStream,
 ) : AutoCloseable {
     @Throws(IOException::class)
     fun readAll(): AdbShellResponse {
@@ -49,7 +49,10 @@ class AdbShellStream(
     }
 
     @Throws(IOException::class)
-    fun write(id: Int, payload: ByteArray? = null) {
+    fun write(
+        id: Int,
+        payload: ByteArray? = null,
+    ) {
         stream.sink.apply {
             writeByte(id)
             writeIntLe(payload?.size ?: 0)
@@ -69,7 +72,10 @@ class AdbShellStream(
         return id
     }
 
-    private fun checkLength(id: Int, length: Int): Int {
+    private fun checkLength(
+        id: Int,
+        length: Int,
+    ): Int {
         check(length >= 0) { "Shell packet length must be >= 0: $length" }
         check(id != ID_EXIT || length == 1) { "Shell exit packet does not have payload length == 1: $length" }
         return length

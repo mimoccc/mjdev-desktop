@@ -14,5 +14,5 @@ data class MouseRange(
     val x: Dp,
     val y: Dp,
     val width: Dp,
-    val height: Dp
+    val height: Dp,
 )

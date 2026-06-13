@@ -17,7 +17,7 @@ internal class AdbConnection(
     private val closeable: Closeable?,
     private val supportedFeatures: Set<String>,
     @Suppress("unused") private val version: Int,
-    private val maxPayloadSize: Int
+    private val maxPayloadSize: Int,
 ) : AutoCloseable {
     private val random = Random()
     private val messageQueue = AdbMessageQueue(adbReader)
@@ -37,13 +37,9 @@ internal class AdbConnection(
         }
     }
 
-    fun supportsFeature(feature: String): Boolean {
-        return supportedFeatures.contains(feature)
-    }
+    fun supportsFeature(feature: String): Boolean = supportedFeatures.contains(feature)
 
-    private fun newId(): Int {
-        return random.nextInt()
-    }
+    private fun newId(): Int = random.nextInt()
 
     @Suppress("unused")
     @TestOnly
@@ -61,7 +57,10 @@ internal class AdbConnection(
     }
 
     companion object {
-        fun connect(socket: Socket, keyPair: AdbKeyPair? = null): AdbConnection {
+        fun connect(
+            socket: Socket,
+            keyPair: AdbKeyPair? = null,
+        ): AdbConnection {
             val source = socket.source()
             val sink = socket.sink()
             return connect(source, sink, keyPair, socket)
@@ -71,7 +70,7 @@ internal class AdbConnection(
             source: Source,
             sink: Sink,
             keyPair: AdbKeyPair? = null,
-            closeable: Closeable? = null
+            closeable: Closeable? = null,
         ): AdbConnection {
             val adbReader = AdbReader(source)
             val adbWriter = AdbWriter(sink)
@@ -89,7 +88,7 @@ internal class AdbConnection(
             adbReader: AdbReader,
             adbWriter: AdbWriter,
             keyPair: AdbKeyPair?,
-            closeable: Closeable?
+            closeable: Closeable?,
         ): AdbConnection {
             adbWriter.writeConnect()
             var message = adbReader.readMessage()
@@ -112,11 +111,13 @@ internal class AdbConnection(
         }
 
         private fun parseConnectionString(connectionString: String): ConnectionString {
-            val keyValues = connectionString.substringAfter("device::")
-                .split(";")
-                .map { it.split("=") }
-                .mapNotNull { if (it.size != 2) null else it[0] to it[1] }
-                .toMap()
+            val keyValues =
+                connectionString
+                    .substringAfter("device::")
+                    .split(";")
+                    .map { it.split("=") }
+                    .mapNotNull { if (it.size != 2) null else it[0] to it[1] }
+                    .toMap()
             if ("features" !in keyValues) throw IOException("Failed to parse features from connection string: $connectionString")
             val features = keyValues.getValue("features").split(",").toSet()
             return ConnectionString(features)

@@ -13,20 +13,21 @@ import okio.Path.Companion.toPath
 import org.mjdev.desktop.extensions.PathExt.lines
 import org.mjdev.desktop.extensions.Text.notStartsWith
 
-
 @Suppress("unused")
 class OsRelease(
     configFile: Path = "/etc/os-release".toPath(),
-    configFileContent: List<String> = configFile.lines.filter { line ->
-        line.trim().let { l -> l.isNotEmpty() && l.notStartsWith("#") }
-    }
+    configFileContent: List<String> =
+        configFile.lines.filter { line ->
+            line.trim().let { l -> l.isNotEmpty() && l.notStartsWith("#") }
+        },
 ) : HashMap<String, String>() {
     init {
-        configFileContent.map {
-            it.split("=").let { pair -> Pair(pair[0], pair.getOrNull(1)) }
-        }.forEach {
-            put(it.first, it.second.orEmpty())
-        }
+        configFileContent
+            .map {
+                it.split("=").let { pair -> Pair(pair[0], pair.getOrNull(1)) }
+            }.forEach {
+                put(it.first, it.second.orEmpty())
+            }
     }
 
     val prettyName: String

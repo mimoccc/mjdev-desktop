@@ -8,17 +8,16 @@
 
 package org.mjdev.desktop.managers.theme
 
-import org.mjdev.desktop.managers.theme.base.ThemeManagerStub
-import org.mjdev.desktop.managers.theme.linux.ThemeManagerLinux
 import org.jetbrains.skiko.OS
 import org.jetbrains.skiko.hostOs
 import org.mjdev.desktop.context.IDesktopContext
+import org.mjdev.desktop.managers.theme.base.ThemeManagerStub
+import org.mjdev.desktop.managers.theme.linux.ThemeManagerLinux
 
 // todo other platforms
 @Suppress("FunctionName")
-fun ThemeManager(
-    context: IDesktopContext
-) = when (hostOs) {
-    OS.Linux -> ThemeManagerLinux(context)
-    else -> ThemeManagerStub(context)
-}
+fun ThemeManager(context: IDesktopContext) =
+    when (hostOs) {
+        OS.Linux -> ThemeManagerLinux(context)
+        else -> ThemeManagerStub(context)
+    }

@@ -10,7 +10,10 @@ internal class ComponentUpdater {
     inner class UpdateScope {
         private var index = 0
 
-        fun <T : Any?> set(value: T, update: (T) -> Unit) {
+        fun <T : Any?> set(
+            value: T,
+            update: (T) -> Unit,
+        ) {
             if (index < updatedValues.size) {
                 if (updatedValues[index] != value) {
                     update(value)

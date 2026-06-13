@@ -35,13 +35,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Colors.alpha
+import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.extensions.Text.textFrom
 import org.mjdev.desktop.icons.visibility.VisibilityOff
 import org.mjdev.desktop.icons.visibility.VisibilityOn
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.mjdev.desktop.extensions.Modifier.onMousePress
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -56,7 +56,7 @@ fun KeyValueText(
     keyboardType: KeyboardType = KeyboardType.Text,
     keyTranscription: (text: Any) -> Any = { text -> text },
     valueTranscription: (text: Any) -> Any = { text -> text },
-    textPadding: PaddingValues = PaddingValues(horizontal = 8.dp)
+    textPadding: PaddingValues = PaddingValues(horizontal = 8.dp),
 ) = withDesktopContext {
     var textValue by rememberSaveable { mutableStateOf(textFrom(valueTranscription(value))) }
     var passwordVisible by rememberSaveable { mutableStateOf(keyboardType != KeyboardType.Password) }
@@ -69,41 +69,45 @@ fun KeyValueText(
     }
     var isFocused by rememberSaveable { mutableStateOf(false) }
     Row(
-        modifier = modifier
+        modifier = modifier,
     ) {
         TextAny(
             modifier = Modifier.align(Alignment.CenterVertically),
             text = keyTranscription(key),
-            color = textColor
+            color = textColor,
         )
         Spacer(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
         OutlinedTextField(
             value = textValue,
             shape = shape,
-            modifier = Modifier.align(Alignment.CenterVertically)
-                .onFocusChanged { focusState ->
-                    isFocused = focusState.isFocused || focusState.hasFocus
-                    if (isPassword && !isFocused) passwordVisible = false
-                },
-            textStyle = LocalTextStyle.current.copy(
-                letterSpacing = 0.sp
-            ),
+            modifier =
+                Modifier
+                    .align(Alignment.CenterVertically)
+                    .onFocusChanged { focusState ->
+                        isFocused = focusState.isFocused || focusState.hasFocus
+                        if (isPassword && !isFocused) passwordVisible = false
+                    },
+            textStyle =
+                LocalTextStyle.current.copy(
+                    letterSpacing = 0.sp,
+                ),
             readOnly = !editable,
             singleLine = true,
             onValueChange = { text ->
                 textValue = text
                 onValueChange(text)
             },
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = if (isFocused) focusedTextBackgroundColor.alpha(0.3f) else Color.Transparent,
-                textColor = textColor,
-                disabledTextColor = textColor,
-                cursorColor = textColor,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
+            colors =
+                TextFieldDefaults.textFieldColors(
+                    backgroundColor = if (isFocused) focusedTextBackgroundColor.alpha(0.3f) else Color.Transparent,
+                    textColor = textColor,
+                    disabledTextColor = textColor,
+                    cursorColor = textColor,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                ),
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             trailingIcon = {
@@ -112,10 +116,13 @@ fun KeyValueText(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
-                            modifier = Modifier.size(iconSize)
-                                .onMousePress { // todo on click?
-                                    passwordVisible = !passwordVisible
-                                },
+                            modifier =
+                                Modifier
+                                    .size(iconSize)
+                                    .onMousePress {
+                                        // todo on click?
+                                        passwordVisible = !passwordVisible
+                                    },
                             imageVector = iconVisible,
                             contentDescription = "",
                             tint = textColor,
@@ -123,7 +130,7 @@ fun KeyValueText(
                     }
                 }
             },
-            textPadding = textPadding
+            textPadding = textPadding,
         )
     }
 }

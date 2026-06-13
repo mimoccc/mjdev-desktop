@@ -11,23 +11,23 @@ package org.mjdev.desktop.managers.theme.linux
 import androidx.compose.ui.graphics.Color
 import okio.Path
 import okio.Path.Companion.toPath
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.data.DesktopEntryType
 import org.mjdev.desktop.data.DesktopFile.Companion.desktopFile
 import org.mjdev.desktop.extensions.Colors.SuperDarkGray
 import org.mjdev.desktop.extensions.Colors.darker
 import org.mjdev.desktop.extensions.Colors.isLightColor
-import org.mjdev.desktop.extensions.PathExt.get
 import org.mjdev.desktop.extensions.PathExt.absolutePath
 import org.mjdev.desktop.extensions.PathExt.delete
+import org.mjdev.desktop.extensions.PathExt.exists
+import org.mjdev.desktop.extensions.PathExt.get
 import org.mjdev.desktop.extensions.PathExt.mkdirs
 import org.mjdev.desktop.extensions.PathExt.parentFile
 import org.mjdev.desktop.extensions.PathExt.writeText
+import org.mjdev.desktop.extensions.StringExt.hexRgb
 import org.mjdev.desktop.helpers.system.shell.Shell
 import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.theme.base.ThemeManagerStub
-import org.mjdev.desktop.extensions.PathExt.exists
-import org.mjdev.desktop.extensions.StringExt.hexRgb
-import org.mjdev.desktop.context.IDesktopContext
 import java.util.concurrent.CompletableFuture.runAsync
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -78,31 +78,32 @@ class ThemeManagerLinux(
         }
     }
 
-    private fun createDesktopFile() = runAsync {
-        runCatching {
-            desktopFile(themeDesktopFile) {
-                mkDirs()
-                deleteFile()
-                desktopSection {
-                    Type = DesktopEntryType.Theme
-                    Name = THEME_MJDEV
-                    Comment = "dynamic system theme"
-                    Encoding = Charsets.UTF_8.name()
+    private fun createDesktopFile() =
+        runAsync {
+            runCatching {
+                desktopFile(themeDesktopFile) {
+                    mkDirs()
+                    deleteFile()
+                    desktopSection {
+                        Type = DesktopEntryType.Theme
+                        Name = THEME_MJDEV
+                        Comment = "dynamic system theme"
+                        Encoding = Charsets.UTF_8.name()
+                    }
+                    themeSection {
+                        GtkTheme = THEME_MJDEV
+                        MetacityTheme = THEME_ADWAITA_DARK
+                        IconTheme = THEME_ADWAITA_DARK
+                        CursorTheme = THEME_CURSOR_BLOOM
+                        ButtonLayout = "minimize,maximize,close:"
+                        UseOverlayScrollbars = true
+                    }
+                    write()
                 }
-                themeSection {
-                    GtkTheme = THEME_MJDEV
-                    MetacityTheme = THEME_ADWAITA_DARK
-                    IconTheme = THEME_ADWAITA_DARK
-                    CursorTheme = THEME_CURSOR_BLOOM
-                    ButtonLayout = "minimize,maximize,close:"
-                    UseOverlayScrollbars = true
-                }
-                write()
+            }.onFailure { e ->
+                Log.e(e)
             }
-        }.onFailure { e ->
-            Log.e(e)
         }
-    }
 
     private fun createCssFile(file: Path) {
         runCatching {
@@ -125,28 +126,30 @@ class ThemeManagerLinux(
     }
 
     /**
-    @define-color accent_color #ffb49e;
-    @define-color accent_bg_color #ffb49e;
-    @define-color accent_fg_color #5e1703;
-    @define-color destructive_color #ffb4a9;
-    @define-color destructive_bg_color #930006;
-    @define-color destructive_fg_color #680003;
-    @define-color success_color #d9c58d;
-    @define-color success_bg_color #534619;
-    @define-color success_fg_color #f6e1a6;
-    @define-color warning_color #e7bdb2;
-    @define-color warning_bg_color #5d4038;
-    @define-color warning_fg_color #ffdacf;
-    @define-color error_color #ffb4a9;
-    @define-color error_bg_color #930006;
-    @define-color error_fg_color #680003;
-    @define-color shade_color rgba(0, 0, 0, 0.36);
-    @define-color scrollbar_outline_color rgba(160, 140, 135, 0.5);
+     @define-color accent_color #ffb49e;
+     @define-color accent_bg_color #ffb49e;
+     @define-color accent_fg_color #5e1703;
+     @define-color destructive_color #ffb4a9;
+     @define-color destructive_bg_color #930006;
+     @define-color destructive_fg_color #680003;
+     @define-color success_color #d9c58d;
+     @define-color success_bg_color #534619;
+     @define-color success_fg_color #f6e1a6;
+     @define-color warning_color #e7bdb2;
+     @define-color warning_bg_color #5d4038;
+     @define-color warning_fg_color #ffdacf;
+     @define-color error_color #ffb4a9;
+     @define-color error_bg_color #930006;
+     @define-color error_fg_color #680003;
+     @define-color shade_color rgba(0, 0, 0, 0.36);
+     @define-color scrollbar_outline_color rgba(160, 140, 135, 0.5);
      */
     // ~/.config/gtk-3.0/gtk.css
     // ~/.config/gtk-4.0/gtk.css
     @Suppress("MemberVisibilityCanBePrivate")
-    class GtkTheme(val file: Path) {
+    class GtkTheme(
+        val file: Path,
+    ) {
         var bgColor: Color = Color.SuperDarkGray
         var fgColor: Color = Color.SuperDarkGray
         var baseColor: Color = Color.SuperDarkGray
@@ -171,7 +174,8 @@ class ThemeManagerLinux(
         var buttonBgColor: Color = Color.SuperDarkGray
         var buttonFgColor: Color = Color.White
 
-        fun asString() = """
+        fun asString() =
+            """
             @define-color bg_color ${bgColor.hexRgb};
             @define-color fg_color ${fgColor.hexRgb};
             @define-color base_color ${baseColor.hexRgb};
@@ -352,33 +356,29 @@ class ThemeManagerLinux(
             button.close:hover {
                 opacity: 1;
             }
-        """.trimIndent()
+            """.trimIndent()
     }
 
-    fun setColorScheme(
-        schemeName: String
-    ) {
+    fun setColorScheme(schemeName: String) {
         runAsync {
             Shell.executeAndRead(
                 "gsettings",
                 "set",
                 "org.gnome.desktop.interface",
                 "color-scheme",
-                schemeName
+                schemeName,
             )
         }
     }
 
-    fun setGTKTheme(
-        themeName: String = THEME_YARU
-    ) {
+    fun setGTKTheme(themeName: String = THEME_YARU) {
         runAsync {
             Shell.executeAndRead(
                 "gsettings",
                 "set",
                 "org.gnome.desktop.interface",
                 "gtk-theme",
-                themeName
+                themeName,
             )
         }
     }
@@ -391,30 +391,26 @@ class ThemeManagerLinux(
 //    ).replace("'", "").trim()
 //    }
 
-    fun setIconTheme(
-        themeName: String = THEME_YARU
-    ) {
+    fun setIconTheme(themeName: String = THEME_YARU) {
         runAsync {
             Shell.executeAndRead(
                 "gsettings",
                 "set",
                 "org.gnome.desktop.interface",
                 "icon-theme",
-                themeName
+                themeName,
             )
         }
     }
 
-    fun setSoundTheme(
-        themeName: String = THEME_YARU
-    ) {
+    fun setSoundTheme(themeName: String = THEME_YARU) {
         runAsync {
             Shell.executeAndRead(
                 "gsettings",
                 "set",
                 "org.gnome.desktop.sound",
                 "gtk-theme",
-                themeName
+                themeName,
             )
         }
     }
@@ -434,7 +430,7 @@ class ThemeManagerLinux(
 
         private fun theme(
             file: Path,
-            block: GtkTheme.() -> Unit
+            block: GtkTheme.() -> Unit,
         ) = GtkTheme(file).apply(block)
 
         private fun GtkTheme.write() {

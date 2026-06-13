@@ -1,15 +1,15 @@
-//package org.mjdev.desktop.helpers.bitmap
+// package org.mjdev.desktop.helpers.bitmap
 //
-//import okio.Source
-//import okio.buffer
-//import java.awt.image.BufferedImage
-//import java.io.ByteArrayInputStream
-//import java.io.IOException
-//import javax.imageio.ImageIO
-//import javax.imageio.ImageReader
+// import okio.Source
+// import okio.buffer
+// import java.awt.image.BufferedImage
+// import java.io.ByteArrayInputStream
+// import java.io.IOException
+// import javax.imageio.ImageIO
+// import javax.imageio.ImageReader
 //
-//@Suppress("unused")
-//interface BitmapFactory {
+// @Suppress("unused")
+// interface BitmapFactory {
 //    fun decodeSource(source: Source): Bitmap
 //
 //    fun decodeByteArray(data: ByteArray, offset: Int, length: Int): Bitmap?
@@ -29,9 +29,9 @@
 //            instance = bitmapFactory
 //        }
 //    }
-//}
+// }
 //
-//private class BitmapFactoryImageIoImpl : BitmapFactory {
+// private class BitmapFactoryImageIoImpl : BitmapFactory {
 //
 //    override fun decodeSource(source: Source): Bitmap {
 //        val bitmap: Bitmap
@@ -60,4 +60,4 @@
 //        }
 //        return bitmap
 //    }
-//}
+// }

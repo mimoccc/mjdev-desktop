@@ -1,10 +1,10 @@
 package org.mjdev.desktop.helpers.adb
 
-import org.mjdev.desktop.log.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.mjdev.desktop.log.Log
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class AdbDiscover(
@@ -46,7 +46,7 @@ class AdbDiscover(
         ) = AdbDiscover(
             coroutineScope = coroutineScope,
             onAdded = onAdded,
-            onRemoved = onRemoved
+            onRemoved = onRemoved,
         )
     }
 }

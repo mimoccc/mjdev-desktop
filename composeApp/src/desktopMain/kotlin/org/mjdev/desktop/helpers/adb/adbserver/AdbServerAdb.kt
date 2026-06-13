@@ -1,10 +1,10 @@
 package org.mjdev.desktop.helpers.adb.adbserver
 
-import org.mjdev.desktop.helpers.adb.IAdb
-import org.mjdev.desktop.helpers.adb.helpers.IAdbStream
 import okio.buffer
 import okio.sink
 import okio.source
+import org.mjdev.desktop.helpers.adb.IAdb
+import org.mjdev.desktop.helpers.adb.helpers.IAdbStream
 import java.io.DataInputStream
 import java.net.Socket
 
@@ -17,10 +17,11 @@ class AdbServerAdb(
     private val supportedFeatures: Set<String>
 
     init {
-        supportedFeatures = open("host:features").use {
-            val features = AdbServer.readString(DataInputStream(it.source.inputStream()))
-            features.split(",").toSet()
-        }
+        supportedFeatures =
+            open("host:features").use {
+                val features = AdbServer.readString(DataInputStream(it.source.inputStream()))
+                features.split(",").toSet()
+            }
     }
 
     override fun open(destination: String): IAdbStream {
@@ -31,25 +32,23 @@ class AdbServerAdb(
         return object : IAdbStream {
             override val source = socket.source().buffer()
             override val sink = socket.sink().buffer()
+
             override fun close() = socket.close()
         }
     }
 
-    override fun supportsFeature(feature: String): Boolean {
-        return feature in supportedFeatures
-    }
+    override fun supportsFeature(feature: String): Boolean = feature in supportedFeatures
 
     override fun close() {}
 
-    override fun toString(): String {
-        return name
-    }
+    override fun toString(): String = name
 
-    override fun equals(other: Any?): Boolean = when (other) {
-        null -> false
-        !is IAdb -> false
-        else -> other.name.contentEquals(this.name) == true
-    }
+    override fun equals(other: Any?): Boolean =
+        when (other) {
+            null -> false
+            !is IAdb -> false
+            else -> other.name.contentEquals(this.name) == true
+        }
 
     override fun hashCode(): Int {
         var result = host.hashCode()

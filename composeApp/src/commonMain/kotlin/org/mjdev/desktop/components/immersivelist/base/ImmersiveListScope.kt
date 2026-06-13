@@ -32,13 +32,13 @@ import org.mjdev.desktop.helpers.compose.Gravity
 
 @Immutable
 class ImmersiveListScope internal constructor(
-    private val onFocused: (Int) -> Unit
+    private val onFocused: (Int) -> Unit,
 ) {
-    fun Modifier.immersiveListItem(index: Int): Modifier {
-        return this then onFocusChanged {
-            if (it.isFocused) onFocused(index)
-        }
-    }
+    fun Modifier.immersiveListItem(index: Int): Modifier =
+        this then
+            onFocusChanged {
+                if (it.isFocused) onFocused(index)
+            }
 }
 
 @Composable
@@ -50,31 +50,32 @@ fun ImmersiveListScope.ImmersiveInnerList(
     exit: ExitTransition = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 }),
     content: @Composable ImmersiveListScope.() -> Unit = {},
 ) {
-    val background: State<Brush> = remember(backgroundColor) {
-        derivedStateOf {
-            if (backgroundColor == Color.Transparent) {
-                verticalGradient(
-                    listOf(
-                        Color.Transparent,
-                        Color.Transparent
+    val background: State<Brush> =
+        remember(backgroundColor) {
+            derivedStateOf {
+                if (backgroundColor == Color.Transparent) {
+                    verticalGradient(
+                        listOf(
+                            Color.Transparent,
+                            Color.Transparent,
+                        ),
                     )
-                )
-            } else {
-                createVerticalColorBrush(
-                    backgroundColor,
-                    Gravity.BOTTOM
-                )
+                } else {
+                    createVerticalColorBrush(
+                        backgroundColor,
+                        Gravity.BOTTOM,
+                    )
+                }
             }
         }
-    }
     AnimatedVisibility(
         modifier = modifier,
         visible = visible,
         enter = enter,
-        exit = exit
+        exit = exit,
     ) {
         Box(
-            modifier = modifier.background(background.value)
+            modifier = modifier.background(background.value),
         ) {
             content()
         }

@@ -10,26 +10,27 @@ import coil3.request.CachePolicy
 import coil3.svg.SvgDecoder
 
 object ImageLoader {
-
     @Composable
     fun imageLoaderContext() = LocalPlatformContext.current
 
     @Composable
-    fun imageLoaderMemoryCache() = MemoryCache.Builder()
-        .maxSizePercent(imageLoaderContext(), 0.3)
-        .strongReferencesEnabled(true)
-        .build()
+    fun imageLoaderMemoryCache() =
+        MemoryCache
+            .Builder()
+            .maxSizePercent(imageLoaderContext(), 0.3)
+            .strongReferencesEnabled(true)
+            .build()
 
     @Composable
     fun asyncImageLoader(
         imageLoaderContext: PlatformContext = imageLoaderContext(),
-        imageLoaderMemoryCache: MemoryCache = imageLoaderMemoryCache()
-    ) = ImageLoader.Builder(imageLoaderContext)
+        imageLoaderMemoryCache: MemoryCache = imageLoaderMemoryCache(),
+    ) = ImageLoader
+        .Builder(imageLoaderContext)
         .memoryCachePolicy(CachePolicy.ENABLED)
         .components {
             add(SvgDecoder.Factory())
 //            add(GifDecoder.Factory())
-        }
-        .memoryCache { imageLoaderMemoryCache }
+        }.memoryCache { imageLoaderMemoryCache }
         .build()
 }

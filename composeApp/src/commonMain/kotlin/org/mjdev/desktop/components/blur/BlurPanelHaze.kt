@@ -29,13 +29,14 @@ import org.mjdev.desktop.components.text.TextAny
 @Composable
 fun BlurPanelHaze(
     modifier: Modifier = Modifier,
-    hazeState: HazeState = rememberHazeState()
+    hazeState: HazeState = rememberHazeState(),
 ) {
     Box {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .hazeSource(state = hazeState)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .hazeSource(state = hazeState),
         ) {
             // todo
         }
@@ -45,15 +46,14 @@ fun BlurPanelHaze(
             title = {
                 TextAny("Test Blur Panel Haze")
             },
-            modifier = Modifier
-                // We use hazeEffect on anything where we want the background
-                // blurred.
-                .hazeEffect
-                    (
-                    state = hazeState,
+            modifier =
+                Modifier
+                    // We use hazeEffect on anything where we want the background
+                    // blurred.
+                    .hazeEffect(
+                        state = hazeState,
 //                    style = HazeMaterials.ultraThin()
-                )
-                .fillMaxWidth(),
+                    ).fillMaxWidth(),
         )
     }
 }

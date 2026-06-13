@@ -1,9 +1,9 @@
 package org.mjdev.desktop.windows.blur
 
-//import org.mjdev.desktop.windows.blur.linux.LinuxWindowBlurManager
+// import org.mjdev.desktop.windows.blur.linux.LinuxWindowBlurManager
 
-//@Suppress("unused")
-//interface WindowBlurManager {
+// @Suppress("unused")
+// interface WindowBlurManager {
 //    var blurEnabled: Boolean
 
 //    companion object {
@@ -12,7 +12,7 @@ package org.mjdev.desktop.windows.blur
 //            blurEnabled: Boolean = false,
 //        ) = when (hostOs) {
 //            // todo other platforms
-////            OS.Linux -> LinuxWindowBlurManager(window, blurEnabled)
+// //            OS.Linux -> LinuxWindowBlurManager(window, blurEnabled)
 //            else -> StubWindowBlurManager(blurEnabled)
 //        }
 
@@ -26,4 +26,4 @@ package org.mjdev.desktop.windows.blur
 //            }
 //        }
 //    }
-//}
+// }

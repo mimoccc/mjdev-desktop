@@ -3,7 +3,7 @@ package org.mjdev.desktop.helpers.system.shell
 import org.mjdev.desktop.data.App
 
 class ShellScope(
-    val shell: Shell
+    val shell: Shell,
 ) {
     suspend fun autoStartApps() = shell.autoStartApps()
 
@@ -15,11 +15,11 @@ class ShellScope(
 
     suspend fun executeAndRead(
         cmd: String,
-        vararg args: String
+        vararg args: String,
     ): String = Shell.executeAndRead(cmd, *args)
 
     suspend fun executeAndReadLines(
         cmd: String,
-        vararg args: String
+        vararg args: String,
     ): List<String> = Shell.executeAndReadLines(cmd, *args)
 }

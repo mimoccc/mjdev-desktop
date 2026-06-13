@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.icon.ShapedIcon
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Colors.SuperDarkGray
@@ -27,7 +28,6 @@ import org.mjdev.desktop.extensions.Modifier.circleBorder
 import org.mjdev.desktop.icons.system.Logout
 import org.mjdev.desktop.icons.system.PowerOff
 import org.mjdev.desktop.icons.system.RestartAlt
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("UNUSED_PARAMETER")
 @Composable
@@ -40,10 +40,10 @@ fun AppsMenuActions(
     iconLogout: ImageVector = Logout,
     modifier: Modifier = Modifier,
     onActionClick: () -> Unit = {},
-    onTooltip: (item: Any?) -> Unit = {}
+    onTooltip: (item: Any?) -> Unit = {},
 ) = withDesktopContext {
     Row(
-        modifier = modifier.wrapContentWidth()
+        modifier = modifier.wrapContentWidth(),
     ) {
         ShapedIcon(
             modifier = Modifier.circleBorder(2.dp, textColor.alpha(0.5f)),
@@ -57,7 +57,7 @@ fun AppsMenuActions(
                 runAsync {
                     context.restart()
                 }
-            }
+            },
         )
         ShapedIcon(
             modifier = Modifier.circleBorder(2.dp, textColor.alpha(0.5f)),
@@ -71,7 +71,7 @@ fun AppsMenuActions(
                 runAsync {
                     context.suspend()
                 }
-            }
+            },
         )
         ShapedIcon(
             modifier = Modifier.circleBorder(2.dp, textColor.alpha(0.5f)),
@@ -85,17 +85,19 @@ fun AppsMenuActions(
                 runAsync {
                     context.logOut()
                 }
-            }
+            },
         )
     }
 }
 
 @Preview
 @Composable
-fun PreviewAppsMenuActions() = preview {
-    AppsMenuActions(
-        modifier = Modifier
-            .background(Color.SuperDarkGray, RoundedCornerShape(16.dp))
-            .padding(8.dp),
-    )
-}
+fun PreviewAppsMenuActions() =
+    preview {
+        AppsMenuActions(
+            modifier =
+                Modifier
+                    .background(Color.SuperDarkGray, RoundedCornerShape(16.dp))
+                    .padding(8.dp),
+        )
+    }

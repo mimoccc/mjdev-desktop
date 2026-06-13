@@ -8,17 +8,20 @@ expect class MaterialIconFont(
     codepointsFileName: String,
 ) : IFont
 
-val MaterialSymbolsOutlined = MaterialIconFont(
-    "icons/MaterialSymbolsOutlined.ttf",
-    "icons/MaterialSymbolsOutlined.codepoints"
-)
+val MaterialSymbolsOutlined =
+    MaterialIconFont(
+        "icons/MaterialSymbolsOutlined.ttf",
+        "icons/MaterialSymbolsOutlined.codepoints",
+    )
 
-val MaterialSymbolsRounded = MaterialIconFont(
-    "icons/MaterialSymbolsRounded.ttf",
-    "icons/MaterialSymbolsRounded.codepoints"
-)
+val MaterialSymbolsRounded =
+    MaterialIconFont(
+        "icons/MaterialSymbolsRounded.ttf",
+        "icons/MaterialSymbolsRounded.codepoints",
+    )
 
-val MaterialSymbolsSharp = MaterialIconFont(
-    "icons/MaterialSymbolsSharp.ttf",
-    "icons/MaterialSymbolsSharp.codepoints"
-)
+val MaterialSymbolsSharp =
+    MaterialIconFont(
+        "icons/MaterialSymbolsSharp.ttf",
+        "icons/MaterialSymbolsSharp.codepoints",
+    )

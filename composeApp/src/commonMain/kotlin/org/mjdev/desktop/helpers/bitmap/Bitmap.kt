@@ -1,23 +1,23 @@
-//package org.mjdev.desktop.helpers.bitmap
+// package org.mjdev.desktop.helpers.bitmap
 //
-//import androidx.compose.ui.graphics.Color
-//import androidx.compose.ui.graphics.colorspace.ColorSpace
-//import androidx.compose.ui.graphics.colorspace.ColorSpaces
-//import okio.Sink
-//import okio.buffer
-//import java.awt.Image.SCALE_DEFAULT
-//import java.awt.image.BufferedImage
-//import java.io.IOException
-//import javax.imageio.IIOImage
-//import javax.imageio.ImageIO
-//import javax.imageio.ImageWriteParam
-//import javax.imageio.stream.ImageOutputStream
-//import kotlin.math.abs
+// import androidx.compose.ui.graphics.Color
+// import androidx.compose.ui.graphics.colorspace.ColorSpace
+// import androidx.compose.ui.graphics.colorspace.ColorSpaces
+// import okio.Sink
+// import okio.buffer
+// import java.awt.Image.SCALE_DEFAULT
+// import java.awt.image.BufferedImage
+// import java.io.IOException
+// import javax.imageio.IIOImage
+// import javax.imageio.ImageIO
+// import javax.imageio.ImageWriteParam
+// import javax.imageio.stream.ImageOutputStream
+// import kotlin.math.abs
 //
-//@Suppress("unused", "UNUSED_PARAMETER")
-//class Bitmap(
+// @Suppress("unused", "UNUSED_PARAMETER")
+// class Bitmap(
 //    val image: BufferedImage
-//) {
+// ) {
 //    val width: Int = image.width
 //    val height: Int = image.height
 //    val config: Config = Config.ARGB_8888
@@ -105,11 +105,11 @@
 //        }
 //    }
 //
-////    fun createScaledBitmap(
-////        src: Bitmap,
-////        dstWidth: Int,
-////        dstHeight: Int,
-////    ): Bitmap = Bitmap(src.image.getScaledInstance(dstWidth, dstHeight, SCALE_DEFAULT).toBufferedImage())
+// //    fun createScaledBitmap(
+// //        src: Bitmap,
+// //        dstWidth: Int,
+// //        dstHeight: Int,
+// //    ): Bitmap = Bitmap(src.image.getScaledInstance(dstWidth, dstHeight, SCALE_DEFAULT).toBufferedImage())
 //
 //    fun getPixel(
 //        x: Int,
@@ -182,4 +182,4 @@
 //            return Bitmap(newImage)
 //        }
 //    }
-//}
+// }

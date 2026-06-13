@@ -9,14 +9,13 @@
 package org.mjdev.desktop.components.surface.base
 
 import androidx.compose.runtime.Immutable
-
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Immutable
 class ClickableSurfaceGlow(
     val glow: Glow,
     val focusedGlow: Glow,
-    val pressedGlow: Glow
+    val pressedGlow: Glow,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -35,8 +34,7 @@ class ClickableSurfaceGlow(
         return result
     }
 
-    override fun toString(): String {
-        return "ClickableSurfaceGlow(glow=$glow, focusedGlow=$focusedGlow, " +
-                "pressedGlow=$pressedGlow)"
-    }
+    override fun toString(): String =
+        "ClickableSurfaceGlow(glow=$glow, focusedGlow=$focusedGlow, " +
+            "pressedGlow=$pressedGlow)"
 }

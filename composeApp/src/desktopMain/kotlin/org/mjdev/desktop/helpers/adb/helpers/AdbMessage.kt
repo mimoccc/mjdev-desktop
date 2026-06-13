@@ -1,9 +1,9 @@
 package org.mjdev.desktop.helpers.adb.helpers
 
-import org.mjdev.desktop.helpers.adb.helpers.AdbShellStream.Companion.ID_EXIT
-import org.mjdev.desktop.helpers.adb.helpers.AdbSyncStream.Companion.SYNC_IDS
 import okio.Buffer
 import okio.BufferedSource
+import org.mjdev.desktop.helpers.adb.helpers.AdbShellStream.Companion.ID_EXIT
+import org.mjdev.desktop.helpers.adb.helpers.AdbSyncStream.Companion.SYNC_IDS
 import java.nio.charset.StandardCharsets
 
 @Suppress("unused")
@@ -14,15 +14,14 @@ internal class AdbMessage(
     val payloadLength: Int,
     val checksum: Int,
     val magic: Int,
-    val payload: ByteArray
+    val payload: ByteArray,
 ) {
-    override fun toString() =
-        "${commandStr()}[${argStr(arg0)}, ${argStr(arg1)}] ${payloadStr()}"
+    override fun toString() = "${commandStr()}[${argStr(arg0)}, ${argStr(arg1)}] ${payloadStr()}"
 
     private fun payloadStr(): String {
         if (payloadLength == 0) return ""
         return when (command) {
-            AdbConstants.CMD_AUTH -> if (arg0 == AdbConstants.AUTH_TYPE_RSA_PUBLIC) String(payload) else "auth[${payloadLength}]"
+            AdbConstants.CMD_AUTH -> if (arg0 == AdbConstants.AUTH_TYPE_RSA_PUBLIC) String(payload) else "auth[$payloadLength]"
             AdbConstants.CMD_WRTE -> writePayloadStr()
             AdbConstants.CMD_OPEN -> String(payload, 0, payloadLength - 1)
             else -> "payload[$payloadLength]"
@@ -56,19 +55,18 @@ internal class AdbMessage(
         return "[sync] $id($arg)"
     }
 
-    private fun getSource(): BufferedSource {
-        return Buffer().apply { write(payload, 0, payloadLength) }
-    }
+    private fun getSource(): BufferedSource = Buffer().apply { write(payload, 0, payloadLength) }
 
     private fun argStr(arg: Int) = String.format("%X", arg)
 
-    private fun commandStr() = when (command) {
-        AdbConstants.CMD_AUTH -> "AUTH"
-        AdbConstants.CMD_CNXN -> "CNXN"
-        AdbConstants.CMD_OPEN -> "OPEN"
-        AdbConstants.CMD_OKAY -> "OKAY"
-        AdbConstants.CMD_CLSE -> "CLSE"
-        AdbConstants.CMD_WRTE -> "WRTE"
-        else -> "????"
-    }
+    private fun commandStr() =
+        when (command) {
+            AdbConstants.CMD_AUTH -> "AUTH"
+            AdbConstants.CMD_CNXN -> "CNXN"
+            AdbConstants.CMD_OPEN -> "OPEN"
+            AdbConstants.CMD_OKAY -> "OKAY"
+            AdbConstants.CMD_CLSE -> "CLSE"
+            AdbConstants.CMD_WRTE -> "WRTE"
+            else -> "????"
+        }
 }

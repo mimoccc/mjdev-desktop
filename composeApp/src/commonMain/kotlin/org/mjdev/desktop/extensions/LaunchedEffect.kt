@@ -21,22 +21,19 @@ import kotlin.coroutines.CoroutineContext
 
 @Suppress("ComposableNaming")
 object LaunchedEffect {
-
     fun launch(
         context: CoroutineContext = Dispatchers.Default,
         scope: CoroutineScope = CoroutineScope(context),
         start: CoroutineStart = CoroutineStart.DEFAULT,
-        block: suspend CoroutineScope.() -> Unit
+        block: suspend CoroutineScope.() -> Unit,
     ) = scope.launch(context, start, block)
 
     @Composable
-    fun LaunchedEffect(
-        block: suspend CoroutineScope.() -> Unit
-    ) = LaunchedEffect(Unit, block)
+    fun LaunchedEffect(block: suspend CoroutineScope.() -> Unit) = LaunchedEffect(Unit, block)
 
     fun runAsync(
         context: CoroutineContext = Dispatchers.Main,
-        block: suspend () -> Unit
+        block: suspend () -> Unit,
     ) = CoroutineScope(context).launch(context) { block() }
 
     // todo move to uiState
@@ -55,9 +52,10 @@ object LaunchedEffect {
                 emit(block())
             }.catch { t ->
                 onError(t)
-            }.flowOn(coroutineContext).collect { r ->
-                result.value = r
-            }
+            }.flowOn(coroutineContext)
+                .collect { r ->
+                    result.value = r
+                }
             if (delay > 0L) {
                 delay(delay)
                 state = currentTimeMillis
@@ -81,9 +79,10 @@ object LaunchedEffect {
                 emit(block())
             }.catch { t ->
                 onError(t)
-            }.flowOn(coroutineContext).collect { r ->
-                result.value = r
-            }
+            }.flowOn(coroutineContext)
+                .collect { r ->
+                    result.value = r
+                }
         }
         return result
     }

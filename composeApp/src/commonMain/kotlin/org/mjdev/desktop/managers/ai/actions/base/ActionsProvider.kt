@@ -8,15 +8,15 @@
 
 package org.mjdev.desktop.managers.ai.actions.base
 
-import org.mjdev.desktop.log.Log
-import org.mjdev.desktop.managers.ai.actions.base.ActionException.ActionFail
-import org.mjdev.desktop.managers.ai.actions.base.ActionException.ActionSuccess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.extensions.Compose.addIfNotExists
 import org.mjdev.desktop.extensions.System.currentTimeMillis
 import org.mjdev.desktop.helpers.fuzzywuzzy.FuzzySearch
-import org.mjdev.desktop.context.IDesktopContext
+import org.mjdev.desktop.log.Log
+import org.mjdev.desktop.managers.ai.actions.base.ActionException.ActionFail
+import org.mjdev.desktop.managers.ai.actions.base.ActionException.ActionSuccess
 
 @Suppress("unused")
 class ActionsProvider(
@@ -27,14 +27,14 @@ class ActionsProvider(
 
     constructor(
         context: IDesktopContext,
-        block: ActionsProvider.() -> Unit = {}
+        block: ActionsProvider.() -> Unit = {},
     ) : this(context) {
         block.invoke(this)
     }
 
     constructor(
         context: IDesktopContext,
-        vararg actions: Action
+        vararg actions: Action,
     ) : this(context) {
         this@ActionsProvider.actions.addAll(actions)
     }
@@ -48,21 +48,22 @@ class ActionsProvider(
     }
 
     // todo regexp
-    suspend fun tryAction(
-        text: String
-    ): ActionException {
-        return text.trim().lowercase().let { t ->
-            var action = actions.firstOrNull { a ->
-                a.text.contentEquals(t, true) || a.history.contains(t)
-            }
+    suspend fun tryAction(text: String): ActionException =
+        text.trim().lowercase().let { t ->
+            var action =
+                actions.firstOrNull { a ->
+                    a.text.contentEquals(t, true) || a.history.contains(t)
+                }
             if (action != null) {
-                Log.i("got action ${action}, relevance: exact.")
+                Log.i("got action $action, relevance: exact.")
             } else {
-                val fuzzy: Pair<Int, Action>? = actions.map { a ->
-                    Pair(FuzzySearch.ratio(a.text, t), a)
-                }.maxByOrNull { p ->
-                    p.first
-                }?.let { p -> if (p.first > 70) p else null }
+                val fuzzy: Pair<Int, Action>? =
+                    actions
+                        .map { a ->
+                            Pair(FuzzySearch.ratio(a.text, t), a)
+                        }.maxByOrNull { p ->
+                            p.first
+                        }?.let { p -> if (p.first > 70) p else null }
                 action = fuzzy?.second
                 if (action != null) {
                     Log.i("got action ${fuzzy?.second}, relevance: ${fuzzy?.first}.")
@@ -73,7 +74,7 @@ class ActionsProvider(
                 action.history.addIfNotExists(t) { t1, t2 -> t1.contentEquals(t2, true) }
                 action.action.invoke(ActionProviderScope(context)).let { r ->
                     when (r) {
-                        is ActionFail, is ActionSuccess-> r
+                        is ActionFail, is ActionSuccess -> r
                         else -> ActionSuccess(action.responseSuccess, r)
                     }
                 }
@@ -81,5 +82,4 @@ class ActionsProvider(
                 ActionException.ActionNone
             }
         }
-    }
 }

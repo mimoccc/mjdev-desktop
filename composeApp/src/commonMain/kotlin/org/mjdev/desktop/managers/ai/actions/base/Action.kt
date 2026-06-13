@@ -17,5 +17,5 @@ data class Action(
     val responseSuccess: String = "OK",
     val action: suspend ActionProviderScope.() -> ActionException,
     var lastSeen: Long = 0,
-    var history: MutableList<String> = mutableListOf()
+    var history: MutableList<String> = mutableListOf(),
 )

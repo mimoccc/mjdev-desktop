@@ -16,23 +16,27 @@ import java.awt.GraphicsEnvironment
 import java.util.*
 
 val GraphicsConfiguration.density: Density
-    get() = Density(
-        defaultTransform.scaleX.toFloat(),
-        fontScale = 1f
-    )
+    get() =
+        Density(
+            defaultTransform.scaleX.toFloat(),
+            fontScale = 1f,
+        )
 
 val GlobalDensity
-    get() = GraphicsEnvironment.getLocalGraphicsEnvironment()
-        .defaultScreenDevice
-        .defaultConfiguration
-        .density
+    get() =
+        GraphicsEnvironment
+            .getLocalGraphicsEnvironment()
+            .defaultScreenDevice
+            .defaultConfiguration
+            .density
 
 val ComponentOrientation.layoutDirection: LayoutDirection
-    get() = when {
-        isLeftToRight -> LayoutDirection.Ltr
-        isHorizontal -> LayoutDirection.Rtl
-        else -> LayoutDirection.Ltr
-    }
+    get() =
+        when {
+            isLeftToRight -> LayoutDirection.Ltr
+            isHorizontal -> LayoutDirection.Rtl
+            else -> LayoutDirection.Ltr
+        }
 
 val Locale.layoutDirection: LayoutDirection
     get() = ComponentOrientation.getOrientation(this).layoutDirection

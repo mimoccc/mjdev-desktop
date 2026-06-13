@@ -8,12 +8,12 @@
 
 package org.mjdev.desktop.managers.os.linux
 
+import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.helpers.system.shell.Shell
 import org.mjdev.desktop.managers.os.base.OSManagerStub
-import org.mjdev.desktop.context.IDesktopContext
 
 class OSManagerLinux(
-    context: IDesktopContext
+    context: IDesktopContext,
 ) : OSManagerStub(context) {
     private val osRelease = OsRelease()
 

@@ -1,0 +1,8 @@
+# This file contains project tasks for ai
+# * at the line beginning means repeatable task every build run
+# - at the line beginning means task to be done once, task can be multiline
+
+* collect reports from reports folder and clean up code where it is non-invasive,
+  and also check build can complete after update
+* update dependencies from report in reports folder, on every updated library check
+  that builds run and or ommit/revert update if impossible

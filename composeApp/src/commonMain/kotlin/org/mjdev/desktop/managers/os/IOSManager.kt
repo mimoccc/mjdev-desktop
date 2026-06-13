@@ -6,8 +6,9 @@ interface IOSManager : IDelegate {
     val machineName: String
 
     companion object {
-        val EMPTY = object : IOSManager {
-            override val machineName: String = "mjdev"
-        }
+        val EMPTY =
+            object : IOSManager {
+                override val machineName: String = "mjdev"
+            }
     }
 }

@@ -16,49 +16,51 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.text.TextAny
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.data.TooltipData
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.interfaces.IApp
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
-fun Tooltip(
-    tooltipState: TooltipState= rememberTooltipState(),
-) = withDesktopContext {
-    if (tooltipState.value != null) {
-        Box(
-            modifier = Modifier
-                .wrapContentSize()
-                .background(backgroundColor, RoundedCornerShape(8.dp))
-                .border(2.dp, borderColor, RoundedCornerShape(8.dp))
-                .padding(8.dp)
-        ) {
-            with(tooltipState.convertedValue) {
-                Column {
-                    if (title.isNotEmpty()) {
-                        TextAny(
-                            text = title,
-                            color = textColor,
-                            fontSize = 14.sp
-                        )
-                    }
-                    if (description.isNotEmpty()) {
-                        TextAny(
-                            text = description,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            minLines = 1,
-                            maxLines = 2
-                        )
+fun Tooltip(tooltipState: TooltipState = rememberTooltipState()) =
+    withDesktopContext {
+        if (tooltipState.value != null) {
+            Box(
+                modifier =
+                    Modifier
+                        .wrapContentSize()
+                        .background(backgroundColor, RoundedCornerShape(8.dp))
+                        .border(2.dp, borderColor, RoundedCornerShape(8.dp))
+                        .padding(8.dp),
+            ) {
+                with(tooltipState.convertedValue) {
+                    Column {
+                        if (title.isNotEmpty()) {
+                            TextAny(
+                                text = title,
+                                color = textColor,
+                                fontSize = 14.sp,
+                            )
+                        }
+                        if (description.isNotEmpty()) {
+                            TextAny(
+                                text = description,
+                                color = textColor,
+                                fontSize = 12.sp,
+                                minLines = 1,
+                                maxLines = 2,
+                            )
+                        }
                     }
                 }
             }
+        } else {
+            Unit
         }
-    } else Unit
-}
+    }
 
 class TooltipState(
     val converter: (Any?) -> TooltipData = { item ->
@@ -66,7 +68,7 @@ class TooltipState(
             is IApp -> TooltipData(title = item.name, description = item.comment)
             else -> TooltipData(description = item.toString())
         }
-    }
+    },
 ) {
     private var valueState: MutableState<Any?> = mutableStateOf(null)
 
@@ -93,8 +95,9 @@ fun rememberTooltipState() = remember { TooltipState() }
 
 @Preview
 @Composable
-fun PreviewTooltip() = preview {
-    Tooltip(
-        tooltipState = rememberTooltipState().apply{ show("test tooltip") }
-    )
-}
+fun PreviewTooltip() =
+    preview {
+        Tooltip(
+            tooltipState = rememberTooltipState().apply { show("test tooltip") },
+        )
+    }

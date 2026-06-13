@@ -15,16 +15,16 @@ import org.mjdev.desktop.windows.ChromeWindow
 @Composable
 fun InfoWindow(
     visibleState: VisibilityState = rememberVisibilityState(),
-    showInstallWindow: () -> Unit = {}
+    showInstallWindow: () -> Unit = {},
 ) = withDesktopContext {
     ChromeWindow(
         visible = visibleState.isVisible,
         size = DpSize(808.dp, 608.dp),
-        position = DpOffset.Zero
+        position = DpOffset.Zero,
     ) {
         Info(
             visibleState = visibleState,
-            onInstallClick = showInstallWindow
+            onInstallClick = showInstallWindow,
         )
     }
 }
@@ -32,6 +32,7 @@ fun InfoWindow(
 @Suppress("unused")
 @Preview
 @Composable
-fun PreviewInfoWindow() = preview {
-    InfoWindow()
-}
+fun PreviewInfoWindow() =
+    preview {
+        InfoWindow()
+    }

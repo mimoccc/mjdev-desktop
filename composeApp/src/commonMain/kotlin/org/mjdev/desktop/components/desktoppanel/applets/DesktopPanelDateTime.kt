@@ -14,15 +14,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.custom.DateTime
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.ButtonDefaults.color
 import org.mjdev.desktop.extensions.ButtonDefaults.noElevation
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.onMouseEnter
 import org.mjdev.desktop.extensions.Modifier.onMouseLeave
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DesktopPanelDateTime(
@@ -36,22 +36,22 @@ fun DesktopPanelDateTime(
     onClick: () -> Unit = {},
 ) = withDesktopContext {
     Box(
-        modifier = modifier
-            .wrapContentSize()
-            .onMouseEnter {
-                buttonState.value = true
-                onTooltip(null) // todo
-            }
-            .onMouseLeave {
-                buttonState.value = false
-            }
+        modifier =
+            modifier
+                .wrapContentSize()
+                .onMouseEnter {
+                    buttonState.value = true
+                    onTooltip(null) // todo
+                }.onMouseLeave {
+                    buttonState.value = false
+                },
     ) {
         Button(
             modifier = Modifier.padding(padding),
             contentPadding = PaddingValues(horizontal = 4.dp),
             onClick = onClick,
             colors = ButtonDefaults.color(if (buttonState.value) backgroundHover else Color.Transparent),
-            elevation = ButtonDefaults.noElevation()
+            elevation = ButtonDefaults.noElevation(),
         ) {
             DateTime(
                 backgroundColor = Color.Transparent,
@@ -67,6 +67,7 @@ fun DesktopPanelDateTime(
 
 @Preview
 @Composable
-fun PreviewDesktopPanelDateTime() = preview {
-    DesktopPanelDateTime()
-}
+fun PreviewDesktopPanelDateTime() =
+    preview {
+        DesktopPanelDateTime()
+    }

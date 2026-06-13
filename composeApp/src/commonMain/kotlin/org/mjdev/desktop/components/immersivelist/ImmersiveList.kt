@@ -13,18 +13,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.immersivelist.base.ImmersiveListBackgroundScope
 import org.mjdev.desktop.components.immersivelist.base.ImmersiveListScope
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.FocusState.bringIntoViewIfChildrenAreFocused
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("IllegalExperimentalApiUsage")
 @Composable
 fun ImmersiveList(
     background: @Composable ImmersiveListBackgroundScope.(
         index: Int,
-        listHasFocus: Boolean
+        listHasFocus: Boolean,
     ) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
     listAlignment: Alignment = Alignment.BottomEnd,
@@ -32,13 +32,13 @@ fun ImmersiveList(
     listHasFocus: MutableState<Boolean> = remember { mutableStateOf(false) },
     list: @Composable ImmersiveListScope.() -> Unit = {},
 ) = Box(
-    modifier.bringIntoViewIfChildrenAreFocused()
+    modifier.bringIntoViewIfChildrenAreFocused(),
 ) {
     ImmersiveListBackgroundScope(
-        this
+        this,
     ).background(
         currentItemIndex.intValue,
-        listHasFocus.value
+        listHasFocus.value,
     )
     val focusManager = LocalFocusManager.current
     Box(
@@ -46,7 +46,7 @@ fun ImmersiveList(
             .align(listAlignment)
             .onFocusChanged { focusState ->
                 listHasFocus.value = focusState.hasFocus
-            }
+            },
     ) {
         ImmersiveListScope { idx ->
             currentItemIndex.intValue = idx
@@ -58,6 +58,7 @@ fun ImmersiveList(
 // todo
 @Preview
 @Composable
-fun PreviewImmersiveList() = preview {
-    ImmersiveList()
-}
+fun PreviewImmersiveList() =
+    preview {
+        ImmersiveList()
+    }

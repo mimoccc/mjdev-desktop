@@ -1,11 +1,11 @@
 package org.mjdev.desktop.data
 
-import org.mjdev.desktop.helpers.system.shell.Shell
 import okio.Path
 import okio.Path.Companion.toPath
-import org.mjdev.desktop.extensions.PathExt.lines
-import org.mjdev.desktop.icons.user.AccountCircle
 import org.mjdev.desktop.context.IDesktopContext
+import org.mjdev.desktop.extensions.PathExt.lines
+import org.mjdev.desktop.helpers.system.shell.Shell
+import org.mjdev.desktop.icons.user.AccountCircle
 import org.mjdev.desktop.interfaces.IUser
 import org.mjdev.desktop.interfaces.IUserDirs
 import java.io.File
@@ -44,9 +44,7 @@ class User(
     override val backgrounds
         get() = config.desktopBackgrounds
 
-    override fun toString(): String {
-        return userName
-    }
+    override fun toString(): String = userName
 
 //    fun login(
 //        context: IDesktopContext,
@@ -57,29 +55,29 @@ class User(
         val NOBODY = User(":x:-1:-1:::")
         val DEFAULT = NOBODY
 
-        fun isLoggedIn(
-            uname: String
-        ): Boolean = Shell.executeAndRead("whoami").trim().contentEquals(uname)
+        fun isLoggedIn(uname: String): Boolean = Shell.executeAndRead("whoami").trim().contentEquals(uname)
 
         fun loadPicture(
             home: String,
-            pic: String
+            pic: String,
         ): File? = loadPicture(File(home), pic)
 
         fun loadPicture(
             homeDir: File,
-            picName: String
-        ): File? = File(homeDir, picName).let { f ->
-            if (f.exists()) f else null
-        }
-
-        fun allUsers(
-            context: IDesktopContext
-        ): List<User> = "/etc/passwd".toPath().lines
-            .filter { t ->
-                t.contains("/home")
-            }.map { dir ->
-                User(dir)
+            picName: String,
+        ): File? =
+            File(homeDir, picName).let { f ->
+                if (f.exists()) f else null
             }
+
+        fun allUsers(context: IDesktopContext): List<User> =
+            "/etc/passwd"
+                .toPath()
+                .lines
+                .filter { t ->
+                    t.contains("/home")
+                }.map { dir ->
+                    User(dir)
+                }
     }
 }

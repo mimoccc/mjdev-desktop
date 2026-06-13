@@ -13,10 +13,9 @@ import org.mjdev.desktop.helpers.compose.ImagesProvider
 // todo
 @Suppress("unused")
 class ProviderErzvo(
-    private val loadCount: Int = 10
+    private val loadCount: Int = 10,
 ) : ImagesProvider {
     override val size: Int = 1
-    override suspend fun get(): Any {
-        return "http://erzvo.com/wp-content/uploads/2022/11/22-11-05-10429-Kubo-kvety-2013-1.jpg"
-    }
+
+    override suspend fun get(): Any = "http://erzvo.com/wp-content/uploads/2022/11/22-11-05-10429-Kubo-kvety-2013-1.jpg"
 }

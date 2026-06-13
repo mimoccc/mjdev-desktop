@@ -16,8 +16,5 @@ object DoubleExt {
     }
 
     // todo
-    fun String.format(
-        dbl: Double
-    ): String = "not yet implemented"
-
+    fun String.format(dbl: Double): String = "not yet implemented"
 }

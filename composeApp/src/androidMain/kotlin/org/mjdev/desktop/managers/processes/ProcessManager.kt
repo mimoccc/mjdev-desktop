@@ -18,7 +18,7 @@ import org.mjdev.desktop.managers.process.IProcessManager
 @Suppress("unused")
 class ProcessManager(
     private val context: IDesktopContext,
-    private val checkDelay: Long = 1000L
+    private val checkDelay: Long = 1000L,
 ) : IProcessManager {
     private val listeners = mutableListOf<IProcessListener>()
 

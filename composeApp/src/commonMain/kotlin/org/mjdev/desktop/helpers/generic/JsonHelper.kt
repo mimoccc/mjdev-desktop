@@ -12,11 +12,7 @@ object JsonHelper {
             .create()
     }
 
-    fun <T> T.toJson(): String =
-        gson.toJson(this)
+    fun <T> T.toJson(): String = gson.toJson(this)
 
-    inline fun <reified T> fromJson(
-        json: String
-    ): T = gson.fromJson(json, T::class.java)
-
+    inline fun <reified T> fromJson(json: String): T = gson.fromJson(json, T::class.java)
 }

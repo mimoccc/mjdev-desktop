@@ -1,0 +1,8 @@
+root = true
+
+[*.{kt,kts}]
+# ktlint's no-unused-imports is a false positive on receiver/extension-member imports
+# (e.g. ButtonDefaults.transparent / .noElevation) and would strip imports that are
+# actually used, breaking compilation when ktlintFormat runs. Disable just that rule so
+# auto-format stays safe.
+ktlint_standard_no-unused-imports = disabled

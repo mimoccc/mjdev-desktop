@@ -10,6 +10,10 @@ package org.mjdev.desktop.data
 
 sealed class LoadingState {
     object Initializing : LoadingState()
-    data class Loading(val progress: Float) : LoadingState()
+
+    data class Loading(
+        val progress: Float,
+    ) : LoadingState()
+
     object Finished : LoadingState()
 }

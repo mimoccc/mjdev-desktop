@@ -10,12 +10,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.helpers.gif.GifDecoder
 import org.mjdev.desktop.components.image.GifViewState.Companion.rememberGifViewState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.context.LocalDesktopContext
+import org.mjdev.desktop.extensions.Compose.preview
+import org.mjdev.desktop.helpers.gif.GifDecoder
 import org.mjdev.desktop.log.Log
 import kotlin.math.absoluteValue
 
@@ -28,7 +28,7 @@ fun GifView(
     onAnimationFinish: () -> Unit = {},
     onLoading: () -> Unit = { Log.d("Loading GIF: ${state.src}") },
     onLoaded: (duration: Long) -> Unit = { Log.d("Loading GIF: ${state.src} is loaded.") },
-    onFail: (error: Throwable) -> Unit = { e -> Log.e("Failed to load GIF: ${state.src}", e) }
+    onFail: (error: Throwable) -> Unit = { e -> Log.e("Failed to load GIF: ${state.src}", e) },
 ) = withDesktopContext {
     BoxWithConstraints {
         Canvas(modifier = modifier) {
@@ -113,20 +113,22 @@ class GifViewState {
         fun rememberGifViewState(
             src: String,
             context: IDesktopContext = LocalDesktopContext.current,
-            scope: CoroutineScope = context.scope
-        ): GifViewState = remember(src) {
-            GifViewState().apply {
-                scope.launch {
-                    load(src)
+            scope: CoroutineScope = context.scope,
+        ): GifViewState =
+            remember(src) {
+                GifViewState().apply {
+                    scope.launch {
+                        load(src)
+                    }
                 }
             }
-        }
     }
 }
 
 @Suppress("unused")
 @Preview
 @Composable
-fun PreviewGifView() = preview {
-    GifView()
-}
+fun PreviewGifView() =
+    preview {
+        GifView()
+    }

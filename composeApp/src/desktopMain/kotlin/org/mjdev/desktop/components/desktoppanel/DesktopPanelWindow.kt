@@ -9,14 +9,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import org.mjdev.desktop.context.DesktopContextScope
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
+import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
 import org.mjdev.desktop.extensions.PaddingValues.height
 import org.mjdev.desktop.helpers.mouseevents.MouseRange
-import org.mjdev.desktop.context.DesktopContextScope
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.mjdev.desktop.extensions.LaunchedEffect.runAsync
 import org.mjdev.desktop.interfaces.IApp
 import org.mjdev.desktop.windows.ChromeWindow
 import org.mjdev.desktop.windows.ChromeWindowState
@@ -50,41 +50,46 @@ fun DesktopPanelWindow(
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
         if (visible) {
             iconSize.height +
-                    iconPadding.height.times(2) +
-                    iconOuterPadding.height.times(2) +
-                    theme.panelContentPadding.times(2)
-        } else panelDividerWidth
+                iconPadding.height.times(2) +
+                iconOuterPadding.height.times(2) +
+                theme.panelContentPadding.times(2)
+        } else {
+            panelDividerWidth
+        }
     }
     val size by rememberComputed(
         panelState.isVisible,
         panelState.enabled,
         containerSize.width,
-        containerSize.height
+        containerSize.height,
     ) {
         DpSize(
             containerSize.width,
             panelHeight(
-                if (panelState.enabled) panelState.isVisible
-                else true
-            )
+                if (panelState.enabled) {
+                    panelState.isVisible
+                } else {
+                    true
+                },
+            ),
         )
     }
     val position by rememberComputed(size) {
         DpOffset(
             9.dp,
-            containerSize.height
+            containerSize.height,
         )
     }
     val mouseRange by rememberCalculated(
         containerSize,
         size,
-        position
+        position,
     ) {
         MouseRange(
             x = 0.dp,
             y = containerSize.height - controlCenterDividerWidth,
             width = containerSize.width,
-            height = size.height
+            height = size.height,
         )
     }
     ChromeWindow(
@@ -129,7 +134,7 @@ fun DesktopPanelWindow(
                     }
                 }
             }
-        }
+        },
     ) {
         DesktopPanel(
             iconSize = iconSize,
@@ -154,7 +159,7 @@ fun DesktopPanelWindow(
                         }
                     }
                 }
-            }
+            },
         )
     }
     LaunchedEffect(size, position) {
@@ -165,6 +170,7 @@ fun DesktopPanelWindow(
 // todo
 @Preview
 @Composable
-fun PreviewDesktopPanelWindow() = preview {
-    DesktopPanelWindow()
-}
+fun PreviewDesktopPanelWindow() =
+    preview {
+        DesktopPanelWindow()
+    }

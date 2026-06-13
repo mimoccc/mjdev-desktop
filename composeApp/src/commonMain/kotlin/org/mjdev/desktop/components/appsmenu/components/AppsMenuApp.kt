@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.fonticon.FontIcon
 import org.mjdev.desktop.components.text.TextAny
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
@@ -30,7 +31,6 @@ import org.mjdev.desktop.extensions.Modifier.onMousePress
 import org.mjdev.desktop.extensions.Modifier.onRightClick
 import org.mjdev.desktop.helpers.shape.DottedShape
 import org.mjdev.desktop.interfaces.IApp
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName", "UNUSED_PARAMETER")
 @Composable
@@ -46,15 +46,16 @@ fun AppsMenuApp(
     dividerColor: Color = Color.Black,
     onContextMenuClick: () -> Unit = {},
     onClick: () -> Unit = {},
-    onTooltip: (item: Any?) -> Unit = {}
+    onTooltip: (item: Any?) -> Unit = {},
 ) = withDesktopContext {
     val appIconName = remember(app, icon) { app?.name ?: icon }
     val materialIcon = remember(appIconName) { iconSet.iconForName(appIconName) ?: 0 }
     Column(
-        modifier = modifier.onMousePress {
-            onLeftClick { onClick() }
-            onRightClick { onContextMenuClick() }
-        }
+        modifier =
+            modifier.onMousePress {
+                onLeftClick { onClick() }
+                onRightClick { onContextMenuClick() }
+            },
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -69,34 +70,35 @@ fun AppsMenuApp(
                 innerPadding = PaddingValues(0.dp),
             )
             Column(
-                Modifier.padding(4.dp).fillMaxWidth()
+                Modifier.padding(4.dp).fillMaxWidth(),
             ) {
                 TextAny(
                     text = (app?.name ?: app?.fullAppName.orEmpty()).ifEmpty { "-" },
                     color = textColor,
                     singleLine = true,
                     fontSize = titleTextSize,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 TextAny(
                     text = (app?.comment.orEmpty()).ifEmpty { "-" },
                     color = textColor,
                     singleLine = true,
                     fontSize = commentTextSize,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
             }
         }
         if (showDivider) {
             HorizontalDivider(
-                modifier = Modifier
-                    .padding(start = dividerPadding)
-                    .background(
-                        color = dividerColor,
-                        shape = DottedShape(5.dp)
-                    ),
+                modifier =
+                    Modifier
+                        .padding(start = dividerPadding)
+                        .background(
+                            color = dividerColor,
+                            shape = DottedShape(5.dp),
+                        ),
                 color = Color.Transparent,
-                thickness = 1.dp
+                thickness = 1.dp,
             )
         }
     }
@@ -104,14 +106,16 @@ fun AppsMenuApp(
 
 @Preview
 @Composable
-fun PreviewAppsMenuApp() = preview {
-    AppsMenuApp(
-        modifier = Modifier.padding(8.dp)
-            .background(
-                Color.SuperDarkGray,
-                RoundedCornerShape(16.dp)
-            )
-            .padding(8.dp),
-        app = null // App.Test
-    )
-}
+fun PreviewAppsMenuApp() =
+    preview {
+        AppsMenuApp(
+            modifier =
+                Modifier
+                    .padding(8.dp)
+                    .background(
+                        Color.SuperDarkGray,
+                        RoundedCornerShape(16.dp),
+                    ).padding(8.dp),
+            app = null, // App.Test
+        )
+    }

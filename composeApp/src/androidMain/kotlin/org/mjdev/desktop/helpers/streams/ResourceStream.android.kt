@@ -4,7 +4,7 @@ import java.io.InputStream
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING", "MemberVisibilityCanBePrivate")
 actual class ResourceStream actual constructor(
-    val resourcePath: String
+    val resourcePath: String,
 ) {
     actual val bytes: ByteArray
         get() = useResource(resourcePath) { stream -> stream.readBytes() }
@@ -13,20 +13,19 @@ actual class ResourceStream actual constructor(
     companion object {
         inline fun <T> useResource(
             resourcePath: String,
-            block: (InputStream) -> T
+            block: (InputStream) -> T,
         ): T = openResource(resourcePath).use(block)
 
-        fun openResource(
-            resourcePath: String,
-        ): InputStream = ClassLoaderResourceLoader.load(resourcePath)
+        fun openResource(resourcePath: String): InputStream = ClassLoaderResourceLoader.load(resourcePath)
 
         private object ClassLoaderResourceLoader {
             fun load(resourcePath: String): InputStream {
-                val resource = Thread
-                    .currentThread()
-                    .contextClassLoader
-                    ?.getResourceAsStream("assets/$resourcePath")
-                    ?: this::class.java.getResourceAsStream(resourcePath)
+                val resource =
+                    Thread
+                        .currentThread()
+                        .contextClassLoader
+                        ?.getResourceAsStream("assets/$resourcePath")
+                        ?: this::class.java.getResourceAsStream(resourcePath)
                 return requireNotNull(resource) {
                     "Resource $resourcePath not found"
                 }

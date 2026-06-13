@@ -15,7 +15,7 @@ import androidx.compose.runtime.Immutable
 class CardScale(
     val scale: Float,
     val focusedScale: Float,
-    val pressedScale: Float
+    val pressedScale: Float,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -34,9 +34,7 @@ class CardScale(
         return result
     }
 
-    override fun toString(): String {
-        return "CardScale(scale=$scale, focusedScale=$focusedScale, pressedScale=$pressedScale)"
-    }
+    override fun toString(): String = "CardScale(scale=$scale, focusedScale=$focusedScale, pressedScale=$pressedScale)"
 
     companion object {
         val None = CardScale(scale = 1f, focusedScale = 1f, pressedScale = 1f)

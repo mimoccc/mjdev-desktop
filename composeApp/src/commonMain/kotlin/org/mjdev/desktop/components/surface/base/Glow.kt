@@ -12,11 +12,13 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Immutable
-class Glow(val elevationColor: Color, val elevation: Dp) {
+class Glow(
+    val elevationColor: Color,
+    val elevation: Dp,
+) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
@@ -32,14 +34,15 @@ class Glow(val elevationColor: Color, val elevation: Dp) {
         return result
     }
 
-    override fun toString(): String {
-        return "Glow(elevationColor=$elevationColor, elevation=$elevation)"
-    }
+    override fun toString(): String = "Glow(elevationColor=$elevationColor, elevation=$elevation)"
 
-    fun copy(glowColor: Color? = null, glowElevation: Dp? = null): Glow =
+    fun copy(
+        glowColor: Color? = null,
+        glowElevation: Dp? = null,
+    ): Glow =
         Glow(
             elevationColor = glowColor ?: this.elevationColor,
-            elevation = glowElevation ?: this.elevation
+            elevation = glowElevation ?: this.elevation,
         )
 
     companion object {

@@ -18,10 +18,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.conditional
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -38,58 +38,59 @@ fun DraggableView(
     onDoubleTap: () -> Unit = {},
     onClick: () -> Unit = {},
     onContextMenuClick: () -> Unit = {},
-    content: @Composable BoxScope.() -> Unit = {}
+    content: @Composable BoxScope.() -> Unit = {},
 ) {
     var position by rememberState(Offset.Zero)
     var isDragging by rememberState(false)
     Box(
-        modifier = modifier.wrapContentSize()
-            .conditional(zIndex > Float.MIN_VALUE) {
-                zIndex(zIndex)
-            }
-            .graphicsLayer(
-                translationX = position.x,
-                translationY = position.y
-            )
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = { onTap() },
-                    onPress = { onClick() },
-                    onDoubleTap = { onDoubleTap() },
-                    onLongPress = { onContextMenuClick() }
-                )
-            }
-            .pointerInput(Unit) {
-                detectDragGestures(
-                    onDrag = { change, dragAmount ->
-                        if (dragEnabled) {
-                            change.consume()
-                            position += dragAmount
-                        }
-                    },
-                    onDragStart = {
-                        isDragging = true
-                        onDragStart()
-                    },
-                    onDragEnd = {
-                        isDragging = false
-                        onDragEnd()
-                    }
-                )
-            }.padding(contentPadding),
+        modifier =
+            modifier
+                .wrapContentSize()
+                .conditional(zIndex > Float.MIN_VALUE) {
+                    zIndex(zIndex)
+                }.graphicsLayer(
+                    translationX = position.x,
+                    translationY = position.y,
+                ).pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = { onTap() },
+                        onPress = { onClick() },
+                        onDoubleTap = { onDoubleTap() },
+                        onLongPress = { onContextMenuClick() },
+                    )
+                }.pointerInput(Unit) {
+                    detectDragGestures(
+                        onDrag = { change, dragAmount ->
+                            if (dragEnabled) {
+                                change.consume()
+                                position += dragAmount
+                            }
+                        },
+                        onDragStart = {
+                            isDragging = true
+                            onDragStart()
+                        },
+                        onDragEnd = {
+                            isDragging = false
+                            onDragEnd()
+                        },
+                    )
+                }.padding(contentPadding),
         content = {
             Box(
-                modifier = Modifier
-                    .background(if (isDragging) dragBackgroundColor else backgroundColor)
+                modifier =
+                    Modifier
+                        .background(if (isDragging) dragBackgroundColor else backgroundColor),
             ) {
                 content()
             }
-        }
+        },
     )
 }
 
 @Preview
 @Composable
-fun PreviewDraggableView() = preview {
-    DraggableView()
-}
+fun PreviewDraggableView() =
+    preview {
+        DraggableView()
+    }

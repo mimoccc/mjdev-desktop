@@ -12,6 +12,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.appbar.AppBar
 import org.mjdev.desktop.components.icon.ShapedIcon
 import org.mjdev.desktop.components.input.SearchFieldPassive
@@ -21,7 +22,6 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.MutableStateExt.clear
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
 import org.mjdev.desktop.icons.arrow.ArrowBack
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName")
 @Composable
@@ -32,25 +32,29 @@ fun AppsBottomBar(
     onContextMenuClick: () -> Unit = {},
     onActionClick: () -> Unit = {},
     onBackClick: () -> Unit = {},
-    onTooltip: (item: Any?) -> Unit = {}
+    onTooltip: (item: Any?) -> Unit = {},
 ) = withDesktopContext {
     AppBar(
         modifier = modifier.focusable(false),
         title = {
             SearchFieldPassive(
-                modifier = Modifier.padding(
-                    start = 8.dp,
-                    end = 8.dp
-                ).fillMaxWidth().focusable(true),
+                modifier =
+                    Modifier
+                        .padding(
+                            start = 8.dp,
+                            end = 8.dp,
+                        ).fillMaxWidth()
+                        .focusable(true),
                 textState = searchTextState,
                 textColor = iconsTintColor,
                 textSize = 20.sp,
-                textStyle = TextStyle(
-                    fontWeight = FontWeight.Bold
-                ),
+                textStyle =
+                    TextStyle(
+                        fontWeight = FontWeight.Bold,
+                    ),
                 backgroundColor = Color.Transparent,
                 onClearClick = { searchTextState.clear() },
-                onTooltip = onTooltip
+                onTooltip = onTooltip,
             )
         },
         icon = {
@@ -62,22 +66,23 @@ fun AppsBottomBar(
                 iconBackgroundColor = iconsTintColor,
                 onRightClick = onContextMenuClick,
                 onClick = onBackClick,
-                onTooltip = onTooltip
+                onTooltip = onTooltip,
             )
         },
         actions = {
             AppsMenuActions(
                 onActionClick = onActionClick,
-                onTooltip = onTooltip
+                onTooltip = onTooltip,
             )
-        }
+        },
     )
 }
 
 @Preview
 @Composable
-fun PreviewAppsBottomBar() = preview {
-    AppsBottomBar(
-        modifier = Modifier.background(Color.SuperDarkGray)
-    )
-}
+fun PreviewAppsBottomBar() =
+    preview {
+        AppsBottomBar(
+            modifier = Modifier.background(Color.SuperDarkGray),
+        )
+    }

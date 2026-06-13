@@ -17,18 +17,18 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import okio.Path
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.mjdev.desktop.components.draggable.DraggableView
 import org.mjdev.desktop.components.fonticon.FontIcon
 import org.mjdev.desktop.components.text.TextWithShadow
-import org.mjdev.desktop.components.draggable.DraggableView
+import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Colors.alpha
 import org.mjdev.desktop.extensions.Compose.preview
+import org.mjdev.desktop.extensions.DpSizeExt.plus
 import org.mjdev.desktop.extensions.Modifier.circleBorder
 import org.mjdev.desktop.extensions.PathExt.absolutePath
 import org.mjdev.desktop.extensions.PathExt.cwd
 import org.mjdev.desktop.extensions.PathExt.extension
-import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.mjdev.desktop.extensions.DpSizeExt.plus
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Suppress("FunctionName", "UNNECESSARY_SAFE_CALL")
 @Composable
@@ -45,13 +45,14 @@ fun FolderIcon(
     onContextMenuClick: () -> Unit = {},
     onClick: () -> Unit = {},
 ) = withDesktopContext {
-    val iconName = remember(path) {
-        when {
-            path.absolutePath?.contentEquals("/") == true -> "root"
-            path.absolutePath?.contentEquals("~") == true -> "home"
-            else -> path.extension.ifEmpty { "folder" }
-        }
-    } // todo from mime type
+    val iconName =
+        remember(path) {
+            when {
+                path.absolutePath?.contentEquals("/") == true -> "root"
+                path.absolutePath?.contentEquals("~") == true -> "home"
+                else -> path.extension.ifEmpty { "folder" }
+            }
+        } // todo from mime type
     val iconId: Int = remember(path) { iconSet?.iconForName(iconName) ?: 0 }
     val computedSize = remember(path) { iconSize + 2.dp }
     DraggableView(
@@ -60,14 +61,16 @@ fun FolderIcon(
         onClick = onClick,
         onContextMenuClick = onContextMenuClick,
         onDragStart = onDragStart,
-        onDragEnd = onDragEnd
+        onDragEnd = onDragEnd,
     ) {
         Column(
-            modifier = Modifier.wrapContentSize().aspectRatio(1f)
+            modifier = Modifier.wrapContentSize().aspectRatio(1f),
         ) {
             Box(
-                modifier = Modifier.size(computedSize)
-                    .circleBorder(2.dp, textColor)
+                modifier =
+                    Modifier
+                        .size(computedSize)
+                        .circleBorder(2.dp, textColor),
             ) {
                 FontIcon(
                     iconId = iconId,
@@ -77,19 +80,21 @@ fun FolderIcon(
                     outerPadding = outerPadding,
                     innerPadding = innerPadding,
                     onClick = onClick,
-                    onRightClick = onContextMenuClick
+                    onRightClick = onContextMenuClick,
                 )
             }
             TextWithShadow(
-                modifier = Modifier.width(computedSize.width)
-                    .padding(start = 4.dp),
+                modifier =
+                    Modifier
+                        .width(computedSize.width)
+                        .padding(start = 4.dp),
                 text = (customName ?: path.name).ifEmpty { iconName },
                 color = textColor,
                 fontWeight = FontWeight.Bold,
                 overflow = Ellipsis,
                 minLines = 2,
                 maxLines = 2,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
     }
@@ -97,6 +102,7 @@ fun FolderIcon(
 
 @Preview
 @Composable
-fun PreviewFolderIcon() = preview {
-    FolderIcon()
-}
+fun PreviewFolderIcon() =
+    preview {
+        FolderIcon()
+    }

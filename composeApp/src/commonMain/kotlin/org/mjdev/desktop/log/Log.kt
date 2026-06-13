@@ -16,6 +16,7 @@ import org.mjdev.desktop.extensions.System.currentTimeMillis
 object Log {
     private var isInitialized = false
     private val creationDate = currentTimeMillis.toString()
+
     // todo
     private val logFile = "/var/tmp/mjdev-desktop/log/$creationDate.log".toPath()
 //    private val logWriter = PrintWriter(logFile.apply {
@@ -109,11 +110,13 @@ object Log {
 //        }
     }
 
-    fun e(message: String, e: Throwable) {
+    fun e(
+        message: String,
+        e: Throwable,
+    ) {
         init()
         Napier.e(message, e)
 //        e(message)
 //        e(e)
     }
-
 }
