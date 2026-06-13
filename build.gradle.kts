@@ -1,3 +1,5 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+
 plugins {
 //    alias(libs.plugins.devtools.ksp) apply false
     alias(libs.plugins.android.application) apply false
@@ -12,9 +14,23 @@ plugins {
 //    alias(libs.plugins.kover)
     alias(libs.plugins.changelog) apply false
     alias(libs.plugins.gradle.ktlint)
-    alias(libs.plugins.manes.versions) apply false
+    alias(libs.plugins.manes.versions)
     alias(libs.plugins.kotlin.android) apply false
 //    id("com.github.gmazzo.buildconfig") version "5.6.5"
+}
+
+// TEMP exploratory: stable-only update report across all modules
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    return !(stableKeyword || regex.matches(version))
+}
+
+allprojects {
+    apply(plugin = "com.github.ben-manes.versions")
+    tasks.withType<DependencyUpdatesTask> {
+        rejectVersionIf { isNonStable(candidate.version) && !isNonStable(currentVersion) }
+    }
 }
 
 //buildConfig {
