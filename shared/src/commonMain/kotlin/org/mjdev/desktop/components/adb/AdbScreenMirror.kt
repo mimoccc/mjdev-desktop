@@ -19,6 +19,7 @@ import dadb.Dadb
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.adb.DeviceState.Companion.rememberDeviceState
@@ -39,36 +40,31 @@ fun AdbScreenMirror(
         ),
 ) = withDesktopContext {
     if (isAndroid()) return@withDesktopContext
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) {
-        when {
-            deviceState.isConnecting -> CircularProgressIndicator()
-            deviceState.error != null -> Text("Error: ${deviceState.error}")
-            deviceState.imageBitmap != null -> {
-                val currentImage = deviceState.imageBitmap!!
-                Image(
-                    bitmap = currentImage,
-                    contentDescription = "Device screen",
-                    contentScale = ContentScale.Fit,
-                    modifier =
-                        Modifier
-                            .fillMaxHeight()
-                            .pointerInput(deviceState.dadbInstance) {
-                                detectTapGestures { offset ->
-                                    deviceState.tapOnDevice(
-                                        offset.x.toInt(),
-                                        offset.y.toInt(),
-                                        size.width,
-                                        size.height,
-                                    )
-                                }
-                            },
-                )
-            }
-
-            else -> Text("Waiting for device...")
+    // Hide the whole view unless a device is connected and actually streaming frames.
+    val image = deviceState.imageBitmap
+    if (image != null) {
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.Center,
+        ) {
+            Image(
+                bitmap = image,
+                contentDescription = "Device screen",
+                contentScale = ContentScale.Fit,
+                modifier =
+                    Modifier
+                        .fillMaxHeight()
+                        .pointerInput(deviceState.dadbInstance) {
+                            detectTapGestures { offset ->
+                                deviceState.tapOnDevice(
+                                    offset.x.toInt(),
+                                    offset.y.toInt(),
+                                    size.width,
+                                    size.height,
+                                )
+                            }
+                        },
+            )
         }
     }
     DisposableEffect(visibilityState.value) {
@@ -82,6 +78,7 @@ fun AdbScreenMirror(
 class DeviceState(
     private val scope: CoroutineScope,
     private val refreshInterval: Long,
+    private val reconnectInterval: Long = 1000L,
 ) {
     var imageBitmap by mutableStateOf<ImageBitmap?>(null)
     var error by mutableStateOf<String?>(null)
@@ -92,19 +89,32 @@ class DeviceState(
     private var job: Job? = null
 
     fun start() {
+        if (job?.isActive == true) return
         job =
             scope.launch {
-                try {
-                    val dadb = Dadb.discover()
+                // Outer loop keeps (re)connecting: discover -> stream -> on any loss
+                // clean up (which hides the view) and retry, until the job is cancelled.
+                while (isActive) {
+                    val dadb =
+                        try {
+                            Dadb.discover()
+                        } catch (e: Exception) {
+                            error = e.message
+                            null
+                        }
                     if (dadb == null) {
-                        error = "No device found"
+                        // no device connected — clear state so the view hides, then retry
+                        dadbInstance = null
+                        imageBitmap = null
                         isConnecting = false
-                        return@launch
+                        delay(reconnectInterval)
+                        continue
                     }
                     dadbInstance = dadb
                     isConnecting = false
-                    while (job?.isActive == true) {
-                        try {
+                    error = null
+                    try {
+                        while (isActive) {
                             val stream = dadb.open("exec:screencap -p")
                             val bytes = stream.source.readByteArray()
                             stream.close()
@@ -116,14 +126,17 @@ class DeviceState(
                                     screenHeight = decoded.height
                                 }
                             }
-                        } catch (e: Exception) {
-                            error = e.message
+                            delay(refreshInterval)
                         }
-                        delay(refreshInterval)
+                    } catch (e: Exception) {
+                        // device disconnected / stream broke — fall through and reconnect
+                        error = e.message
+                    } finally {
+                        runCatching { dadb.close() }
+                        dadbInstance = null
+                        imageBitmap = null
                     }
-                } catch (e: Exception) {
-                    error = e.message
-                    isConnecting = false
+                    delay(reconnectInterval)
                 }
             }
     }
