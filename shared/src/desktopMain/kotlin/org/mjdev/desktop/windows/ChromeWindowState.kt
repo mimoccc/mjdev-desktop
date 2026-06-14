@@ -84,7 +84,7 @@ open class ChromeWindowState(
 
     override var position: DpOffset = position
         set(value) {
-//            Log.i("Setting position of window : ${window?.name}")
+            Log.d("ChromeWindow position: ${field} -> $value")
             field = value
             if (isCreated) {
                 scope.launch {
@@ -95,7 +95,7 @@ open class ChromeWindowState(
 
     override var size: DpSize = size
         set(value) {
-//            Log.i("Setting size of window : ${window?.name}, $size")
+            Log.d("ChromeWindow size: ${field} -> $value")
             val oldSize = field
             field = value
             if (isCreated) {
@@ -117,6 +117,23 @@ open class ChromeWindowState(
     val y: Dp
         get() = position.y
 
+    /** name + intended position/size + actual AWT bounds, for logging the window geometry */
+    private fun geom(): String {
+        val w = if (isCreated) window else null
+        val bounds = w?.let { " bounds=[${it.x},${it.y} ${it.width}x${it.height}]" } ?: ""
+        return "name=${w?.name ?: "-"} pos=$position size=$size$bounds"
+    }
+
+    override suspend fun show() {
+        Log.d("ChromeWindow show: ${geom()}")
+        super.show()
+    }
+
+    override suspend fun hide(force: Boolean) {
+        Log.d("ChromeWindow hide(force=$force): ${geom()}")
+        super.hide(force)
+    }
+
     fun onOpened(block: ChromeWindowState.() -> Unit) {
         onOpened.add(block)
     }
@@ -133,7 +150,7 @@ open class ChromeWindowState(
         x: Dp,
         y: Dp,
     ) = runCatching {
-//        Log.i("moveBy called ($x, $y)")
+        Log.d("ChromeWindow moveBy ($x, $y): ${geom()}")
         setPosition(
             DpOffset(
                 position.x - x,
@@ -144,13 +161,13 @@ open class ChromeWindowState(
 
     suspend fun setSize(size: DpSize) =
         runCatching {
-//        Log.i("Setting window size : ${window?.name} to $size")
+            Log.d("ChromeWindow setSize -> $size: ${geom()}")
             window?.setSizeSafely(size, WindowPlacement.Floating)
         }.onFailure { e -> Log.e(e) }
 
     suspend fun setPosition(position: DpOffset) =
         runCatching {
-//        Log.i("Setting window position : ${window?.name} to $position")
+            Log.d("ChromeWindow setPosition -> $position: ${geom()}")
             window?.setPosition(
                 WindowPosition.Absolute(position.x, position.y),
                 WindowPlacement.Floating,
@@ -159,7 +176,7 @@ open class ChromeWindowState(
 
     override suspend fun focus() {
         runCatching {
-//            Log.i("Requesting window focus : ${window?.name}")
+            Log.d("ChromeWindow focus: ${geom()}")
             window?.toFront()
             if (!isFocused) {
                 window?.requestFocus()

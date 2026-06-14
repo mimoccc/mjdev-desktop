@@ -277,6 +277,8 @@ kotlin {
                 implementation(kotlin("reflect"))
                 // preview
                 implementation(compose.components.uiToolingPreview)
+                // preview rendering in the IDE (org.jetbrains.compose.ui:ui-tooling)
+                implementation(compose.uiTooling)
                 // activity
                 implementation(libs.androidx.activity.compose)
                 // network client

@@ -33,7 +33,10 @@
       "Bash(cd *)",
       "Bash(./gradlew buildAll -PdepCheck=false --console=plain)",
       "Bash(awk '{printf \"  %-34s %s\\\\n\",$NF,$5}')",
-      "WebFetch(domain:blog.jetbrains.com)"
+      "WebFetch(domain:blog.jetbrains.com)",
+      "Bash(timeout 580 ./gradlew :shared:compileKotlinDesktop -q)",
+      "Bash(xargs ls -la)",
+      "Bash(./gradlew :compositor:help --task installDesktop -q)"
     ]
   }
 }

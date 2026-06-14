@@ -72,7 +72,10 @@ fun ChromeWindow(
             onCloseRequest = onCloseRequest,
             state = windowState,
             visible = visible,
-            title = "",
+            // Encode the window role into the title as "mjdev::<name>" so the mjdev compositor
+            // can layer shell windows correctly (background / panel / top). The window is
+            // undecorated, so the title is never visible; on a non-mjdev WM it is just ignored.
+            title = name?.let { "mjdev::$it" } ?: "",
             icon = null,
             undecorated = true,
             transparent = transparent,

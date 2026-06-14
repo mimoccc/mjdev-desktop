@@ -27,6 +27,16 @@ compose.desktop {
     application {
         jvmArgs("-Dprism.order=sw")
         mainClass = "org.mjdev.desktop.main.MainKt"
+        // jpackage (createDistributable/packageDeb) needs a full JDK; the IDE's bundled JBR
+        // (e.g. Android Studio's) ships without jpackage, so resolve a jpackage-capable JDK
+        // explicitly. Override with JPACKAGE_HOME or JAVA_HOME; falls back to system JDKs.
+        sequenceOf(
+            System.getenv("JPACKAGE_HOME"),
+            System.getenv("JAVA_HOME"),
+            "/usr/lib/jvm/java-21-openjdk-amd64",
+            "/usr/lib/jvm/java-17-openjdk-amd64",
+        ).filterNotNull().firstOrNull { rootProject.file("$it/bin/jpackage").canExecute() }
+            ?.let { javaHome = it }
         nativeDistributions {
             packageName = libs.versions.app.name.get()
             packageVersion = libs.versions.app.pkg.version.get()

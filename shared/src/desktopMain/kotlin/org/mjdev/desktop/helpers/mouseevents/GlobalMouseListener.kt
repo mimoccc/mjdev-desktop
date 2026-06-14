@@ -51,14 +51,19 @@ class GlobalMouseListener(
         ) {
             DisposableEffect(Unit) {
                 val handler = MouseEventHandler(enabled, block)
+                // Prefer the compositor's pointer feed when one is running (reliable everywhere,
+                // including nested XWayland where the AWT global pointer is stuck at screen
+                // centre). Fall back to AWT polling only when no compositor is present.
+                val ipc = CompositorMouseSource.connect(scope) { event -> handler.onEvent(event) }
                 val globalHandler =
-                    GlobalMouseListener(
-                        scope = scope,
-                    ) { event ->
-                        handler.onEvent(event)
+                    if (ipc == null) {
+                        GlobalMouseListener(scope = scope) { event -> handler.onEvent(event) }
+                    } else {
+                        null
                     }
                 onDispose {
-                    globalHandler.dispose()
+                    ipc?.dispose()
+                    globalHandler?.dispose()
                 }
             }
         }

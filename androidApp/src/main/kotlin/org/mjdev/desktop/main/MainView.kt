@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
+import org.mjdev.desktop.components.OrientatedView
 import org.mjdev.desktop.components.appsmenu.AppsMenu
 import org.mjdev.desktop.components.appsmenu.AppsMenuState.Companion.rememberAppsMenuState
 import org.mjdev.desktop.components.controlcenter.ControlCenter
@@ -65,13 +66,9 @@ fun MainView(onBackgroundChange: (Color) -> Unit = {}) =
             println("Showing tooltip : $item")
             tooltipState.show(item)
         }
-        // todo not showing nothing
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            // todo, something prevent preview
-            if (!isDesign) {
+        OrientatedView(
+            portrait = {
+                // todo menu & etc
                 Desktop(
                     tooltipState = tooltipState,
                     onTooltip = onTooltip,
@@ -99,40 +96,77 @@ fun MainView(onBackgroundChange: (Color) -> Unit = {}) =
 //                contextMenuState.show()
                     },
                 )
-            }
-            DesktopPanel(panelState = panelState, onTooltip = onTooltip, onMenuIconClicked = {
-                runAsync {
-                    appsMenuState.show()
+            },
+            landscape = {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Desktop(
+                        tooltipState = tooltipState,
+                        onTooltip = onTooltip,
+                        padding =
+                            PaddingValues(
+                                bottom = bottomPadding,
+                            ),
+                        widgets = {
+                            MemoryChart(
+                                modifier =
+                                    Modifier
+                                        .size(350.dp, 300.dp)
+                                        .align(Alignment.BottomEnd),
+                            )
+                        },
+                        onLeftMouseClick = {
+                            runAsync {
+                                panelState.hide()
+                                appsMenuState.hide()
+                                controlCenterState.hide()
+                            }
+                        },
+                        onBackgroundChange = onBackgroundChange,
+                        onRightMouseClick = {
+//                          contextMenuState.show()
+                        },
+                    )
+                    DesktopPanel(
+                        panelState = panelState,
+                        onTooltip = onTooltip,
+                        onMenuIconClicked = {
+                            runAsync {
+                                appsMenuState.show()
+                            }
+                        })
+                    ControlCenter(
+                        modifier =
+                            Modifier
+                                .fillMaxHeight()
+                                .align(Alignment.TopEnd),
+                        controlCenterState = controlCenterState,
+                        onTooltip = onTooltip,
+                    )
+                    AppsMenu(
+                        modifier =
+                            Modifier
+                                .wrapContentSize()
+                                .align(Alignment.BottomStart),
+                        appsMenuState = appsMenuState,
+                        panelState = panelState,
+                        onAppClick = { app ->
+                            runAsync {
+                                app.start()
+                                appsMenuState.hide()
+                            }
+                        },
+                        onAppContextMenuClick = {},
+                        onCategoryContextMenuClick = {},
+                        onUserAvatarClick = {},
+                        onActionClick = {},
+                        onTooltip = onTooltip,
+                    )
                 }
-            })
-            ControlCenter(
-                modifier =
-                    Modifier
-                        .fillMaxHeight()
-                        .align(Alignment.TopEnd),
-                controlCenterState = controlCenterState,
-                onTooltip = onTooltip,
-            )
-            AppsMenu(
-                modifier =
-                    Modifier
-                        .wrapContentSize()
-                        .align(Alignment.BottomStart),
-                appsMenuState = appsMenuState,
-                panelState = panelState,
-                onAppClick = { app ->
-                    runAsync {
-                        app.start()
-                        appsMenuState.hide()
-                    }
-                },
-                onAppContextMenuClick = {},
-                onCategoryContextMenuClick = {},
-                onUserAvatarClick = {},
-                onActionClick = {},
-                onTooltip = onTooltip,
-            )
-        }
+            }
+        )
     }
 
 @Preview(device = Devices.TABLET)

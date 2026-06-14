@@ -31,6 +31,7 @@ class Palette(
     val initialColor: Color = Color.SuperDarkGray,
     val borderFactor: Float = 0.1f,
     val textFactor: Float = 0.6f,
+    val cutPercent: Int = 6,
 ) : IPalette {
     val backgroundColorState: MutableState<Color> = mutableStateOf(initialColor)
 
@@ -110,7 +111,6 @@ class Palette(
             context.loadPicture(src)?.let { image ->
                 val width = image.width
                 val height = image.height
-                val cutPercent = 5
                 val cutWidth = (width / 100) * cutPercent
                 val cutHeight = (height / 100) * cutPercent
                 val leftTopPart = image.cut(0, 0, cutWidth, cutHeight)

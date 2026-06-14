@@ -33,7 +33,10 @@ class User(
     override val picture: Any
         get() = AccountCircle // todo
     override val homeDir: Path
-        get() = Environment.getExternalStorageDirectory().path.toPath()
+        get() =
+            runCatching {
+                Environment.getExternalStorageDirectory().path.toPath()
+            }.getOrNull() ?: "".toPath()
     override val isLoggedIn
         get() = isLoggedIn(userName) // todo
     override val userDirs: IUserDirs

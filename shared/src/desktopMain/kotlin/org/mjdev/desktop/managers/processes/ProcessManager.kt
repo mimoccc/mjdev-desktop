@@ -65,14 +65,11 @@ class ProcessManager(
     }
 
     private fun cleanup() {
-        processes.iterator().apply {
-            while (hasNext()) {
-                val pw = next()
-                if (pw.processHandle?.isAlive != true) {
-                    remove()
-                    listeners.filterIsInstance<ProcessRemoveListener>().forEach { l ->
-                        l.onProcessRemoved(pw.processHandle)
-                    }
+        processes.toList().forEach { pw ->
+            if (pw.processHandle?.isAlive != true) {
+                processes.remove(pw)
+                listeners.filterIsInstance<ProcessRemoveListener>().forEach { l ->
+                    l.onProcessRemoved(pw.processHandle)
                 }
             }
         }
@@ -96,7 +93,7 @@ class ProcessManager(
             val appCmd = app?.cmd
             val appName = app?.name
             val appFullName = app?.fullAppName
-            processes.any { pw ->
+            processes.toList().any { pw ->
                 (appName != null && pw.command.contains(appName)) ||
                     (appCmd != null && pw.command.contains(appCmd)) ||
                     (appFullName != null && pw.command.contains(appFullName)) ||
@@ -111,10 +108,11 @@ class ProcessManager(
     companion object {
         fun SnapshotStateList<ProcessWrapper>.containsProcess(ph: ProcessHandle) =
             ph.pid().let { pid ->
-                any { p -> p.pid == pid }
+                toList().any { p -> p.pid == pid }
             }
 
-        fun SnapshotStateList<ProcessWrapper>.containsProcess(ph: ProcessWrapper) = any { p -> p.pid == ph.pid }
+        fun SnapshotStateList<ProcessWrapper>.containsProcess(ph: ProcessWrapper) =
+            toList().any { p -> p.pid == ph.pid }
 
         @Composable
         fun processManagerListener(onChanged: IProcessManager?.(processHandle: ProcessHandle?) -> Unit = {}) =

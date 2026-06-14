@@ -12,7 +12,9 @@ class MemInfoAndroid(
     val aContext: Context?
         get() = (context as? DesktopContext)?.context
     val activityManager: ActivityManager? by lazy {
-        aContext?.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        runCatching {
+            aContext?.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        }.getOrNull()
     }
     private val meminfo: ActivityManager.MemoryInfo
         get() =

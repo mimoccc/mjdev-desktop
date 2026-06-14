@@ -53,14 +53,14 @@ open class VisibilityState(
     }
 
     open suspend fun show() {
-//        println("Show called.")
+        Log.d("Sliding: show (was=${visibleState.value}) size=${sizeState.value}")
         hideJob?.cancel()
         visibleState.value = true
     }
 
     open suspend fun hide(force: Boolean = false) {
         if (enabledState.value || force) {
-//            println("Hide called.")
+            Log.d("Sliding: hide (was=${visibleState.value}, force=$force, delay=$hideDelay) size=${sizeState.value}")
             hideJob?.cancel()
             if (hideDelay == 0L) {
                 visibleState.value = false
@@ -79,14 +79,14 @@ open class VisibilityState(
         onVisibilityChange: (visible: Boolean) -> Unit = {},
     ) {
         if (enabledState.value || force) {
-            println("Toggle visible state from: ${visibleState.value} to ${!visibleState.value}")
+            Log.d("Sliding: toggle ${visibleState.value} -> ${!visibleState.value} size=${sizeState.value}")
             visibleState.toggle()
             onVisibilityChange(isVisible)
         }
     }
 
     open suspend fun updateSize(size: DpSize) {
-//        println("Size update: $size")
+        Log.d("Sliding: size update ${sizeState.value} -> $size")
         this.sizeState.value = size
     }
 

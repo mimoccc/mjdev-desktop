@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Mjdev Desktop
+Comment=Mjdev desktop environment (wayland)
+Exec=mjdev-session
+Type=Application
+DesktopNames=mjdev

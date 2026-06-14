@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.app.icon.generator) apply false
     alias(libs.plugins.qodana)
 //    alias(libs.plugins.kover)

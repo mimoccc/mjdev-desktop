@@ -1,4 +1,5 @@
 # This file contains project tasks for ai
+# # at the line beginning means no task no command just a note
 # * at the line beginning means repeatable task every build run
 # - at the line beginning means task to be done once, task can be multiline
 
@@ -6,3 +7,16 @@
   and also check build can complete after update
 * update dependencies from report in reports folder, on every updated library check
   that builds run and or ommit/revert update if impossible
+
+- bottom desktop panel have non valid x coordinate, bad computation when in nested,
+  when it should be shown, by moving mouse pointer down to screen, and or it have bad height,
+  but usualy is shown out of nested window, may be nested window position is not starting 0,0 and
+  that breaks computation?
+
+- handles that are on sliding windows 12dp please, there is 9dp i think yet.
+
+- in log when building theres a lot of warnings and errors probably, i want to have
+  clean log  if possible
+
+# unimportant changes if possible:
+# control center, when shown should hide menu and bottom bar if it is visible
