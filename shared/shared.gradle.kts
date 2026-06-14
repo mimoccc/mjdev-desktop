@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.application)
+    id("com.android.kotlin.multiplatform.library")
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.vlc.setup)
@@ -101,7 +101,17 @@ targets {
     desktopTarget {
     }
 
-    androidTarget {
+    androidLibrary {
+        namespace = "org.mjdev.desktop.shared"
+        compileSdk =
+            libs.versions.android.compile.sdk
+                .get()
+                .toInt()
+        minSdk =
+            libs.versions.android.min.sdk
+                .get()
+                .toInt()
+        androidResources { enable = true }
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
         }
@@ -322,150 +332,7 @@ kotlin {
 
 // <editor-fold desc="platforms">--------------------------------------------------------------------
 
-// android app config
-android {
-    namespace = "org.mjdev.desktop"
-    compileSdk =
-        libs.versions.android.compile.sdk
-            .get()
-            .toInt()
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/composeResources")
-    sourceSets["main"].assets.srcDirs("src/commonMain/resources")
-    defaultConfig {
-        applicationId = "org.mjdev.desktop"
-        minSdk =
-            libs.versions.android.min.sdk
-                .get()
-                .toInt()
-        targetSdk =
-            libs.versions.android.target.sdk
-                .get()
-                .toInt()
-        versionCode =
-            libs.versions.app.pkg.version
-                .get()
-                .replace(".", "")
-                .toInt()
-        versionName =
-            libs.versions.app.pkg.version
-                .get()
-        resValue(
-            "string",
-            "app_name",
-            libs.versions.app.name
-                .get(),
-        )
-    }
-    packaging {
-        resources {
-            excludes += "META-INF/{AL2.0,LGPL2.1}"
-            excludes += "META-INF/INDEX.LIST"
-            excludes += "META-INF/DEPENDENCIES"
-            excludes += "META-INF/io.netty.versions.properties"
-            pickFirsts += "META-INF/native-image/**"
-        }
-    }
-    buildTypes {
-        getByName("release") {
-            isDebuggable = true
-            isJniDebuggable = true
-            isMinifyEnabled = false
-            isShrinkResources = false
-//            isRenderscriptDebuggable = true
-            isPseudoLocalesEnabled = true
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    buildFeatures {
-        compose = true
-        buildConfig = true
-    }
-    dependencies {
-        debugImplementation(libs.androidx.ui.tooling)
-    }
-}
-
-// desktop app config
-desktop {
-    group =
-        libs.versions.app.pkg.name
-            .get()
-    version =
-        libs.versions.app.pkg.version
-            .get()
-    application {
-        jvmArgs("-Dprism.order=sw")
-        mainClass = "org.mjdev.desktop.main.MainKt"
-        nativeDistributions {
-            packageName =
-                libs.versions.app.name
-                    .get()
-            packageVersion =
-                libs.versions.app.pkg.version
-                    .get()
-            description =
-                libs.versions.app.description
-                    .get()
-            copyright =
-                libs.versions.app.copyright
-                    .get()
-            outputBaseDir.set(project.rootDir.resolve("packages"))
-//                macOS {
-//                    iconFile.set(project.rootDir.resolve("icons").resolve("icon.icns"))
-//                }
-//                windows {
-//                    iconFile.set(project.rootDir.resolve("icons").resolve("icon.ico"))
-//                    exePackageVersion = "1.0.0"
-//                    msiPackageVersion = "1.0.0"
-//                }
-            linux {
-//                    iconFile.set(
-//                        project.rootDir
-//                            .resolve("composeApp")
-//                            .resolve("src")
-//                            .resolve("commonMain")
-//                            .resolve("resources")
-//                            .resolve("drawable")
-//                            .resolve("icon.png")
-//                    )
-//                    licenseFile.set(project.rootDir.resolve("LICENSE.txt"))
-                appCategory =
-                    libs.versions.app.category
-                        .get()
-                debMaintainer =
-                    libs.versions.app.maintainer
-                        .get()
-                menuGroup =
-                    libs.versions.app.menu.group
-                        .get()
-                vendor =
-                    libs.versions.app.vendor
-                        .get()
-            }
-            targetFormats(
-//                TargetFormat.Dmg,
-//                TargetFormat.Msi,
-                TargetFormat.Deb,
-                TargetFormat.Exe, // Windows installer — only built when running on a Windows host
-                TargetFormat.AppImage,
-//                TargetFormat.Pkg,
-                TargetFormat.Rpm,
-            )
-            buildTypes.release.proguard {
-                configurationFiles.from("composeApp.pro")
-                // The optimization pass can't resolve the class hierarchy of optional
-                // transitive deps (e.g. netty's Log4J2Logger -> log4j2, absent at runtime),
-                // throwing IncompleteClassHierarchyException. Shrinking + obfuscation stay on.
-                optimize.set(false)
-            }
-//            appResourcesRootDir.set(project.rootDir.resolve("resources"))
-        }
-    }
-}
+// android app config -> moved to :androidApp module
+// desktop app config -> moved to :desktopApp module
 
 // </editor-fold>------------------------------------------------------------------------------------

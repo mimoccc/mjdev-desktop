@@ -78,7 +78,9 @@ dependencyResolutionManagement {
 //</editor-fold>------------------------------------------------------------------------------------
 
 //<editor-fold desc="includes">---------------------------------------------------------------------
-include(":composeApp")
+include(":shared")
+include(":androidApp")
+include(":desktopApp")
 //</editor-fold>------------------------------------------------------------------------------------
 
 //<editor-fold desc="rename gradle build files">----------------------------------------------------

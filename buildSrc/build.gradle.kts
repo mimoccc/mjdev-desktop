@@ -45,12 +45,6 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        register("MultiPlatformPlugin") {
-            id = "MultiPlatformPlugin"
-            displayName = "MultiPlatformPlugin"
-            description = "Common library plugin to handle all stuffs needed."
-            implementationClass = "MultiPlatformPlugin"
-        }
         register("AiAgentPlugin") {
             id = "AiAgentPlugin"
             displayName = "AiAgentPlugin"

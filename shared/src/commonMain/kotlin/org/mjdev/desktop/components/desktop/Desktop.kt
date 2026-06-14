@@ -95,14 +95,14 @@ fun Desktop(
 //            ComposeWebView(
 //                modifier = Modifier.align(Alignment.Center).size(640.dp, 480.dp)
 //            )
-                AdbScreenMirror(
-                    modifier =
-                        Modifier
-                            .align(Alignment.TopEnd)
-                            .fillMaxHeight()
-                            .wrapContentWidth(),
-                )
             }
+            AdbScreenMirror(
+                modifier =
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .fillMaxHeight()
+                        .wrapContentWidth(),
+            )
         }
     }
 }

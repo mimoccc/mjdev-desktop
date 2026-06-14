@@ -17,7 +17,7 @@ android-min-sdk = "26"
 android-target-sdk = "36"
 ### custom versions ################################################################################
 vlc-version = "3.0.21-2"
-vlc-dir = "composeApp/src/commonMain/resources/vlc/"
+vlc-dir = "shared/src/commonMain/resources/vlc/"
 ### lib versions ###################################################################################
 gradle = "9.0.1"
 #gradle-kotlinter = "4.3.0"
@@ -26,7 +26,7 @@ androidx-lifecycle = "2.9.1"
 androidx-ui-tooling = "1.8.3"
 app-icon = "1.2.6"
 coil = "3.2.0"
-compose-plugin = "1.8.2"
+compose-plugin = "1.10.0"
 core-splash-screen = "1.0.1"
 generative-ai = "0.9.0-1.1.0"
 gettext-lib = "1.11.0"
@@ -178,6 +178,7 @@ cryptography-provider-optimal = { module = "dev.whyoleg.cryptography:cryptograph
 ####################################################################################################
 android-application = { id = "com.android.application", version.ref = "gradle" }
 android-library = { id = "com.android.library", version.ref = "gradle" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "gradle" }
 app-icon-generator = { id = "io.github.qamarelsafadi.kmp.app.icon.generator", version.ref = "app-icon" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

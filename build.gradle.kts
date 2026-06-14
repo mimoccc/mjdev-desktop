@@ -86,8 +86,8 @@ val postBuildCodeCheck by tasks.registering {
     description = "Auto-formats code (ktlintFormat) and runs the gated dependency-update report into /reports"
     // Auto-format on build. Safe because .editorconfig disables no-unused-imports — the one
     // rule that stripped receiver/extension-member imports and broke compilation.
-    dependsOn(":composeApp:ktlintFormat")
-    if (depCheckEnabled) dependsOn(":composeApp:dependencyUpdates")
+    dependsOn(":shared:ktlintFormat")
+    if (depCheckEnabled) dependsOn(":shared:dependencyUpdates")
     finalizedBy(collectKtlintReports)
 }
 
@@ -152,7 +152,7 @@ val ensureAppImageTool = tasks.register<EnsureAppImageToolTask>("ensureAppImageT
 val packageAppImageFile = tasks.register<PackageAppImageTask>("packageAppImageFile") {
     group = "mjdev"
     description = "Builds a single-file .AppImage from the jpackage app-image (skips if appimagetool unavailable)."
-    dependsOn(ensureAppImageTool, ":composeApp:packageReleaseAppImage")
+    dependsOn(ensureAppImageTool, ":desktopApp:packageReleaseAppImage")
     appName.set(appNameV)
     appImagePath.set(pkgDirV.resolve("app/$appNameV").absolutePath)
     outputPath.set(pkgDirV.resolve("appimage/$appNameV.AppImage").absolutePath)
@@ -165,8 +165,8 @@ val collectReleases = tasks.register<Copy>("collectReleases") {
     group = "mjdev"
     description = "Copies the built distributables into releases/ (versioned filenames)."
     dependsOn(
-        ":composeApp:packageReleaseDistributionForCurrentOS",
-        ":composeApp:assembleRelease",
+        ":desktopApp:packageReleaseDistributionForCurrentOS",
+        ":androidApp:assembleRelease",
         packageAppImageFile,
     )
     // local copies so the rename closures capture plain Strings (configuration-cache safe)
@@ -176,7 +176,7 @@ val collectReleases = tasks.register<Copy>("collectReleases") {
     from(pkgDirV.resolve("rpm")) { include("*.rpm"); rename { "$base.rpm" } }
     from(pkgDirV.resolve("exe")) { include("*.exe"); rename { "$base.exe" } } // present only on a Windows host
     from(pkgDirV.resolve("appimage")) { include("*.AppImage"); rename { "$base.AppImage" } }
-    from(rootDir.resolve("composeApp/build/outputs/apk/release")) {
+    from(rootDir.resolve("androidApp/build/outputs/apk/release")) {
         include("*.apk"); rename { "$base.apk" }
     }
 }
@@ -189,7 +189,7 @@ val buildAll = tasks.register("buildAll") {
 
 // Attach iOS framework build only when an iOS target actually exists in composeApp
 // (it never does on a Linux/Windows host — Kotlin/Native iOS requires macOS + Xcode).
-project(":composeApp").afterEvaluate {
+project(":shared").afterEvaluate {
     val iosTask = tasks.names.firstOrNull {
         it.startsWith("linkReleaseFrameworkIos") || it == "embedAndSignAppleFrameworkForXcode"
     }
