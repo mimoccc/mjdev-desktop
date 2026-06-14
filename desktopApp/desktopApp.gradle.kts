@@ -41,9 +41,10 @@ compose.desktop {
             }
             targetFormats(
                 TargetFormat.Deb,
-                TargetFormat.Exe, // Windows installer — only built on a Windows host
-                TargetFormat.AppImage,
                 TargetFormat.Rpm,
+                TargetFormat.AppImage,
+                TargetFormat.Exe, // Windows installer — only built on a Windows host
+                TargetFormat.Dmg, // macOS installer — only built on a macOS host
             )
             buildTypes.release.proguard {
                 configurationFiles.from("desktopApp.pro")

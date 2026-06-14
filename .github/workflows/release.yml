@@ -1,0 +1,143 @@
+name: Release
+
+# Produces versioned distributables for all targets into a GitHub Release.
+# Targets that cannot be built on a given host (or fail) are skipped and logged
+# as ::warning:: — they never fail the whole release.
+#   linux   (deb/rpm/AppImage) + android (apk)  -> ubuntu-latest
+#   windows (exe)                               -> windows-latest
+#   macos   (dmg)  + ios                        -> macos-latest
+# NOTE: iOS currently cannot be produced — the project has no iOS Kotlin target
+#       (commonMain uses JVM-only libraries); the iOS step only logs a skip.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: Package (${{ matrix.target }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: linux-android
+          - os: windows-latest
+            target: windows
+          - os: macos-latest
+            target: macos-ios
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        shell: bash
+        run: chmod +x gradlew || true
+
+      - name: Read version
+        id: ver
+        shell: bash
+        run: echo "version=$(grep -E '^app-pkg-version' gradle/libs.versions.toml | sed -E 's/.*"(.*)".*/\1/')" >> "$GITHUB_OUTPUT"
+
+      # ---------- linux + android + reports (ubuntu) ----------
+      - name: Build linux + android + reports
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        continue-on-error: true
+        run: |
+          sudo apt-get update && sudo apt-get install -y rpm || echo "::warning::rpm tools missing — .rpm may be skipped"
+          ./gradlew buildAll -PdepCheck=false --stacktrace || echo "::warning::linux/android buildAll failed — skipped"
+
+      # ---------- windows (.exe) ----------
+      - name: Build windows .exe
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        continue-on-error: true
+        run: ./gradlew :desktopApp:packageReleaseExe --stacktrace || echo "::warning::windows .exe failed — skipped"
+
+      # ---------- macos (.dmg) ----------
+      - name: Build macOS .dmg
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        continue-on-error: true
+        run: ./gradlew :desktopApp:packageReleaseDmg --stacktrace || echo "::warning::macOS .dmg failed — skipped"
+
+      # ---------- ios (not available) ----------
+      - name: iOS (skipped — no iOS target)
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          echo "::warning::iOS skipped — project has no iOS Kotlin target (commonMain uses JVM-only libs vlcj/jna)"
+
+      # ---------- collect whatever got produced ----------
+      - name: Collect artifacts
+        shell: bash
+        run: |
+          VER='${{ steps.ver.outputs.version }}'
+          mkdir -p upload
+          # linux/android: buildAll already wrote versioned files into releases/
+          cp -v releases/* upload/ 2>/dev/null || true
+          # desktop installers from jpackage (windows/mac, also deb/rpm if present)
+          find packages -type f \( -name '*.exe' -o -name '*.msi' -o -name '*.dmg' -o -name '*.pkg' \) -exec cp -v {} upload/ \; 2>/dev/null || true
+          # reports copied into the release (zipped tree)
+          if [ -d reports ] && [ -n "$(ls -A reports 2>/dev/null)" ]; then
+            (cd reports && zip -r "../upload/mjdev-desktop-${VER}-reports.zip" .) || echo "::warning::reports zip failed"
+          fi
+          echo "=== produced for ${{ matrix.target }} ==="; ls -la upload/ || true
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.target }}
+          path: upload/
+          if-no-files-found: warn
+
+  release:
+    name: Publish GitHub Release
+    needs: package
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version
+        id: ver
+        shell: bash
+        run: echo "version=$(grep -E '^app-pkg-version' gradle/libs.versions.toml | sed -E 's/.*"(.*)".*/\1/')" >> "$GITHUB_OUTPUT"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: List collected
+        shell: bash
+        run: ls -la dist/ || echo "no artifacts produced"
+
+      - name: Publish to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', steps.ver.outputs.version) }}
+          name: mjdev-desktop v${{ steps.ver.outputs.version }}
+          files: dist/**
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
