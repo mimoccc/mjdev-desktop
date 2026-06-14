@@ -4,9 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
@@ -40,7 +37,6 @@ fun AdbScreenMirror(
         ),
 ) = withDesktopContext {
     if (isAndroid()) return@withDesktopContext
-    // Hide the whole view unless a device is connected and actually streaming frames.
     val image = deviceState.imageBitmap
     if (image != null) {
         Box(
@@ -92,8 +88,6 @@ class DeviceState(
         if (job?.isActive == true) return
         job =
             scope.launch {
-                // Outer loop keeps (re)connecting: discover -> stream -> on any loss
-                // clean up (which hides the view) and retry, until the job is cancelled.
                 while (isActive) {
                     val dadb =
                         try {
@@ -103,7 +97,6 @@ class DeviceState(
                             null
                         }
                     if (dadb == null) {
-                        // no device connected — clear state so the view hides, then retry
                         dadbInstance = null
                         imageBitmap = null
                         isConnecting = false
@@ -129,7 +122,6 @@ class DeviceState(
                             delay(refreshInterval)
                         }
                     } catch (e: Exception) {
-                        // device disconnected / stream broke — fall through and reconnect
                         error = e.message
                     } finally {
                         runCatching { dadb.close() }
