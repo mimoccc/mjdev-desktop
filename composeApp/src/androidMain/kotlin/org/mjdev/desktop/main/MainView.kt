@@ -32,9 +32,7 @@ import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 
 @SuppressLint("ComposableNaming")
 @Composable
-fun MainView(
-    onBackgroundChange:(Color) -> Unit = {}
-) =
+fun MainView(onBackgroundChange: (Color) -> Unit = {}) =
     withDesktopContext {
         val tooltipState: TooltipState = rememberTooltipState()
         val appsMenuState =

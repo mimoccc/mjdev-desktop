@@ -35,7 +35,7 @@ fun Desktop(
     onTooltip: (item: Any?) -> Unit = {},
     onLeftMouseClick: () -> Unit = {},
     onRightMouseClick: () -> Unit = {},
-    onBackgroundChange:(Color) -> Unit = {},
+    onBackgroundChange: (Color) -> Unit = {},
     // todo
     widgets: @Composable () -> Unit = {},
 ) = withDesktopContext {

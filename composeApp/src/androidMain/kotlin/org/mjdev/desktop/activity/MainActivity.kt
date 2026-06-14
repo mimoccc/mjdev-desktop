@@ -28,13 +28,11 @@ import org.mjdev.desktop.context.DesktopContext.Companion.rememberDesktopContext
 import org.mjdev.desktop.context.LocalDesktopContext
 import org.mjdev.desktop.extensions.ComponentActivityExt.OnBackPress
 import org.mjdev.desktop.extensions.ComponentActivityExt.TRANSPARENT
+import org.mjdev.desktop.extensions.ComponentActivityExt.setBackgroundColor
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.helpers.permission.rememberPermissionManager
 import org.mjdev.desktop.helpers.theme.DesktopTheme
 import org.mjdev.desktop.main.MainView
-import org.mjdev.desktop.extensions.ComponentActivityExt.OnBackPress
-import org.mjdev.desktop.extensions.ComponentActivityExt.TRANSPARENT
-import org.mjdev.desktop.extensions.ComponentActivityExt.setBackgroundColor
 
 @Suppress("unused", "DEPRECATION")
 @OptIn(ExperimentalPermissionsApi::class)
@@ -98,9 +96,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun ActivityMain(
-    activity: ComponentActivity? = null
-) {
+private fun ActivityMain(activity: ComponentActivity? = null) {
     DesktopTheme {
         Scaffold(
             modifier =
@@ -120,7 +116,7 @@ private fun ActivityMain(
                 MainView(
                     onBackgroundChange = { color ->
                         activity?.setBackgroundColor(color)
-                    }
+                    },
                 )
             }
         }
@@ -129,6 +125,7 @@ private fun ActivityMain(
 
 @Preview
 @Composable
-fun PreviewMainActivity() = preview {
-    ActivityMain(null)
-}
+fun PreviewMainActivity() =
+    preview {
+        ActivityMain(null)
+    }

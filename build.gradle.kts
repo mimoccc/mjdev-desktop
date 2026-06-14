@@ -159,26 +159,25 @@ val packageAppImageFile = tasks.register<PackageAppImageTask>("packageAppImageFi
     toolPath.set(appImageToolPath)
 }
 
-// Collects all distributables into releases/ with stable (version-less) names so each
-// build overwrites the previous file. Declarative Sync = configuration-cache safe.
-val collectReleases = tasks.register<Sync>("collectReleases") {
+// Copies all distributables into releases/ with version in the filename
+// (mjdev-desktop-<version>.<ext>). Copy = configuration-cache safe.
+val collectReleases = tasks.register<Copy>("collectReleases") {
     group = "mjdev"
-    description = "Copies the built distributables into releases/ (stable names, overwrites)."
+    description = "Copies the built distributables into releases/ (versioned filenames)."
     dependsOn(
         ":composeApp:packageReleaseDistributionForCurrentOS",
         ":composeApp:assembleRelease",
         packageAppImageFile,
     )
-    // local copies so the rename closures capture plain Strings (configuration-cache safe;
-    // capturing the script-level vals makes the closure hold a null script reference on reload)
-    val name = appNameV
+    // local copies so the rename closures capture plain Strings (configuration-cache safe)
+    val base = "$appNameV-$versionV"
     into(layout.projectDirectory.dir("releases"))
-    from(pkgDirV.resolve("deb")) { include("*.deb"); rename { "$name.deb" } }
-    from(pkgDirV.resolve("rpm")) { include("*.rpm"); rename { "$name.rpm" } }
-    from(pkgDirV.resolve("exe")) { include("*.exe"); rename { "$name.exe" } } // present only on a Windows host
-    from(pkgDirV.resolve("appimage")) { include("*.AppImage") } // already named <app>.AppImage
+    from(pkgDirV.resolve("deb")) { include("*.deb"); rename { "$base.deb" } }
+    from(pkgDirV.resolve("rpm")) { include("*.rpm"); rename { "$base.rpm" } }
+    from(pkgDirV.resolve("exe")) { include("*.exe"); rename { "$base.exe" } } // present only on a Windows host
+    from(pkgDirV.resolve("appimage")) { include("*.AppImage"); rename { "$base.AppImage" } }
     from(rootDir.resolve("composeApp/build/outputs/apk/release")) {
-        include("*.apk"); rename { "$name.apk" }
+        include("*.apk"); rename { "$base.apk" }
     }
 }
 

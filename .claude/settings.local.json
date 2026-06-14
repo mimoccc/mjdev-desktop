@@ -30,7 +30,9 @@
       "Bash(tee /tmp/pg3.log)",
       "Bash(grep -cE \"\\\\.kt$\"22)",
       "Bash(git checkout *)",
-      "Bash(cd *)"
+      "Bash(cd *)",
+      "Bash(./gradlew buildAll -PdepCheck=false --console=plain)",
+      "Bash(awk '{printf \"  %-34s %s\\\\n\",$NF,$5}')"
     ]
   }
 }
