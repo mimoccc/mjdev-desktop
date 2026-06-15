@@ -173,7 +173,7 @@ fun DesktopPanel(
                                         ).padding(
                                             start = 4.dp,
                                             end = 4.dp,
-                                            bottom = 4.dp,
+                                            bottom = 0.dp,
                                         ),
                             ) {
                                 Box(

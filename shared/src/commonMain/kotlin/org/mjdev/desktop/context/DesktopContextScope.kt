@@ -8,8 +8,8 @@ import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
 import org.mjdev.desktop.data.Category
+import org.mjdev.desktop.data.PanelLocation
 import org.mjdev.desktop.interfaces.IApp
 import org.mjdev.desktop.interfaces.ILocale
 import org.mjdev.desktop.interfaces.ITheme
@@ -132,6 +132,8 @@ open class DesktopContextScope(
         get() = context.theme.panelHideDelay > 0L
     val panelDividerWidth: Dp
         get() = context.theme.panelDividerWidth
+    val panelLocation : PanelLocation
+        get() = context.theme.panelLocation
 
     val controlPanelHideDelay: Long
         get() = context.theme.controlPanelHideDelay

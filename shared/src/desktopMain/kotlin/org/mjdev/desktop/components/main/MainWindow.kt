@@ -17,6 +17,7 @@ import org.mjdev.desktop.components.controlcenter.ControlCenterWindow
 import org.mjdev.desktop.components.desktop.Desktop
 import org.mjdev.desktop.components.desktop.widgets.MemoryChart
 import org.mjdev.desktop.components.desktoppanel.DesktopPanelWindow
+import org.mjdev.desktop.components.dockbar.DockBarWindow
 import org.mjdev.desktop.components.greeter.GreeterWindow
 import org.mjdev.desktop.components.info.InfoWindow
 import org.mjdev.desktop.components.installer.InstallerWindow
@@ -71,6 +72,19 @@ fun MainWindow() =
 //        println("Tooltip: $item")
             tooltipState.show(item)
         }
+        // When the control center opens it covers the desktop, so the dock bar and any open menu
+        // step aside (this also frees focus so the control center can actually take it).
+        LaunchedEffect(controlCenterState.isVisible) {
+            if (controlCenterState.isVisible) {
+                panelState.hide()
+                if (menuState.isVisible) {
+                    menuState.hide()
+                }
+                if (appsMenuState.isVisible) {
+                    appsMenuState.hide()
+                }
+            }
+        }
         DesktopWindow(
             panelState = panelState,
             controlCenterState = controlCenterState,
@@ -109,12 +123,27 @@ fun MainWindow() =
                 },
             )
         }
-        DesktopPanelWindow(
+//        DesktopPanelWindow(
+//            onTooltip = onTooltip,
+//            panelState = panelState,
+//            menuState = menuState,
+//            onFocusChange = { focused ->
+////            Log.d("panel focus : $focused")
+//                val menuIsVisible = appsMenuState.isVisible || menuState.isVisible
+//                if (panelState.enabled) {
+//                    if (!menuIsVisible && !focused) {
+//                        runAsync {
+//                            panelState.hide()
+//                        }
+//                    }
+//                }
+//            },
+//        )
+        DockBarWindow(
             onTooltip = onTooltip,
             panelState = panelState,
             menuState = menuState,
             onFocusChange = { focused ->
-//            Log.d("panel focus : $focused")
                 val menuIsVisible = appsMenuState.isVisible || menuState.isVisible
                 if (panelState.enabled) {
                     if (!menuIsVisible && !focused) {

@@ -8,17 +8,12 @@
 * update dependencies from report in reports folder, on every updated library check
   that builds run and or ommit/revert update if impossible
 
-- bottom desktop panel have  invalid x coordinate, bad computation when in nested,
-  when it should be shown, by moving mouse pointer down to screen, and or, it have bad height,
-  but usualy is shown out of nested window, may be nested window position is not starting 0,0 and
-  that breaks computation?
-
 - handles that are on sliding windows 12dp please, there is 9dp i think yet.
 
 - in log, when building, there is a lot of warnings and errors, i want to have
   clean log  if possible.
 
-  - iso se negeneruje do releases na githubu
+- iso se negeneruje do releases na githubu
 
 # unimportant changes if possible:
 # control center, when shown should hide menu and bottom bar if it is visible
