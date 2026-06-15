@@ -28,6 +28,10 @@
 #include <wlr/backend/session.h>
 #include <wlr/render/allocator.h>
 #include <wlr/render/wlr_renderer.h>
+#include <wlr/render/gles2.h>
+#include <wlr/render/egl.h>
+#include <EGL/egl.h>
+#include <GLES2/gl2.h>
 #include <wlr/types/wlr_compositor.h>
 #include <wlr/types/wlr_subcompositor.h>
 #include <wlr/types/wlr_cursor.h>
@@ -1239,6 +1243,38 @@ static int handle_sigchld(int signal_number, void *data) {
     return 0;
 }
 
+/* True when the GLES2 renderer ended up on software rendering (llvmpipe/swrast) — i.e. there is
+ * no usable hardware GL. In that case the Compose shell (Skiko) cannot create an OpenGL/GLX
+ * context on the (also software) XWayland and must use its CPU raster backend, so the compositor
+ * exports SKIKO_RENDER_API=SOFTWARE for the shell. On a real GPU it returns false and the shell
+ * uses hardware GL. Queries GL_RENDERER via the renderer's own EGL context (surfaceless). */
+static bool mjc_renderer_is_software(struct wlr_renderer *renderer) {
+    if (!wlr_renderer_is_gles2(renderer)) {
+        return false;
+    }
+    struct wlr_egl *egl = wlr_gles2_renderer_get_egl(renderer);
+    if (egl == NULL) {
+        return false;
+    }
+    EGLDisplay dpy = wlr_egl_get_display(egl);
+    EGLContext ctx = wlr_egl_get_context(egl);
+    if (dpy == EGL_NO_DISPLAY || ctx == EGL_NO_CONTEXT) {
+        return false;
+    }
+    if (!eglMakeCurrent(dpy, EGL_NO_SURFACE, EGL_NO_SURFACE, ctx)) {
+        return false;
+    }
+    const char *gl_renderer = (const char *) glGetString(GL_RENDERER);
+    bool software = gl_renderer != NULL && (
+        strstr(gl_renderer, "llvmpipe") != NULL ||
+        strstr(gl_renderer, "softpipe") != NULL ||
+        strstr(gl_renderer, "swrast") != NULL ||
+        strstr(gl_renderer, "SWR") != NULL ||
+        strstr(gl_renderer, "Software") != NULL);
+    eglMakeCurrent(dpy, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    return software;
+}
+
 /* ------------------------------------------------------------------ */
 /* public API                                                          */
 /* ------------------------------------------------------------------ */
@@ -1368,6 +1404,16 @@ bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdat
     setenv("WAYLAND_DISPLAY", socket, true);
     if (server->xwayland != NULL) {
         setenv("DISPLAY", server->xwayland->display_name, true);
+    }
+    /* GPU vs software decision for the Compose shell (Skiko), exported into its environment
+     * before it is spawned. Software GL (VM / no GPU) -> Skiko CPU raster (else it crashes with
+     * "Cannot create Linux GL context"); real GPU -> leave unset so Skiko uses hardware GL. */
+    if (mjc_renderer_is_software(server->renderer)) {
+        setenv("SKIKO_RENDER_API", "SOFTWARE", true);
+        fprintf(stderr, "mjdevc: software GL renderer -> SKIKO_RENDER_API=SOFTWARE for the shell\n");
+    } else {
+        unsetenv("SKIKO_RENDER_API");
+        fprintf(stderr, "mjdevc: hardware GL renderer -> shell uses Skiko OpenGL\n");
     }
 
     if (server->cbs.ready != NULL) {

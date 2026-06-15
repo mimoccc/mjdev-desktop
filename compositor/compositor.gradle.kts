@@ -118,6 +118,9 @@ kotlin {
                 linkerOpts(systemLibDirs)
                 linkerOpts(shimDir.get().asFile.resolve("libmjcshim.a").absolutePath)
                 linkerOpts(wlrLibs)
+                // the shim queries GL_RENDERER via EGL to decide hardware vs software GL for the
+                // shell (SKIKO_RENDER_API), so link the EGL + GLES2 dispatchers explicitly.
+                linkerOpts("-lEGL", "-lGLESv2")
             }
         }
     }

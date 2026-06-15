@@ -13,12 +13,9 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 # rendering detected, please use WLR_RENDERER_ALLOW_SOFTWARE") and the compositor
 # exits immediately -> black screen + tty1 autologin crash-loop.
 export WLR_RENDERER_ALLOW_SOFTWARE=1
-# the Compose shell renders via Skiko. On a software/llvmpipe stack (VM, or a box with
-# no GPU) the compositor's XWayland has no glamor, so Skiko cannot create an OpenGL/GLX
-# context -> "org.jetbrains.skiko.RenderException: Cannot create Linux GL context" and the
-# shell crash-loops. Skiko's CPU raster backend needs no GL context and works everywhere.
-# (On real GPUs this is the safe-but-slower path; revisit once GPU detection is added.)
-export SKIKO_RENDER_API=SOFTWARE
+# NOTE: SKIKO_RENDER_API is intentionally NOT set here. The compositor (mjdevc) detects at runtime
+# whether it got a hardware or software GL renderer and exports SKIKO_RENDER_API=SOFTWARE for the
+# shell only when GL is software (VM / no GPU) — so real GPUs use hardware GL automatically.
 
 # desktop shell binary - deb/appimage install location, gradle dev fallback
 SHELL_CMD="/opt/mjdev-desktop/bin/mjdev-desktop"
