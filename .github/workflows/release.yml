@@ -61,8 +61,16 @@ jobs:
         shell: bash
         continue-on-error: true
         run: |
-          sudo apt-get update && sudo apt-get install -y rpm || echo "::warning::rpm tools missing — .rpm may be skipped"
+          sudo apt-get update
+          sudo apt-get install -y rpm || echo "::warning::rpm tools missing — .rpm may be skipped"
+          # ISO toolchain (debootstrap/chroot/mksquashfs/grub+mtools) so buildAll's makeIso can
+          # assemble the bootable live image; missing tools would just skip the ISO.
+          sudo apt-get install -y debootstrap squashfs-tools xorriso mtools dpkg-dev \
+            grub-common grub-pc-bin grub-efi-amd64-bin debian-archive-keyring \
+            || echo "::warning::iso toolchain missing — .iso may be skipped"
           ./gradlew buildAll -PdepCheck=false --stacktrace || echo "::warning::linux/android buildAll failed — skipped"
+          # makeIso is part of buildAll; surface whether the .iso was actually produced
+          ls -la releases/*.iso 2>/dev/null && echo "ISO produced" || echo "::warning::no .iso in releases/ — makeIso skipped or failed"
 
       # ---------- windows (.exe) ----------
       - name: Build windows .exe

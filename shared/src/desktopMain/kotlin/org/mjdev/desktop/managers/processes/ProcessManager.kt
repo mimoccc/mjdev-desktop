@@ -111,8 +111,7 @@ class ProcessManager(
                 toList().any { p -> p.pid == pid }
             }
 
-        fun SnapshotStateList<ProcessWrapper>.containsProcess(ph: ProcessWrapper) =
-            toList().any { p -> p.pid == ph.pid }
+        fun SnapshotStateList<ProcessWrapper>.containsProcess(ph: ProcessWrapper) = toList().any { p -> p.pid == ph.pid }
 
         @Composable
         fun processManagerListener(onChanged: IProcessManager?.(processHandle: ProcessHandle?) -> Unit = {}) =

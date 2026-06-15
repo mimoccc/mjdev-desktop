@@ -161,9 +161,27 @@ tasks.register<Copy>("stageSession") {
 // built at configuration time (staged paths are static) so the Exec stays config-cache safe.
 // built at configuration time (staged paths are static) so referencing the result from doLast
 // stays configuration-cache safe (the function itself is never captured in the task action).
+// the wayland runtime stack mjdevc needs — from the version catalog (single source of truth,
+// shared with the deb Depends and make-iso.sh), never hardcoded here.
+val compositorRuntimeDeps: String = libs.versions.app.compositor.runtime.deps.get()
+
 fun sessionInstallLines(staged: File): List<String> = listOf(
     "#!/bin/sh",
     "set -e",
+    // runtime stack the compositor needs but a clean / GNOME box lacks (GNOME uses mutter,
+    // not wlroots). dpkg can't resolve these, so apt-install them explicitly. libwlroots-0.18
+    // pulls libdrm/libgbm/libinput/libseat/libxkbcommon/libwayland/libdisplay-info/libliftoff;
+    // xwayland = X display for the AWT-based Compose shell; libgl1-mesa-dri = the GL/EGL driver
+    // (incl. llvmpipe software fallback). Without these mjdevc fails to even load -> black screen.
+    "apt-get update || true",
+    "apt-get install --no-install-recommends -y $compositorRuntimeDeps seatd || " +
+            "echo 'WARN: apt could not install the wayland runtime stack (offline or non-debian?) — the desktop may not start'",
+    // the compositor opens /dev/dri/card0 + the seatd socket (group video); seatd must run and
+    // the logged-in user must be in video/input/render (+ seat if present) or the session is black.
+    "systemctl enable --now seatd 2>/dev/null || true",
+    "_u=\"\$(getent passwd \"\${PKEXEC_UID:-\${SUDO_UID:-1000}}\" | cut -d: -f1)\"",
+    "[ -n \"\$_u\" ] && usermod -aG video,input,render \"\$_u\" 2>/dev/null || true",
+    "getent group seat >/dev/null 2>&1 && [ -n \"\$_u\" ] && usermod -aG seat \"\$_u\" 2>/dev/null || true",
     "install -Dm755 '${staged.resolve("mjdevc")}' /usr/local/bin/mjdevc",
     "install -Dm755 '${staged.resolve("mjdev-session")}' /usr/local/bin/mjdev-session",
     "install -Dm644 '${staged.resolve("mjdev.desktop")}' /usr/share/wayland-sessions/mjdev.desktop",
@@ -196,7 +214,7 @@ tasks.register("installSession") {
 tasks.register<Exec>("installDesktop") {
     group = "mjdev"
     description = "Builds compositor + session + app .deb and installs it via a pkexec authentication dialog."
-    dependsOn("stageSession", ":desktopApp:packageReleaseDeb")
+    dependsOn("stageSession", ":desktopApp:packageReleaseDeb", ":packageFullDeb")
     val staged = layout.buildDirectory.dir("session-install").get().asFile
     val lines = sessionInstallLines(staged)
     // desktopApp overrides compose outputBaseDir to <root>/packages, so the .deb is written
@@ -207,7 +225,11 @@ tasks.register<Exec>("installDesktop") {
         val deb = debDir.listFiles { f -> f.extension == "deb" }?.firstOrNull()
             ?: error("desktop .deb not found in $debDir — run :desktopApp:packageReleaseDeb")
         val script = staged.resolve("install-desktop.sh")
-        script.writeText((lines + "dpkg -i '${deb.absolutePath}'").joinToString("\n") + "\n")
+        // install the deb via apt so its Depends (the wayland runtime stack baked in by
+        // packageFullDeb) are resolved; fall back to dpkg + apt -f if the apt form is unavailable.
+        val installDeb = "apt-get install --no-install-recommends -y '${deb.absolutePath}' || " +
+                "{ dpkg -i '${deb.absolutePath}' || true; apt-get install -f -y; }"
+        script.writeText((lines + installDeb).joinToString("\n") + "\n")
         // pkexec pops a graphical polkit auth dialog and runs the script as root; needs a polkit
         // agent in the session but no terminal. Fall back to a printed sudo command if absent.
         val pkexec = listOf("/usr/bin/pkexec", "/usr/local/bin/pkexec")

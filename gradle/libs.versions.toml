@@ -10,6 +10,11 @@ app-name = "mjdev-desktop"
 app-pkg-name = "org.mjdev.desktop"
 app-pkg-version = "1.0.3"
 app-vendor = "mjdev"
+# wayland runtime stack the compositor (mjdevc) needs at runtime — single source of truth for the
+# deb Depends, the installDesktop apt step and make-iso.sh. Space-separated (shell-friendly); the
+# deb packaging joins it with ", ". A clean/GNOME box lacks these (GNOME uses mutter, not wlroots),
+# so without them mjdevc fails to load (libwlroots-0.18.so missing) and the session black-screens.
+app-compositor-runtime-deps = "libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session"
 java-language-version = "17"
 # app specific android
 android-compile-sdk = "36"

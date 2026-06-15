@@ -84,7 +84,7 @@ open class ChromeWindowState(
 
     override var position: DpOffset = position
         set(value) {
-            Log.d("ChromeWindow position: ${field} -> $value")
+            Log.d("ChromeWindow position: $field -> $value")
             field = value
             if (isCreated) {
                 scope.launch {
@@ -95,7 +95,7 @@ open class ChromeWindowState(
 
     override var size: DpSize = size
         set(value) {
-            Log.d("ChromeWindow size: ${field} -> $value")
+            Log.d("ChromeWindow size: $field -> $value")
             val oldSize = field
             field = value
             if (isCreated) {

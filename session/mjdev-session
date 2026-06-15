@@ -7,6 +7,18 @@ export XDG_SESSION_TYPE=wayland
 export MOZ_ENABLE_WAYLAND=1
 export QT_QPA_PLATFORM="wayland;xcb"
 export _JAVA_AWT_WM_NONREPARENTING=1
+# allow wlroots to start on llvmpipe (software GL). On real hardware mesa uses the
+# GPU and this is ignored; in a VM / headless box without GPU passthrough mesa falls
+# back to llvmpipe and wlroots otherwise refuses to create a renderer ("Software
+# rendering detected, please use WLR_RENDERER_ALLOW_SOFTWARE") and the compositor
+# exits immediately -> black screen + tty1 autologin crash-loop.
+export WLR_RENDERER_ALLOW_SOFTWARE=1
+# the Compose shell renders via Skiko. On a software/llvmpipe stack (VM, or a box with
+# no GPU) the compositor's XWayland has no glamor, so Skiko cannot create an OpenGL/GLX
+# context -> "org.jetbrains.skiko.RenderException: Cannot create Linux GL context" and the
+# shell crash-loops. Skiko's CPU raster backend needs no GL context and works everywhere.
+# (On real GPUs this is the safe-but-slower path; revisit once GPU detection is added.)
+export SKIKO_RENDER_API=SOFTWARE
 
 # desktop shell binary - deb/appimage install location, gradle dev fallback
 SHELL_CMD="/opt/mjdev-desktop/bin/mjdev-desktop"
@@ -32,4 +44,9 @@ cleanup() {
 }
 trap cleanup EXIT HUP INT TERM
 
-"$MJDEVC" --session --shell-cmd "$SHELL_CMD"
+# log the compositor + shell output so a failed start is diagnosable (otherwise the
+# tty1 session just dies to a black screen with no trace). keep the previous run.
+LOG_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/mjdev-desktop"
+mkdir -p "$LOG_DIR"
+[ -f "$LOG_DIR/session.log" ] && mv -f "$LOG_DIR/session.log" "$LOG_DIR/session.log.1"
+"$MJDEVC" --session --shell-cmd "$SHELL_CMD" >"$LOG_DIR/session.log" 2>&1

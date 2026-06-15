@@ -36,7 +36,9 @@
       "WebFetch(domain:blog.jetbrains.com)",
       "Bash(timeout 580 ./gradlew :shared:compileKotlinDesktop -q)",
       "Bash(xargs ls -la)",
-      "Bash(./gradlew :compositor:help --task installDesktop -q)"
+      "Bash(./gradlew :compositor:help --task installDesktop -q)",
+      "Bash(git ls-tree *)",
+      "Bash(grep -iE \"iso|live-build|debootstrap|\\\\.sh$\")"
     ]
   }
 }
