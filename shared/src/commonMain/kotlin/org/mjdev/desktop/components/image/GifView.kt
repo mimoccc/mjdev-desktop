@@ -1,11 +1,11 @@
 package org.mjdev.desktop.components.image
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.layout.ContentScale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -31,11 +31,16 @@ fun GifView(
     onFail: (error: Throwable) -> Unit = { e -> Log.e("Failed to load GIF: ${state.src}", e) },
 ) = withDesktopContext {
     BoxWithConstraints {
-        Canvas(modifier = modifier) {
-            drawImage(
-                image = state.currentImage ?: ImageBitmap(1, 1),
-                srcSize = IntSize(state.currentImage?.width ?: 0, state.currentImage?.height ?: 0),
-                dstSize = IntSize(constraints.maxWidth, constraints.maxHeight),
+        // Render the decoded frame via the standard Image composable (the same path AsyncImage
+        // uses for bitmaps). The previous Canvas { drawImage(srcSize, dstSize) } stopped painting
+        // anything after the Compose bump — frames decoded fine but never appeared (gray bg).
+        val image = state.currentImage
+        if (image != null) {
+            Image(
+                bitmap = image,
+                contentDescription = null,
+                modifier = modifier,
+                contentScale = ContentScale.Crop,
             )
         }
         LaunchedEffect(state.currentFrame) {

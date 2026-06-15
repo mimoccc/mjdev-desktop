@@ -143,16 +143,10 @@ fun MainWindow() =
             onTooltip = onTooltip,
             panelState = panelState,
             menuState = menuState,
-            onFocusChange = { focused ->
-                val menuIsVisible = appsMenuState.isVisible || menuState.isVisible
-                if (panelState.enabled) {
-                    if (!menuIsVisible && !focused) {
-                        runAsync {
-                            panelState.hide()
-                        }
-                    }
-                }
-            },
+            // Autohide is driven purely by pointer-leave (see DockBarWindow.onGlobalMouse), NOT by
+            // focus. Hiding on focus-loss flooded hide() under focus-follows-mouse (every pointer
+            // flicker over a non-focused window fired a hide) and flip-flopped the dock 16<->80.
+            onFocusChange = {},
         )
         AppsMenuWindow(
             menuState = menuState,
@@ -169,9 +163,12 @@ fun MainWindow() =
         ControlCenterWindow(
             onTooltip = onTooltip,
             controlCenterState = controlCenterState,
+            // Close on focus-loss = the "click outside" dismissal. Guard on isVisible so it does not
+            // fire a hide() on every focus flicker while already hidden (focus-follows-mouse would
+            // otherwise flood runAsync). Pointer-leave no longer hides it, so it stays open until a
+            // real click moves focus away (or a desktop click via onLeftMouseClick).
             onFocusChange = { focused ->
-//            Log.d("control center focus : $focused")
-                if (!focused) {
+                if (!focused && controlCenterState.isVisible) {
                     runAsync {
                         controlCenterState.hide()
                     }

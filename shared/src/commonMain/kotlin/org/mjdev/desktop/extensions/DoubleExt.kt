@@ -1,5 +1,7 @@
 package org.mjdev.desktop.extensions
 
+import kotlin.math.roundToLong
+
 object DoubleExt {
     fun Double.toMemorySizeReadable(): String {
         val bytes = toLong()
@@ -15,6 +17,12 @@ object DoubleExt {
         }
     }
 
-    // todo
-    fun String.format(dbl: Double): String = "not yet implemented"
+    // Minimal KMP-safe replacement for the JVM-only String.format: this object only ever uses the
+    // "%.1f" token (one decimal place), so substitute that with a hand-rounded one-decimal number.
+    fun String.format(dbl: Double): String {
+        val scaled = (dbl * 10.0).roundToLong()
+        val sign = if (scaled < 0) "-" else ""
+        val abs = if (scaled < 0) -scaled else scaled
+        return replace("%.1f", "$sign${abs / 10}.${abs % 10}")
+    }
 }

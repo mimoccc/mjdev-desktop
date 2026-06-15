@@ -8,12 +8,47 @@
 * update dependencies from report in reports folder, on every updated library check
   that builds run and or ommit/revert update if impossible
 
+- github action produce only one file, exe for windows, read only gh allowed in this step.
+
+- iso should be also included in release on github (limit is 2 GB of iso i hear)
+
+- when control center is shown and then user is going to a dock bottom bar, dock bottom bar
+  is below control center, focus jvm issue.
+
+- bottom bar is show in center of desktop, this should never happen.
+  your fixes little bit improve stability but this shows thats not enough.
+
+- memory widget have time to time unstable color, diferrent on another in some cases.
+
+- stabilize mouse focuses and events, this is probably done
+
 - handles that are on sliding windows 12dp please, there is 9dp i think yet.
 
 - in log, when building, there is a lot of warnings and errors, i want to have
   clean log  if possible.
 
-- iso se negeneruje do releases na githubu
+- control center, when shown should hide menu and bottom bar if it is visible.
 
-# unimportant changes if possible:
-# control center, when shown should hide menu and bottom bar if it is visible
+# --- from code review 2026-06-16 (background/palette/memory task) ---
+- RESOURCE MINIMIZATION (top priority): minimize computer resources of the desktop, any way.
+  main hog = GIF playback: custom GifDecoder decodes ALL frames upfront into ImageBitmaps and
+  ImageBitmapExt.writePixels writes them pixel-by-pixel via Canvas.drawRect (O(w*h) draw calls per
+  frame) + every frame kept in RAM. ideas to evaluate:
+  (a) render gifs via coil3 animated decoder (coil now HAS a gif decoder and already decodes gifs
+      for the palette) - only if visual behavior stays exactly as now;
+  (b) on-disk gif cache: pre-extract a gif into per-frame image files on disk (disk is cheap) and
+      stream frames from disk instead of holding all frames in RAM.
+  open to other ideas. measure CPU/RAM before+after.
+- palette samples ONE frame of an animated gif at switch time (a white flash frame -> washed-out
+  palette). sample a representative frame or average several. (review #3, try next)
+- palette iconsTintColor currently resolves equal to textColor; they SHOULD differ (accent vs
+  text). this is a todo hack. (review #4)
+- MimeTypeExt.Path.isVideo returns absolutePath.isGif (copy-paste); should be .isVideo. (review #6)
+- BackgroundImage rotation relies on LaunchedEffect(imagesSize) keyed on a non-observable
+  images.size and works only via the chained LaunchedEffect(currentBackground). make it robust
+  WITHOUT changing the current behavior (beware the desktopBackgrounds stateList landmine). (review #7)
+- ImageAny ignores colorFilter on the gif/video/async paths, so BackgroundImage's
+  ContrastColorFilter(1.5f) is dead there; apply it or drop the param. (review #9)
+
+todo later:
+- remote desktop or a connection aka VNC (any standardized protocol) to desktop by ip address, aka X11

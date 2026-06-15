@@ -20,6 +20,7 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.put
@@ -28,11 +29,15 @@ import mjdev.compositor.shim.MJC_EVENT_HANGUP
 import mjdev.compositor.shim.MJC_EVENT_READABLE
 import mjdev.compositor.shim.mjc_loop_add_fd
 import mjdev.compositor.shim.mjc_loop_remove_fd
+import mjdev.compositor.shim.mjc_key
+import mjdev.compositor.shim.mjc_pointer_button
+import mjdev.compositor.shim.mjc_pointer_move
 import mjdev.compositor.shim.mjc_view_focus
 import mjdev.compositor.shim.mjc_view_close
 import mjdev.compositor.shim.mjc_view_is_maximized
 import mjdev.compositor.shim.mjc_view_set_maximized
 import mjdev.compositor.shim.mjc_view_set_minimized
+import mjdev.compositor.shim.mjc_view_set_position
 import mjdev.compositor.shim.mjc_unix_accept
 import mjdev.compositor.shim.mjc_unix_listen
 import platform.posix.EAGAIN
@@ -42,6 +47,9 @@ import platform.posix.errno
 import platform.posix.read
 import platform.posix.unlink
 import platform.posix.write
+
+/** evdev code for the left mouse button (linux input-event-codes.h BTN_LEFT) */
+private const val BTN_LEFT = 0x110
 
 /**
  * Line based JSON api on a unix socket.
@@ -54,6 +62,11 @@ import platform.posix.write
  *   {"cmd":"minimize","id":3,"minimized":true}
  *   {"cmd":"maximize","id":3}
  *   {"cmd":"subscribe"}
+ *   {"cmd":"pointer-move","x":100,"y":200}
+ *   {"cmd":"button","button":272,"pressed":true}   // 272 = BTN_LEFT; omit button for left
+ *   {"cmd":"click","x":100,"y":200}                // optional x/y, then press+release
+ *   {"cmd":"key","code":1,"pressed":true}          // evdev code; omit pressed to tap
+ *   {"cmd":"move","id":1,"x":100,"y":100}          // move a window to absolute position
  *
  * Events (only for subscribed clients):
  *   {"event":"window-opened","window":{...}}
@@ -132,6 +145,10 @@ class IpcServer(private val c: Compositor) {
             when {
                 n > 0 -> client.buffer.append(chunk.decodeToString(0, n))
                 n == 0 -> {
+                    // process any complete line received right before the peer half-closed
+                    // (a `printf ... | nc -U` client sends data then EOF in one go), otherwise
+                    // the request is silently dropped
+                    processBuffer(client)
                     dropClient(fd)
                     return
                 }
@@ -223,6 +240,57 @@ class IpcServer(private val c: Compositor) {
 
             "subscribe" -> {
                 client.subscribed = true
+                ok { }
+            }
+
+            // input injection for automated/headless testing (drives the seat directly)
+            "pointer-move" -> {
+                val x = request["x"]?.jsonPrimitive?.int ?: return error("missing x")
+                val y = request["y"]?.jsonPrimitive?.int ?: return error("missing y")
+                mjc_pointer_move(c.server, x, y)
+                ok { }
+            }
+
+            "button" -> {
+                val button = request["button"]?.jsonPrimitive?.int ?: BTN_LEFT
+                val pressed = request["pressed"]?.jsonPrimitive?.content?.toBoolean() ?: true
+                mjc_pointer_button(c.server, button.toUInt(), pressed)
+                ok { }
+            }
+
+            "click" -> {
+                val button = request["button"]?.jsonPrimitive?.int ?: BTN_LEFT
+                val x = request["x"]?.jsonPrimitive?.int
+                val y = request["y"]?.jsonPrimitive?.int
+                if (x != null && y != null) {
+                    mjc_pointer_move(c.server, x, y)
+                }
+                mjc_pointer_button(c.server, button.toUInt(), true)
+                mjc_pointer_button(c.server, button.toUInt(), false)
+                ok { }
+            }
+
+            "key" -> {
+                val code = request["code"]?.jsonPrimitive?.int ?: return error("missing code")
+                val pressed = request["pressed"]?.jsonPrimitive?.content?.toBoolean()
+                if (pressed == null) {
+                    // no explicit state -> tap (press + release)
+                    mjc_key(c.server, code.toUInt(), true)
+                    mjc_key(c.server, code.toUInt(), false)
+                } else {
+                    mjc_key(c.server, code.toUInt(), pressed)
+                }
+                ok { }
+            }
+
+            // move a window directly (deterministic; injected drag can't start an
+            // interactive move because the client's move request needs a real grab serial)
+            "move" -> {
+                val id = request["id"]?.jsonPrimitive?.long ?: return error("missing id")
+                val x = request["x"]?.jsonPrimitive?.int ?: return error("missing x")
+                val y = request["y"]?.jsonPrimitive?.int ?: return error("missing y")
+                val info = c.windows.byId(id) ?: return error("no window $id")
+                mjc_view_set_position(info.ptr, x, y)
                 ok { }
             }
 

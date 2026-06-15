@@ -95,6 +95,12 @@ struct mjc_server {
     /* throttle timestamp (msec) for the pointer callback */
     uint32_t last_pointer_ms;
 
+    /* injection feedback marker (Android "show touches" style): a small white square in
+     * the overlay layer that appears at the injected pointer and fades out after a timeout */
+    struct wlr_scene_rect *inject_marker;
+    struct wl_event_source *inject_fade_timer;
+    float inject_alpha;
+
     enum mjc_cursor_mode cursor_mode;
     struct mjc_view *grabbed_view;
     double grab_x, grab_y;
@@ -227,7 +233,7 @@ static void view_deactivate(struct mjc_view *view) {
     }
 }
 
-void mjc_view_focus(struct mjc_view *view) {
+static void view_focus_internal(struct mjc_view *view, bool raise) {
     if (view == NULL || !view->focusable || view->minimized) {
         return;
     }
@@ -239,7 +245,9 @@ void mjc_view_focus(struct mjc_view *view) {
     if (server->focused_view != NULL) {
         view_deactivate(server->focused_view);
     }
-    if (view->scene_tree != NULL) {
+    /* focus-follows-mouse must not restack windows (no autoraise); only an explicit
+     * focus (click / activate / unminimize) raises the view to the top */
+    if (raise && view->scene_tree != NULL) {
         wlr_scene_node_raise_to_top(&view->scene_tree->node);
     }
     if (view->is_xwayland) {
@@ -260,6 +268,10 @@ void mjc_view_focus(struct mjc_view *view) {
     }
     server->focused_view = view;
     emit_focus_change(server);
+}
+
+void mjc_view_focus(struct mjc_view *view) {
+    view_focus_internal(view, true);
 }
 
 static void clear_focus_if(struct mjc_server *server, struct mjc_view *view) {
@@ -315,15 +327,13 @@ static void output_frame(struct wl_listener *listener, void *data) {
 
 static void output_request_state(struct wl_listener *listener, void *data) {
     struct mjc_output *output = wl_container_of(listener, output, request_state);
-    (void) data; /* ignore the host-requested size: keep the nested output locked
-                  * to its fixed 16:9 mode so the window cannot be resized
-                  * (moving and closing still work via the host decoration) */
-    struct wlr_output_state state;
-    wlr_output_state_init(&state);
-    wlr_output_state_set_custom_mode(&state,
-        output->server->output_w, output->server->output_h, 0);
-    wlr_output_commit_state(output->wlr_output, &state);
-    wlr_output_state_finish(&state);
+    const struct wlr_output_event_request_state *event = data;
+    /* honor host-driven resizes (the user resizing the nested x11/wayland window) so the
+     * desktop relayouts to the new size; commit the requested state and remember the new
+     * dimensions, which the shell reads back via the wl_output geometry */
+    wlr_output_commit_state(output->wlr_output, event->state);
+    output->server->output_w = output->wlr_output->width;
+    output->server->output_h = output->wlr_output->height;
 }
 
 static void output_destroy(struct wl_listener *listener, void *data) {
@@ -587,6 +597,11 @@ static void process_cursor_resize(struct mjc_server *server) {
     }
 }
 
+/* 1 = focus-follows-mouse (focusable view under the pointer gets focus). The focus-clear
+ * over the desktop is intentionally NOT done here: it made the dock reveal jam after a couple
+ * of cycles. The dock autohide must instead be driven by pointer-leave on the shell side. */
+#define MJC_FOCUS_FOLLOWS_MOUSE 1
+
 static void process_cursor_motion(struct mjc_server *server, uint32_t time) {
     if (server->cursor_mode == MJC_CURSOR_MOVE) {
         process_cursor_move(server);
@@ -599,14 +614,20 @@ static void process_cursor_motion(struct mjc_server *server, uint32_t time) {
     double sx, sy;
     struct wlr_seat *seat = server->seat;
     struct wlr_surface *surface = NULL;
-    desktop_view_at(server, server->cursor->x, server->cursor->y,
-        &surface, &sx, &sy);
+    struct mjc_view *view = desktop_view_at(server, server->cursor->x,
+        server->cursor->y, &surface, &sx, &sy);
     if (surface == NULL) {
         wlr_cursor_set_xcursor(server->cursor, server->cursor_mgr, "default");
     }
     if (surface != NULL) {
         wlr_seat_pointer_notify_enter(seat, surface, sx, sy);
         wlr_seat_pointer_notify_motion(seat, time, sx, sy);
+        /* focus-follows-mouse: focusable view under the pointer gets keyboard focus (no
+         * restack). Do NOT clear focus over non-focusable surfaces — that churns focus and
+         * jams the dock reveal; autohide is handled by pointer-leave on the shell side. */
+        if (MJC_FOCUS_FOLLOWS_MOUSE && view != NULL && view->focusable) {
+            view_focus_internal(view, false);
+        }
     } else {
         wlr_seat_pointer_clear_focus(seat);
     }
@@ -1341,6 +1362,13 @@ bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdat
         server->layers[i] = wlr_scene_tree_create(&server->scene->tree);
     }
 
+    /* injection feedback marker: a 16x16 white square in the overlay layer, hidden until
+     * input is injected, then shown at the pointer and faded out (Android show-touches style) */
+    const float marker_hidden[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    server->inject_marker = wlr_scene_rect_create(
+        server->layers[MJC_LAYER_OVERLAY], 16, 16, marker_hidden);
+    wlr_scene_node_set_enabled(&server->inject_marker->node, false);
+
     server->xdg_shell = wlr_xdg_shell_create(server->display, 3);
     server->new_xdg_toplevel.notify = server_new_xdg_toplevel;
     wl_signal_add(&server->xdg_shell->events.new_toplevel, &server->new_xdg_toplevel);
@@ -1748,5 +1776,131 @@ void mjc_view_set_geometry(mjc_view *view, int x, int y, int width, int height) 
             wlr_scene_node_set_position(&view->scene_tree->node,
                 x - off.x, y - off.y);
         }
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* input injection (ipc-driven, for automated/headless testing)        */
+/* ------------------------------------------------------------------ */
+
+static uint32_t mjc_now_msec(void) {
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return (uint32_t) (now.tv_sec * 1000 + now.tv_nsec / 1000000);
+}
+
+#define MJC_INJECT_MARKER_SIZE 16
+#define MJC_INJECT_FADE_STEP 0.08f
+#define MJC_INJECT_FADE_INTERVAL_MS 40
+
+/* step the injection marker's alpha down; disables it once fully faded */
+static int inject_marker_fade(void *data) {
+    struct mjc_server *server = data;
+    if (server->inject_marker == NULL) {
+        return 0;
+    }
+    server->inject_alpha -= MJC_INJECT_FADE_STEP;
+    if (server->inject_alpha <= 0.0f) {
+        server->inject_alpha = 0.0f;
+        wlr_scene_node_set_enabled(&server->inject_marker->node, false);
+        return 0;
+    }
+    float a = server->inject_alpha;
+    const float color[4] = {a, a, a, a}; /* premultiplied white */
+    wlr_scene_rect_set_color(server->inject_marker, color);
+    if (server->inject_fade_timer != NULL) {
+        wl_event_source_timer_update(server->inject_fade_timer,
+            MJC_INJECT_FADE_INTERVAL_MS);
+    }
+    return 0;
+}
+
+/* show the injection marker at the current cursor position at full opacity and (re)arm
+ * the fade timer; called on every injected pointer event so it stays bright while moving */
+static void inject_marker_show(struct mjc_server *server) {
+    if (server->inject_marker == NULL) {
+        return;
+    }
+    wlr_scene_node_set_position(&server->inject_marker->node,
+        (int) server->cursor->x - MJC_INJECT_MARKER_SIZE / 2,
+        (int) server->cursor->y - MJC_INJECT_MARKER_SIZE / 2);
+    server->inject_alpha = 1.0f;
+    const float color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    wlr_scene_rect_set_color(server->inject_marker, color);
+    wlr_scene_node_raise_to_top(&server->inject_marker->node);
+    wlr_scene_node_set_enabled(&server->inject_marker->node, true);
+    /* keep the marker persistently visible for now (behaves like a mouse cursor); the
+     * inactivity fadeout is disabled until we want it back */
+}
+
+void mjc_pointer_move(mjc_server *server, int x, int y) {
+    if (server == NULL) {
+        return;
+    }
+    /* warp to the closest valid layout point, then run the normal motion path so
+     * pointer focus, focus-follows-mouse and the ipc pointer broadcast all fire */
+    wlr_cursor_warp_closest(server->cursor, NULL, (double) x, (double) y);
+    process_cursor_motion(server, mjc_now_msec());
+    inject_marker_show(server);
+}
+
+void mjc_pointer_button(mjc_server *server, uint32_t button, bool pressed) {
+    if (server == NULL) {
+        return;
+    }
+    enum wl_pointer_button_state state = pressed
+        ? WL_POINTER_BUTTON_STATE_PRESSED
+        : WL_POINTER_BUTTON_STATE_RELEASED;
+    wlr_seat_pointer_notify_button(server->seat, mjc_now_msec(), button, state);
+    if (!pressed) {
+        server->cursor_mode = MJC_CURSOR_PASSTHROUGH;
+        server->grabbed_view = NULL;
+    } else {
+        double sx, sy;
+        struct wlr_surface *surface = NULL;
+        struct mjc_view *view = desktop_view_at(server,
+            server->cursor->x, server->cursor->y, &surface, &sx, &sy);
+        if (view != NULL && view->focusable) {
+            mjc_view_focus(view);
+        }
+    }
+    wlr_seat_pointer_notify_frame(server->seat);
+    inject_marker_show(server);
+}
+
+void mjc_key(mjc_server *server, uint32_t keycode, bool pressed) {
+    if (server == NULL) {
+        return;
+    }
+    struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(server->seat);
+    if (keyboard == NULL) {
+        if (wl_list_empty(&server->keyboards)) {
+            return;
+        }
+        struct mjc_keyboard *kb =
+            wl_container_of(server->keyboards.next, kb, link);
+        keyboard = kb->wlr_keyboard;
+    }
+    enum wl_keyboard_key_state state = pressed
+        ? WL_KEYBOARD_KEY_STATE_PRESSED
+        : WL_KEYBOARD_KEY_STATE_RELEASED;
+    /* mirror keyboard_handle_key: offer the keysym to the shell global-key hook first
+     * (Super/Escape toggles), and only forward to the focused client when unhandled */
+    uint32_t xkb_keycode = keycode + 8;
+    const xkb_keysym_t *syms;
+    int nsyms = xkb_state_key_get_syms(keyboard->xkb_state, xkb_keycode, &syms);
+    uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard);
+    bool handled = false;
+    if (pressed) {
+        for (int i = 0; i < nsyms; i++) {
+            if (server->cbs.key != NULL &&
+                    server->cbs.key(server->ud, syms[i], modifiers, true)) {
+                handled = true;
+            }
+        }
+    }
+    if (!handled) {
+        wlr_seat_set_keyboard(server->seat, keyboard);
+        wlr_seat_keyboard_notify_key(server->seat, mjc_now_msec(), keycode, state);
     }
 }

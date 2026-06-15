@@ -161,6 +161,7 @@ kotlin {
                 implementation(compose.animation)
                 implementation(compose.animationGraphics)
                 implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
                 // lifecycles
                 implementation(libs.androidx.lifecycle.viewmodel)
                 implementation(libs.androidx.lifecycle.runtime.compose)
@@ -276,7 +277,7 @@ kotlin {
                 // reflection
                 implementation(kotlin("reflect"))
                 // preview
-                implementation(compose.components.uiToolingPreview)
+//                implementation(compose.components.uiToolingPreview)
                 // preview rendering in the IDE (org.jetbrains.compose.ui:ui-tooling)
                 implementation(compose.uiTooling)
                 // activity

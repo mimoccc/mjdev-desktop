@@ -11,6 +11,7 @@ package org.mjdev.desktop.managers.palette
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,6 +31,7 @@ class Palette(
     val scope: CoroutineScope = context.scope,
     val initialColor: Color = Color.SuperDarkGray,
     val borderFactor: Float = 0.1f,
+    val borderBlend: Float = 0.5f,
     val textFactor: Float = 0.6f,
     val cutPercent: Int = 6,
 ) : IPalette {
@@ -63,17 +65,17 @@ class Palette(
         get() = backgroundColor.isLightColor
 
     override val borderColor
-        get() =
-            if (isLight) {
-                backgroundColor.darker(borderFactor)
-            } else {
-                backgroundColor.lighter(borderFactor)
-            }
+        // Blend the background toward the (already-contrasting) icon tint: the border stays part
+        // of the wallpaper's palette but is reliably visible on both light and dark backgrounds.
+        // The old darker/lighter(borderFactor=0.1) was too subtle to see on light wallpapers.
+        get() = lerp(backgroundColor, iconsTintColor, borderBlend)
 
     override val iconsTintColor
         get() =
-            if (textColor.isLightColor) {
-                textColor
+            if (isLight) {
+                // light background -> darken so the tint stays visible (the old branch lightened an
+                // already-light background to ~white, making widgets like MemoryChart invisible)
+                backgroundColor.darker(textFactor)
             } else {
                 backgroundColor.lighter(textFactor)
             }
@@ -125,11 +127,13 @@ class Palette(
                         rightBottomPart.topMostColor,
                     )
                 val background = colors.darkestColor
+                // Derive text from the NEW background (assigned below), not the stale state value,
+                // which made the derived colors lag one wallpaper behind.
                 val text =
-                    if (isLight) {
-                        backgroundColor.darker(textFactor)
+                    if (background.isLightColor) {
+                        background.darker(textFactor)
                     } else {
-                        backgroundColor.lighter(textFactor)
+                        background.lighter(textFactor)
                     }
                 backgroundColorState.value = background
                 textColorState.value = text

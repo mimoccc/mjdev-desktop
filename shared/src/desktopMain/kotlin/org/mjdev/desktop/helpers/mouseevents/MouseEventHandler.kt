@@ -32,22 +32,18 @@ class MouseEventHandler(
     fun onEvent(point: Point) {
         if (!isEnabled()) return
         val offset = DpOffset(point.x.dp, point.y.dp)
-        listeners
-            .filter { ev ->
-                ev.type == MouseEventType.ENTER
-            }.filter { ev ->
-                ev.isInRange(offset)
-            }.forEach { l ->
-                l.block(offset)
+        // Edge-triggered: fire only when the pointer crosses a range boundary, never on every
+        // in/out sample. This stops the high-frequency pointer feed from flooding the coroutine
+        // scope (which froze the bars) and from flickering the windows by re-firing show/hide.
+        listeners.forEach { listener ->
+            val inRange = listener.isInRange(offset)
+            val wasInRange = listener.lastInRange
+            listener.lastInRange = inRange
+            when (listener.type) {
+                MouseEventType.ENTER -> if (inRange && !wasInRange) listener.block(offset)
+                MouseEventType.LEAVE -> if (!inRange && wasInRange) listener.block(offset)
             }
-        listeners
-            .filter { ev ->
-                ev.type == MouseEventType.LEAVE
-            }.filter { ev ->
-                !ev.isInRange(offset)
-            }.forEach { l ->
-                l.block(offset)
-            }
+        }
     }
 
     fun onPointerEnter(

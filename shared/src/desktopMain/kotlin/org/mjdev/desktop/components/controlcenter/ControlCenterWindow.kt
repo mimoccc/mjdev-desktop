@@ -104,6 +104,10 @@ fun ControlCenterWindow(
                     controlCenterState.showOrFocus()
                 }
             }
+            // Intentionally NO pointer-leave autohide: the control center must stay open when the
+            // pointer moves off it (it vanished on every mouse-leave before, which felt broken).
+            // It closes on a click outside instead — the desktop's onLeftMouseClick hides it, and
+            // focus loss does too. Works in JVM and nested alike.
         },
     ) {
         ControlCenter(
