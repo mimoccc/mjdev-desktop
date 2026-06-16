@@ -113,6 +113,14 @@ void mjc_view_set_focusable(mjc_view *view, bool focusable);
 void mjc_view_set_position(mjc_view *view, int x, int y);
 void mjc_view_set_geometry(mjc_view *view, int x, int y, int width, int height);
 
+/* server-side decorations: mark a surface as shell chrome (no frame), toggle a
+ * window's frame (chromeless), and set the frame color theme (rgb in 0..1). */
+void mjc_view_set_chrome(mjc_view *view, bool chrome);
+void mjc_view_set_decorated(mjc_view *view, bool decorated);
+void mjc_set_decoration_theme(mjc_server *server,
+    float bg_r, float bg_g, float bg_b,
+    float fg_r, float fg_g, float fg_b);
+
 /* input injection (ipc-driven, for automated/headless testing) */
 void mjc_pointer_move(mjc_server *server, int x, int y);
 void mjc_pointer_button(mjc_server *server, uint32_t button, bool pressed);

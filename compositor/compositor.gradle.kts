@@ -34,12 +34,14 @@ fun pkgConfig(vararg args: String): List<String> = runCatching {
     else out.trim().split(Regex("\\s+")).filter { it.isNotBlank() }
 }.getOrElse { emptyList() }
 
-val wlrPackages = arrayOf("wlroots-0.18", "wayland-server", "xkbcommon", "pixman-1")
+// cairo is added for server-side window decorations (the compositor renders the
+// GNOME-style titlebar + buttons into a cairo image surface used as a wlr_buffer)
+val wlrPackages = arrayOf("wlroots-0.18", "wayland-server", "xkbcommon", "pixman-1", "cairo")
 val wlrCflags: List<String>
     get() = pkgConfig("--cflags", *wlrPackages)
 val wlrLibs: List<String>
     get() = pkgConfig("--libs", *wlrPackages).ifEmpty {
-        listOf("-lwlroots-0.18", "-lwayland-server", "-lxkbcommon")
+        listOf("-lwlroots-0.18", "-lwayland-server", "-lxkbcommon", "-lcairo")
     }
 
 // the kotlin/native bundled linker does not search the system lib dirs

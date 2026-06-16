@@ -25,6 +25,7 @@ import org.mjdev.desktop.extensions.PathExt.mkdirs
 import org.mjdev.desktop.extensions.PathExt.parentFile
 import org.mjdev.desktop.extensions.PathExt.writeText
 import org.mjdev.desktop.extensions.StringExt.hexRgb
+import org.mjdev.desktop.helpers.compositor.CompositorControl
 import org.mjdev.desktop.helpers.system.shell.Shell
 import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.theme.base.ThemeManagerStub
@@ -73,6 +74,9 @@ class ThemeManagerLinux(
             createCssFile(gtk4CssFile)
             createCssFile(systemGtk3CssFile)
             createCssFile(systemGtk4CssFile)
+            // colorize the compositor's server-side window frames from the same palette
+            // (no-op when not running inside mjdevc)
+            CompositorControl.setDecorationTheme(palette.backgroundColor, palette.textColor)
         }.onFailure { e ->
             Log.e(e)
         }

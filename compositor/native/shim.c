@@ -50,7 +50,28 @@
 #include <wlr/xwayland.h>
 #include <xkbcommon/xkbcommon.h>
 
+/* server-side window decorations: rendered with cairo into an image surface that
+ * is wrapped in a custom wlr_buffer and shown via a wlr_scene_buffer node */
+#include <math.h>
+#include <cairo.h>
+#include <drm_fourcc.h>
+#include <wlr/interfaces/wlr_buffer.h>
+
+/* _POSIX_C_SOURCE hides the XOPEN/GNU math constants from <math.h> */
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 #include "shim.h"
+
+/* GNOME-style decoration geometry (logical px) */
+#define MJC_DECO_TITLEBAR_H 36
+#define MJC_DECO_RADIUS     10
+#define MJC_DECO_BORDER     3
+#define MJC_DECO_BTN_R      9   /* button circle radius */
+#define MJC_DECO_BTN_GAP    8   /* gap between button circles */
+#define MJC_DECO_PAD        14  /* horizontal padding (title left, buttons right) */
+#define MJC_DECO_RESIZE     6   /* edge/corner resize hotzone half-width (px) */
 
 enum mjc_cursor_mode {
     MJC_CURSOR_PASSTHROUGH,
@@ -114,6 +135,11 @@ struct mjc_server {
     pid_t spawned_pids[64];
     int spawned_count;
 
+    /* server-side decoration theme (straight-alpha colors, 0..1) derived from the
+     * shell background; the compositor paints every normal-layer window's frame with it */
+    float deco_bg[3];
+    float deco_fg[3];
+
     struct wl_listener new_output;
     struct wl_listener new_xdg_toplevel;
     struct wl_listener new_xdg_popup;
@@ -146,6 +172,17 @@ struct mjc_view {
     /* floating geometry remembered while maximized (x/y are scene coords) */
     struct wlr_box saved_geo;
 
+    /* server-side decoration (only for normal-layer app windows). The titlebar is a
+     * cairo buffer node, the borders are scene rects; all are children of scene_tree so
+     * they move/raise/minimize with the window automatically. */
+    bool decorated;
+    bool deco_disabled;                    /* chromeless: never draw a server frame */
+    bool is_chrome;                         /* shell surface (wallpaper/panel/menu): no frame */
+    struct wlr_scene_buffer *deco_titlebar;
+    struct wlr_scene_rect *deco_border[3]; /* left, right, bottom */
+    int deco_w, deco_h;                    /* last rendered content size */
+    int hovered_button;                    /* -1 none, 0 min, 1 max, 2 close */
+
     /* xdg shell */
     struct wlr_xdg_toplevel *xdg_toplevel;
 
@@ -177,6 +214,7 @@ struct mjc_popup {
 
 struct mjc_decoration {
     struct wlr_xdg_toplevel_decoration_v1 *decoration;
+    struct mjc_view *view;
     struct wl_listener request_mode;
     struct wl_listener destroy;
 };
@@ -217,6 +255,9 @@ static struct wlr_surface *view_surface(struct mjc_view *view) {
     return view->xdg_toplevel->base->surface;
 }
 
+/* re-render a window's titlebar bitmap in place (focus/hover/title changes) */
+static void deco_repaint(struct mjc_view *view);
+
 static void emit_focus_change(struct mjc_server *server) {
     if (server->cbs.focus_change != NULL) {
         server->cbs.focus_change(server->ud, server->focused_view);
@@ -242,6 +283,7 @@ static void view_focus_internal(struct mjc_view *view, bool raise) {
     if (server->focused_view == view) {
         return;
     }
+    struct mjc_view *prev = server->focused_view;
     if (server->focused_view != NULL) {
         view_deactivate(server->focused_view);
     }
@@ -267,6 +309,11 @@ static void view_focus_internal(struct mjc_view *view, bool raise) {
         }
     }
     server->focused_view = view;
+    /* refresh active/inactive titlebar styling on both windows */
+    if (prev != NULL) {
+        deco_repaint(prev);
+    }
+    deco_repaint(view);
     emit_focus_change(server);
 }
 
@@ -530,6 +577,23 @@ static void seat_request_set_selection(struct wl_listener *listener, void *data)
 
 static void view_current_geometry(struct mjc_view *view, struct wlr_box *box);
 
+/* server-side decoration helpers (defined after the interactive-grab section) */
+static void view_decoration_update(struct mjc_view *view);
+static void view_decoration_destroy(struct mjc_view *view);
+/* returns true when the press/release was consumed by a window's decoration */
+static bool deco_handle_button(struct mjc_server *server,
+    double lx, double ly, bool pressed);
+/* recompute which titlebar button (if any) the pointer hovers, re-rendering on change */
+static void deco_update_hover(struct mjc_server *server);
+/* layout-space top-left and width of a decorated view's titlebar; false if undecorated */
+static bool deco_titlebar_box(struct mjc_view *view,
+    double *tx, double *ty, int *w);
+/* resize-edge mask under (lx,ly) for a decorated window (0 = not on an edge) */
+static uint32_t deco_resize_edges(struct mjc_server *server,
+    double lx, double ly, struct mjc_view **out);
+/* xcursor name for a resize-edge mask */
+static const char *deco_resize_cursor(uint32_t edges);
+
 static void process_cursor_move(struct mjc_server *server) {
     struct mjc_view *view = server->grabbed_view;
     if (view == NULL || view->scene_tree == NULL) {
@@ -616,10 +680,44 @@ static void process_cursor_motion(struct mjc_server *server, uint32_t time) {
     struct wlr_surface *surface = NULL;
     struct mjc_view *view = desktop_view_at(server, server->cursor->x,
         server->cursor->y, &surface, &sx, &sy);
-    if (surface == NULL) {
-        wlr_cursor_set_xcursor(server->cursor, server->cursor_mgr, "default");
+
+    /* server-side decorations own the pointer over the frame: refresh button hover
+     * and pick the cursor (resize on edges/corners, hand over buttons, arrow over the
+     * draggable titlebar). When the frame owns the pointer the client gets no focus. */
+    deco_update_hover(server);
+    struct mjc_view *rview = NULL;
+    uint32_t redges = deco_resize_edges(server, server->cursor->x,
+        server->cursor->y, &rview);
+    bool deco_owns = false;
+    const char *deco_cursor = NULL;
+    if (redges != 0) {
+        deco_cursor = deco_resize_cursor(redges);
+        deco_owns = true;
+    } else {
+        struct mjc_view *tv;
+        wl_list_for_each(tv, &server->views, link) {
+            double tx, ty;
+            int w;
+            if (!deco_titlebar_box(tv, &tx, &ty, &w)) {
+                continue;
+            }
+            if (server->cursor->x >= tx && server->cursor->x < tx + w &&
+                    server->cursor->y >= ty &&
+                    server->cursor->y < ty + MJC_DECO_TITLEBAR_H) {
+                deco_cursor = (tv->hovered_button >= 0) ? "pointer" : "default";
+                deco_owns = true;
+                break;
+            }
+        }
     }
-    if (surface != NULL) {
+
+    if (deco_owns) {
+        wlr_cursor_set_xcursor(server->cursor, server->cursor_mgr, deco_cursor);
+        wlr_seat_pointer_clear_focus(seat);
+    } else if (surface == NULL) {
+        wlr_cursor_set_xcursor(server->cursor, server->cursor_mgr, "default");
+        wlr_seat_pointer_clear_focus(seat);
+    } else {
         wlr_seat_pointer_notify_enter(seat, surface, sx, sy);
         wlr_seat_pointer_notify_motion(seat, time, sx, sy);
         /* focus-follows-mouse: focusable view under the pointer gets keyboard focus (no
@@ -628,8 +726,6 @@ static void process_cursor_motion(struct mjc_server *server, uint32_t time) {
         if (MJC_FOCUS_FOLLOWS_MOUSE && view != NULL && view->focusable) {
             view_focus_internal(view, false);
         }
-    } else {
-        wlr_seat_pointer_clear_focus(seat);
     }
 
     // broadcast the pointer position to ipc clients (throttled), so the shell can do
@@ -668,6 +764,12 @@ static void server_cursor_button(struct wl_listener *listener, void *data) {
         server->cursor_mode = MJC_CURSOR_PASSTHROUGH;
         server->grabbed_view = NULL;
     } else {
+        /* a press over a window's titlebar/buttons is handled by the decoration
+         * (focus + move grab, or a min/max/close action) and must not fall through
+         * to client focus */
+        if (deco_handle_button(server, server->cursor->x, server->cursor->y, true)) {
+            return;
+        }
         double sx, sy;
         struct wlr_surface *surface = NULL;
         struct mjc_view *view = desktop_view_at(server,
@@ -739,6 +841,461 @@ static void begin_interactive(struct mjc_view *view,
         server->grab_geobox = geo_box;
         server->resize_edges = edges;
     }
+}
+
+/* ------------------------------------------------------------------ */
+/* server-side decorations                                             */
+/* ------------------------------------------------------------------ */
+
+/* a wlr_buffer backed by a cairo ARGB32 image surface. cairo ARGB32 is
+ * premultiplied and laid out as B,G,R,A on little-endian, which matches
+ * DRM_FORMAT_ARGB8888 — so the scene can upload it directly as a texture. */
+struct mjc_cairo_buffer {
+    struct wlr_buffer base;
+    cairo_surface_t *surface;
+};
+
+static void cairo_buffer_destroy(struct wlr_buffer *wlr_buffer) {
+    struct mjc_cairo_buffer *buf = wl_container_of(wlr_buffer, buf, base);
+    cairo_surface_destroy(buf->surface);
+    free(buf);
+}
+
+static bool cairo_buffer_begin_data_ptr_access(struct wlr_buffer *wlr_buffer,
+        uint32_t flags, void **data, uint32_t *format, size_t *stride) {
+    struct mjc_cairo_buffer *buf = wl_container_of(wlr_buffer, buf, base);
+    if (flags & WLR_BUFFER_DATA_PTR_ACCESS_WRITE) {
+        return false;
+    }
+    *data = cairo_image_surface_get_data(buf->surface);
+    *format = DRM_FORMAT_ARGB8888;
+    *stride = (size_t) cairo_image_surface_get_stride(buf->surface);
+    return true;
+}
+
+static void cairo_buffer_end_data_ptr_access(struct wlr_buffer *wlr_buffer) {
+    (void) wlr_buffer;
+}
+
+static const struct wlr_buffer_impl cairo_buffer_impl = {
+    .destroy = cairo_buffer_destroy,
+    .begin_data_ptr_access = cairo_buffer_begin_data_ptr_access,
+    .end_data_ptr_access = cairo_buffer_end_data_ptr_access,
+};
+
+static struct mjc_cairo_buffer *cairo_buffer_create(int width, int height) {
+    struct mjc_cairo_buffer *buf = calloc(1, sizeof(*buf));
+    if (buf == NULL) {
+        return NULL;
+    }
+    buf->surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
+    if (cairo_surface_status(buf->surface) != CAIRO_STATUS_SUCCESS) {
+        cairo_surface_destroy(buf->surface);
+        free(buf);
+        return NULL;
+    }
+    wlr_buffer_init(&buf->base, &cairo_buffer_impl, width, height);
+    return buf;
+}
+
+/* content-surface offset inside the view's scene_tree (xdg windows carry a
+ * geometry offset for their CSD margins; xwayland surfaces sit at 0,0) */
+static void view_geo_offset(struct mjc_view *view, int *ox, int *oy) {
+    if (view->is_xwayland) {
+        *ox = 0;
+        *oy = 0;
+    } else {
+        struct wlr_box geo;
+        wlr_xdg_surface_get_geometry(view->xdg_toplevel->base, &geo);
+        *ox = geo.x;
+        *oy = geo.y;
+    }
+}
+
+static void view_content_size(struct mjc_view *view, int *w, int *h) {
+    struct wlr_box box;
+    view_current_geometry(view, &box);
+    *w = box.width;
+    *h = box.height;
+}
+
+/* center x of titlebar button i (0=min, 1=max, 2=close), right-aligned GNOME order */
+static int deco_button_cx(int width, int i) {
+    int step = 2 * MJC_DECO_BTN_R + MJC_DECO_BTN_GAP;
+    int close_cx = width - MJC_DECO_PAD - MJC_DECO_BTN_R;
+    return close_cx - (2 - i) * step;
+}
+
+static bool view_should_decorate(struct mjc_view *view) {
+    if (!view->mapped || view->scene_tree == NULL) {
+        return false;
+    }
+    /* chrome (shell wallpaper/panels/menus) and chromeless windows get no frame;
+     * everything else is a normal app window and is decorated in any layer, so
+     * always-on-top / always-on-bottom apps keep their titlebar */
+    if (view->is_chrome || view->deco_disabled) {
+        return false;
+    }
+    if (view->is_xwayland && view->xsurface != NULL &&
+            view->xsurface->override_redirect) {
+        return false;
+    }
+    return true;
+}
+
+/* a path with rounded top corners and square bottom corners */
+static void deco_rounded_top(cairo_t *cr, double x, double y,
+        double w, double h, double r) {
+    cairo_new_sub_path(cr);
+    cairo_arc(cr, x + r, y + r, r, M_PI, 1.5 * M_PI);
+    cairo_arc(cr, x + w - r, y + r, r, 1.5 * M_PI, 2.0 * M_PI);
+    cairo_line_to(cr, x + w, y + h);
+    cairo_line_to(cr, x, y + h);
+    cairo_close_path(cr);
+}
+
+/* render the titlebar of `width` px into a fresh cairo buffer and hand it to the
+ * scene node (the scene takes a ref; we drop ours) */
+static void deco_render(struct mjc_view *view, int width) {
+    if (view->deco_titlebar == NULL || width <= 0) {
+        return;
+    }
+    struct mjc_server *server = view->server;
+    int h = MJC_DECO_TITLEBAR_H;
+    struct mjc_cairo_buffer *buf = cairo_buffer_create(width, h);
+    if (buf == NULL) {
+        return;
+    }
+    cairo_t *cr = cairo_create(buf->surface);
+
+    cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
+    cairo_paint(cr);
+    cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+
+    const float *bg = server->deco_bg;
+    const float *fg = server->deco_fg;
+    bool active = (server->focused_view == view);
+    double dim = active ? 0.0 : 0.10;
+
+    /* titlebar fill: soft vertical gradient derived from the theme bg */
+    cairo_pattern_t *grad = cairo_pattern_create_linear(0, 0, 0, h);
+    cairo_pattern_add_color_stop_rgb(grad, 0.0,
+        fmin(bg[0] + 0.10 - dim, 1.0), fmin(bg[1] + 0.10 - dim, 1.0),
+        fmin(bg[2] + 0.10 - dim, 1.0));
+    cairo_pattern_add_color_stop_rgb(grad, 1.0,
+        fmax(bg[0] - dim, 0.0), fmax(bg[1] - dim, 0.0), fmax(bg[2] - dim, 0.0));
+    deco_rounded_top(cr, 0, 0, width, h, MJC_DECO_RADIUS);
+    cairo_set_source(cr, grad);
+    cairo_fill(cr);
+    cairo_pattern_destroy(grad);
+
+    /* hairline top highlight for depth */
+    cairo_set_source_rgba(cr, 1, 1, 1, active ? 0.10 : 0.05);
+    cairo_set_line_width(cr, 1.0);
+    deco_rounded_top(cr, 0.5, 0.5, width - 1, h, MJC_DECO_RADIUS);
+    cairo_stroke(cr);
+
+    /* title text (cairo toy font api, no pango dependency) */
+    const char *title = mjc_view_title(view);
+    if (title != NULL && title[0] != '\0') {
+        cairo_select_font_face(cr, "Sans",
+            CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+        cairo_set_font_size(cr, 13.0);
+        cairo_font_extents_t fe;
+        cairo_font_extents(cr, &fe);
+        double clip_r = deco_button_cx(width, 0) - MJC_DECO_BTN_R - 8;
+        cairo_save(cr);
+        cairo_rectangle(cr, 0, 0, clip_r > 0 ? clip_r : 0, h);
+        cairo_clip(cr);
+        cairo_set_source_rgba(cr, fg[0], fg[1], fg[2], active ? 0.95 : 0.6);
+        cairo_move_to(cr, MJC_DECO_PAD, (h + fe.ascent - fe.descent) / 2.0);
+        cairo_show_text(cr, title);
+        cairo_restore(cr);
+    }
+
+    /* three GNOME-style circular buttons: min, max, close */
+    double cy = h / 2.0;
+    for (int i = 0; i < 3; i++) {
+        double cx = deco_button_cx(width, i);
+        bool hov = (view->hovered_button == i);
+        bool is_close = (i == 2);
+
+        if (is_close && hov) {
+            cairo_set_source_rgba(cr, 0.86, 0.22, 0.20, 1.0);
+        } else {
+            double a = hov ? 0.22 : 0.12;
+            cairo_set_source_rgba(cr, fg[0], fg[1], fg[2], active ? a : a * 0.6);
+        }
+        cairo_arc(cr, cx, cy, MJC_DECO_BTN_R, 0, 2 * M_PI);
+        cairo_fill(cr);
+
+        if (is_close && hov) {
+            cairo_set_source_rgba(cr, 1, 1, 1, 1.0);
+        } else {
+            cairo_set_source_rgba(cr, fg[0], fg[1], fg[2], active ? 0.92 : 0.55);
+        }
+        cairo_set_line_width(cr, 1.4);
+        double g = 4.0;
+        if (i == 0) {            /* minimize: bottom dash */
+            cairo_move_to(cr, cx - g, cy + 2.5);
+            cairo_line_to(cr, cx + g, cy + 2.5);
+            cairo_stroke(cr);
+        } else if (i == 1) {     /* maximize: square */
+            cairo_rectangle(cr, cx - g, cy - g, 2 * g, 2 * g);
+            cairo_stroke(cr);
+        } else {                 /* close: x */
+            cairo_move_to(cr, cx - g, cy - g);
+            cairo_line_to(cr, cx + g, cy + g);
+            cairo_move_to(cr, cx + g, cy - g);
+            cairo_line_to(cr, cx - g, cy + g);
+            cairo_stroke(cr);
+        }
+    }
+
+    cairo_destroy(cr);
+    cairo_surface_flush(buf->surface);
+
+    wlr_scene_buffer_set_buffer(view->deco_titlebar, &buf->base);
+    wlr_buffer_drop(&buf->base);
+}
+
+static void deco_repaint(struct mjc_view *view) {
+    if (view->decorated && view->deco_w > 0) {
+        deco_render(view, view->deco_w);
+    }
+}
+
+static void view_decoration_destroy(struct mjc_view *view) {
+    if (view->deco_titlebar != NULL) {
+        wlr_scene_node_destroy(&view->deco_titlebar->node);
+        view->deco_titlebar = NULL;
+    }
+    for (int i = 0; i < 3; i++) {
+        if (view->deco_border[i] != NULL) {
+            wlr_scene_node_destroy(&view->deco_border[i]->node);
+            view->deco_border[i] = NULL;
+        }
+    }
+    view->decorated = false;
+    view->deco_w = 0;
+    view->deco_h = 0;
+    view->hovered_button = -1;
+}
+
+/* create/refresh/remove a window's decoration to match its current state */
+static void view_decoration_update(struct mjc_view *view) {
+    if (!view_should_decorate(view)) {
+        view_decoration_destroy(view);
+        return;
+    }
+    int w, h, ox, oy;
+    view_content_size(view, &w, &h);
+    view_geo_offset(view, &ox, &oy);
+    if (w <= 0 || h <= 0) {
+        return;
+    }
+    struct mjc_server *server = view->server;
+    int tb = MJC_DECO_TITLEBAR_H;
+    int b = MJC_DECO_BORDER;
+
+    if (view->deco_titlebar == NULL) {
+        view->deco_titlebar = wlr_scene_buffer_create(view->scene_tree, NULL);
+        const float border_col[4] = {
+            server->deco_bg[0] * 0.6f, server->deco_bg[1] * 0.6f,
+            server->deco_bg[2] * 0.6f, 1.0f,
+        };
+        for (int i = 0; i < 3; i++) {
+            view->deco_border[i] =
+                wlr_scene_rect_create(view->scene_tree, 1, 1, border_col);
+        }
+        view->hovered_button = -1;
+        view->decorated = true;
+        view->deco_w = 0;
+    }
+
+    if (w != view->deco_w) {
+        deco_render(view, w);
+    }
+    view->deco_w = w;
+    view->deco_h = h;
+
+    /* place relative to the content surface inside scene_tree; the titlebar sits
+     * directly above the content, the borders frame the sides and bottom */
+    wlr_scene_node_set_position(&view->deco_titlebar->node, ox, oy - tb);
+    wlr_scene_rect_set_size(view->deco_border[0], b, tb + h);
+    wlr_scene_node_set_position(&view->deco_border[0]->node, ox - b, oy - tb);
+    wlr_scene_rect_set_size(view->deco_border[1], b, tb + h);
+    wlr_scene_node_set_position(&view->deco_border[1]->node, ox + w, oy - tb);
+    wlr_scene_rect_set_size(view->deco_border[2], w + 2 * b, b);
+    wlr_scene_node_set_position(&view->deco_border[2]->node, ox - b, oy + h);
+}
+
+/* layout-space top-left and size of a decorated view's titlebar */
+static bool deco_titlebar_box(struct mjc_view *view,
+        double *tx, double *ty, int *w) {
+    if (!view->decorated || view->deco_titlebar == NULL) {
+        return false;
+    }
+    int ox, oy, h;
+    view_geo_offset(view, &ox, &oy);
+    view_content_size(view, w, &h);
+    *tx = view->scene_tree->node.x + ox;
+    *ty = view->scene_tree->node.y + oy - MJC_DECO_TITLEBAR_H;
+    return true;
+}
+
+/* button index (0..2) under (lx,ly), or -1 if over the titlebar but not a button */
+static int deco_button_index(double tx, double ty, int w, double lx, double ly) {
+    double cy = ty + MJC_DECO_TITLEBAR_H / 2.0;
+    for (int i = 0; i < 3; i++) {
+        double cx = tx + deco_button_cx(w, i);
+        double dx = lx - cx, dy = ly - cy;
+        double rr = (MJC_DECO_BTN_R + 2) * (MJC_DECO_BTN_R + 2);
+        if (dx * dx + dy * dy <= rr) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+/* resize-edge mask under (lx,ly) for the first decorated, non-maximized window
+ * whose frame border zone the pointer is in; 0 when the pointer is not on an edge */
+static uint32_t deco_resize_edges(struct mjc_server *server,
+        double lx, double ly, struct mjc_view **out) {
+    struct mjc_view *view;
+    wl_list_for_each(view, &server->views, link) {
+        if (!view->decorated || view->scene_tree == NULL || view->maximized) {
+            continue;
+        }
+        int ox, oy, w, h;
+        view_geo_offset(view, &ox, &oy);
+        view_content_size(view, &w, &h);
+        double x0 = view->scene_tree->node.x + ox - MJC_DECO_BORDER;
+        double y0 = view->scene_tree->node.y + oy - MJC_DECO_TITLEBAR_H;
+        double x1 = view->scene_tree->node.x + ox + w + MJC_DECO_BORDER;
+        double y1 = view->scene_tree->node.y + oy + h + MJC_DECO_BORDER;
+        double r = MJC_DECO_RESIZE;
+        if (lx < x0 - r || lx > x1 + r || ly < y0 - r || ly > y1 + r) {
+            continue;
+        }
+        uint32_t edges = 0;
+        if (ly <= y0 + r) {
+            edges |= WLR_EDGE_TOP;
+        } else if (ly >= y1 - r) {
+            edges |= WLR_EDGE_BOTTOM;
+        }
+        if (lx <= x0 + r) {
+            edges |= WLR_EDGE_LEFT;
+        } else if (lx >= x1 - r) {
+            edges |= WLR_EDGE_RIGHT;
+        }
+        if (edges != 0) {
+            if (out != NULL) {
+                *out = view;
+            }
+            return edges;
+        }
+    }
+    return 0;
+}
+
+static const char *deco_resize_cursor(uint32_t edges) {
+    bool top = edges & WLR_EDGE_TOP, bottom = edges & WLR_EDGE_BOTTOM;
+    bool left = edges & WLR_EDGE_LEFT, right = edges & WLR_EDGE_RIGHT;
+    if (top && left) return "nw-resize";
+    if (top && right) return "ne-resize";
+    if (bottom && left) return "sw-resize";
+    if (bottom && right) return "se-resize";
+    if (top) return "n-resize";
+    if (bottom) return "s-resize";
+    if (left) return "w-resize";
+    if (right) return "e-resize";
+    return "default";
+}
+
+static void deco_update_hover(struct mjc_server *server) {
+    struct mjc_view *view;
+    wl_list_for_each(view, &server->views, link) {
+        double tx, ty;
+        int w;
+        if (!deco_titlebar_box(view, &tx, &ty, &w)) {
+            continue;
+        }
+        int want = -1;
+        if (server->cursor->x >= tx && server->cursor->x < tx + w &&
+                server->cursor->y >= ty &&
+                server->cursor->y < ty + MJC_DECO_TITLEBAR_H) {
+            want = deco_button_index(tx, ty, w, server->cursor->x, server->cursor->y);
+        }
+        if (want != view->hovered_button) {
+            view->hovered_button = want;
+            deco_repaint(view);
+        }
+    }
+}
+
+static bool deco_handle_button(struct mjc_server *server,
+        double lx, double ly, bool pressed) {
+    if (!pressed) {
+        return false;
+    }
+
+    /* edge/corner of a window frame => start an interactive resize. Mirrors the
+     * RESIZE branch of begin_interactive but without the focused-surface guard
+     * (the pointer is over the decoration, not the client surface). */
+    struct mjc_view *rv = NULL;
+    uint32_t redges = deco_resize_edges(server, lx, ly, &rv);
+    if (redges != 0 && rv != NULL) {
+        if (rv->focusable) {
+            mjc_view_focus(rv);
+        }
+        struct wlr_box geo_box;
+        view_current_geometry(rv, &geo_box);
+        double border_x = geo_box.x +
+            ((redges & WLR_EDGE_RIGHT) ? geo_box.width : 0);
+        double border_y = geo_box.y +
+            ((redges & WLR_EDGE_BOTTOM) ? geo_box.height : 0);
+        server->grabbed_view = rv;
+        server->cursor_mode = MJC_CURSOR_RESIZE;
+        server->grab_x = server->cursor->x - border_x;
+        server->grab_y = server->cursor->y - border_y;
+        server->grab_geobox = geo_box;
+        server->resize_edges = redges;
+        return true;
+    }
+
+    struct mjc_view *view;
+    wl_list_for_each(view, &server->views, link) {
+        double tx, ty;
+        int w;
+        if (!deco_titlebar_box(view, &tx, &ty, &w)) {
+            continue;
+        }
+        if (lx < tx || lx >= tx + w || ly < ty ||
+                ly >= ty + MJC_DECO_TITLEBAR_H) {
+            continue;
+        }
+        int btn = deco_button_index(tx, ty, w, lx, ly);
+        if (view->focusable) {
+            mjc_view_focus(view);
+        }
+        if (btn == 0) {
+            mjc_view_set_minimized(view, true);
+        } else if (btn == 1) {
+            mjc_view_set_maximized(view, !view->maximized);
+        } else if (btn == 2) {
+            mjc_view_close(view);
+        } else {
+            /* drag the titlebar => interactive move (no focused-surface guard
+             * because the pointer is over the decoration, not the client) */
+            server->grabbed_view = view;
+            server->cursor_mode = MJC_CURSOR_MOVE;
+            server->grab_x = server->cursor->x - view->scene_tree->node.x;
+            server->grab_y = server->cursor->y - view->scene_tree->node.y;
+        }
+        return true;
+    }
+    return false;
 }
 
 /* ------------------------------------------------------------------ */
@@ -822,8 +1379,9 @@ static void xdg_toplevel_map(struct wl_listener *listener, void *data) {
     struct mjc_view *view = wl_container_of(listener, view, map);
     view->mapped = true;
     view_center(view);
-    view_emit_map(view);
+    view_emit_map(view);    /* policy assigns the layer here (synchronous) */
     mjc_view_focus(view);
+    view_decoration_update(view);
 }
 
 static void xdg_toplevel_unmap(struct wl_listener *listener, void *data) {
@@ -831,6 +1389,7 @@ static void xdg_toplevel_unmap(struct wl_listener *listener, void *data) {
     struct mjc_view *view = wl_container_of(listener, view, unmap);
     view->mapped = false;
     clear_focus_if(view->server, view);
+    view_decoration_destroy(view);
     view_emit_unmap(view);
 }
 
@@ -860,6 +1419,10 @@ static void xdg_toplevel_commit(struct wl_listener *listener, void *data) {
                 view_center(view);
             }
         }
+    }
+    /* keep the frame sized/placed to the (possibly just-resized) window */
+    if (view->decorated || view_should_decorate(view)) {
+        view_decoration_update(view);
     }
 }
 
@@ -918,6 +1481,7 @@ static void xdg_toplevel_request_fullscreen(struct wl_listener *listener, void *
 static void xdg_toplevel_set_title(struct wl_listener *listener, void *data) {
     (void) data;
     struct mjc_view *view = wl_container_of(listener, view, set_title);
+    deco_repaint(view);
     if (view->server->cbs.view_title != NULL) {
         view->server->cbs.view_title(view->server->ud, view,
             view->xdg_toplevel->title);
@@ -940,6 +1504,12 @@ static void server_new_xdg_toplevel(struct wl_listener *listener, void *data) {
 
     struct mjc_view *view = view_create(server, false);
     view->xdg_toplevel = xdg_toplevel;
+    /* wayland toplevels default to frameless: a client that draws its own CSD (GTK)
+     * never negotiates xdg-decoration, and adding a server frame would double it up.
+     * The frame is enabled only when the client requests SERVER_SIDE (Qt, libdecor,
+     * SDL…) in decoration_request_mode. xwayland/X11 windows have no CSD and are
+     * always decorated. */
+    view->deco_disabled = true;
     view->scene_tree = wlr_scene_xdg_surface_create(
         server->layers[MJC_LAYER_NORMAL], xdg_toplevel->base);
     view->scene_tree->node.data = view;
@@ -1011,15 +1581,24 @@ static void server_new_xdg_popup(struct wl_listener *listener, void *data) {
     wl_signal_add(&xdg_popup->events.destroy, &popup->destroy);
 }
 
-/* decorations - clients draw their own buttons (CSD), the compositor
- * renders no frames, so server side mode is never granted */
+/* decorations - the compositor draws GNOME-style server-side frames. We grant
+ * SERVER_SIDE unless the client explicitly demands client-side decorations, in
+ * which case we honor it and leave that window chromeless (no server frame). */
 
 static void decoration_request_mode(struct wl_listener *listener, void *data) {
     (void) data;
     struct mjc_decoration *deco = wl_container_of(listener, deco, request_mode);
-    if (deco->decoration->toplevel->base->initialized) {
-        wlr_xdg_toplevel_decoration_v1_set_mode(deco->decoration,
-            WLR_XDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE);
+    if (!deco->decoration->toplevel->base->initialized) {
+        return;
+    }
+    bool client_wants_csd = deco->decoration->requested_mode ==
+        WLR_XDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
+    wlr_xdg_toplevel_decoration_v1_set_mode(deco->decoration, client_wants_csd
+        ? WLR_XDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE
+        : WLR_XDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
+    if (deco->view != NULL) {
+        deco->view->deco_disabled = client_wants_csd;
+        view_decoration_update(deco->view);
     }
 }
 
@@ -1037,6 +1616,9 @@ static void server_new_toplevel_decoration(struct wl_listener *listener,
     struct wlr_xdg_toplevel_decoration_v1 *decoration = data;
     struct mjc_decoration *deco = calloc(1, sizeof(*deco));
     deco->decoration = decoration;
+    /* the view was stashed on the xdg surface in server_new_xdg_toplevel */
+    struct wlr_scene_tree *tree = decoration->toplevel->base->data;
+    deco->view = tree != NULL ? tree->node.data : NULL;
     deco->request_mode.notify = decoration_request_mode;
     wl_signal_add(&decoration->events.request_mode, &deco->request_mode);
     deco->destroy.notify = decoration_destroy;
@@ -1071,6 +1653,7 @@ static void xwayland_surface_map(struct wl_listener *listener, void *data) {
     if (!xsurface->override_redirect) {
         mjc_view_focus(view);
     }
+    view_decoration_update(view);
 }
 
 static void xwayland_surface_unmap(struct wl_listener *listener, void *data) {
@@ -1081,6 +1664,8 @@ static void xwayland_surface_unmap(struct wl_listener *listener, void *data) {
     /* emit while the scene node still exists so the policy side can
      * read the last window geometry */
     view_emit_unmap(view);
+    /* tear down the frame before the scene_tree (its children) is destroyed */
+    view_decoration_destroy(view);
     if (view->scene_tree != NULL) {
         wlr_scene_node_destroy(&view->scene_tree->node);
         view->scene_tree = NULL;
@@ -1117,6 +1702,7 @@ static void xwayland_surface_destroy(struct wl_listener *listener, void *data) {
     wl_list_remove(&view->set_title.link);
     wl_list_remove(&view->set_app_id.link);
     wl_list_remove(&view->set_geometry.link);
+    view_decoration_destroy(view);
     if (view->scene_tree != NULL) {
         wlr_scene_node_destroy(&view->scene_tree->node);
         view->scene_tree = NULL;
@@ -1133,6 +1719,9 @@ static void xwayland_surface_request_configure(struct wl_listener *listener,
     if (view->scene_tree != NULL) {
         wlr_scene_node_set_position(&view->scene_tree->node, event->x, event->y);
     }
+    if (view->decorated) {
+        view_decoration_update(view);
+    }
 }
 
 static void xwayland_surface_set_geometry(struct wl_listener *listener,
@@ -1142,6 +1731,9 @@ static void xwayland_surface_set_geometry(struct wl_listener *listener,
     if (view->scene_tree != NULL && view->xsurface != NULL) {
         wlr_scene_node_set_position(&view->scene_tree->node,
             view->xsurface->x, view->xsurface->y);
+    }
+    if (view->decorated) {
+        view_decoration_update(view);
     }
 }
 
@@ -1182,6 +1774,7 @@ static void xwayland_surface_request_maximize(struct wl_listener *listener,
 static void xwayland_surface_set_title(struct wl_listener *listener, void *data) {
     (void) data;
     struct mjc_view *view = wl_container_of(listener, view, set_title);
+    deco_repaint(view);
     if (view->server->cbs.view_title != NULL) {
         view->server->cbs.view_title(view->server->ud, view,
             view->xsurface->title);
@@ -1311,6 +1904,15 @@ mjc_server *mjc_create(void) {
 bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdata) {
     server->cbs = *callbacks;
     server->ud = userdata;
+
+    /* default decoration theme (dark slate + near-white); the shell overrides this
+     * from its live background palette via mjc_set_decoration_theme over IPC */
+    server->deco_bg[0] = 0.16f;
+    server->deco_bg[1] = 0.17f;
+    server->deco_bg[2] = 0.20f;
+    server->deco_fg[0] = 0.92f;
+    server->deco_fg[1] = 0.93f;
+    server->deco_fg[2] = 0.95f;
 
     wlr_log_init(WLR_INFO, NULL);
 
@@ -1720,6 +2322,11 @@ void mjc_view_set_maximized(mjc_view *view, bool maximized) {
             view->pending_center = true;
         }
     }
+    /* xwayland sizes itself synchronously here (no commit round-trip), so refresh
+     * the frame now; xdg follows up on its next commit */
+    if (view->decorated) {
+        view_decoration_update(view);
+    }
 }
 
 void mjc_view_set_layer(mjc_view *view, mjc_layer layer) {
@@ -1728,12 +2335,53 @@ void mjc_view_set_layer(mjc_view *view, mjc_layer layer) {
         wlr_scene_node_reparent(&view->scene_tree->node,
             view->server->layers[layer]);
     }
+    /* only normal-layer app windows get a server-side frame; shell surfaces
+     * (wallpaper, panels, menus) live in other layers and stay undecorated */
+    view_decoration_update(view);
 }
 
 void mjc_view_set_focusable(mjc_view *view, bool focusable) {
     view->focusable = focusable;
     if (!focusable) {
         clear_focus_if(view->server, view);
+    }
+}
+
+void mjc_view_set_chrome(mjc_view *view, bool chrome) {
+    view->is_chrome = chrome;
+    view_decoration_update(view);
+}
+
+void mjc_view_set_decorated(mjc_view *view, bool decorated) {
+    view->deco_disabled = !decorated;
+    view_decoration_update(view);
+}
+
+void mjc_set_decoration_theme(mjc_server *server,
+        float bg_r, float bg_g, float bg_b,
+        float fg_r, float fg_g, float fg_b) {
+    server->deco_bg[0] = bg_r;
+    server->deco_bg[1] = bg_g;
+    server->deco_bg[2] = bg_b;
+    server->deco_fg[0] = fg_r;
+    server->deco_fg[1] = fg_g;
+    server->deco_fg[2] = fg_b;
+    /* re-skin every currently decorated window with the new palette */
+    struct mjc_view *view;
+    wl_list_for_each(view, &server->views, link) {
+        if (view->decorated) {
+            view->deco_w = 0; /* force a re-render at the same width */
+            view_decoration_update(view);
+            /* refresh the border tint too */
+            const float border_col[4] = {
+                bg_r * 0.6f, bg_g * 0.6f, bg_b * 0.6f, 1.0f,
+            };
+            for (int i = 0; i < 3; i++) {
+                if (view->deco_border[i] != NULL) {
+                    wlr_scene_rect_set_color(view->deco_border[i], border_col);
+                }
+            }
+        }
     }
 }
 
@@ -1776,6 +2424,9 @@ void mjc_view_set_geometry(mjc_view *view, int x, int y, int width, int height) 
             wlr_scene_node_set_position(&view->scene_tree->node,
                 x - off.x, y - off.y);
         }
+    }
+    if (view->decorated) {
+        view_decoration_update(view);
     }
 }
 

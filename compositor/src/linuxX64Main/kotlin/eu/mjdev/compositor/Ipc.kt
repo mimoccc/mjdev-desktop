@@ -27,14 +27,20 @@ import kotlinx.serialization.json.put
 import mjdev.compositor.shim.MJC_EVENT_ERROR
 import mjdev.compositor.shim.MJC_EVENT_HANGUP
 import mjdev.compositor.shim.MJC_EVENT_READABLE
+import mjdev.compositor.shim.MJC_LAYER_BOTTOM
+import mjdev.compositor.shim.MJC_LAYER_NORMAL
+import mjdev.compositor.shim.MJC_LAYER_TOP
 import mjdev.compositor.shim.mjc_loop_add_fd
 import mjdev.compositor.shim.mjc_loop_remove_fd
 import mjdev.compositor.shim.mjc_key
 import mjdev.compositor.shim.mjc_pointer_button
 import mjdev.compositor.shim.mjc_pointer_move
+import mjdev.compositor.shim.mjc_set_decoration_theme
 import mjdev.compositor.shim.mjc_view_focus
 import mjdev.compositor.shim.mjc_view_close
 import mjdev.compositor.shim.mjc_view_is_maximized
+import mjdev.compositor.shim.mjc_view_set_decorated
+import mjdev.compositor.shim.mjc_view_set_layer
 import mjdev.compositor.shim.mjc_view_set_maximized
 import mjdev.compositor.shim.mjc_view_set_minimized
 import mjdev.compositor.shim.mjc_view_set_position
@@ -292,6 +298,43 @@ class IpcServer(private val c: Compositor) {
                 val info = c.windows.byId(id) ?: return error("no window $id")
                 mjc_view_set_position(info.ptr, x, y)
                 ok { }
+            }
+
+            // server-side decoration frame color, rgb channels 0..255; fg is optional
+            // and defaults to a contrasting black/white based on bg luminance
+            "set-decoration-theme" -> {
+                val br = request["bg_r"]?.jsonPrimitive?.int ?: return error("missing bg_r")
+                val bgc = request["bg_g"]?.jsonPrimitive?.int ?: return error("missing bg_g")
+                val bb = request["bg_b"]?.jsonPrimitive?.int ?: return error("missing bg_b")
+                val lum = (0.2126 * br + 0.7152 * bgc + 0.0722 * bb) / 255.0
+                val defFg = if (lum > 0.5) 0 else 255
+                val fr = request["fg_r"]?.jsonPrimitive?.int ?: defFg
+                val fgc = request["fg_g"]?.jsonPrimitive?.int ?: defFg
+                val fb = request["fg_b"]?.jsonPrimitive?.int ?: defFg
+                mjc_set_decoration_theme(
+                    c.server,
+                    br / 255f, bgc / 255f, bb / 255f,
+                    fr / 255f, fgc / 255f, fb / 255f,
+                )
+                ok { }
+            }
+
+            // chromeless / frameless toggle for a specific window
+            "set-decorated" -> withWindow(request) { info ->
+                val decorated = request["decorated"]
+                    ?.jsonPrimitive?.content?.toBoolean() ?: true
+                mjc_view_set_decorated(info.ptr, decorated)
+            }
+
+            // window stacking: always-on-top / always-on-bottom (apps keep their frame)
+            "always-on-top" -> withWindow(request) { info ->
+                val on = request["on"]?.jsonPrimitive?.content?.toBoolean() ?: true
+                mjc_view_set_layer(info.ptr, if (on) MJC_LAYER_TOP else MJC_LAYER_NORMAL)
+            }
+
+            "always-on-bottom" -> withWindow(request) { info ->
+                val on = request["on"]?.jsonPrimitive?.content?.toBoolean() ?: true
+                mjc_view_set_layer(info.ptr, if (on) MJC_LAYER_BOTTOM else MJC_LAYER_NORMAL)
             }
 
             else -> error("unknown cmd $cmd")

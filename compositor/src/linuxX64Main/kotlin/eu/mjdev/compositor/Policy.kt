@@ -16,6 +16,7 @@ import mjdev.compositor.shim.MJC_LAYER_TOP
 import mjdev.compositor.shim.MJC_MOD_ALT
 import mjdev.compositor.shim.mjc_view_close
 import mjdev.compositor.shim.mjc_view_focus
+import mjdev.compositor.shim.mjc_view_set_chrome
 import mjdev.compositor.shim.mjc_view_set_focusable
 import mjdev.compositor.shim.mjc_view_set_layer
 
@@ -48,6 +49,9 @@ class Policy(private val c: Compositor) {
             return
         }
         info.role = titleRole ?: "window"
+        // shell surfaces (wallpaper, panels, menus, control center) are our own UI and
+        // must never get a server-side frame; app windows stay decorated
+        mjc_view_set_chrome(info.ptr, true)
         when (info.role) {
             // ChromeWindow names: DesktopWindow/FullScreenWindow carry the wallpaper
             "wallpaper", "background", "desktop",
