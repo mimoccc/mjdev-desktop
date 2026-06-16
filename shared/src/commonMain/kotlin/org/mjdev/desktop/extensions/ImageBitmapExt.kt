@@ -67,7 +67,6 @@ fun ImageBitmap.cut(
     height: Int,
 ): ImageBitmap {
     val srcPixels = this.pixels
-    val result = ImageBitmap(width, height)
     val subPixels = IntArray(width * height)
     for (j in 0 until height) {
         for (i in 0 until width) {
@@ -76,6 +75,5 @@ fun ImageBitmap.cut(
             subPixels[dstIndex] = srcPixels.getOrElse(srcIndex) { 0 }
         }
     }
-    result.pixels = subPixels
-    return result
+    return imageBitmapFromArgb(subPixels, width, height)
 }

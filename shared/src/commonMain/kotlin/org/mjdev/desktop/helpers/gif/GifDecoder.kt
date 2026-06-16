@@ -8,7 +8,6 @@
 
 package org.mjdev.desktop.helpers.gif
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.IntRect
 import okio.BufferedSource
@@ -17,7 +16,7 @@ import okio.Path
 import okio.Path.Companion.toPath
 import okio.buffer
 import okio.source
-import org.mjdev.desktop.extensions.fillRect
+import org.mjdev.desktop.extensions.imageBitmapFromArgb
 import org.mjdev.desktop.extensions.pixels
 import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.system.Filesystem.source
@@ -151,7 +150,9 @@ class GifDecoder {
     }
 
     private fun setPixels() {
-        val dest = image?.pixels ?: intArrayOf()
+        // Build the frame into a plain IntArray and create the ImageBitmap in ONE bulk op
+        // (imageBitmapFromArgb) instead of the old per-pixel Canvas.drawRect write.
+        val dest = IntArray(width * height)
         if (lastDispose > 0) {
             if (lastDispose == 3) {
                 val n = frameCount - 2
@@ -160,19 +161,9 @@ class GifDecoder {
             if (lastImage != null) {
                 val prev = lastImage?.pixels ?: intArrayOf()
                 System.arraycopy(prev, 0, dest, 0, width * height)
-                if (lastDispose == 2) {
-                    image?.fillRect(
-                        lastRect.left,
-                        lastRect.top,
-                        lastRect.width,
-                        lastRect.height,
-                        if (transparency) {
-                            Color(0, 0, 0, 0)
-                        } else {
-                            Color(lastBackgroundColor)
-                        },
-                    )
-                }
+                // NOTE: the original code called image.fillRect here for lastDispose == 2, but the
+                // result was immediately overwritten by `image.pixels = dest`, so it was a no-op.
+                // Preserved as a no-op to keep frame output identical.
             }
         }
         var pass = 1
@@ -215,7 +206,7 @@ class GifDecoder {
                 }
             }
         }
-        image?.pixels = dest
+        image = imageBitmapFromArgb(dest, width, height)
     }
 
     private fun decodeImageData() {
@@ -473,7 +464,7 @@ class GifDecoder {
         skip()
         if (isErr()) return
         frameCount++
-        image = ImageBitmap(width, height)
+        // setPixels() builds `image` directly from the decoded pixels (bulk), no empty alloc needed
         setPixels()
         frames.add(GifFrame(image, delay))
         if (transparency) {

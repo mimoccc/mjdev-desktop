@@ -18,7 +18,9 @@ class Shell(
     block: suspend ShellScope.() -> Unit,
 ) {
     init {
-        scope.launch(Dispatchers.Default) {
+        // The block runs blocking process I/O (ProcessBuilder.start/waitFor) — keep it on IO so it
+        // never ties up the CPU-sized Default pool.
+        scope.launch(Dispatchers.IO) {
             with(ShellScope(this@Shell)) {
                 block()
             }

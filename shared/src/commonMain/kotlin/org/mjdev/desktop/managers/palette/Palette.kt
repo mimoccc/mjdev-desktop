@@ -22,8 +22,8 @@ import org.mjdev.desktop.extensions.Colors.isLightColor
 import org.mjdev.desktop.extensions.Colors.lighter
 import org.mjdev.desktop.extensions.Colors.nonAlphaValue
 import org.mjdev.desktop.extensions.ImageBitmapExt.loadPicture
-import org.mjdev.desktop.extensions.cut
-import org.mjdev.desktop.helpers.image.ImageUtils.topMostColor
+import org.mjdev.desktop.extensions.pixels
+import org.mjdev.desktop.helpers.image.ImageUtils.dominantArgbColor
 
 @Suppress("CanBeParameter", "MemberVisibilityCanBePrivate", "unused")
 class Palette(
@@ -115,16 +115,15 @@ class Palette(
                 val height = image.height
                 val cutWidth = (width / 100) * cutPercent
                 val cutHeight = (height / 100) * cutPercent
-                val leftTopPart = image.cut(0, 0, cutWidth, cutHeight)
-                val rightTopPart = image.cut(width - cutWidth, 0, cutWidth, cutHeight)
-                val leftBottomPart = image.cut(0, height - cutHeight, cutWidth, cutHeight)
-                val rightBottomPart = image.cut(width - cutWidth, height - cutHeight, cutWidth, cutHeight)
+                // One bulk readPixels, then sample the four corners directly from the IntArray —
+                // no four intermediate cut() bitmaps, no per-pixel Color boxing.
+                val pixels = image.pixels
                 val colors =
                     PaletteColors(
-                        leftTopPart.topMostColor,
-                        rightTopPart.topMostColor,
-                        leftBottomPart.topMostColor,
-                        rightBottomPart.topMostColor,
+                        dominantArgbColor(pixels, width, 0, 0, cutWidth, cutHeight),
+                        dominantArgbColor(pixels, width, width - cutWidth, 0, cutWidth, cutHeight),
+                        dominantArgbColor(pixels, width, 0, height - cutHeight, cutWidth, cutHeight),
+                        dominantArgbColor(pixels, width, width - cutWidth, height - cutHeight, cutWidth, cutHeight),
                     )
                 val background = colors.darkestColor
                 // Derive text from the NEW background (assigned below), not the stale state value,

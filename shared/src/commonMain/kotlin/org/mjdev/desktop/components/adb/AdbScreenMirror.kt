@@ -14,6 +14,7 @@ import androidx.compose.ui.layout.ContentScale
 import com.sun.jna.Platform.isAndroid
 import dadb.Dadb
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -29,7 +30,7 @@ fun AdbScreenMirror(
     modifier: Modifier = Modifier,
     visibilityState: MutableState<Boolean> = mutableStateOf(false),
     scope: CoroutineScope = rememberCoroutineScope(),
-    refreshInterval: Long = 100L,
+    refreshInterval: Long = 200L,
     deviceState: DeviceState =
         rememberDeviceState(
             refreshInterval = refreshInterval,
@@ -86,8 +87,10 @@ class DeviceState(
 
     fun start() {
         if (job?.isActive == true) return
+        // Blocking adb/socket I/O (discover, open, screencap read) MUST run off the UI/Default
+        // dispatcher — on the Compose Main dispatcher it freezes the whole desktop.
         job =
-            scope.launch {
+            scope.launch(Dispatchers.IO) {
                 while (isActive) {
                     val dadb =
                         try {
@@ -145,7 +148,7 @@ class DeviceState(
         sizeHeight: Int,
     ) {
         dadbInstance?.let { dadb ->
-            scope.launch {
+            scope.launch(Dispatchers.IO) {
                 try {
                     val scaleX = screenWidth.toFloat() / sizeWidth
                     val scaleY = screenHeight.toFloat() / sizeHeight
@@ -162,7 +165,7 @@ class DeviceState(
     companion object {
         @Composable
         fun rememberDeviceState(
-            refreshInterval: Long = 100L,
+            refreshInterval: Long = 200L,
             scope: CoroutineScope = rememberCoroutineScope(),
         ) = remember {
             DeviceState(scope, refreshInterval)

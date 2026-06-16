@@ -84,7 +84,8 @@ object CustomExt {
                                 send(time)
                             }
                         }
-                        delay(200L)
+                        // sleep to just past the next whole second (~1 wake/s) instead of polling 5×/s
+                        delay((1000L - (currentTime.toEpochMilliseconds() % 1000)).coerceAtLeast(1L))
                     } while (true)
                 }
             }.collectAsState(initial = "")
