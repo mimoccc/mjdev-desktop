@@ -247,7 +247,12 @@ val makeIso = tasks.register("makeIso") {
             "--out", isoOutPath)
         logger.lifecycle("makeIso: ${args.joinToString(" ")}")
         val code = ProcessBuilder(args).inheritIO().start().waitFor()
-        check(code == 0) { "make-iso.sh failed (exit $code)" }
+        if (code != 0) {
+            logger.warn(
+                "::warning::makeIso: make-iso.sh failed (exit $code) — ISO skipped; " +
+                    "other distributables are still published",
+            )
+        }
     }
 }
 
@@ -261,6 +266,10 @@ tasks.register("runIsoQemu") {
         check(code == 0) { "run-iso-qemu.sh failed (exit $code)" }
     }
 }
+
+// ISO is built after collectReleases so deb/rpm/AppImage/apk land in releases/ even when
+// make-iso.sh is slow or fails; makeIso never fails the aggregate (warn-only on error).
+makeIso.configure { mustRunAfter(collectReleases) }
 
 val buildAll = tasks.register("buildAll") {
     group = "mjdev"

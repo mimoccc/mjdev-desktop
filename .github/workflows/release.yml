@@ -76,39 +76,33 @@ jobs:
             echo "::warning::no ANDROID_KEYSTORE_BASE64 secret — APK will be debug-signed"
           fi
 
-      # ---------- linux desktop formats + android apk + reports (ubuntu) ----------
-      # One invocation with --continue so deb/rpm/AppImage/apk/reports each build to
-      # completion independently: a failure in one does NOT abort the others.
-      - name: Build linux desktop + android + reports
+      # Single apt transaction on ubuntu — avoids dpkg lock races from overlapping apt-get runs.
+      - name: Install Linux build dependencies
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm debootstrap squashfs-tools xorriso mtools dpkg-dev \
+            grub-common grub-pc-bin grub-efi-amd64-bin debian-archive-keyring zip \
+            || echo "::warning::some apt packages missing — some formats may be skipped"
+
+      # ---------- linux + android + iso + reports (ubuntu) ----------
+      # buildAll = collectReleases (deb/rpm/AppImage/apk -> releases/) + makeIso + reports.
+      # --continue keeps going when one format fails; makeIso is warn-only so ISO never
+      # blocks the formats that already succeeded.
+      - name: Build linux + android + iso + reports
         if: matrix.os == 'ubuntu-latest'
         shell: bash
         continue-on-error: true
         env:
-          # ANDROID_KEYSTORE_FILE is exported by the decode step above (if present)
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y rpm || echo "::warning::rpm tools missing — .rpm may be skipped"
-          ./gradlew packageFullDeb :desktopApp:packageReleaseRpm packageAppImageFile \
-            :androidApp:assembleRelease postBuildCodeCheck \
-            -PdepCheck=false --continue --stacktrace \
-            || echo "::warning::one or more linux/android formats failed — others still collected"
-
-      # ---------- bootable live ISO (ubuntu, needs root) ----------
-      # Separate step because makeIso needs root (debootstrap/chroot/mksquashfs); on CI it
-      # runs via passwordless sudo. Isolated so a failed/slow ISO can't drop the other formats.
-      - name: Build live ISO
-        if: matrix.os == 'ubuntu-latest'
-        shell: bash
-        continue-on-error: true
-        run: |
-          sudo apt-get install -y debootstrap squashfs-tools xorriso mtools dpkg-dev \
-            grub-common grub-pc-bin grub-efi-amd64-bin debian-archive-keyring \
-            || echo "::warning::iso toolchain missing — .iso may be skipped"
-          ./gradlew makeIso -PdepCheck=false --stacktrace \
-            || echo "::warning::makeIso failed — .iso skipped"
+          ./gradlew buildAll -PdepCheck=false --continue --stacktrace \
+            || echo "::warning::buildAll had failures — collecting partial artifacts"
+          echo "=== releases/ ==="
+          ls -la releases/ 2>/dev/null || echo "(empty)"
           ls -la releases/*.iso 2>/dev/null && echo "ISO produced" \
             || echo "::warning::no .iso in releases/ — makeIso skipped or failed"
 
@@ -135,39 +129,55 @@ jobs:
         run: ./gradlew :desktopApp:packageReleaseDmg -PdepCheck=false --stacktrace || echo "::warning::macOS .dmg failed — skipped"
 
       # ---------- collect whatever got produced (versioned names) ----------
-      # Copies from every known jpackage/build output dir; dirs absent on this OS are simply
-      # skipped. Mirrors the rename scheme of the :collectReleases Gradle task but tolerates
-      # partial builds so we never lose the formats that DID succeed.
+      # Primary source is releases/ (collectReleases + makeIso). Fall back to jpackage output
+      # dirs for partial builds and for platform-specific runners (exe/dmg).
       - name: Collect artifacts
         shell: bash
+        continue-on-error: true
         run: |
+          set +e
           VER='${{ steps.meta.outputs.version }}'
           APP='${{ steps.meta.outputs.appname }}'
           BASE="$APP-$VER"
           PKG=packages/main-release
           mkdir -p upload
-          copy() { # <glob-dir> <ext>
-            for f in "$1"/*."$2"; do
-              [ -e "$f" ] && cp -v "$f" "upload/$BASE.$2" && return 0
+
+          copy_pkg() {
+            local dir="$1" ext="$2"
+            for f in "$dir"/*."$ext"; do
+              if [ -e "$f" ]; then
+                cp -v "$f" "upload/$BASE.$ext"
+                return 0
+              fi
             done
             return 0
           }
-          copy "$PKG/deb" deb
-          copy "$PKG/rpm" rpm
-          copy "$PKG/appimage" AppImage
-          copy "$PKG/exe" exe
-          copy "$PKG/dmg" dmg
-          for f in androidApp/build/outputs/apk/release/*.apk; do
-            [ -e "$f" ] && cp -v "$f" "upload/$BASE.apk" && break
-          done
-          for f in releases/*.iso; do
-            [ -e "$f" ] && cp -v "$f" "upload/$BASE.iso" && break
-          done
-          # reports tree zipped into the release
+
+          if compgen -G "releases/*" > /dev/null; then
+            cp -av releases/* upload/
+          fi
+
+          copy_pkg "$PKG/exe" exe
+          copy_pkg "$PKG/dmg" dmg
+          [ -f "upload/$BASE.deb" ] || copy_pkg "$PKG/deb" deb
+          [ -f "upload/$BASE.rpm" ] || copy_pkg "$PKG/rpm" rpm
+          [ -f "upload/$BASE.AppImage" ] || copy_pkg "$PKG/appimage" AppImage
+          if [ ! -f "upload/$BASE.apk" ]; then
+            for f in androidApp/build/outputs/apk/release/*.apk; do
+              [ -e "$f" ] && cp -v "$f" "upload/$BASE.apk" && break
+            done
+          fi
+          if [ ! -f "upload/$BASE.iso" ]; then
+            for f in releases/*.iso; do
+              [ -e "$f" ] && cp -v "$f" "upload/$BASE.iso" && break
+            done
+          fi
+
           if [ -d reports ] && [ -n "$(ls -A reports 2>/dev/null)" ]; then
             (cd reports && zip -r "../upload/$BASE-reports.zip" .) || echo "::warning::reports zip failed"
           fi
-          echo "=== produced for ${{ matrix.target }} ==="; ls -la upload/ || true
+          echo "=== produced for ${{ matrix.target }} ==="
+          ls -la upload/ || true
 
       - name: Upload build artifacts
         if: always()
