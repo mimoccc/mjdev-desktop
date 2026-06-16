@@ -1,23 +1,17 @@
 package org.mjdev.desktop.components.main
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
-import org.mjdev.desktop.components.appsmenu.AppsMenuState.Companion.rememberAppsMenuState
-import org.mjdev.desktop.components.appsmenu.AppsMenuWindow
-import org.mjdev.desktop.components.controlcenter.ControlCenterWindow
-import org.mjdev.desktop.components.desktop.Desktop
-import org.mjdev.desktop.components.desktop.widgets.MemoryChart
-import org.mjdev.desktop.components.desktoppanel.DesktopPanelWindow
-import org.mjdev.desktop.components.dockbar.DockBarWindow
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import org.mjdev.desktop.components.aidesktop.AiControlCenterTab
+import org.mjdev.desktop.components.aidesktop.AiDesktopControlCenterWindow
+import org.mjdev.desktop.components.aidesktop.AiDesktopDockWindow
+import org.mjdev.desktop.components.aidesktop.AiDesktopMenuMode
+import org.mjdev.desktop.components.aidesktop.AiDesktopShell
 import org.mjdev.desktop.components.greeter.GreeterWindow
 import org.mjdev.desktop.components.info.InfoWindow
 import org.mjdev.desktop.components.installer.InstallerWindow
@@ -25,12 +19,9 @@ import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.remem
 import org.mjdev.desktop.components.tooltip.TooltipState
 import org.mjdev.desktop.components.tooltip.rememberTooltipState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 import org.mjdev.desktop.helpers.system.shell.Shell
 import org.mjdev.desktop.log.Log
-import org.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 import org.mjdev.desktop.windows.DesktopWindow
 
 // todo focus manager
@@ -38,142 +29,48 @@ import org.mjdev.desktop.windows.DesktopWindow
 fun MainWindow() =
     withDesktopContext {
         val tooltipState: TooltipState = rememberTooltipState()
-        val controlCenterState =
-            rememberChromeWindowState(
-                visible = isDesign,
-            )
-        val panelState =
-            rememberChromeWindowState(
-                hideDelay = panelHideDelay,
-                visible = isDesign || !panelAutoHideEnabled,
-                enabled = panelAutoHideEnabled,
-            )
-        val menuState =
-            rememberChromeWindowState(
-                visible = isDesign,
-            )
-        val appsMenuState =
-            rememberAppsMenuState(
-                visible = isDesign,
-            )
+        var menuVisible by remember { mutableStateOf(false) }
+        var menuMode by remember { mutableStateOf(AiDesktopMenuMode.Window) }
+        var controlCenterVisible by remember { mutableStateOf(false) }
+        var selectedControlTab by remember { mutableStateOf(AiControlCenterTab.System) }
         val installWindowState = rememberVisibilityState()
         val infoWindowState = rememberVisibilityState(false) // (api.isFirstStart || api.isDebug) // todo
-        val bottomPadding by rememberCalculated(
-            panelState.enabled,
-            panelState.height,
-        ) {
-            if (panelState.enabled) {
-                0.dp
-            } else {
-                max(0.dp, panelState.height)
-            }
-        }
         val onTooltip: (item: Any?) -> Unit = { item ->
 //        println("Tooltip: $item")
             tooltipState.show(item)
         }
-        // When the control center opens it covers the desktop, so the dock bar and any open menu
-        // step aside (this also frees focus so the control center can actually take it).
-        LaunchedEffect(controlCenterState.isVisible) {
-            if (controlCenterState.isVisible) {
-                panelState.hide()
-                if (menuState.isVisible) {
-                    menuState.hide()
-                }
-                if (appsMenuState.isVisible) {
-                    appsMenuState.hide()
-                }
-            }
-        }
-        DesktopWindow(
-            panelState = panelState,
-            controlCenterState = controlCenterState,
-            menuState = menuState,
-        ) {
-            Desktop(
+        DesktopWindow {
+            AiDesktopShell(
                 tooltipState = tooltipState,
                 onTooltip = onTooltip,
-                padding =
-                    PaddingValues(
-                        bottom = bottomPadding,
-                    ),
-                widgets = {
-                    MemoryChart(
-                        modifier =
-                            Modifier
-                                .size(350.dp, 300.dp)
-                                .align(Alignment.BottomEnd),
-                    )
-//                WebView(
-//                    modifier = Modifier
-//                        .size(800.dp, 600.dp)
-//                        .align(Alignment.Center),
-//                    url = "https://www.google.com"
-//                )
-                },
-                onLeftMouseClick = {
-                    runAsync {
-                        panelState.hide()
-                        menuState.hide()
-                        controlCenterState.hide()
-                    }
-                },
-                onRightMouseClick = {
-//                contextMenuState.show()
-                },
+                menuVisible = menuVisible,
+                menuMode = menuMode,
+                controlCenterVisible = controlCenterVisible,
+                selectedControlTab = selectedControlTab,
+                showBottomDock = false,
+                showControlCenterPanel = false,
+                showControlCenterHotspot = false,
+                onMenuVisibleChange = { visible -> menuVisible = visible },
+                onMenuModeChange = { mode -> menuMode = mode },
+                onControlCenterVisibleChange = { visible -> controlCenterVisible = visible },
+                onSelectedControlTabChange = { tab -> selectedControlTab = tab },
             )
         }
-//        DesktopPanelWindow(
-//            onTooltip = onTooltip,
-//            panelState = panelState,
-//            menuState = menuState,
-//            onFocusChange = { focused ->
-// //            Log.d("panel focus : $focused")
-//                val menuIsVisible = appsMenuState.isVisible || menuState.isVisible
-//                if (panelState.enabled) {
-//                    if (!menuIsVisible && !focused) {
-//                        runAsync {
-//                            panelState.hide()
-//                        }
-//                    }
-//                }
-//            },
-//        )
-        DockBarWindow(
-            onTooltip = onTooltip,
-            panelState = panelState,
-            menuState = menuState,
-            // Autohide is driven purely by pointer-leave (see DockBarWindow.onGlobalMouse), NOT by
-            // focus. Hiding on focus-loss flooded hide() under focus-follows-mouse (every pointer
-            // flicker over a non-focused window fired a hide) and flip-flopped the dock 16<->80.
-            onFocusChange = {},
+        AiDesktopDockWindow(
+            menuVisible = menuVisible,
+            onMenuVisibleChange = { visible -> menuVisible = visible },
+            onControlCenterVisibleChange = { visible -> controlCenterVisible = visible },
         )
-        AppsMenuWindow(
-            menuState = menuState,
-            panelState = panelState,
-            appsMenuState = appsMenuState,
-            onTooltip = onTooltip,
-            onFocusChange = { focused ->
-                Log.d("menu focus : $focused")
-//            if (!focused) {
-//                menuState.hide()
-//            }
-            },
-        )
-        ControlCenterWindow(
-            onTooltip = onTooltip,
-            controlCenterState = controlCenterState,
-            // Close on focus-loss = the "click outside" dismissal. Guard on isVisible so it does not
-            // fire a hide() on every focus flicker while already hidden (focus-follows-mouse would
-            // otherwise flood runAsync). Pointer-leave no longer hides it, so it stays open until a
-            // real click moves focus away (or a desktop click via onLeftMouseClick).
-            onFocusChange = { focused ->
-                if (!focused && controlCenterState.isVisible) {
-                    runAsync {
-                        controlCenterState.hide()
-                    }
+        AiDesktopControlCenterWindow(
+            selectedTab = selectedControlTab,
+            visible = controlCenterVisible,
+            onVisibleChange = { visible ->
+                controlCenterVisible = visible
+                if (visible) {
+                    menuVisible = false
                 }
             },
+            onTabSelected = { tab -> selectedControlTab = tab },
         )
         GreeterWindow()
         InfoWindow(
@@ -204,9 +101,6 @@ fun MainWindow() =
                 dispose()
                 Log.i("App ended.")
             }
-        }
-        LaunchedEffect(menuState.isVisible) {
-            appsMenuState.isVisible = menuState.isVisible
         }
     }
 

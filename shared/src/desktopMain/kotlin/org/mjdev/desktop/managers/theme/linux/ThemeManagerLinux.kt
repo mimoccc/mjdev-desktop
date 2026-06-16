@@ -9,6 +9,7 @@
 package org.mjdev.desktop.managers.theme.linux
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import okio.Path
 import okio.Path.Companion.toPath
 import org.mjdev.desktop.context.IDesktopContext
@@ -73,8 +74,54 @@ class ThemeManagerLinux(
             createCssFile(gtk4CssFile)
             createCssFile(systemGtk3CssFile)
             createCssFile(systemGtk4CssFile)
+            // applyLiveGtkTheme()
         }.onFailure { e ->
             Log.e(e)
+        }
+    }
+
+    private fun applyLiveGtkTheme() {
+        val scheme =
+            if (palette.backgroundColor.isLightColor) {
+                COLOR_SCHEME_PREFER_LIGHT
+            } else {
+                COLOR_SCHEME_PREFER_DARK
+            }
+        runCatching {
+            // GTK_THEME env var overrides gsettings and blocks live reload — theme name must
+            // come only from gsettings so open apps pick up rewritten gtk.css on notify.
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "color-scheme",
+                scheme,
+            )
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "gtk-theme",
+                THEME_MJDEV,
+            )
+            // Brief hop away and back forces GTK to re-read ~/.themes/Mjdev and gtk.css.
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "gtk-theme",
+                THEME_ADWAITA,
+            )
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "gtk-theme",
+                THEME_MJDEV,
+            )
+            Log.d("Live GTK theme applied: $THEME_MJDEV color-scheme=$scheme")
+        }.onFailure { e ->
+            Log.w("Live GTK theme apply failed (gsettings unavailable?): ${e.message}")
         }
     }
 
@@ -112,6 +159,7 @@ class ThemeManagerLinux(
                 fgColor = palette.textColor
                 baseColor = palette.baseColor
                 textColor = palette.textColor
+                borderColor = palette.borderColor
                 selectedBgColor = palette.selectedBgColor
                 selectedFgColor = palette.selectedFgColor
                 tooltipBgColor = palette.tooltipBgColor
@@ -174,8 +222,20 @@ class ThemeManagerLinux(
         var buttonBgColor: Color = Color.SuperDarkGray
         var buttonFgColor: Color = Color.White
 
-        fun asString() =
-            """
+        fun asString(): String {
+            val buttonInsens = lerp(buttonBgColor, bgColor, 0.6f)
+            val backdropFg = lerp(bgColor, fgColor, 0.8f)
+            val backdropText = lerp(baseColor, textColor, 0.8f)
+            val backdropDarkFg = lerp(bgColor, fgColor, 0.75f)
+            val backdropDarkBg = lerp(bgColor, fgColor, 0.75f)
+            val backdropSelBg = bgColor.darker(0.08f)
+            return """
+            @define-color accent_color ${selectedBgColor.hexRgb};
+            @define-color accent_bg_color ${selectedBgColor.hexRgb};
+            @define-color accent_fg_color ${selectedFgColor.hexRgb};
+            @define-color destructive_color ${errorBgColor.hexRgb};
+            @define-color destructive_bg_color ${errorBgColor.hexRgb};
+            @define-color destructive_fg_color ${errorFgColor.hexRgb};
             @define-color bg_color ${bgColor.hexRgb};
             @define-color fg_color ${fgColor.hexRgb};
             @define-color base_color ${baseColor.hexRgb};
@@ -216,18 +276,18 @@ class ThemeManagerLinux(
             @define-color popover_bg_color ${bgColor.hexRgb};
             @define-color popover_fg_color ${fgColor.hexRgb};
             @define-color link_color @selected_bg_color;
-            @define-color button_bg_color shade (@bg_color, 1.02);
-            @define-color notebook_button_bg_color shade (@bg_color, 1.02);
-            @define-color button_insensitive_bg_color mix (@button_bg_color, @bg_color, 0.6);
-            @define-color backdrop_fg_color mix (@bg_color, @fg_color, 0.8);
-            @define-color backdrop_text_color mix (@base_color, @text_color, 0.8);
-            @define-color backdrop_dark_fg_color mix (@dark_bg_color, @dark_fg_color, 0.75);
-            @define-color backdrop_dark_bg_color mix (@dark_bg_color, @dark_fg_color, 0.75);
-            @define-color backdrop_selected_bg_color shade (@bg_color, 0.92);
+            @define-color button_bg_color ${buttonBgColor.hexRgb};
+            @define-color notebook_button_bg_color ${buttonBgColor.hexRgb};
+            @define-color button_insensitive_bg_color ${buttonInsens.hexRgb};
+            @define-color backdrop_fg_color ${backdropFg.hexRgb};
+            @define-color backdrop_text_color ${backdropText.hexRgb};
+            @define-color backdrop_dark_fg_color ${backdropDarkFg.hexRgb};
+            @define-color backdrop_dark_bg_color ${backdropDarkBg.hexRgb};
+            @define-color backdrop_selected_bg_color ${backdropSelBg.hexRgb};
             @define-color backdrop_selected_fg_color @fg_color;
-            @define-color focus_color alpha (@selected_bg_color, 0.5);
-            @define-color focus_bg_color alpha (@selected_bg_color, 0.1);
-            @define-color shadow_color alpha(black, 0.5);
+            @define-color focus_color ${selectedBgColor.hexRgb};
+            @define-color focus_bg_color ${bgColor.hexRgb};
+            @define-color shadow_color rgba(0, 0, 0, 0.5);
             @define-color blue_1 #99c1f1;
             @define-color blue_2 #62a0ea;
             @define-color blue_3 #3584e4;
@@ -274,89 +334,73 @@ class ThemeManagerLinux(
             @define-color dark_4 #241f31;
             @define-color dark_5 #000000;
             
+            /* App content follows the wallpaper palette (compositor draws the outer frame). */
             window {
                 background-image: none;
-                background-color: ${bgColor.hexRgb};
-            	border-radius: 8px;
-            	border-bottom-left-radius: 8px;
-            	border-bottom-right-radius: 8px;
-                border-top-right-radius: 8px;
-                border-top-left-radius: 8px;
-                border: 2px solid ${bgColor.hexRgb};
-            	border-top: none;
-                /* position: relative; */
-                box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-            }
-            
-            window:before, window:after {
-                /* position:absolute; */
-                z-index: -1;
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-                top: 0;
-                bottom: 0;
-                left: 10px;
-                right: 10px;
-                border-radius: 100px / 10px;
-            }
-            
-            window:after {
-                right: 10px;
-                left: auto;
-                transform: skew(8deg) rotate(3deg);
+                background-color: @window_bg_color;
+                border-radius: 0;
+                box-shadow: none;
+                border: none;
+                margin: 0;
+                padding: 0;
             }
 
-            decoration {
-                background-image: none;
-            	background-color: ${bgColor.hexRgb};
-            	border-radius: 8px;
-            	border-bottom-left-radius: 8px;
-            	border-bottom-right-radius: 8px;
-            	box-shadow: 0px 0px 0px 1px ${textColor.hexRgb};
-            	border-top: none;
+            /* Compositor draws min/max/close — hide client-side titlebuttons only. */
+            headerbar button.titlebutton,
+            headerbar .titlebutton {
+                opacity: 0;
+                min-width: 0;
+                min-height: 0;
+                padding: 0;
+                margin: 0;
+                border: none;
             }
-            
+
+            window.ssd headerbar {
+                min-height: 0;
+                padding: 0;
+                margin: 0;
+                border: none;
+                box-shadow: none;
+                background-image: none;
+                background-color: @window_bg_color;
+            }
+
             .titlebar, headerbar {
                 padding-top: 2px;
                 padding-bottom: 2px;
                 background-image: none;
-                background-color: ${bgColor.hexRgb};
+                background-color: @headerbar_bg_color;
             }
 
-            .titlebar:backdrop, headerbar:backdrop  {
-                background: ${bgColor.hexRgb};
-                color: ${textColor.hexRgb};
+            toolbarview,
+            .toolbarview,
+            .background {
+                background-color: @window_bg_color;
+                color: @text_color;
             }
-            
-            /* all buttons */
+
+            entry, textview, label {
+                color: @text_color;
+            }
+
             button {
-                background: ${buttonBgColor.hexRgb};
-                opacity: 0.7;
+                background-color: @button_bg_color;
+                opacity: 0.85;
                 margin: 2px;
                 padding: 4px;
                 min-width: 24px;
                 min-height: 24px;
                 text-shadow: none;
-                color:  ${buttonFgColor.hexRgb};
+                color: ${buttonFgColor.hexRgb};
                 border-radius: 8px;
             }
-            
-            /* window buttons */
-            button.minimize,
-            button.maximize,
-            button.close,
-            button.maximize:hover,
-            button.minimize:hover,
-            button.close:hover {
-                opacity: 0.7;
-            }
 
-            button:hover,
-            button.maximize:hover,
-            button.minimize:hover,
-            button.close:hover {
+            button:hover {
                 opacity: 1;
             }
             """.trimIndent()
+        }
     }
 
     fun setColorScheme(schemeName: String) {
@@ -421,6 +465,7 @@ class ThemeManagerLinux(
 
     companion object {
         const val COLOR_SCHEME_PREFER_DARK = "prefer-dark"
+        const val COLOR_SCHEME_PREFER_LIGHT = "prefer-light"
         const val COLOR_SCHEME_MJDEV = "mjdev"
         const val THEME_YARU = "Yaru"
         const val THEME_ADWAITA = "Adwaita"

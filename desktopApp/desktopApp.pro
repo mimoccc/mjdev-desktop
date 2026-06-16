@@ -21,6 +21,9 @@
 -dontwarn com.couchbase.**
 -dontwarn com.google.**
 -dontwarn com.jogamp.**
+-dontwarn com.sun.prism.**
+-dontwarn com.sun.scenario.**
+-dontwarn com.sun.javafx.**
 -dontwarn javafx.**
 -dontwarn community.flock.**
 -dontwarn io.github.**
@@ -28,6 +31,7 @@
 -dontwarn io.lettuce.**
 -dontwarn io.netty.**
 -dontwarn io.opentelemetry.**
+-dontwarn java.lang.MatchException
 -dontwarn kotbase.**
 -dontwarn net.htmlparser.**
 -dontwarn okhttp3.internal.**

@@ -15,6 +15,16 @@ app-vendor = "mjdev"
 # deb packaging joins it with ", ". A clean/GNOME box lacks these (GNOME uses mutter, not wlroots),
 # so without them mjdevc fails to load (libwlroots-0.18.so missing) and the session black-screens.
 app-compositor-runtime-deps = "libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session"
+# GitHub's ubuntu-latest runner is Ubuntu 24.04, which does not package wlroots 0.18.
+# Keep the CI-only package URLs here instead of hardcoding them in the workflow.
+ci-ubuntu-wlroots-runtime-deb-url = "http://archive.ubuntu.com/ubuntu/pool/universe/w/wlroots/libwlroots-0.18_0.18.2-3_amd64.deb"
+ci-ubuntu-wlroots-dev-deb-url = "http://archive.ubuntu.com/ubuntu/pool/universe/w/wlroots/libwlroots-0.18-dev_0.18.2-3_amd64.deb"
+ci-ubuntu-libdisplay-info-runtime-deb-url = "http://archive.ubuntu.com/ubuntu/pool/main/libd/libdisplay-info/libdisplay-info2_0.2.0-2_amd64.deb"
+ci-ubuntu-libdisplay-info-dev-deb-url = "http://archive.ubuntu.com/ubuntu/pool/main/libd/libdisplay-info/libdisplay-info-dev_0.2.0-2_amd64.deb"
+ci-ubuntu-libliftoff-runtime-deb-url = "http://archive.ubuntu.com/ubuntu/pool/universe/libl/libliftoff/libliftoff0_0.5.0-1.1_amd64.deb"
+ci-ubuntu-libliftoff-dev-deb-url = "http://archive.ubuntu.com/ubuntu/pool/universe/libl/libliftoff/libliftoff-dev_0.5.0-1.1_amd64.deb"
+ci-ubuntu-libxcb-errors-runtime-deb-url = "http://archive.ubuntu.com/ubuntu/pool/universe/x/xcb-util-errors/libxcb-errors0_1.0.1-4_amd64.deb"
+ci-ubuntu-libxcb-errors-dev-deb-url = "http://archive.ubuntu.com/ubuntu/pool/universe/x/xcb-util-errors/libxcb-errors-dev_1.0.1-4_amd64.deb"
 java-language-version = "17"
 # app specific android
 android-compile-sdk = "36"
