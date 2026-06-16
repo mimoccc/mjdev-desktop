@@ -1,0 +1,42 @@
+v readme.md projektu mas popis co by mela apka / jak by to melo vypadat.
+cilem je linux desktop environment inspirovan cinskym deepin linuxem z roku 2014 + me napady.
+dde desktop mel pravy dock a spodni dock.
+spodni dock mel dve rezimy: fill size aka windows kdy se
+roztahne bar na sirku okna, (v zakladnim stavu, protoze muze byt nadockovany na kteroukoli hranu obrazovky)
+a druhy rezim kde se na sirku v ose x roztahl do takove sirky aby byl obsah viditelnej.
+obsahem spodniho docku byla prvni ikona pro menu pak favorite apps a pak status tray.
+pri kliku na ikonu menu se zobrazi menu a to ma take dva rezimy, bud jako windows menu, anebo jako
+fullscreen touch menu podobne unity z ubuntu. tedy ikonky v mrizce.
+asi menu neni treba vysvetlovat. melo kategorie, search view, ikonku a umoznovalo listovat a spoustet aplikace.
+v tray byli ikonky tray, pak keyboard layout a hodinky a pod.
+v control center byli tabs kde se uzivatel dostal k veskerym nastavenim systemu, zvuk, wifi, obrazovka, temy, ...
+a bylo tam mozne nadokovat i vlastni custom panely.
+dal bych na desktopu chtel widgety ala screenlets z linuxu.
+ja mam v mem projektu zatim jen memory widget.
+na plose byli klasicky ikonky dle toho co obsahuje desktop folder uzivatele, resp Plocha.
+hezky v mrizce jako to dela kazdy jiny linux desktop.
+moje vychytavka je ze se cely system obarvi dle nastavene pozadi plochy, nebo jak to mam ted background
+rotuje z backgrounds folderu meni pozadi kazdyccccccccccch 60 sekund a vzdy kdyz se zmeni pozadi
+zmeni se i barvy vsech komponent systemu tak aby to vypadalo ze jsou soucasti obrazku, ktery je
+aktualne pouzit jako wallpaper.
+dal ze se vytvori gtk 2/3/4 tema, a vynuti se tak aby i okenka otevrenych aplikaci korenspondovala s
+pozadim a to i kdyz se po casovem intervale zmeni.
+text a ikonky a vsechno ma mit takovy kontrast a rozdil mezi barvami, aby byli lehce uzivatelem citelne.
+screenshoty desktopu s mou predstavou jsou ve slozce screenshots.
+jako ikonky se pouziva iconic ttf.
+vsechno co lze ma byti modifikovatelne a nastavitelne uzivatelem.
+
+a ted ukol:
+- vytvor novou branch s nazvem ai-desktop
+- do branche vytvor desktop z tohoto popisu a ze vseho co mas k dispozici v projektu, jakykoli
+soubor mimo te nesmi zajimat jen to co je v projektu, staci graficka cast a mock data, ktere bude ziskavat skrz managery jako to mam v projektu ja.
+- zadne hardcodes, pokud je potreba tak enumy nebo companion objekty v jinem souboru s konstantami.
+- vse co lze udelat modularne, manazery a helpery, nebo rozsiritelne veci musi byt pres interface a konkretni extendery.
+- jedna class jeden soubor.
+- kazda compose komponenta zvlast soubor.
+- kazdy enum zvlast soubor
+- multiplatform, zatim windows, linux, mac a android, ale predpripravit pro mobily
+
+jsem zvedav co vyplijes.
+tohle je posledni sance pro to ze uverim ze ai je uzitecna a nejde jen o ciry podvod a marketing.
+

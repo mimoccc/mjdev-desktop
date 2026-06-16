@@ -1,12 +1,12 @@
 name: Release
 
 # Produces versioned distributables for ALL targets a host can build, into a GitHub Release.
-# Each format is built independently so one failing format never blocks the others, and the
-# collect step uploads whatever actually got produced (partial success is still published).
-#   linux (deb/rpm/AppImage) + android (apk) + iso  -> ubuntu-latest
+# Each target verifies its own required artifacts. Publishing uses every successful target, so
+# apk/exe are not held hostage by Linux-only packaging dependencies.
+#   linux (deb/rpm/AppImage) + iso                  -> debian:trixie
+#   android (apk)                                   -> ubuntu-latest
 #   windows (exe)                                   -> windows-latest
 #   macos   (dmg)                                   -> macos-latest
-# Skipped/failed formats are logged as ::warning:: and never fail the whole release.
 # NOTE: iOS cannot be produced — the project has no iOS Kotlin target (commonMain uses
 #       JVM-only libs); there is no iOS step.
 
@@ -24,6 +24,152 @@ permissions:
   contents: read
 
 jobs:
+  package-linux-iso:
+    name: Package (linux-iso)
+    runs-on: ubuntu-latest
+    container:
+      image: debian:trixie
+      options: --privileged
+    steps:
+      - name: Install Debian build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            bash ca-certificates coreutils curl findutils git \
+            tar unzip xz-utils zip zstd \
+            build-essential pkg-config rpm fakeroot \
+            debootstrap squashfs-tools xorriso mtools dpkg-dev \
+            grub-common grub-pc-bin grub-efi-amd64-bin debian-archive-keyring \
+            wayland-protocols libwayland-dev libwayland-bin \
+            libxkbcommon-dev libcairo2-dev libcairo2 libpixman-1-dev libdrm-dev \
+            libseat-dev libgbm-dev libegl-dev libgles-dev \
+            libcap-dev liblcms2-dev libsystemd-dev libudev-dev libvulkan-dev \
+            libxcb1-dev libxcb-composite0-dev libxcb-dri3-dev \
+            libxcb-image0-dev libxcb-present-dev libxcb-render0-dev \
+            libxcb-render-util0-dev libxcb-res0-dev libxcb-shm0-dev libxcb-xfixes0-dev \
+            libxcb-ewmh-dev libxcb-icccm4-dev libxcb-xinput-dev libxcb-errors-dev \
+            libx11-xcb-dev libwlroots-0.18-dev
+
+          wayland-scanner --version
+          pkg-config --modversion wlroots-0.18
+
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+          gradle-home-cache-cleanup: true
+
+      - name: Cache Kotlin/Native
+        uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: ${{ runner.os }}-debian-trixie-konan-${{ hashFiles('gradle/libs.versions.toml', 'gradle.properties', 'settings.gradle.kts', 'build.gradle.kts', 'compositor/*.gradle.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-debian-trixie-konan-
+
+      - name: Cache AppImage tool
+        uses: actions/cache@v4
+        with:
+          path: .gradle/tools
+          key: ${{ runner.os }}-debian-trixie-appimagetool-${{ hashFiles('gradle/libs.versions.toml', 'build.gradle.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-debian-trixie-appimagetool-
+
+      - name: Make gradlew executable
+        shell: bash
+        run: chmod +x gradlew || true
+
+      - name: Read app name + version
+        id: meta
+        shell: bash
+        run: |
+          echo "version=$(grep -E '^app-pkg-version' gradle/libs.versions.toml | sed -E 's/.*"(.*)".*/\1/')" >> "$GITHUB_OUTPUT"
+          echo "appname=$(grep -E '^app-name' gradle/libs.versions.toml | sed -E 's/.*"(.*)".*/\1/')" >> "$GITHUB_OUTPUT"
+
+      # One Gradle invocation keeps dependency resolution/configuration cache hot and avoids
+      # re-entering packageFullDeb before makeIso. --continue keeps independent artifacts building
+      # when one Linux format fails; artifact collection below publishes whatever succeeded.
+      - name: Build linux artifacts
+        shell: bash
+        continue-on-error: true
+        run: ./gradlew packageAppImageFile :desktopApp:packageReleaseRpm packageFullDeb makeIso -PdepCheck=false --stacktrace --continue
+
+      # Primary source is releases/ (collectReleases + makeIso). Fall back to jpackage output
+      # dirs for partial builds.
+      - name: Collect artifacts
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          VER='${{ steps.meta.outputs.version }}'
+          APP='${{ steps.meta.outputs.appname }}'
+          BASE="$APP-$VER"
+          PKG=packages/main-release
+          mkdir -p upload
+
+          copy_pkg() {
+            local dir="$1" ext="$2"
+            for f in "$dir"/*."$ext"; do
+              if [ -e "$f" ]; then
+                cp -v "$f" "upload/$BASE.$ext"
+                return 0
+              fi
+            done
+            return 0
+          }
+
+          if compgen -G "releases/*" > /dev/null; then
+            cp -av releases/* upload/
+          fi
+
+          [ -f "upload/$BASE.deb" ] || copy_pkg "$PKG/deb" deb
+          [ -f "upload/$BASE.rpm" ] || copy_pkg "$PKG/rpm" rpm
+          [ -f "upload/$BASE.AppImage" ] || copy_pkg "$PKG/appimage" AppImage
+          if [ ! -f "upload/$BASE.iso" ]; then
+            for f in releases/*.iso; do
+              [ -e "$f" ] && cp -v "$f" "upload/$BASE.iso" && break
+            done
+          fi
+
+          if [ -d reports ] && [ -n "$(ls -A reports 2>/dev/null)" ]; then
+            (cd reports && zip -r "../upload/$BASE-reports.zip" .)
+          fi
+          echo "=== produced for linux-iso ==="
+          ls -la upload/
+
+          require_artifact() {
+            local file="upload/$1"
+            if [ ! -s "$file" ]; then
+              echo "::error::required release artifact is missing or empty: $1"
+              exit 1
+            fi
+          }
+
+          for required in "$BASE.deb" "$BASE.rpm" "$BASE.AppImage" "$BASE.iso"; do
+            if [ ! -s "upload/$required" ]; then
+              echo "::warning::linux artifact was not produced: $required"
+            fi
+          done
+          require_artifact "$BASE.iso"
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-linux-iso
+          path: upload/
+          if-no-files-found: warn
+
   package:
     name: Package (${{ matrix.target }})
     strategy:
@@ -31,7 +177,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            target: linux-android-iso
+            target: android
           - os: windows-latest
             target: windows
           - os: macos-latest
@@ -48,6 +194,9 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+          gradle-home-cache-cleanup: true
 
       - name: Make gradlew executable
         shell: bash
@@ -63,7 +212,7 @@ jobs:
       # Decode the Android release keystore from a base64 secret (optional). Without the
       # secret the APK is debug-signed by the build fallback — still installable.
       - name: Decode Android keystore
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.target == 'android'
         shell: bash
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -76,48 +225,21 @@ jobs:
             echo "::warning::no ANDROID_KEYSTORE_BASE64 secret — APK will be debug-signed"
           fi
 
-      # ---------- linux desktop formats + android apk + reports (ubuntu) ----------
-      # One invocation with --continue so deb/rpm/AppImage/apk/reports each build to
-      # completion independently: a failure in one does NOT abort the others.
-      - name: Build linux desktop + android + reports
-        if: matrix.os == 'ubuntu-latest'
+      # ---------- android (.apk) ----------
+      - name: Build android .apk
+        if: matrix.target == 'android'
         shell: bash
-        continue-on-error: true
         env:
-          # ANDROID_KEYSTORE_FILE is exported by the decode step above (if present)
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y rpm || echo "::warning::rpm tools missing — .rpm may be skipped"
-          ./gradlew packageFullDeb :desktopApp:packageReleaseRpm packageAppImageFile \
-            :androidApp:assembleRelease postBuildCodeCheck \
-            -PdepCheck=false --continue --stacktrace \
-            || echo "::warning::one or more linux/android formats failed — others still collected"
-
-      # ---------- bootable live ISO (ubuntu, needs root) ----------
-      # Separate step because makeIso needs root (debootstrap/chroot/mksquashfs); on CI it
-      # runs via passwordless sudo. Isolated so a failed/slow ISO can't drop the other formats.
-      - name: Build live ISO
-        if: matrix.os == 'ubuntu-latest'
-        shell: bash
-        continue-on-error: true
-        run: |
-          sudo apt-get install -y debootstrap squashfs-tools xorriso mtools dpkg-dev \
-            grub-common grub-pc-bin grub-efi-amd64-bin debian-archive-keyring \
-            || echo "::warning::iso toolchain missing — .iso may be skipped"
-          ./gradlew makeIso -PdepCheck=false --stacktrace \
-            || echo "::warning::makeIso failed — .iso skipped"
-          ls -la releases/*.iso 2>/dev/null && echo "ISO produced" \
-            || echo "::warning::no .iso in releases/ — makeIso skipped or failed"
+        run: ./gradlew :androidApp:assembleRelease -PdepCheck=false --stacktrace
 
       # ---------- windows (.exe) ----------
       - name: Build windows .exe
         if: matrix.os == 'windows-latest'
         shell: bash
-        continue-on-error: true
-        run: ./gradlew :desktopApp:packageReleaseExe -PdepCheck=false --stacktrace || echo "::warning::windows .exe failed — skipped"
+        run: ./gradlew :desktopApp:packageReleaseExe -PdepCheck=false --stacktrace
 
       # ---------- macos (.dmg) ----------
       # Signing/notarization activate only when the Apple Developer ID secrets are present
@@ -125,49 +247,76 @@ jobs:
       - name: Build macOS .dmg
         if: matrix.os == 'macos-latest'
         shell: bash
-        continue-on-error: true
         env:
           MACOS_SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
           MACOS_BUNDLE_ID: ${{ secrets.MACOS_BUNDLE_ID }}
           MACOS_NOTARY_APPLE_ID: ${{ secrets.MACOS_NOTARY_APPLE_ID }}
           MACOS_NOTARY_PASSWORD: ${{ secrets.MACOS_NOTARY_PASSWORD }}
           MACOS_NOTARY_TEAM_ID: ${{ secrets.MACOS_NOTARY_TEAM_ID }}
-        run: ./gradlew :desktopApp:packageReleaseDmg -PdepCheck=false --stacktrace || echo "::warning::macOS .dmg failed — skipped"
+        run: ./gradlew :desktopApp:packageReleaseDmg -PdepCheck=false --stacktrace
 
       # ---------- collect whatever got produced (versioned names) ----------
-      # Copies from every known jpackage/build output dir; dirs absent on this OS are simply
-      # skipped. Mirrors the rename scheme of the :collectReleases Gradle task but tolerates
-      # partial builds so we never lose the formats that DID succeed.
+      # Primary source is releases/ (collectReleases + makeIso). Fall back to jpackage output
+      # dirs for partial builds and for platform-specific runners (exe/dmg).
       - name: Collect artifacts
+        if: always()
         shell: bash
         run: |
+          set -euo pipefail
           VER='${{ steps.meta.outputs.version }}'
           APP='${{ steps.meta.outputs.appname }}'
           BASE="$APP-$VER"
           PKG=packages/main-release
           mkdir -p upload
-          copy() { # <glob-dir> <ext>
-            for f in "$1"/*."$2"; do
-              [ -e "$f" ] && cp -v "$f" "upload/$BASE.$2" && return 0
+
+          copy_pkg() {
+            local dir="$1" ext="$2"
+            for f in "$dir"/*."$ext"; do
+              if [ -e "$f" ]; then
+                cp -v "$f" "upload/$BASE.$ext"
+                return 0
+              fi
             done
             return 0
           }
-          copy "$PKG/deb" deb
-          copy "$PKG/rpm" rpm
-          copy "$PKG/appimage" AppImage
-          copy "$PKG/exe" exe
-          copy "$PKG/dmg" dmg
-          for f in androidApp/build/outputs/apk/release/*.apk; do
-            [ -e "$f" ] && cp -v "$f" "upload/$BASE.apk" && break
-          done
-          for f in releases/*.iso; do
-            [ -e "$f" ] && cp -v "$f" "upload/$BASE.iso" && break
-          done
-          # reports tree zipped into the release
-          if [ -d reports ] && [ -n "$(ls -A reports 2>/dev/null)" ]; then
-            (cd reports && zip -r "../upload/$BASE-reports.zip" .) || echo "::warning::reports zip failed"
+
+          if compgen -G "releases/*" > /dev/null; then
+            cp -av releases/* upload/
           fi
-          echo "=== produced for ${{ matrix.target }} ==="; ls -la upload/ || true
+
+          copy_pkg "$PKG/exe" exe
+          copy_pkg "$PKG/dmg" dmg
+          if [ ! -f "upload/$BASE.apk" ]; then
+            for f in androidApp/build/outputs/apk/release/*.apk; do
+              [ -e "$f" ] && cp -v "$f" "upload/$BASE.apk" && break
+            done
+          fi
+
+          if [ -d reports ] && [ -n "$(ls -A reports 2>/dev/null)" ]; then
+            (cd reports && zip -r "../upload/$BASE-reports.zip" .)
+          fi
+          echo "=== produced for ${{ matrix.target }} ==="
+          ls -la upload/
+
+          require_artifact() {
+            local file="upload/$1"
+            if [ ! -s "$file" ]; then
+              echo "::error::required release artifact is missing or empty: $1"
+              exit 1
+            fi
+          }
+
+          case '${{ matrix.target }}' in
+            android)
+              require_artifact "$BASE.apk"
+              ;;
+            windows)
+              require_artifact "$BASE.exe"
+              ;;
+            macos)
+              require_artifact "$BASE.dmg"
+              ;;
+          esac
 
       - name: Upload build artifacts
         if: always()
@@ -179,7 +328,9 @@ jobs:
 
   release:
     name: Publish GitHub Release
-    needs: package
+    needs:
+      - package-linux-iso
+      - package
     if: always()
     runs-on: ubuntu-latest
     permissions:
