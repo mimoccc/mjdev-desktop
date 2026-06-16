@@ -18,6 +18,12 @@ Datum: 2026-06-16. Cíl: **non-invazivní** snížení CPU/RAM bez změny vidite
   pollingu á 200 ms (~1 probuzení/s).
 - **#7.1 Shell blokující I/O → IO** — `Shell.init` launch přepnut z `Dispatchers.Default` na `IO`
   (blokující `ProcessBuilder.waitFor` nehladoví CPU-sized Default pool).
+- **#2 GIF perzistentní disk cache** — `GifDecoder` už nedrží snímky v RAM: každý snímek se streamuje
+  na disk do `/var/tmp/mjdev-desktop/gif-cache/<klíč>/f<n>` (raw ARGB) + `info` manifest (klíč =
+  src+velikost+mtime). Při dalším spuštění se GIF **vůbec nedekóduje** (cache hit). Za běhu se snímky
+  čtou z disku líně přes malou in-memory LRU (`MAX_CACHED_BITMAPS=4`) → max 4 živé bitmapy/GPU textury
+  místo všech. Build snímku běží přes `withContext(Dispatchers.Default)` (mimo UI vlákno, bez janku).
+  `gifCacheBaseDir()` expect/actual (desktop `/var/tmp/...`, android temp).
 
 Pozn.: přímý `java.util.HashMap` v commonMain shazuje K2 actualizer (přes `OsRelease`) — používat
 `mutableMapOf`.
@@ -25,19 +31,6 @@ Pozn.: přímý `java.util.HashMap` v commonMain shazuje K2 actualizer (přes `O
 ---
 
 ## ZBÝVÁ K ROZHODNUTÍ
-
-### #2 — GIF snímky v RAM (LRU) — POZOR na návrh
-Naivní LRU paměť **nesníží** (možná zvýší): snímek jako `IntArray` (heap, w·h·4 B) je stejně velký
-jako `ImageBitmap`, takže držet všechny IntArrays + pár přestavěných bitmap = stejně/víc než dnes
-(všechny bitmapy). Reálnou úsporu dá jen:
-- **(a)** ukládat snímky komprimovaně — palette-index **1 B/px** (~4× méně heapu) a kompozitovat
-  on-demand; čisté pro **sekvenční** přehrávání, ale rozbíjí náhodný seek (`prevFrame`/`reset`
-  v `GifViewState`) — nutno dořešit (keyframe replay nebo udržovat poslední kompozici);
-- **(b)** **coil3 animated decoder** pro přehrávání (coil GIF dekodér v projektu už je, používá se
-  pro paletu) — deleguje správu snímků, ruší vlastní `GifDecoder`; mění verified-working playback
-  path → ověřit vizuál 1:1 za běhu.
-Vybrat (a)/(b). Měřit RSS + počet živých bitmap před/po. `imageBitmapFromArgb` (z #1) dělá rebuild
-snímku levný, takže lazy decode je teď reálná cesta.
 
 ### #7.2 — Scope leaky v default argumentech @Composable
 `CoroutineScope(Dispatchers.Default)` jako default arg (`AppsMenu.kt:264,276`, bázová

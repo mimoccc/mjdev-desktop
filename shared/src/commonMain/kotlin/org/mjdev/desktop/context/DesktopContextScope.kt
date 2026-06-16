@@ -132,7 +132,7 @@ open class DesktopContextScope(
         get() = context.theme.panelHideDelay > 0L
     val panelDividerWidth: Dp
         get() = context.theme.panelDividerWidth
-    val panelLocation : PanelLocation
+    val panelLocation: PanelLocation
         get() = context.theme.panelLocation
 
     val controlPanelHideDelay: Long

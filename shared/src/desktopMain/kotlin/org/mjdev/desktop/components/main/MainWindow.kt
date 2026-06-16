@@ -128,7 +128,7 @@ fun MainWindow() =
 //            panelState = panelState,
 //            menuState = menuState,
 //            onFocusChange = { focused ->
-////            Log.d("panel focus : $focused")
+// //            Log.d("panel focus : $focused")
 //                val menuIsVisible = appsMenuState.isVisible || menuState.isVisible
 //                if (panelState.enabled) {
 //                    if (!menuIsVisible && !focused) {

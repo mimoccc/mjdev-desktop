@@ -17,8 +17,8 @@ import okio.Path.Companion.toPath
 import okio.buffer
 import okio.source
 import org.mjdev.desktop.extensions.imageBitmapFromArgb
-import org.mjdev.desktop.extensions.pixels
 import org.mjdev.desktop.log.Log
+import org.mjdev.desktop.system.Filesystem
 import org.mjdev.desktop.system.Filesystem.source
 
 // todo optimize code, remove unused variables, use better data structures
@@ -56,13 +56,24 @@ class GifDecoder {
     private var globalColorTable: IntArray = intArrayOf()
     private var localColorTable: IntArray = intArrayOf()
     private var activeColorTable: IntArray = intArrayOf()
-    private var image: ImageBitmap? = null
-    private var lastImage: ImageBitmap? = null
     private var input: BufferedSource? = null
     private var block = byteArrayOf()
     private var frameCount: Int = 0
 
     private val frames = mutableListOf<GifFrame>()
+
+    // Compositing history (used only during decode): previous and two-frames-ago composited
+    // canvases needed for the GIF dispose methods — bounded, not the whole movie.
+    private var lastFramePixels: IntArray? = null
+    private var lastLastFramePixels: IntArray? = null
+
+    // Directory holding this gif's on-disk frame cache (raw ARGB per frame).
+    private var cacheDir: Path? = null
+
+    // Small in-memory LRU of frames built from disk — bounds live ImageBitmaps / GPU textures
+    // to MAX_CACHED_BITMAPS instead of holding every frame of the animation in RAM.
+    private val frameBitmapCache = mutableMapOf<Int, ImageBitmap>()
+    private val frameCacheOrder = ArrayDeque<Int>()
 
     fun getWidth(): Int = width
 
@@ -85,15 +96,34 @@ class GifDecoder {
 
     fun getFrameCount(): Int = frameCount
 
-    fun getFrame(n: Int): ImageBitmap? =
-        if (n in 0..<frameCount) {
-            frames[n].image
-        } else {
-            null
+    fun getFrame(n: Int): ImageBitmap? {
+        if (n !in 0..<frameCount) return null
+        frameBitmapCache[n]?.let { cached ->
+            frameCacheOrder.remove(n)
+            frameCacheOrder.addLast(n)
+            return cached
         }
+        val frame = frames.getOrNull(n) ?: return null
+        val bitmap =
+            runCatching { imageBitmapFromArgb(readFramePixels(frame.file), width, height) }
+                .onFailure { e -> Log.e(e) }
+                .getOrNull() ?: return null
+        frameBitmapCache[n] = bitmap
+        frameCacheOrder.addLast(n)
+        while (frameCacheOrder.size > MAX_CACHED_BITMAPS) {
+            frameBitmapCache.remove(frameCacheOrder.removeFirst())
+        }
+        return bitmap
+    }
 
     fun fromSource(inp: BufferedSource?): Int {
         init()
+        // Frames are always streamed to disk; when no stable cache dir was set (e.g. a direct
+        // fromSource/fromPath call), use an ephemeral one so we still avoid holding frames in RAM.
+        if (cacheDir == null) {
+            cacheDir = gifCacheBaseDir().resolve("tmp-${hashCode().toUInt().toString(16)}")
+        }
+        runCatching { Filesystem.createDirectories(cacheDir!!) }.onFailure { e -> Log.e(e) }
         if (inp != null) {
             input = inp
             readHeader()
@@ -137,6 +167,15 @@ class GifDecoder {
         }
 
     fun from(pathOrUrl: String): Int {
+        init()
+        val dir = stableCacheDir(pathOrUrl)
+        cacheDir = dir
+        runCatching { Filesystem.createDirectories(dir) }.onFailure { e -> Log.e(e) }
+        // Persistent cache hit: frames already on disk from a previous run — skip decoding entirely.
+        if (loadManifest(dir, pathOrUrl)) {
+            status = STATUS_OK
+            return status
+        }
         status =
             when {
                 pathOrUrl.startsWith("http://") || pathOrUrl.startsWith("https://") -> {
@@ -146,25 +185,27 @@ class GifDecoder {
                     fromFile(pathOrUrl)
                 }
             }
+        if (status == STATUS_OK) {
+            runCatching { saveManifest(dir, pathOrUrl) }.onFailure { e -> Log.e(e) }
+        }
         return status
     }
 
-    private fun setPixels() {
-        // Build the frame into a plain IntArray and create the ImageBitmap in ONE bulk op
-        // (imageBitmapFromArgb) instead of the old per-pixel Canvas.drawRect write.
+    // Composites the current frame onto the right base canvas (per GIF dispose method) and returns
+    // the full-canvas ARGB pixels. Output identical to the old setPixels; it just works on plain
+    // IntArray history buffers instead of reading pixels back out of ImageBitmaps.
+    private fun compositeCurrentFrame(): IntArray {
         val dest = IntArray(width * height)
-        if (lastDispose > 0) {
-            if (lastDispose == 3) {
-                val n = frameCount - 2
-                lastImage = if (n > 0) getFrame(n - 1) else null
+        // dispose of the PREVIOUS frame decides the base: 3 = restore to two-frames-ago,
+        // 1/2 = keep previous, 0 = none (first frame). (dispose==2's fillRect was a no-op before.)
+        val base =
+            when {
+                lastDispose == 3 -> lastLastFramePixels
+                lastDispose > 0 -> lastFramePixels
+                else -> null
             }
-            if (lastImage != null) {
-                val prev = lastImage?.pixels ?: intArrayOf()
-                System.arraycopy(prev, 0, dest, 0, width * height)
-                // NOTE: the original code called image.fillRect here for lastDispose == 2, but the
-                // result was immediately overwritten by `image.pixels = dest`, so it was a no-op.
-                // Preserved as a no-op to keep frame output identical.
-            }
+        if (base != null && base.size >= width * height) {
+            System.arraycopy(base, 0, dest, 0, width * height)
         }
         var pass = 1
         var inc = 8
@@ -206,7 +247,7 @@ class GifDecoder {
                 }
             }
         }
-        image = imageBitmapFromArgb(dest, width, height)
+        return dest
     }
 
     private fun decodeImageData() {
@@ -318,7 +359,101 @@ class GifDecoder {
         frames.clear()
         globalColorTable = intArrayOf()
         localColorTable = intArrayOf()
+        lastFramePixels = null
+        lastLastFramePixels = null
+        frameBitmapCache.clear()
+        frameCacheOrder.clear()
     }
+
+    // --- on-disk frame cache -------------------------------------------------------------------
+
+    // Cache key from source + file size + mtime so it invalidates when the gif changes.
+    private fun stableCacheDir(src: String): Path {
+        val meta = runCatching { Filesystem.metadataOrNull(src.toPath()) }.getOrNull()
+        val size = meta?.size ?: -1L
+        val mtime = meta?.lastModifiedAtMillis ?: -1L
+        val key = "$src|$size|$mtime".hashCode().toUInt().toString(16)
+        return gifCacheBaseDir().resolve(key)
+    }
+
+    private fun writeFramePixels(
+        file: Path,
+        pixels: IntArray,
+    ) {
+        val bytes = ByteArray(pixels.size * 4)
+        for (i in pixels.indices) {
+            val v = pixels[i]
+            val o = i * 4
+            bytes[o] = (v ushr 24).toByte()
+            bytes[o + 1] = (v ushr 16).toByte()
+            bytes[o + 2] = (v ushr 8).toByte()
+            bytes[o + 3] = v.toByte()
+        }
+        Filesystem.sink(file).buffer().use { sink -> sink.write(bytes) }
+    }
+
+    private fun readFramePixels(file: Path): IntArray {
+        val bytes = Filesystem.source(file).buffer().use { it.readByteArray() }
+        val out = IntArray(bytes.size / 4)
+        for (i in out.indices) {
+            val o = i * 4
+            out[i] =
+                ((bytes[o].toInt() and 0xff) shl 24) or
+                ((bytes[o + 1].toInt() and 0xff) shl 16) or
+                ((bytes[o + 2].toInt() and 0xff) shl 8) or
+                (bytes[o + 3].toInt() and 0xff)
+        }
+        return out
+    }
+
+    private fun saveManifest(
+        dir: Path,
+        src: String,
+    ) {
+        val text =
+            buildString {
+                appendLine("v1")
+                appendLine(src)
+                appendLine(width.toString())
+                appendLine(height.toString())
+                appendLine(loopCount.toString())
+                appendLine(frameCount.toString())
+                appendLine(frames.joinToString(",") { it.delay.toString() })
+            }
+        Filesystem.writeText(dir.resolve("info"), text)
+    }
+
+    // Populates frames from a previously written manifest (no decoding). Returns false on any
+    // mismatch / missing file so the caller re-decodes.
+    private fun loadManifest(
+        dir: Path,
+        src: String,
+    ): Boolean =
+        runCatching {
+            val info = dir.resolve("info")
+            if (!Filesystem.fileExists(info)) return false
+            val lines = Filesystem.readLines(info)
+            if (lines.size < 7 || lines[0] != "v1" || lines[1] != src) return false
+            val w = lines[2].toInt()
+            val h = lines[3].toInt()
+            val loop = lines[4].toInt()
+            val count = lines[5].toInt()
+            val delays = lines[6].split(",").mapNotNull { it.toIntOrNull() }
+            if (count <= 0 || delays.size != count) return false
+            val restored = mutableListOf<GifFrame>()
+            for (i in 0 until count) {
+                val f = dir.resolve("f$i")
+                if (!Filesystem.fileExists(f)) return false
+                restored.add(GifFrame(delays[i], f))
+            }
+            width = w
+            height = h
+            loopCount = loop
+            frameCount = count
+            frames.clear()
+            frames.addAll(restored)
+            true
+        }.getOrDefault(false)
 
     private fun readByte(): Int {
         val curByte =
@@ -464,12 +599,17 @@ class GifDecoder {
         skip()
         if (isErr()) return
         frameCount++
-        // setPixels() builds `image` directly from the decoded pixels (bulk), no empty alloc needed
-        setPixels()
-        frames.add(GifFrame(image, delay))
+        val dest = compositeCurrentFrame()
+        val index = frameCount - 1
+        val frameFile = cacheDir!!.resolve("f$index")
+        runCatching { writeFramePixels(frameFile, dest) }.onFailure { e -> Log.e(e) }
+        frames.add(GifFrame(delay, frameFile))
         if (transparency) {
             activeColorTable[transIndex] = save
         }
+        // advance compositing history for the next frame's dispose handling
+        lastLastFramePixels = lastFramePixels
+        lastFramePixels = dest
         resetFrame()
     }
 
@@ -499,7 +639,6 @@ class GifDecoder {
     private fun resetFrame() {
         lastDispose = dispose
         lastRect = IntRect(ix, iy, iw, ih)
-        lastImage = image
         lastBackgroundColor = backgroundColor
         dispose = 0
         transparency = false
@@ -517,6 +656,9 @@ class GifDecoder {
         const val STATUS_OK = 0
         const val STATUS_FORMAT_ERROR = 1
         const val STATUS_OPEN_ERROR = 2
+
+        // Max frames kept as live ImageBitmaps in RAM at once (rest stream from disk on demand).
+        const val MAX_CACHED_BITMAPS = 4
 
         fun fromSource(source: BufferedSource?): GifDecoder =
             GifDecoder().apply {
