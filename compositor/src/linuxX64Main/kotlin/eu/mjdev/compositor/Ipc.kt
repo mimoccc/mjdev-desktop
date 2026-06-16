@@ -311,10 +311,18 @@ class IpcServer(private val c: Compositor) {
                 val fr = request["fg_r"]?.jsonPrimitive?.int ?: defFg
                 val fgc = request["fg_g"]?.jsonPrimitive?.int ?: defFg
                 val fb = request["fg_b"]?.jsonPrimitive?.int ?: defFg
+                val ibr = request["icon_bg_r"]?.jsonPrimitive?.int ?: br
+                val ibgc = request["icon_bg_g"]?.jsonPrimitive?.int ?: bgc
+                val ibb = request["icon_bg_b"]?.jsonPrimitive?.int ?: bb
+                val ifr = request["icon_fg_r"]?.jsonPrimitive?.int ?: fr
+                val ifgc = request["icon_fg_g"]?.jsonPrimitive?.int ?: fgc
+                val ifb = request["icon_fg_b"]?.jsonPrimitive?.int ?: fb
                 mjc_set_decoration_theme(
                     c.server,
                     br / 255f, bgc / 255f, bb / 255f,
                     fr / 255f, fgc / 255f, fb / 255f,
+                    ibr / 255f, ibgc / 255f, ibb / 255f,
+                    ifr / 255f, ifgc / 255f, ifb / 255f,
                 )
                 ok { }
             }

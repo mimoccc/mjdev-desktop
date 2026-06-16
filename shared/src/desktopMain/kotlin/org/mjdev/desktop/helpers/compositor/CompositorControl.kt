@@ -46,15 +46,23 @@ object CompositorControl {
     private fun chan(v: Float) = (v.coerceIn(0f, 1f) * 255f).toInt()
 
     /**
-     * Pushes the window-frame color theme to the compositor. [bg] tints the titlebar/
-     * border, [fg] the title text and button glyphs (auto-contrast on the compositor
-     * side if omitted, but we send the shell's text color for consistency).
+     * Pushes the window-frame palette to the compositor — same roles as dock / control center:
+     * [bg]/[fg] = backgroundColor / textColor; [iconBg]/[iconFg] = iconsTintColor / borderColor.
      */
-    fun setDecorationTheme(bg: Color, fg: Color) {
+    fun setDecorationTheme(
+        bg: Color,
+        fg: Color,
+        iconBg: Color,
+        iconFg: Color,
+    ) {
         send(
             """{"cmd":"set-decoration-theme",""" +
                 """"bg_r":${chan(bg.red)},"bg_g":${chan(bg.green)},"bg_b":${chan(bg.blue)},""" +
-                """"fg_r":${chan(fg.red)},"fg_g":${chan(fg.green)},"fg_b":${chan(fg.blue)}}""",
+                """"fg_r":${chan(fg.red)},"fg_g":${chan(fg.green)},"fg_b":${chan(fg.blue)},""" +
+                """"icon_bg_r":${chan(iconBg.red)},"icon_bg_g":${chan(iconBg.green)},""" +
+                """"icon_bg_b":${chan(iconBg.blue)},""" +
+                """"icon_fg_r":${chan(iconFg.red)},"icon_fg_g":${chan(iconFg.green)},""" +
+                """"icon_fg_b":${chan(iconFg.blue)}}""",
         )
     }
 }

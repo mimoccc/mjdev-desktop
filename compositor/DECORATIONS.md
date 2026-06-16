@@ -100,7 +100,7 @@ void mjc_set_decoration_theme(mjc_server *server,
 ```c
 #define MJC_DECO_TITLEBAR_H 36   // titlebar height
 #define MJC_DECO_RADIUS     10   // top-corner radius
-#define MJC_DECO_BORDER     1    // side/bottom border width
+#define MJC_DECO_BORDER     3    // side/bottom border width
 #define MJC_DECO_BTN_R      9    // button circle radius
 #define MJC_DECO_BTN_GAP    8    // gap between buttons
 #define MJC_DECO_PAD        14   // title-left / buttons-right padding

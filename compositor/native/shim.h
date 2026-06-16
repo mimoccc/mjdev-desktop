@@ -119,7 +119,9 @@ void mjc_view_set_chrome(mjc_view *view, bool chrome);
 void mjc_view_set_decorated(mjc_view *view, bool decorated);
 void mjc_set_decoration_theme(mjc_server *server,
     float bg_r, float bg_g, float bg_b,
-    float fg_r, float fg_g, float fg_b);
+    float fg_r, float fg_g, float fg_b,
+    float icon_bg_r, float icon_bg_g, float icon_bg_b,
+    float icon_fg_r, float icon_fg_g, float icon_fg_b);
 
 /* input injection (ipc-driven, for automated/headless testing) */
 void mjc_pointer_move(mjc_server *server, int x, int y);

@@ -72,6 +72,11 @@ fun MainWindow() =
 //        println("Tooltip: $item")
             tooltipState.show(item)
         }
+        // Push the current palette to mjdevc as soon as the shell starts (before the first
+        // wallpaper rotation callback) so app window frames match dock / control center colors.
+        LaunchedEffect(Unit) {
+            context.themeManager.createFromPalette()
+        }
         // When the control center opens it covers the desktop, so the dock bar and any open menu
         // step aside (this also frees focus so the control center can actually take it).
         LaunchedEffect(controlCenterState.isVisible) {
