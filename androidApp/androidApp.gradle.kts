@@ -29,6 +29,33 @@ android {
             pickFirsts += "META-INF/native-image/**"
         }
     }
+    // Release signing. Keystore + credentials come from env vars (CI secrets) or Gradle
+    // properties (local ~/.gradle/gradle.properties) — never hardcoded. When no release
+    // keystore is configured we fall back to the debug key so the release APK is still
+    // *signed* and installable (an unsigned APK is rejected by Android on install).
+    val releaseStoreFile = (providers.environmentVariable("ANDROID_KEYSTORE_FILE").orNull
+        ?: providers.gradleProperty("android.keystore.file").orNull)?.let(::file)
+    val releaseStorePassword = providers.environmentVariable("ANDROID_KEYSTORE_PASSWORD").orNull
+        ?: providers.gradleProperty("android.keystore.password").orNull
+    val releaseKeyAlias = providers.environmentVariable("ANDROID_KEY_ALIAS").orNull
+        ?: providers.gradleProperty("android.key.alias").orNull
+    val releaseKeyPassword = providers.environmentVariable("ANDROID_KEY_PASSWORD").orNull
+        ?: providers.gradleProperty("android.key.password").orNull
+    val hasReleaseKeystore = releaseStoreFile?.exists() == true &&
+        !releaseStorePassword.isNullOrBlank() &&
+        !releaseKeyAlias.isNullOrBlank() &&
+        !releaseKeyPassword.isNullOrBlank()
+
+    signingConfigs {
+        if (hasReleaseKeystore) {
+            create("release") {
+                storeFile = releaseStoreFile
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
     buildTypes {
         getByName("release") {
             isDebuggable = true
@@ -36,6 +63,8 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
             isPseudoLocalesEnabled = true
+            // real keystore when provided, otherwise debug key (still a signed, installable APK)
+            signingConfig = signingConfigs.getByName(if (hasReleaseKeystore) "release" else "debug")
         }
     }
     compileOptions {

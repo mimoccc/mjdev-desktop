@@ -1,13 +1,14 @@
 name: Release
 
-# Produces versioned distributables for all targets into a GitHub Release.
-# Targets that cannot be built on a given host (or fail) are skipped and logged
-# as ::warning:: — they never fail the whole release.
-#   linux   (deb/rpm/AppImage) + android (apk)  -> ubuntu-latest
-#   windows (exe)                               -> windows-latest
-#   macos   (dmg)  + ios                        -> macos-latest
-# NOTE: iOS currently cannot be produced — the project has no iOS Kotlin target
-#       (commonMain uses JVM-only libraries); the iOS step only logs a skip.
+# Produces versioned distributables for ALL targets a host can build, into a GitHub Release.
+# Each format is built independently so one failing format never blocks the others, and the
+# collect step uploads whatever actually got produced (partial success is still published).
+#   linux (deb/rpm/AppImage) + android (apk) + iso  -> ubuntu-latest
+#   windows (exe)                                   -> windows-latest
+#   macos   (dmg)                                   -> macos-latest
+# Skipped/failed formats are logged as ::warning:: and never fail the whole release.
+# NOTE: iOS cannot be produced — the project has no iOS Kotlin target (commonMain uses
+#       JVM-only libs); there is no iOS step.
 
 on:
   workflow_dispatch:
@@ -17,8 +18,10 @@ on:
     tags:
       - 'v*'
 
+# Build jobs only read the repo (least privilege — "read only gh" in the build step);
+# only the publish job below requests write to create the release.
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   package:
@@ -28,11 +31,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            target: linux-android
+            target: linux-android-iso
           - os: windows-latest
             target: windows
           - os: macos-latest
-            target: macos-ios
+            target: macos
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -50,62 +53,119 @@ jobs:
         shell: bash
         run: chmod +x gradlew || true
 
-      - name: Read version
-        id: ver
+      - name: Read app name + version
+        id: meta
         shell: bash
-        run: echo "version=$(grep -E '^app-pkg-version' gradle/libs.versions.toml | sed -E 's/.*"(.*)".*/\1/')" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "version=$(grep -E '^app-pkg-version' gradle/libs.versions.toml | sed -E 's/.*"(.*)".*/\1/')" >> "$GITHUB_OUTPUT"
+          echo "appname=$(grep -E '^app-name' gradle/libs.versions.toml | sed -E 's/.*"(.*)".*/\1/')" >> "$GITHUB_OUTPUT"
 
-      # ---------- linux + android + reports (ubuntu) ----------
-      - name: Build linux + android + reports
+      # Decode the Android release keystore from a base64 secret (optional). Without the
+      # secret the APK is debug-signed by the build fallback — still installable.
+      - name: Decode Android keystore
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+            echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
+            echo "Android release keystore decoded"
+          else
+            echo "::warning::no ANDROID_KEYSTORE_BASE64 secret — APK will be debug-signed"
+          fi
+
+      # ---------- linux desktop formats + android apk + reports (ubuntu) ----------
+      # One invocation with --continue so deb/rpm/AppImage/apk/reports each build to
+      # completion independently: a failure in one does NOT abort the others.
+      - name: Build linux desktop + android + reports
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        continue-on-error: true
+        env:
+          # ANDROID_KEYSTORE_FILE is exported by the decode step above (if present)
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm || echo "::warning::rpm tools missing — .rpm may be skipped"
+          ./gradlew packageFullDeb :desktopApp:packageReleaseRpm packageAppImageFile \
+            :androidApp:assembleRelease postBuildCodeCheck \
+            -PdepCheck=false --continue --stacktrace \
+            || echo "::warning::one or more linux/android formats failed — others still collected"
+
+      # ---------- bootable live ISO (ubuntu, needs root) ----------
+      # Separate step because makeIso needs root (debootstrap/chroot/mksquashfs); on CI it
+      # runs via passwordless sudo. Isolated so a failed/slow ISO can't drop the other formats.
+      - name: Build live ISO
         if: matrix.os == 'ubuntu-latest'
         shell: bash
         continue-on-error: true
         run: |
-          sudo apt-get update
-          sudo apt-get install -y rpm || echo "::warning::rpm tools missing — .rpm may be skipped"
-          # ISO toolchain (debootstrap/chroot/mksquashfs/grub+mtools) so buildAll's makeIso can
-          # assemble the bootable live image; missing tools would just skip the ISO.
           sudo apt-get install -y debootstrap squashfs-tools xorriso mtools dpkg-dev \
             grub-common grub-pc-bin grub-efi-amd64-bin debian-archive-keyring \
             || echo "::warning::iso toolchain missing — .iso may be skipped"
-          ./gradlew buildAll -PdepCheck=false --stacktrace || echo "::warning::linux/android buildAll failed — skipped"
-          # makeIso is part of buildAll; surface whether the .iso was actually produced
-          ls -la releases/*.iso 2>/dev/null && echo "ISO produced" || echo "::warning::no .iso in releases/ — makeIso skipped or failed"
+          ./gradlew makeIso -PdepCheck=false --stacktrace \
+            || echo "::warning::makeIso failed — .iso skipped"
+          ls -la releases/*.iso 2>/dev/null && echo "ISO produced" \
+            || echo "::warning::no .iso in releases/ — makeIso skipped or failed"
 
       # ---------- windows (.exe) ----------
       - name: Build windows .exe
         if: matrix.os == 'windows-latest'
         shell: bash
         continue-on-error: true
-        run: ./gradlew :desktopApp:packageReleaseExe --stacktrace || echo "::warning::windows .exe failed — skipped"
+        run: ./gradlew :desktopApp:packageReleaseExe -PdepCheck=false --stacktrace || echo "::warning::windows .exe failed — skipped"
 
       # ---------- macos (.dmg) ----------
+      # Signing/notarization activate only when the Apple Developer ID secrets are present
+      # (see desktopApp.gradle.kts macOS block); otherwise the .dmg is built unsigned.
       - name: Build macOS .dmg
         if: matrix.os == 'macos-latest'
         shell: bash
         continue-on-error: true
-        run: ./gradlew :desktopApp:packageReleaseDmg --stacktrace || echo "::warning::macOS .dmg failed — skipped"
+        env:
+          MACOS_SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
+          MACOS_BUNDLE_ID: ${{ secrets.MACOS_BUNDLE_ID }}
+          MACOS_NOTARY_APPLE_ID: ${{ secrets.MACOS_NOTARY_APPLE_ID }}
+          MACOS_NOTARY_PASSWORD: ${{ secrets.MACOS_NOTARY_PASSWORD }}
+          MACOS_NOTARY_TEAM_ID: ${{ secrets.MACOS_NOTARY_TEAM_ID }}
+        run: ./gradlew :desktopApp:packageReleaseDmg -PdepCheck=false --stacktrace || echo "::warning::macOS .dmg failed — skipped"
 
-      # ---------- ios (not available) ----------
-      - name: iOS (skipped — no iOS target)
-        if: matrix.os == 'macos-latest'
-        shell: bash
-        run: |
-          echo "::warning::iOS skipped — project has no iOS Kotlin target (commonMain uses JVM-only libs vlcj/jna)"
-
-      # ---------- collect whatever got produced ----------
+      # ---------- collect whatever got produced (versioned names) ----------
+      # Copies from every known jpackage/build output dir; dirs absent on this OS are simply
+      # skipped. Mirrors the rename scheme of the :collectReleases Gradle task but tolerates
+      # partial builds so we never lose the formats that DID succeed.
       - name: Collect artifacts
         shell: bash
         run: |
-          VER='${{ steps.ver.outputs.version }}'
+          VER='${{ steps.meta.outputs.version }}'
+          APP='${{ steps.meta.outputs.appname }}'
+          BASE="$APP-$VER"
+          PKG=packages/main-release
           mkdir -p upload
-          # linux/android: buildAll already wrote versioned files into releases/
-          cp -v releases/* upload/ 2>/dev/null || true
-          # desktop installers from jpackage (windows/mac, also deb/rpm if present)
-          find packages -type f \( -name '*.exe' -o -name '*.msi' -o -name '*.dmg' -o -name '*.pkg' \) -exec cp -v {} upload/ \; 2>/dev/null || true
-          # reports copied into the release (zipped tree)
+          copy() { # <glob-dir> <ext>
+            for f in "$1"/*."$2"; do
+              [ -e "$f" ] && cp -v "$f" "upload/$BASE.$2" && return 0
+            done
+            return 0
+          }
+          copy "$PKG/deb" deb
+          copy "$PKG/rpm" rpm
+          copy "$PKG/appimage" AppImage
+          copy "$PKG/exe" exe
+          copy "$PKG/dmg" dmg
+          for f in androidApp/build/outputs/apk/release/*.apk; do
+            [ -e "$f" ] && cp -v "$f" "upload/$BASE.apk" && break
+          done
+          for f in releases/*.iso; do
+            [ -e "$f" ] && cp -v "$f" "upload/$BASE.iso" && break
+          done
+          # reports tree zipped into the release
           if [ -d reports ] && [ -n "$(ls -A reports 2>/dev/null)" ]; then
-            (cd reports && zip -r "../upload/mjdev-desktop-${VER}-reports.zip" .) || echo "::warning::reports zip failed"
+            (cd reports && zip -r "../upload/$BASE-reports.zip" .) || echo "::warning::reports zip failed"
           fi
           echo "=== produced for ${{ matrix.target }} ==="; ls -la upload/ || true
 
@@ -122,6 +182,8 @@ jobs:
     needs: package
     if: always()
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
