@@ -7,10 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
+import org.mjdev.desktop.components.dockbar.DockBarMetrics
+import org.mjdev.desktop.helpers.compositor.CompositorWindowTracker
 import org.mjdev.desktop.components.appsmenu.AppsMenuState.Companion.rememberAppsMenuState
 import org.mjdev.desktop.components.appsmenu.AppsMenuWindow
 import org.mjdev.desktop.components.controlcenter.ControlCenterWindow
@@ -45,9 +49,40 @@ fun MainWindow() =
         val panelState =
             rememberChromeWindowState(
                 hideDelay = panelHideDelay,
-                visible = isDesign || !panelAutoHideEnabled,
+                visible = true,
                 enabled = panelAutoHideEnabled,
             )
+        val windowTracker = remember { CompositorWindowTracker(scope) }
+        DisposableEffect(windowTracker) {
+            windowTracker.start()
+            onDispose { windowTracker.stop() }
+        }
+        val appWindows = windowTracker.appWindows
+        val dockExpandedHeight =
+            DockBarMetrics.expandedHeight(
+                theme = theme,
+                iconSize = DpSize(48.dp, 48.dp),
+                iconPadding = PaddingValues(4.dp),
+                iconOuterPadding = PaddingValues(2.dp),
+            )
+        val dockOccludedByApps by rememberCalculated(
+            containerSize.width,
+            containerSize.height,
+            dockExpandedHeight,
+            appWindows.size,
+            appWindows.joinToString("|") {
+                "${it.id},${it.x},${it.y},${it.width},${it.height},${it.minimized}"
+            },
+        ) {
+            if (!panelAutoHideEnabled) {
+                false
+            } else {
+                val screenW = containerSize.width.value.toInt()
+                val screenH = containerSize.height.value.toInt()
+                val dockTop = screenH - dockExpandedHeight.value.toInt()
+                windowTracker.isDockOccluded(screenW, screenH, dockTop)
+            }
+        }
         val menuState =
             rememberChromeWindowState(
                 visible = isDesign,
@@ -76,12 +111,12 @@ fun MainWindow() =
         // step aside (this also frees focus so the control center can actually take it).
         LaunchedEffect(controlCenterState.isVisible) {
             if (controlCenterState.isVisible) {
-                panelState.hide()
+                panelState.hide(force = true)
                 if (menuState.isVisible) {
-                    menuState.hide()
+                    menuState.hide(force = true)
                 }
                 if (appsMenuState.isVisible) {
-                    appsMenuState.hide()
+                    appsMenuState.hide(force = true)
                 }
             }
         }
@@ -143,6 +178,9 @@ fun MainWindow() =
             onTooltip = onTooltip,
             panelState = panelState,
             menuState = menuState,
+            occludedByApps = dockOccludedByApps,
+            suppressOcclusionAutoShow = controlCenterState.isVisible,
+            menuPinned = menuState.isVisible || appsMenuState.isVisible,
             // Autohide is driven purely by pointer-leave (see DockBarWindow.onGlobalMouse), NOT by
             // focus. Hiding on focus-loss flooded hide() under focus-follows-mouse (every pointer
             // flicker over a non-focused window fired a hide) and flip-flopped the dock 16<->80.

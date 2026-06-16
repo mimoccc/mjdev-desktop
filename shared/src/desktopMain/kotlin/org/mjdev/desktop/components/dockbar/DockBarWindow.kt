@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
@@ -49,6 +52,7 @@ fun DockBarWindow(
     menuState: ChromeWindowState = rememberChromeWindowState(),
     onMenuIconClicked: () -> Unit = {
         runAsync {
+            panelState.show()
             menuState.showOrFocus()
         }
     },
@@ -65,13 +69,17 @@ fun DockBarWindow(
     onAppContextMenuClick: (IApp) -> Unit = {},
     onLanguageClick: () -> Unit = {},
     onTooltip: (item: Any?) -> Unit = {},
+    /** True when a visible app window overlaps the dock strip — hide until hover reveal. */
+    occludedByApps: Boolean = false,
+    /** When true, skip occlusion-driven show (e.g. control center is open). */
+    suppressOcclusionAutoShow: Boolean = false,
+    /** Menu (or apps menu) open — keep the dock expanded for positioning and clicks. */
+    menuPinned: Boolean = false,
 ) = withDesktopContext {
+    var pointerInDock by remember { mutableStateOf(false) }
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
         if (visible) {
-            iconSize.height +
-                iconPadding.height.times(2) +
-                iconOuterPadding.height.times(2) +
-                theme.panelContentPadding.times(2)
+            DockBarMetrics.expandedHeight(theme, iconSize, iconPadding, iconOuterPadding)
         } else {
             panelDividerWidth
         }
@@ -126,6 +134,22 @@ fun DockBarWindow(
             height = expandedHeight,
         )
     }
+    // Intelligent autohide — never call show() on every tick (that cancels hideDelay hides).
+    LaunchedEffect(occludedByApps, menuPinned, pointerInDock, suppressOcclusionAutoShow) {
+        if (!panelState.enabled) {
+            return@LaunchedEffect
+        }
+        when {
+            suppressOcclusionAutoShow -> panelState.hide(force = true)
+            menuPinned -> panelState.show()
+            !occludedByApps -> {
+                if (panelState.isNotVisible) {
+                    panelState.show()
+                }
+            }
+            !pointerInDock -> panelState.hide()
+        }
+    }
     ChromeWindow(
         name = "DockBar",
         visible = true,
@@ -162,6 +186,7 @@ fun DockBarWindow(
         onGlobalMouse = {
             onPointerEnter(mouseRange) {
                 runAsync {
+                    pointerInDock = true
                     // show() only on a real reveal (not showOrFocus): re-focusing an already-open
                     // dock churns focus-follows-mouse and flip-flops the size, drifting geometry.
                     if (menuState.isNotVisible && panelState.isNotVisible) {
@@ -169,12 +194,21 @@ fun DockBarWindow(
                     }
                 }
             }
-            // autohide when the pointer leaves the expanded dock (and no menu is open, which
-            // must keep the dock alive). Driven by pointer position, not focus, so it no longer
-            // gets stuck open over the non-focusable desktop.
+            onPointerEnter(leaveRange) {
+                runAsync {
+                    pointerInDock = true
+                }
+            }
+            // Collapse after hover-reveal only when an app window covers the dock strip.
             onPointerLeave(leaveRange) {
                 runAsync {
-                    if (panelState.isVisible && menuState.isNotVisible) {
+                    pointerInDock = false
+                    if (
+                        panelState.isVisible &&
+                        !menuPinned &&
+                        occludedByApps &&
+                        !suppressOcclusionAutoShow
+                    ) {
                         panelState.hide()
                     }
                 }
