@@ -100,6 +100,8 @@ class ThemeManagerLinux(
                 COLOR_SCHEME_PREFER_DARK
             }
         runCatching {
+            // GTK_THEME env var overrides gsettings and blocks live reload — theme name must
+            // come only from gsettings so open apps pick up rewritten gtk.css on notify.
             Shell.executeAndRead(
                 "gsettings",
                 "set",
@@ -107,7 +109,14 @@ class ThemeManagerLinux(
                 "color-scheme",
                 scheme,
             )
-            // Brief hop away and back forces a reload even when the theme name stays "Mjdev".
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "gtk-theme",
+                THEME_MJDEV,
+            )
+            // Brief hop away and back forces GTK to re-read ~/.themes/Mjdev and gtk.css.
             Shell.executeAndRead(
                 "gsettings",
                 "set",
@@ -232,6 +241,12 @@ class ThemeManagerLinux(
             val backdropDarkBg = lerp(bgColor, fgColor, 0.75f)
             val backdropSelBg = bgColor.darker(0.08f)
             return """
+            @define-color accent_color ${selectedBgColor.hexRgb};
+            @define-color accent_bg_color ${selectedBgColor.hexRgb};
+            @define-color accent_fg_color ${selectedFgColor.hexRgb};
+            @define-color destructive_color ${errorBgColor.hexRgb};
+            @define-color destructive_bg_color ${errorBgColor.hexRgb};
+            @define-color destructive_fg_color ${errorFgColor.hexRgb};
             @define-color bg_color ${bgColor.hexRgb};
             @define-color fg_color ${fgColor.hexRgb};
             @define-color base_color ${baseColor.hexRgb};
@@ -330,54 +345,69 @@ class ThemeManagerLinux(
             @define-color dark_4 #241f31;
             @define-color dark_5 #000000;
             
+            /* App content follows the wallpaper palette (compositor draws the outer frame). */
             window {
                 background-image: none;
-                background-color: ${bgColor.hexRgb};
-            	border-radius: 8px;
-            	border-bottom-left-radius: 8px;
-            	border-bottom-right-radius: 8px;
-                border-top-right-radius: 8px;
-                border-top-left-radius: 8px;
-                border: 2px solid ${bgColor.hexRgb};
-            	border-top: none;
-                /* position: relative; */
-                box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+                background-color: @window_bg_color;
+                border-radius: 0;
+                box-shadow: none;
+                border: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            /* Compositor draws min/max/close — hide client-side titlebuttons only. */
+            headerbar button.titlebutton,
+            headerbar .titlebutton {
+                opacity: 0;
+                min-width: 0;
+                min-height: 0;
+                padding: 0;
+                margin: 0;
+                border: none;
+            }
+
+            window.ssd headerbar {
+                min-height: 0;
+                padding: 0;
+                margin: 0;
+                border: none;
+                box-shadow: none;
+                background-image: none;
+                background-color: @window_bg_color;
             }
 
             .titlebar, headerbar {
                 padding-top: 2px;
                 padding-bottom: 2px;
                 background-image: none;
-                background-color: ${bgColor.hexRgb};
+                background-color: @headerbar_bg_color;
             }
-            
-            /* all buttons */
+
+            toolbarview,
+            .toolbarview,
+            .background {
+                background-color: @window_bg_color;
+                color: @text_color;
+            }
+
+            entry, textview, label {
+                color: @text_color;
+            }
+
             button {
-                background: ${buttonBgColor.hexRgb};
-                opacity: 0.7;
+                background-color: @button_bg_color;
+                opacity: 0.85;
                 margin: 2px;
                 padding: 4px;
                 min-width: 24px;
                 min-height: 24px;
                 text-shadow: none;
-                color:  ${buttonFgColor.hexRgb};
+                color: ${buttonFgColor.hexRgb};
                 border-radius: 8px;
             }
-            
-            /* window buttons */
-            button.minimize,
-            button.maximize,
-            button.close,
-            button.maximize:hover,
-            button.minimize:hover,
-            button.close:hover {
-                opacity: 0.7;
-            }
 
-            button:hover,
-            button.maximize:hover,
-            button.minimize:hover,
-            button.close:hover {
+            button:hover {
                 opacity: 1;
             }
             """.trimIndent()

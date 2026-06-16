@@ -647,6 +647,7 @@ static void view_visible_geometry(struct mjc_view *view, struct wlr_box *box);
 static void view_place_visible_topleft(struct mjc_view *view, int vx, int vy);
 static bool view_deco_content_metrics(struct mjc_view *view, int *cw, int *ch);
 static void view_deco_snap_client(struct mjc_view *view);
+static void view_geo_offset(struct mjc_view *view, int *ox, int *oy);
 static bool view_deco_frame_box(struct mjc_view *view, struct wlr_box *frame);
 
 /* Keep the outer frame as visible as possible on the primary output. */
@@ -994,8 +995,17 @@ static void view_place_visible_topleft(struct mjc_view *view, int vx, int vy) {
     }
 }
 
-/* Client content width/height from the live scene surface (fallback: xdg/xwayland). */
+/* Client content width/height — prefer xdg geometry (excludes CSD shadow margins). */
 static bool view_deco_content_metrics(struct mjc_view *view, int *cw, int *ch) {
+    if (!view->is_xwayland && view->xdg_toplevel != NULL) {
+        struct wlr_box geo;
+        wlr_xdg_surface_get_geometry(view->xdg_toplevel->base, &geo);
+        if (geo.width > 0 && geo.height > 0) {
+            *cw = geo.width;
+            *ch = geo.height;
+            return true;
+        }
+    }
     struct wlr_box local;
     if (view_client_surface_box(view, &local) && local.width > 0 && local.height > 0) {
         *cw = local.width;
@@ -1007,15 +1017,6 @@ static bool view_deco_content_metrics(struct mjc_view *view, int *cw, int *ch) {
         *cw = view->xsurface->width;
         *ch = view->xsurface->height;
         return true;
-    }
-    if (view->xdg_toplevel != NULL) {
-        struct wlr_box geo;
-        wlr_xdg_surface_get_geometry(view->xdg_toplevel->base, &geo);
-        if (geo.width > 0 && geo.height > 0) {
-            *cw = geo.width;
-            *ch = geo.height;
-            return true;
-        }
     }
     return false;
 }
@@ -1031,7 +1032,20 @@ static void view_deco_snap_client(struct mjc_view *view) {
     if (buf == NULL) {
         return;
     }
-    wlr_scene_node_set_position(&buf->node, MJC_DECO_BORDER, MJC_DECO_TITLEBAR_H);
+    int ox = 0, oy = 0;
+    if (!view->is_xwayland && view->xdg_toplevel != NULL) {
+        struct wlr_box geo;
+        wlr_xdg_surface_get_geometry(view->xdg_toplevel->base, &geo);
+        ox = geo.x;
+        oy = geo.y;
+    } else {
+        view_geo_offset(view, &ox, &oy);
+    }
+    wlr_scene_node_set_position(&buf->node,
+        MJC_DECO_BORDER - ox, MJC_DECO_TITLEBAR_H - oy);
+    if (view->deco_titlebar != NULL) {
+        wlr_scene_node_raise_to_top(&view->deco_titlebar->node);
+    }
 }
 
 /* Outer server-side frame in layout coordinates. */

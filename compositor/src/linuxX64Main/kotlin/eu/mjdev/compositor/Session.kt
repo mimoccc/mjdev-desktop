@@ -43,6 +43,12 @@ class Session(private val c: Compositor) {
                     "2>/dev/null || true"
         )
 
+        // GTK apps inherit gsettings (not GTK_THEME env) so palette changes reload css live.
+        mjc_spawn(
+            c.server,
+            "gsettings set org.gnome.desktop.interface gtk-theme Mjdev 2>/dev/null || true"
+        )
+
         if (c.config.sessionMode) {
             // portals deliver live gtk-theme/color-scheme changes to gtk apps;
             // never started in nested mode where the host session owns them

@@ -77,13 +77,19 @@ jobs:
           fi
 
       # Single apt transaction on ubuntu — avoids dpkg lock races from overlapping apt-get runs.
+      # Compositor build headers/tools (wayland-scanner, wlroots pkg-config, …) are required for
+      # :compositor:stageSession -> packageFullDeb -> collectReleases; without them deb/rpm/iso
+      # never land in releases/ even though the android APK still builds.
       - name: Install Linux build dependencies
         if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install -y rpm debootstrap squashfs-tools xorriso mtools dpkg-dev \
+          sudo apt-get install -y \
+            rpm debootstrap squashfs-tools xorriso mtools dpkg-dev \
             grub-common grub-pc-bin grub-efi-amd64-bin debian-archive-keyring zip \
+            pkg-config libwayland-dev wayland-protocols libwlroots-0.18-dev \
+            libxkbcommon-dev libcairo2-dev libpixman-1-dev \
             || echo "::warning::some apt packages missing — some formats may be skipped"
 
       # ---------- linux + android + iso + reports (ubuntu) ----------

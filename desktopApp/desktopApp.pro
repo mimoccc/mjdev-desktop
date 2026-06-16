@@ -21,6 +21,7 @@
 -dontwarn com.couchbase.**
 -dontwarn com.google.**
 -dontwarn com.jogamp.**
+-dontwarn com.sun.javafx.**
 -dontwarn javafx.**
 -dontwarn community.flock.**
 -dontwarn io.github.**
