@@ -6,3 +6,10 @@ root = true
 # actually used, breaking compilation when ktlintFormat runs. Disable just that rule so
 # auto-format stays safe.
 ktlint_standard_no-unused-imports = disabled
+# One line is max 120 chars (project rule: 80-120).
+max_line_length = 120
+# Keep expression bodies on the signature line — `fun Foo() = preview {` — instead of
+# wrapping after `=` onto the next line. `default` joins the body expression with the
+# signature whenever it fits max_line_length.
+ktlint_standard_function-signature = enabled
+ktlint_function_signature_body_expression_wrapping = default

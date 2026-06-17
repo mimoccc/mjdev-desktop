@@ -66,3 +66,7 @@ composeApp/src/commonMain/resources/keys/*.key
 
 ### iso images (never commit — GitHub rejects git blobs >100 MB; ship as a release asset)
 *.iso
+
+### ideas & fixes
+/ideas/
+/fix-it/

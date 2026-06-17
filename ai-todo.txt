@@ -8,62 +8,7 @@
 * update dependencies from report in reports folder, on every updated library check
   that builds run and or ommit/revert update if impossible
 
-- ai ignoruje naklady na vyvoj a lidsky cas, snazi se primet vyvojare pracovat neustale a na
-  opakujicich se chybach ktere sama dokola zanasi i opakovane do projektu.
-  nechape ekologicke, financni a casove dusledky sveho konani maleho retardovaneho ditete a neustale
-  se toci vyvojar v kruhu chyb a planu na opravy.
-  z kodu projektu se stava bordel, v gite se masti bordel, protoze preskakuje zadany ukol a
-  neni schopna si opravy sama rozplanovat.
-  predrazuje to vyvoj nici a frustruje vyvojare a poskozuje celkovo sw spolecnost.
-
-- kdyz uzivatel klikne na prvni ikonu v spodnim dock bare t.j. show menu, okno menu se sic pomaly ale
-  zobrazi, chvili se ale nedeje nic a dokonce zamrzne cely desktop, pak se menu zobrazi a po urcite dobe,
-  panel timeout se spodni panel schova a menu zustane zobrazeno, i kdyz to ai bylo 1000x receno ze
-  kdyz je menu zobrazeno a i kdyz si to ai snad 3x memorizovala a summarizovala vysledek je porad rozbita logika baru.
-  nechapu jak donutit ai aby se to neopakovalo dookola az se programator citi jako papagaj anebo obehrata deska s chybou.
-  hodne frustrujici, zivy programator to udela pouze jednou neni kokot co si nepameta co delal pred minutou.
-  publikovat
-
-- ve funkcnim github actions se vybuildovali veskere artefakty dle zadani pro multiplatform aplikaci.
-  po pozadavku pridat do release artefaktu i iso soubor, ai rozbila komplet build action, ne jen ze
-  buildy konci chybama, ale artefakty nejsou publikovany temer zadne a nic co predtim fungovalo spolehlive nefunguje.
-  i na 8nasobne pozadani nebola ai schopna problem opravit a drzost po rozbiti s informaci ze je vse
-  opraveno a i napric tomu ze ji byli udeleny prava na nadstandardni sw k pouziti na opravu odignorovala
-  a vysledek zustal i po hodinach jejich uprav stejne ubohy temer nedotceny.
-  stav projektu spatny vubec se negeneruji artefakty tudiz dalsi vyvoj nema smysl, kdyz pak
-  nefunguje delivery a externi uzivatel nema zadnou moznost ani sw otestovat.
-  i kdyz ai byla pozadana primo vyvojarem o napravu ona tento stav projektu absolutne ignoruje.
-  v realu by tenhle stav zpusobil existencionalni poskozeni sw spolecnosti.
-  vysledek uprav fungujiciho systemu -> nefunkcni nepublikovatelny a nepublikovany system. publikovat.
-
-- ai byla pozadana, aby vzdy otestovala kazdou zmenu co udela po kazdym kroku, ktery ma vepsany
-  v textovem souboru.
-  ignore, vzdy zada a neustale zada vyvojare at si casti aplikace, ktere upravuje otestuje sam, a to
-  i v pripade ze vyvojar vytvori inteligentni automatizovany system, ktery umoznuje ai absolutne
-  vyvijet a testovat aplikaci bez intervence vyvojare. pouzije testovaci rozhrani jednou pri vyvoji
-  testovaciho rozhrani a pak ho i kdyz vyvojar zada o testy ignoruje.
-  nespusti ho pokud ji to neni napsane jasne a s pohorsenim, a to je otazne jestli vubec.
-  v pripade tohoto projektu bylo dokonce vytvorene vizualni rozhrani kde ne jen ai ma schopnost
-  videt vysledny sw nazivo, ale i uzivatel a vyvojar. publikovat.
-
-- kdyz dam runDesktop, tak se mi spodni dockbar temer nikdy nezobrazi, ma to byt compositor independent,
-  kompozitor ma funkcionalitu desktopu pouze rozsirovat ne prznit. pokud to mas zavesene na nej.
-
-- to same control center, ne jen ze je temer unresponsive, ale zobrazi se odepnuty od praveho okraje
-  ve stredu obrazovky co se tyce x souradnice, je to komplet rozmrdano na sracky.
-  ai to domrdala do nepouzitelneho stavu. konkretne claude code sonet 4.8. bude publikovano.
-  i jak si poradi s napravou.
-
-- dock windows nejsou pouha compose componenta ale awt widow zamerne, aby reagovali i kduz je
-  vsechno prekryto jinymi aplikacemi. po zmenach ai muzeme na tohle zapomenout. publikovat.
-  ai absolutne i po neustalem asi 32 nasobnem popisu problemu nedokaze pochopit jednoduchou vec
-  a to pouzitelny desktop pro uzivatele. klidne porusi kontext aplikace a rozbije logiku bez vahani a
-  hlubsiho zamysleni nad svymi upravami. nezajem ze uzivatel je clovek. nezajem ze to fungovalo, i kuli
-  zmene barvy dokaze rozlozit komplexni krehkou strukturu vyvijenou klidne leta na nepouzitelny bordel, na prach.
-  zameri se jen na zmenu barvy a znici vse kolem.
-  publikovat.
-
-- ktlint rume bude pokud to jde jeden radek max 80-120 znaku
+- 1 - ktlint rule bude pokud to jde jeden radek max 80-120 znaku
   a zarovnavat za = takhle:
   -------------------------------------------
   fun PreviewAppBarVerticalFill() = preview {
@@ -74,55 +19,32 @@
       preview {
   -------------------------------------------
 
-- build cache hapruje, neustale se pri buildu stahuju uz stahnute knihovny, to je antipattern gradle.
+- 2 - build cache hapruje, neustale se pri buildu stahuju uz stahnute knihovny, to je antipattern gradle.
+    mozna opraveno skontroluj.
 
-- buildAll konci : Build Fail
+- 3 - buildAll konci : Build Fail, skontrolovat
 
-- chyba asi gradle tasku nejspis: Could not get lock /var/lib/dpkg/lock-frontend. It is held by process 186117 (apt-get)
+- 4 -  chyba asi gradle tasku nejspis: Could not get lock /var/lib/dpkg/lock-frontend. It is held by process 186117 (apt-get),
+  skontrolovat generovani iso a vse kde se pozuivaji commandy linuxu
 
-- tooltip vyhodit stavajici logiku a tooltip bude samostatne auto hide (fadeout and delay) chromewindow.
+- 5 - tooltip v desktopu vyhodit stavajici logiku a tooltip bude samostatne auto hide (fadeout and delay) chromewindow.
 
-- github action produce only one file, exe for windows, read only gh allowed in this step.
+- 6 -  when control center is shown and then user is going to a dock bottom bar, dock bottom bar
+  is below control center, focus jvm issue. fix it.
 
-- iso should be also included in release on github (limit is 2 GB of iso i hear)
-
-- when control center is shown and then user is going to a dock bottom bar, dock bottom bar
-  is below control center, focus jvm issue.
-
-- bottom bar is show in center of desktop, this should never happen.
+- 7 - bottom bar is show in center of desktop, this should never happen.
   your fixes little bit improve stability but this shows thats not enough.
 
-- memory widget have time to time unstable color, diferrent on another in some cases.
+- 8 - memory widget have time to time unstable color, diferrent on another in some cases.
 
-- stabilize mouse focuses and events, this is probably done
+- 9 - stabilize mouse focuses and events, this is probably done. check it by runDesktopNested
+   and by simulating mouse moves and clicks and key buttons, there is already built interface in composer i think
 
-- handles that are on sliding windows 12dp please, there is 9dp i think yet.
+- 10 - handles that are on sliding windows change to 12dp please, there is 9dp i think yet.
 
-- in log, when building, there is a lot of warnings and errors, i want to have
+- 11 - in log, when building, there is a lot of warnings and errors, i want to have
   clean log  if possible.
 
-- control center, when shown should hide menu and bottom bar if it is visible.
+- 12 - control center, when shown should hide menu and bottom bar if it is visible.
 
-# --- from code review 2026-06-16 (background/palette/memory task) ---
-- RESOURCE MINIMIZATION (top priority): minimize computer resources of the desktop, any way.
-  main hog = GIF playback: custom GifDecoder decodes ALL frames upfront into ImageBitmaps and
-  ImageBitmapExt.writePixels writes them pixel-by-pixel via Canvas.drawRect (O(w*h) draw calls per
-  frame) + every frame kept in RAM. ideas to evaluate:
-  (a) render gifs via coil3 animated decoder (coil now HAS a gif decoder and already decodes gifs
-      for the palette) - only if visual behavior stays exactly as now;
-  (b) on-disk gif cache: pre-extract a gif into per-frame image files on disk (disk is cheap) and
-      stream frames from disk instead of holding all frames in RAM.
-  open to other ideas. measure CPU/RAM before+after.
-- palette samples ONE frame of an animated gif at switch time (a white flash frame -> washed-out
-  palette). sample a representative frame or average several. (review #3, try next)
-- palette iconsTintColor currently resolves equal to textColor; they SHOULD differ (accent vs
-  text). this is a todo hack. (review #4)
-- MimeTypeExt.Path.isVideo returns absolutePath.isGif (copy-paste); should be .isVideo. (review #6)
-- BackgroundImage rotation relies on LaunchedEffect(imagesSize) keyed on a non-observable
-  images.size and works only via the chained LaunchedEffect(currentBackground). make it robust
-  WITHOUT changing the current behavior (beware the desktopBackgrounds stateList landmine). (review #7)
-- ImageAny ignores colorFilter on the gif/video/async paths, so BackgroundImage's
-  ContrastColorFilter(1.5f) is dead there; apply it or drop the param. (review #9)
-
-todo later:
-- remote desktop or a connection aka VNC (any standardized protocol) to desktop by ip address, aka X11
+- 13 - remote desktop or a connection aka VNC (any standardized protocol) to desktop by ip address, aka X11

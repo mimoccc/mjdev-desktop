@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import org.mjdev.desktop.components.controlcenter.pages.about.AboutPage
 import org.mjdev.desktop.components.controlcenter.pages.ai.AIPage
 import org.mjdev.desktop.components.controlcenter.pages.bluetooth.BluetoothSettingsPage
+import org.mjdev.desktop.components.controlcenter.pages.desktop.DesktopSettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.devices.DevicesPage
 import org.mjdev.desktop.components.controlcenter.pages.display.DisplaySettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.ethernet.EthSettingsPage
@@ -54,6 +55,7 @@ abstract class IDesktopContext : IDisposable {
             SoundSettingsPage(this),
             BluetoothSettingsPage(this),
             DisplaySettingsPage(this),
+            DesktopSettingsPage(this),
             DevicesPage(this),
             RemotesSettingsPage(this),
             ThemeSettingsPage(this),
