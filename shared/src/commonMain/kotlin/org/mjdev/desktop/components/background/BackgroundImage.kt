@@ -36,7 +36,7 @@ fun BackgroundImage(
     fadeInDuration: Long = 60000L / 8,
     fadeOutDuration: Long = 60000L / 4,
     backgroundColor: Color = Color.SuperDarkGray,
-    images: MutableList<Any> = mutableListOf(),
+    images: List<Any> = listOf(),
     onError: (Throwable) -> Unit = { e -> Log.e(e) },
     onChange: (bck: Any?) -> Unit = {},
 ) = withDesktopContext {

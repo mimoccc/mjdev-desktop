@@ -7,9 +7,6 @@ import kotlinx.coroutines.launch
 import org.mjdev.desktop.helpers.compose.ImagesProvider
 import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
-import org.mjdev.desktop.providers.background.ProviderErzvo
-import org.mjdev.desktop.providers.background.ProviderLocal
-import org.mjdev.desktop.providers.background.ProviderSmug
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class DesktopConfig(
@@ -43,26 +40,33 @@ class DesktopConfig(
             }
         }
 
-    private fun addBackground(provider: ImagesProvider) =
+    fun addBackground(provider: ImagesProvider) =
         addBackground {
             provider.get()
         }
 
+    /** Clears the current wallpapers and re-populates them from the given [providers]. */
+    fun reloadBackgrounds(providers: List<ImagesProvider>) {
+        desktopBackgrounds.clear()
+        providers.forEach { provider -> addBackground(provider) }
+    }
+
     companion object {
         val configCache = mutableMapOf<String, DesktopConfig>()
 
-        private val DEFAULT =
-            DesktopConfig {
-//            addBackground(ProviderSmug())
-//            addBackground(ProviderErzvo())
-            }
+        private val DEFAULT = DesktopConfig {}
 
-        // todo load from user settings
+        // Loads the per-user desktop config from ~/.mjdev/desktop/config.json (defaults on first
+        // run), applies the persisted tunables to the theme and populates the enabled background
+        // providers.
         fun load(user: IUser): DesktopConfig =
             configCache[user.userName] ?: DEFAULT.apply {
-                theme = ITheme.load(user)
+                val themeForUser = ITheme.load(user)
+                val configData = DesktopConfigStore(user).load()
+                configData.applyTo(themeForUser)
+                theme = themeForUser
                 configCache[user.userName] = this
-                addBackground(ProviderLocal(user))
+                reloadBackgrounds(configData.buildProviders(user))
             }
     }
 }
