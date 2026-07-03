@@ -127,10 +127,6 @@ fun ControlCenterWindow(
         )
         LaunchedEffect(position, size) {
             controlCenterState.size = size
-            // Deterministic right-edge anchor — same hardening as the dock: re-pin the
-            // absolute position after every size change so moveBy drift can never leave
-            // the panel away from the screen edge.
-            controlCenterState.position = position
         }
     }
 }
