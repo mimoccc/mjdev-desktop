@@ -290,10 +290,12 @@ EOF
 echo ">> grub-mkrescue -> $OUT"
 grub-mkrescue -o "$OUT" "$ISO"
 
-# we run as root (pkexec/sudo); hand the iso back to the invoking user so it isn't
-# a root-owned file sitting in releases/. PKEXEC_UID (pkexec) / SUDO_UID (sudo).
+# we run as root (pkexec/sudo); hand the iso AND its directory back to the invoking
+# user — mkdir -p above may have created releases/ as root, which then blocks the
+# user's collectReleases ("Could not copy ... Operace zamítnuta") on the next build.
+# PKEXEC_UID (pkexec) / SUDO_UID (sudo).
 OWNER_UID="${PKEXEC_UID:-${SUDO_UID:-}}"
-[ -n "$OWNER_UID" ] && chown "$OWNER_UID":"$OWNER_UID" "$OUT" 2>/dev/null || true
+[ -n "$OWNER_UID" ] && chown "$OWNER_UID":"$OWNER_UID" "$OUT" "$(dirname "$OUT")" 2>/dev/null || true
 echo ">> done: $OUT ($(du -h "$OUT" | cut -f1))"
 
 # the iso is built — drop the (root-owned) scratch rootfs so it doesn't pile up
