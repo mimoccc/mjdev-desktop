@@ -36,10 +36,8 @@ import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.remem
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.orElse
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.extensions.Modifier.onLeftClick
 import org.mjdev.desktop.extensions.Modifier.onMouseEnter
 import org.mjdev.desktop.extensions.Modifier.onMousePress
-import org.mjdev.desktop.extensions.Modifier.onRightClick
 import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
 import org.mjdev.desktop.extensions.MutableStateExt.rememberState
@@ -122,26 +120,19 @@ fun ControlCenter(
                                             .background(
                                                 color = if (pagerState.value == idx) iconsTintColor else borderColor,
                                                 shape = RoundedCornerShape(8.dp),
-                                            ).pointerInput(Unit) {
+                                            ).onMouseEnter {
+                                                onTooltip(page.name)
+                                            }.pointerInput(idx) {
+                                                // Single canonical tap detector. A second
+                                                // competing onMousePress handler here used to eat
+                                                // taps, so switching a tab took many clicks.
                                                 detectTapGestures(
-                                                    onTap = {
+                                                    onTap = { pagerState.value = idx },
+                                                    onLongPress = {
                                                         pagerState.value = idx
+                                                        onContextMenuClick()
                                                     },
                                                 )
-                                            }.onMouseEnter {
-                                                onTooltip(page.name)
-                                            }.onMousePress {
-                                                onLeftClick {
-                                                    runAsync {
-                                                        pagerState.value = idx
-                                                    }
-                                                }
-                                                onRightClick {
-                                                    runAsync {
-                                                        pagerState.value = idx
-                                                    }
-                                                    onContextMenuClick()
-                                                }
                                             },
                                     imageVector = page.icon,
                                     contentDescription = "",
