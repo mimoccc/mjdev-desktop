@@ -47,6 +47,7 @@ fun DockBarWindow(
     showMenuIcon: Boolean = true,
     panelState: ChromeWindowState = rememberChromeWindowState(),
     menuState: ChromeWindowState = rememberChromeWindowState(),
+    controlCenterState: ChromeWindowState = rememberChromeWindowState(),
     onMenuIconClicked: () -> Unit = {
         runAsync {
             menuState.showOrFocus()
@@ -107,10 +108,18 @@ fun DockBarWindow(
         size,
         position,
     ) {
+        // While the control center is open the reveal hotspot stops at its left edge —
+        // otherwise touching the bottom of the control center itself would close it and
+        // pop the dock instead.
+        val revealWidth = if (controlCenterState.isVisible) {
+            (containerSize.width - controlCenterState.size.width).coerceAtLeast(0.dp)
+        } else {
+            containerSize.width
+        }
         MouseRange(
             x = 0.dp,
             y = containerSize.height - controlCenterDividerWidth,
-            width = containerSize.width,
+            width = revealWidth,
             height = size.height,
         )
     }
@@ -165,6 +174,13 @@ fun DockBarWindow(
                     // show() only on a real reveal (not showOrFocus): re-focusing an already-open
                     // dock churns focus-follows-mouse and flip-flops the size, drifting geometry.
                     if (menuState.isNotVisible && panelState.isNotVisible) {
+                        // Revealing the dock while the control center is open would put the dock
+                        // BELOW the control center window (JVM z-order) and fight it for focus.
+                        // The two never show together: a deliberate reveal closes the control
+                        // center first (same as clicking outside it).
+                        if (controlCenterState.isVisible) {
+                            controlCenterState.hide()
+                        }
                         panelState.show()
                     }
                 }

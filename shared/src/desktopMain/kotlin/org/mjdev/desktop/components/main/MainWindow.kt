@@ -144,6 +144,7 @@ fun MainWindow() = withDesktopContext {
         onTooltip = onTooltip,
         panelState = panelState,
         menuState = menuState,
+        controlCenterState = controlCenterState,
         // Autohide is driven purely by pointer-leave (see DockBarWindow.onGlobalMouse), NOT by
         // focus. Hiding on focus-loss flooded hide() under focus-follows-mouse (every pointer
         // flicker over a non-focused window fired a hide) and flip-flopped the dock 16<->80.
