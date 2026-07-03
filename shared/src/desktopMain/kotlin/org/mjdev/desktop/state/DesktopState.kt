@@ -38,6 +38,7 @@ class DesktopState(
         val window: ChromeWindowState,
         val bounds: () -> ScreenRect,
         val revealHotspot: () -> ScreenRect?,
+        val focusOnShow: Boolean,
         val onApply: (visible: Boolean) -> Unit,
     )
 
@@ -56,9 +57,10 @@ class DesktopState(
         window: ChromeWindowState,
         bounds: () -> ScreenRect,
         revealHotspot: () -> ScreenRect? = { null },
+        focusOnShow: Boolean = false,
         onApply: (visible: Boolean) -> Unit = {},
     ) {
-        surfaces[kind] = Surface(window, bounds, revealHotspot, onApply)
+        surfaces[kind] = Surface(window, bounds, revealHotspot, focusOnShow, onApply)
         reconcile()
     }
 
@@ -164,7 +166,14 @@ class DesktopState(
     ) {
         val surface = surfaces[kind] ?: return
         if (surface.window.isVisible != visible) {
-            if (visible) surface.window.show() else surface.window.hide(force = true)
+            if (visible) {
+                surface.window.show()
+                // grab keyboard focus on open so Escape reaches it right away (control center /
+                // menu). The bar never steals focus.
+                if (surface.focusOnShow) surface.window.focus()
+            } else {
+                surface.window.hide(force = true)
+            }
         }
         surface.onApply(visible)
     }

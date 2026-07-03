@@ -110,6 +110,7 @@ fun MainWindow() = withDesktopContext {
             kind = SurfaceKind.Menu,
             window = menuState,
             bounds = { rectOf(menuState) },
+            focusOnShow = true,
             onApply = { visible -> appsMenuState.isVisible = visible },
         )
         desktopState.register(
@@ -118,6 +119,7 @@ fun MainWindow() = withDesktopContext {
             bounds = { rectOf(controlCenterState) },
             // right reveal strip — hovering it opens the control center
             revealHotspot = { DesktopState.ScreenRect(cw - edge, 0.0, cw, ch) },
+            focusOnShow = true,
         )
         onDispose { }
     }
