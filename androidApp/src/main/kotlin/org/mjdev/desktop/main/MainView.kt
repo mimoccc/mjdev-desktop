@@ -70,7 +70,6 @@ fun MainView(onBackgroundChange: (Color) -> Unit = {}) =
             portrait = {
                 // todo menu & etc
                 Desktop(
-                    tooltipState = tooltipState,
                     onTooltip = onTooltip,
                     padding =
                         PaddingValues(
@@ -103,7 +102,6 @@ fun MainView(onBackgroundChange: (Color) -> Unit = {}) =
                     contentAlignment = Alignment.Center,
                 ) {
                     Desktop(
-                        tooltipState = tooltipState,
                         onTooltip = onTooltip,
                         padding =
                             PaddingValues(

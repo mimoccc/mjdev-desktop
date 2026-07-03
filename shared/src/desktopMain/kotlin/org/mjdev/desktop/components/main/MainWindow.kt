@@ -23,6 +23,7 @@ import org.mjdev.desktop.components.info.InfoWindow
 import org.mjdev.desktop.components.installer.InstallerWindow
 import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import org.mjdev.desktop.components.tooltip.TooltipState
+import org.mjdev.desktop.components.tooltip.TooltipWindow
 import org.mjdev.desktop.components.tooltip.rememberTooltipState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.isDesign
@@ -90,7 +91,6 @@ fun MainWindow() = withDesktopContext {
         menuState = menuState,
     ) {
         Desktop(
-            tooltipState = tooltipState,
             onTooltip = onTooltip,
             padding =
                 PaddingValues(
@@ -173,6 +173,10 @@ fun MainWindow() = withDesktopContext {
                 }
             }
         },
+    )
+    // Standalone auto-hide tooltip window — every onTooltip above lands here.
+    TooltipWindow(
+        tooltipState = tooltipState,
     )
     GreeterWindow()
     InfoWindow(

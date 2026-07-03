@@ -12,17 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.adb.AdbScreenMirror
 import org.mjdev.desktop.components.background.BackgroundImage
 import org.mjdev.desktop.components.file.FolderView
-import org.mjdev.desktop.components.tooltip.Tooltip
-import org.mjdev.desktop.components.tooltip.TooltipArea
-import org.mjdev.desktop.components.tooltip.TooltipPlacement
-import org.mjdev.desktop.components.tooltip.TooltipState
-import org.mjdev.desktop.components.tooltip.rememberTooltipState
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Modifier.onLeftClick
@@ -32,7 +26,6 @@ import org.mjdev.desktop.extensions.Modifier.onRightClick
 @Suppress("FunctionName", "UNUSED_PARAMETER")
 @Composable
 fun Desktop(
-    tooltipState: TooltipState = rememberTooltipState(),
     padding: PaddingValues = PaddingValues(),
     onTooltip: (item: Any?) -> Unit = {},
     onLeftMouseClick: () -> Unit = {},
@@ -41,19 +34,11 @@ fun Desktop(
     // todo
     widgets: @Composable () -> Unit = {},
 ) = withDesktopContext {
-    TooltipArea(
+    // Tooltips are no longer rendered here — components push into TooltipState via
+    // onTooltip and the desktop shell shows them in a standalone auto-hide window
+    // (see desktopMain TooltipWindow).
+    Box(
         modifier = Modifier.fillMaxSize(),
-        delayMillis = 2000,
-        tooltipPlacement =
-            TooltipPlacement.CursorPoint(
-                alignment = Alignment.TopStart,
-                offset = DpOffset(0.dp, 16.dp),
-            ),
-        tooltip = {
-            Tooltip(
-                tooltipState = tooltipState,
-            )
-        },
     ) {
         BackgroundImage(
             modifier =
