@@ -32,19 +32,11 @@ fun DonutChart(
 ) {
     var needRefresh by remember { mutableStateOf(0L) }
     val textStyle = TextStyle(color = textColor)
-    val data by remember(
-        title,
-        textColor,
-        outerCircularColor,
-        innerCircularColor,
-        ratioLineColor,
-        animationDuration,
-        refreshTimeout,
-        animation,
-        legendPosition,
-        dataHandler,
-        needRefresh,
-    ) { mutableStateOf(dataHandler()) }
+    // derivedStateOf tracks the compose state read INSIDE dataHandler (e.g. the wallpaper
+    // palette colors of MemoryChart slices). With plain remember(keys) the slices only
+    // recoloured on the next refreshTimeout tick, so for seconds the chart mixed OLD slice
+    // colors with NEW ring/text colors — the "randomly different widget color" bug.
+    val data by remember(dataHandler, needRefresh) { derivedStateOf { dataHandler() } }
     DonutChart(
         modifier = modifier,
         pieChartData = data,

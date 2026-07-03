@@ -10,6 +10,7 @@ package org.mjdev.desktop.managers.palette
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import kotlinx.coroutines.CoroutineScope
@@ -134,8 +135,12 @@ class Palette(
                     } else {
                         background.lighter(textFactor)
                     }
-                backgroundColorState.value = background
-                textColorState.value = text
+                // One atomic snapshot: writing the two states separately let the UI recompose
+                // between them (new background + stale text) — a transient color mismatch.
+                Snapshot.withMutableSnapshot {
+                    backgroundColorState.value = background
+                    textColorState.value = text
+                }
             }
             createFromPalette()
         }
