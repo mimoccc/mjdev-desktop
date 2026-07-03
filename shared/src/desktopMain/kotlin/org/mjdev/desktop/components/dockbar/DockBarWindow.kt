@@ -227,6 +227,14 @@ fun DockBarWindow(
     }
     LaunchedEffect(size, position) {
         panelState.size = size
+        // Deterministic bottom anchor: the size setter's relative moveBy dance can drift
+        // when show/hide flips interleave (the bar then lands mid-screen). Re-pinning the
+        // absolute position after every size change makes the final geometry always
+        // (0, containerH - height), whatever the intermediate moves did.
+        panelState.position = DpOffset(
+            0.dp,
+            containerSize.height - size.height,
+        )
     }
 }
 
