@@ -106,14 +106,14 @@ class Theme(
                 backgroundColor = Color.SuperDarkGray,
                 backgroundRotationDelay = 60000,
                 panelLocation = PanelLocation.Bottom,
-                panelDividerWidth = 16.dp,
+                panelDividerWidth = 12.dp,
                 panelContentPadding = 4.dp,
                 panelHideDelay = 2000L,
                 controlCenterLocation = ControlCenterLocation.Right,
                 controlPanelHideDelay = 2000L,
                 controlCenterExpandedWidthPercent = 25,
                 controlCenterDividerColor = Color.SuperDarkGray,
-                controlCenterDividerWidth = 4.dp,
+                controlCenterDividerWidth = 12.dp,
                 controlCenterIconColor = Color.White,
                 controlCenterIconSize = DpSize(32.dp, 32.dp),
                 controlCenterBackgroundAlpha = 0.6f,
@@ -123,9 +123,8 @@ class Theme(
             )
 
         // todo load from user settings
-        fun load(user: IUser): Theme =
-            themeCache[user.userName] ?: DEFAULT.apply {
-                themeCache[user.userName] = this
-            }
+        fun load(user: IUser): Theme = themeCache[user.userName] ?: DEFAULT.apply {
+            themeCache[user.userName] = this
+        }
     }
 }

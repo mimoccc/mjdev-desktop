@@ -39,14 +39,14 @@ interface ITheme : IDisposable {
                 override var backgroundColor: Color = Color.SuperDarkGray
                 override var backgroundRotationDelay: Long = 60000
                 override var panelLocation: PanelLocation = PanelLocation.Bottom
-                override var panelDividerWidth: Dp = 2.dp
+                override var panelDividerWidth: Dp = 12.dp
                 override var panelContentPadding: Dp = 8.dp
                 override var panelHideDelay: Long = 0
                 override var controlCenterLocation: ControlCenterLocation = ControlCenterLocation.Right
                 override var controlPanelHideDelay: Long = 10000
                 override var controlCenterExpandedWidthPercent: Int = 35
                 override var controlCenterDividerColor: Color = Color.SuperDarkGray
-                override var controlCenterDividerWidth: Dp = 2.dp
+                override var controlCenterDividerWidth: Dp = 12.dp
                 override var controlCenterIconColor: Color = Color.White
                 override var controlCenterIconSize: DpSize = DpSize(32.dp, 32.dp)
                 override var controlCenterBackgroundAlpha: Float = 0.4f

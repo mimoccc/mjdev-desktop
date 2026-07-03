@@ -24,14 +24,14 @@ data class DesktopConfigData(
     var backgroundRotationDelay: Long = 60_000L,
     // panel
     var panelLocation: String = PanelLocation.Bottom.name,
-    var panelDividerWidth: Float = 16f,
+    var panelDividerWidth: Float = 12f,
     var panelContentPadding: Float = 4f,
     var panelHideDelay: Long = 2_000L,
     // control center
     var controlCenterLocation: String = ControlCenterLocation.Right.name,
     var controlPanelHideDelay: Long = 2_000L,
     var controlCenterExpandedWidthPercent: Int = 25,
-    var controlCenterDividerWidth: Float = 4f,
+    var controlCenterDividerWidth: Float = 12f,
     var controlCenterIconSize: Float = 32f,
     var controlCenterBackgroundAlpha: Float = 0.6f,
     // app menu
@@ -63,32 +63,32 @@ data class DesktopConfigData(
     /** Builds the enabled background providers for this config. */
     fun buildProviders(user: IUser): List<ImagesProvider> = providers.mapNotNull { it.build(user) }
 
-    private inline fun <reified T : Enum<T>> String.toEnum(default: T): T = enumValues<T>().firstOrNull { it.name == this } ?: default
+    private inline fun <reified T : Enum<T>> String.toEnum(default: T): T =
+        enumValues<T>().firstOrNull { it.name == this } ?: default
 
     companion object {
         /** Snapshots the current live [theme] into a persistable config, keeping [providers]. */
         fun fromTheme(
             theme: ITheme,
             providers: MutableList<ProviderConfig> = ProviderConfig.defaults(),
-        ): DesktopConfigData =
-            DesktopConfigData(
-                backgroundColorArgb = theme.backgroundColor.toArgbInt(),
-                backgroundRotationDelay = theme.backgroundRotationDelay,
-                panelLocation = theme.panelLocation.name,
-                panelDividerWidth = theme.panelDividerWidth.value,
-                panelContentPadding = theme.panelContentPadding.value,
-                panelHideDelay = theme.panelHideDelay,
-                controlCenterLocation = theme.controlCenterLocation.name,
-                controlPanelHideDelay = theme.controlPanelHideDelay,
-                controlCenterExpandedWidthPercent = theme.controlCenterExpandedWidthPercent,
-                controlCenterDividerWidth = theme.controlCenterDividerWidth.value,
-                controlCenterIconSize = theme.controlCenterIconSize.width.value,
-                controlCenterBackgroundAlpha = theme.controlCenterBackgroundAlpha,
-                appMenuMinWidthRatio = theme.appMenuMinWidthRatio,
-                appMenuMinHeightRatio = theme.appMenuMinHeightRatio,
-                appMenuOuterPadding = theme.appMenuOuterPadding.value,
-                providers = providers,
-            )
+        ): DesktopConfigData = DesktopConfigData(
+            backgroundColorArgb = theme.backgroundColor.toArgbInt(),
+            backgroundRotationDelay = theme.backgroundRotationDelay,
+            panelLocation = theme.panelLocation.name,
+            panelDividerWidth = theme.panelDividerWidth.value,
+            panelContentPadding = theme.panelContentPadding.value,
+            panelHideDelay = theme.panelHideDelay,
+            controlCenterLocation = theme.controlCenterLocation.name,
+            controlPanelHideDelay = theme.controlPanelHideDelay,
+            controlCenterExpandedWidthPercent = theme.controlCenterExpandedWidthPercent,
+            controlCenterDividerWidth = theme.controlCenterDividerWidth.value,
+            controlCenterIconSize = theme.controlCenterIconSize.width.value,
+            controlCenterBackgroundAlpha = theme.controlCenterBackgroundAlpha,
+            appMenuMinWidthRatio = theme.appMenuMinWidthRatio,
+            appMenuMinHeightRatio = theme.appMenuMinHeightRatio,
+            appMenuOuterPadding = theme.appMenuOuterPadding.value,
+            providers = providers,
+        )
 
         private fun Color.toArgbInt(): Int {
             val a = (alpha * 255f).roundToInt() and 0xFF
