@@ -20,12 +20,13 @@ object DesktopPolicy {
         val controlCenter = input.controlCenterOpen
         // rule 3: the control center takes over — the menu steps aside while it is open
         val menu = input.menuOpen && !controlCenter
-        val bar = when {
-            controlCenter -> false // rule 3: control center hides the bar
-            menu -> true // rule 2: an open menu keeps the bar up
-            !input.barOverlapped -> true // rules 1 & 4: nothing covers it -> visible
-            else -> input.pointerInBarRevealZone // rule 1: covered -> reveal only on hover
-        }
+        val bar =
+            when {
+                controlCenter -> false // rule 3: control center hides the bar
+                menu -> true // rule 2: an open menu keeps the bar up
+                !input.barOverlapped -> true // rules 1 & 4: nothing covers it -> visible
+                else -> input.pointerInBarRevealZone // rule 1: covered -> reveal only on hover
+            }
         return DesktopDecision(
             bar = bar,
             menu = menu,

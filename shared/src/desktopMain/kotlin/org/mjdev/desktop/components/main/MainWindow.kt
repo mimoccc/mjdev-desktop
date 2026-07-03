@@ -26,16 +26,16 @@ import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.remem
 import org.mjdev.desktop.components.tooltip.TooltipState
 import org.mjdev.desktop.components.tooltip.TooltipWindow
 import org.mjdev.desktop.components.tooltip.rememberTooltipState
-import org.mjdev.desktop.state.DesktopState
-import org.mjdev.desktop.state.DesktopStateDriver
-import org.mjdev.desktop.data.PanelLocation
-import org.mjdev.desktop.state.SurfaceKind
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.mjdev.desktop.data.PanelLocation
 import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 import org.mjdev.desktop.helpers.system.shell.Shell
 import org.mjdev.desktop.log.Log
+import org.mjdev.desktop.state.DesktopState
+import org.mjdev.desktop.state.DesktopStateDriver
+import org.mjdev.desktop.state.SurfaceKind
 import org.mjdev.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 import org.mjdev.desktop.windows.DesktopWindow
 
@@ -84,13 +84,17 @@ fun MainWindow() = withDesktopContext {
         val cw = containerSize.width.value.toDouble()
         val ch = containerSize.height.value.toDouble()
         val edge = controlCenterDividerWidth.value.toDouble()
-        fun rectOf(state: org.mjdev.desktop.windows.ChromeWindowState) =
-            DesktopState.ScreenRect(
-                left = state.position.x.value.toDouble(),
-                top = state.position.y.value.toDouble(),
-                right = (state.position.x + state.size.width).value.toDouble(),
-                bottom = (state.position.y + state.size.height).value.toDouble(),
-            )
+
+        fun rectOf(state: org.mjdev.desktop.windows.ChromeWindowState) = DesktopState.ScreenRect(
+            left =
+                state.position.x.value
+                    .toDouble(),
+            top =
+                state.position.y.value
+                    .toDouble(),
+            right = (state.position.x + state.size.width).value.toDouble(),
+            bottom = (state.position.y + state.size.height).value.toDouble(),
+        )
         desktopState.register(
             kind = SurfaceKind.Bar,
             window = panelState,
