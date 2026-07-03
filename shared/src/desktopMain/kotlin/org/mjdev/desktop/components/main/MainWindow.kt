@@ -74,9 +74,11 @@ fun MainWindow() = withDesktopContext {
     }
     // When the control center opens it covers the desktop, so the dock bar and any open menu
     // step aside (this also frees focus so the control center can actually take it).
+    // The dock is dropped IMMEDIATELY (isVisible, not hide()) — hide() honours the multi-second
+    // panelHideDelay, which left the dock lingering *below* the control center for seconds.
     LaunchedEffect(controlCenterState.isVisible) {
         if (controlCenterState.isVisible) {
-            panelState.hide()
+            panelState.isVisible = false
             if (menuState.isVisible) {
                 menuState.hide()
             }
