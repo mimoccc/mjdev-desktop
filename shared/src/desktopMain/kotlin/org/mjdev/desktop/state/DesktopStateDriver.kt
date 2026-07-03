@@ -30,7 +30,8 @@ fun DesktopStateDriver(desktopState: DesktopState) {
         val clicks = GlobalClickListener { x, y, _ -> desktopState.onClick(x, y) }
         val keys =
             GlobalKeyListener { event ->
-                if (event.id != KeyEvent.KEY_RELEASED) return@GlobalKeyListener
+                // act on press (fires first; dismiss/toggle are idempotent so a duplicate is fine)
+                if (event.id != KeyEvent.KEY_PRESSED) return@GlobalKeyListener
                 when (event.keyCode) {
                     // Escape closes whatever is open (menu or control center); the bar stays if
                     // nothing overlaps it — DesktopPolicy works that out.

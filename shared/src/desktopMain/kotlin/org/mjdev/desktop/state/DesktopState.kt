@@ -51,6 +51,7 @@ class DesktopState(
     // facts about the world
     private var barOverlapped = false
     private var pointerInBarZone = false
+    private var pointerWasInCcHotspot = false
 
     fun register(
         kind: SurfaceKind,
@@ -73,10 +74,13 @@ class DesktopState(
     ) {
         val px = x.toDouble()
         val py = y.toDouble()
-        // control center opens when the pointer reaches its reveal edge (stays open until dismissed)
-        surfaces[SurfaceKind.ControlCenter]?.revealHotspot?.invoke()?.let { hotspot ->
-            if (hotspot.contains(px, py)) controlCenterOpen = true
-        }
+        // control center opens on a fresh ENTER into its reveal edge (edge-triggered). Level-
+        // triggering re-opened it right after a dismiss while the pointer sat in the edge strip;
+        // now the pointer must leave and re-enter to reveal again.
+        val inCcHotspot =
+            surfaces[SurfaceKind.ControlCenter]?.revealHotspot?.invoke()?.contains(px, py) == true
+        if (inCcHotspot && !pointerWasInCcHotspot) controlCenterOpen = true
+        pointerWasInCcHotspot = inCcHotspot
         // the bar's zone = the bar itself plus its bottom reveal strip; only matters when overlapped
         pointerInBarZone =
             surfaces[SurfaceKind.Bar]?.let { bar ->
