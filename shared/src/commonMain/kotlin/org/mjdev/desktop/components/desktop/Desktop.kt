@@ -120,7 +120,6 @@ fun Desktop(
 // todo
 @Preview
 @Composable
-fun PreviewDesktop() =
-    preview {
-        Desktop()
-    }
+fun PreviewDesktop() = preview {
+    Desktop()
+}

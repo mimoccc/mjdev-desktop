@@ -153,13 +153,12 @@ class Palette(
         val leftBottomDominantColor: Color,
         val rightBottomDominantColor: Color,
     ) {
-        fun toList(): List<Color> =
-            listOf(
-                leftTopDominantColor,
-                rightTopDominantColor,
-                leftBottomDominantColor,
-                rightBottomDominantColor,
-            )
+        fun toList(): List<Color> = listOf(
+            leftTopDominantColor,
+            rightTopDominantColor,
+            leftBottomDominantColor,
+            rightBottomDominantColor,
+        )
 
         val darkestColor: Color get() = toList().minBy { c -> c.nonAlphaValue }
         val lightestColor: Color get() = toList().maxBy { c -> c.nonAlphaValue }

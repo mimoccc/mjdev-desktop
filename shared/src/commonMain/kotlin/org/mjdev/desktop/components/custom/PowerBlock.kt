@@ -97,7 +97,6 @@ fun PowerBlock(
 
 @Preview
 @Composable
-fun PreviewPowerBlock() =
-    preview {
-        PowerBlock()
-    }
+fun PreviewPowerBlock() = preview {
+    PowerBlock()
+}

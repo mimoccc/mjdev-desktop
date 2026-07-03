@@ -68,7 +68,6 @@ fun QrCodeView(
 
 @Preview
 @Composable
-fun PreviewQrCodeView() =
-    preview(320, 320) {
-        QrCodeView()
-    }
+fun PreviewQrCodeView() = preview(320, 320) {
+    QrCodeView()
+}

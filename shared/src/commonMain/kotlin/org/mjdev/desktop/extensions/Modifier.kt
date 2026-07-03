@@ -46,33 +46,31 @@ object Modifier {
         condition: Boolean,
         onFalse: (Modifier.() -> Modifier)? = null,
         onTrue: Modifier.() -> Modifier,
-    ): Modifier =
-        if (condition) {
-            then(onTrue(Modifier))
-        } else if (onFalse != null) {
-            then(onFalse(Modifier))
-        } else {
-            this
-        }
+    ): Modifier = if (condition) {
+        then(onTrue(Modifier))
+    } else if (onFalse != null) {
+        then(onFalse(Modifier))
+    } else {
+        this
+    }
 
     fun Modifier.onKey(
         keyCode: Key,
         action: KeyEventType = KeyEventType.KeyDown,
         block: () -> Unit,
-    ): Modifier =
-        this then
-            onKeyEvent { ev ->
-                if (ev.type == action) {
-                    if (ev.key == keyCode) {
-                        block()
-                        true
-                    } else {
-                        false
-                    }
+    ): Modifier = this then
+        onKeyEvent { ev ->
+            if (ev.type == action) {
+                if (ev.key == keyCode) {
+                    block()
+                    true
                 } else {
                     false
                 }
+            } else {
+                false
             }
+        }
 
     @Composable
     fun Modifier.scaleOnPress(
@@ -131,54 +129,50 @@ object Modifier {
         eventType: PointerEventType,
         pass: PointerEventPass = PointerEventPass.Main,
         onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit,
-    ): Modifier =
-        composed {
-            val currentEventType by rememberUpdatedState(eventType)
-            val currentOnEvent by rememberUpdatedState(onEvent)
-            pointerInput(pass) {
-                awaitPointerEventScope {
-                    while (true) {
-                        val event = awaitPointerEvent(pass)
-                        if (event.type == currentEventType) {
-                            currentOnEvent(event)
-                        }
+    ): Modifier = composed {
+        val currentEventType by rememberUpdatedState(eventType)
+        val currentOnEvent by rememberUpdatedState(onEvent)
+        pointerInput(pass) {
+            awaitPointerEventScope {
+                while (true) {
+                    val event = awaitPointerEvent(pass)
+                    if (event.type == currentEventType) {
+                        currentOnEvent(event)
                     }
                 }
             }
         }
+    }
 
     @Composable
     fun Modifier.onMouseEnter(
         pass: PointerEventPass = PointerEventPass.Main,
         onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit,
-    ): Modifier =
-        onPointerEvent(
-            eventType = PointerEventType.Enter,
-            pass = pass,
-            onEvent = onEvent,
-        )
+    ): Modifier = onPointerEvent(
+        eventType = PointerEventType.Enter,
+        pass = pass,
+        onEvent = onEvent,
+    )
 
     @Composable
     fun Modifier.onMouseLeave(
         pass: PointerEventPass = PointerEventPass.Main,
         onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit,
-    ): Modifier =
-        onPointerEvent(
-            eventType = PointerEventType.Exit,
-            pass = pass,
-            onEvent = onEvent,
-        )
+    ): Modifier = onPointerEvent(
+        eventType = PointerEventType.Exit,
+        pass = pass,
+        onEvent = onEvent,
+    )
 
     @Composable
     fun Modifier.onMousePress(
         pass: PointerEventPass = PointerEventPass.Main,
         onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit,
-    ): Modifier =
-        onPointerEvent(
-            eventType = PointerEventType.Release,
-            pass = pass,
-            onEvent = onEvent,
-        )
+    ): Modifier = onPointerEvent(
+        eventType = PointerEventType.Release,
+        pass = pass,
+        onEvent = onEvent,
+    )
 
     @Composable
     fun Modifier.onMouseLongPress(

@@ -26,37 +26,33 @@ data class GridPlacedSpanAnchor(
         fun GridPlacedSpanAnchor.leftBound(
             column: Int,
             span: Int,
-        ): Int =
-            when (horizontal) {
-                Horizontal.START -> column
-                Horizontal.END -> column - span + 1
-            }
+        ): Int = when (horizontal) {
+            Horizontal.START -> column
+            Horizontal.END -> column - span + 1
+        }
 
         fun GridPlacedSpanAnchor.rightBound(
             column: Int,
             span: Int,
-        ): Int =
-            when (this.horizontal) {
-                Horizontal.START -> column + span - 1
-                Horizontal.END -> column
-            }
+        ): Int = when (this.horizontal) {
+            Horizontal.START -> column + span - 1
+            Horizontal.END -> column
+        }
 
         fun GridPlacedSpanAnchor.topBound(
             row: Int,
             span: Int,
-        ): Int =
-            when (this.vertical) {
-                Vertical.TOP -> row
-                Vertical.BOTTOM -> row - span + 1
-            }
+        ): Int = when (this.vertical) {
+            Vertical.TOP -> row
+            Vertical.BOTTOM -> row - span + 1
+        }
 
         fun GridPlacedSpanAnchor.bottomBound(
             row: Int,
             span: Int,
-        ): Int =
-            when (this.vertical) {
-                Vertical.TOP -> row + span - 1
-                Vertical.BOTTOM -> row
-            }
+        ): Int = when (this.vertical) {
+            Vertical.TOP -> row + span - 1
+            Vertical.BOTTOM -> row
+        }
     }
 }

@@ -76,9 +76,8 @@ fun SearchFieldPassive(
 
 @Preview
 @Composable
-fun PreviewSearchFieldPassive() =
-    preview {
-        SearchFieldPassive(
-            textState = mutableStateOf("test"),
-        )
-    }
+fun PreviewSearchFieldPassive() = preview {
+    SearchFieldPassive(
+        textState = mutableStateOf("test"),
+    )
+}

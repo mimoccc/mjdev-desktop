@@ -24,33 +24,32 @@ import org.mjdev.desktop.helpers.compose.Orientation
 import org.mjdev.desktop.interfaces.IUser
 
 @Composable
-fun Greeter(onLogin: (user: IUser, password: String) -> Unit = { _, _ -> }) =
-    withDesktopContext {
-        val user: IUser? by rememberState(context.currentUser)
-        var passwordVisible by rememberState(isDesign)
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .background(backgroundColor.alpha(0.9f)),
-            contentAlignment = Alignment.Center,
+fun Greeter(onLogin: (user: IUser, password: String) -> Unit = { _, _ -> }) = withDesktopContext {
+    val user: IUser? by rememberState(context.currentUser)
+    var passwordVisible by rememberState(isDesign)
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(backgroundColor.alpha(0.9f)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            modifier = Modifier.width(256.dp),
         ) {
-            Column(
-                modifier = Modifier.width(256.dp),
-            ) {
-                UserAvatar(
-                    modifier = Modifier,
-                    avatarSize = 128.dp,
-                    orientation = Orientation.Vertical,
-                    textAlign = TextAlign.Center,
-                    circleBorder = 4.dp,
-                    onUserAvatarClick = {
-                        passwordVisible = true
-                    },
-                )
-                if (passwordVisible) {
-                    PasswordTextView(
-                        modifier = Modifier.width(256.dp),
+            UserAvatar(
+                modifier = Modifier,
+                avatarSize = 128.dp,
+                orientation = Orientation.Vertical,
+                textAlign = TextAlign.Center,
+                circleBorder = 4.dp,
+                onUserAvatarClick = {
+                    passwordVisible = true
+                },
+            )
+            if (passwordVisible) {
+                PasswordTextView(
+                    modifier = Modifier.width(256.dp),
 //                        colors = TextFieldDefaults.outlinedTextFieldColors(
 //                            backgroundColor = iconsTintColor.copy(alpha = 0.1f),
 //                            textColor = iconsTintColor.copy(alpha = 0.9f),
@@ -58,20 +57,19 @@ fun Greeter(onLogin: (user: IUser, password: String) -> Unit = { _, _ -> }) =
 //                            focusedBorderColor = iconsTintColor,
 //                            unfocusedBorderColor = iconsTintColor
 //                        ),
-                        onDone = { password ->
-                            if (user != null) {
-                                onLogin(user!!, password)
-                            }
-                        },
-                    )
-                }
+                    onDone = { password ->
+                        if (user != null) {
+                            onLogin(user!!, password)
+                        }
+                    },
+                )
             }
         }
     }
+}
 
 @Preview
 @Composable
-fun PreviewGreeter() =
-    preview(320, 320) {
-        Greeter()
-    }
+fun PreviewGreeter() = preview(320, 320) {
+    Greeter()
+}

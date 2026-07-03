@@ -25,42 +25,41 @@ import org.mjdev.desktop.interfaces.IApp
 
 @Suppress("FunctionName")
 @Composable
-fun Tooltip(tooltipState: TooltipState = rememberTooltipState()) =
-    withDesktopContext {
-        if (tooltipState.value != null) {
-            Box(
-                modifier =
-                    Modifier
-                        .wrapContentSize()
-                        .background(backgroundColor, RoundedCornerShape(8.dp))
-                        .border(2.dp, borderColor, RoundedCornerShape(8.dp))
-                        .padding(8.dp),
-            ) {
-                with(tooltipState.convertedValue) {
-                    Column {
-                        if (title.isNotEmpty()) {
-                            TextAny(
-                                text = title,
-                                color = textColor,
-                                fontSize = 14.sp,
-                            )
-                        }
-                        if (description.isNotEmpty()) {
-                            TextAny(
-                                text = description,
-                                color = textColor,
-                                fontSize = 12.sp,
-                                minLines = 1,
-                                maxLines = 2,
-                            )
-                        }
+fun Tooltip(tooltipState: TooltipState = rememberTooltipState()) = withDesktopContext {
+    if (tooltipState.value != null) {
+        Box(
+            modifier =
+                Modifier
+                    .wrapContentSize()
+                    .background(backgroundColor, RoundedCornerShape(8.dp))
+                    .border(2.dp, borderColor, RoundedCornerShape(8.dp))
+                    .padding(8.dp),
+        ) {
+            with(tooltipState.convertedValue) {
+                Column {
+                    if (title.isNotEmpty()) {
+                        TextAny(
+                            text = title,
+                            color = textColor,
+                            fontSize = 14.sp,
+                        )
+                    }
+                    if (description.isNotEmpty()) {
+                        TextAny(
+                            text = description,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            minLines = 1,
+                            maxLines = 2,
+                        )
                     }
                 }
             }
-        } else {
-            Unit
         }
+    } else {
+        Unit
     }
+}
 
 class TooltipState(
     val converter: (Any?) -> TooltipData = { item ->
@@ -95,9 +94,8 @@ fun rememberTooltipState() = remember { TooltipState() }
 
 @Preview
 @Composable
-fun PreviewTooltip() =
-    preview {
-        Tooltip(
-            tooltipState = rememberTooltipState().apply { show("test tooltip") },
-        )
-    }
+fun PreviewTooltip() = preview {
+    Tooltip(
+        tooltipState = rememberTooltipState().apply { show("test tooltip") },
+    )
+}

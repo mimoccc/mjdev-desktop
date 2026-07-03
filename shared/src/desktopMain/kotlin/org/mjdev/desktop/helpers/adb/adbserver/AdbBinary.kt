@@ -11,13 +11,12 @@ object AdbBinary {
     fun tryStartServer(
         adbServerHost: String,
         adbServerPort: Int,
-    ): Boolean =
-        try {
-            ensureServerRunning(adbServerHost, adbServerPort)
-            true
-        } catch (_: Exception) {
-            false
-        }
+    ): Boolean = try {
+        ensureServerRunning(adbServerHost, adbServerPort)
+        true
+    } catch (_: Exception) {
+        false
+    }
 
     fun ensureServerRunning(
         adbServerHost: String,
@@ -56,13 +55,12 @@ object AdbBinary {
     private fun isServerRunning(
         adbServerHost: String,
         adbServerPort: Int,
-    ): Boolean =
-        try {
-            Socket(adbServerHost, adbServerPort).close()
-            true
-        } catch (_: Exception) {
-            false
-        }
+    ): Boolean = try {
+        Socket(adbServerHost, adbServerPort).close()
+        true
+    } catch (_: Exception) {
+        false
+    }
 
     private fun find(): File? = findViaWhich() ?: findViaAndroidHome()
 

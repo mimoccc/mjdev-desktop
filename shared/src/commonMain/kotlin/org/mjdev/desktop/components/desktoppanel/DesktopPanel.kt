@@ -240,9 +240,8 @@ fun DesktopPanel(
 
 @Preview
 @Composable
-fun PreviewDesktopPanel() =
-    preview {
-        DesktopPanel(
-            panelState = rememberVisibilityState(true),
-        )
-    }
+fun PreviewDesktopPanel() = preview {
+    DesktopPanel(
+        panelState = rememberVisibilityState(true),
+    )
+}

@@ -69,18 +69,16 @@ class User(
         fun loadPicture(
             homeDir: File,
             picName: String,
-        ): File? =
-            File(homeDir, picName).let { f ->
-                if (f.exists()) f else null
-            }
+        ): File? = File(homeDir, picName).let { f ->
+            if (f.exists()) f else null
+        }
 
-        fun allUsers(context: IDesktopContext): List<User> =
-            if (context is DesktopContext) {
-                AccountManager.get(context.context).accounts.map { a ->
-                    User(a)
-                }
-            } else {
-                emptyList()
+        fun allUsers(context: IDesktopContext): List<User> = if (context is DesktopContext) {
+            AccountManager.get(context.context).accounts.map { a ->
+                User(a)
             }
+        } else {
+            emptyList()
+        }
     }
 }

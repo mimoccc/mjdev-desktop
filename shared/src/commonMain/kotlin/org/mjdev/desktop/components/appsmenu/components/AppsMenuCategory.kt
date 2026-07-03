@@ -97,16 +97,15 @@ fun AppsMenuCategory(
 
 @Preview
 @Composable
-fun PreviewAppsMenuCategory() =
-    preview {
-        AppsMenuCategory(
-            modifier =
-                Modifier
-                    .padding(8.dp)
-                    .background(
-                        Color.SuperDarkGray,
-                        RoundedCornerShape(16.dp),
-                    ).padding(8.dp),
-            category = Category("Audio"),
-        )
-    }
+fun PreviewAppsMenuCategory() = preview {
+    AppsMenuCategory(
+        modifier =
+            Modifier
+                .padding(8.dp)
+                .background(
+                    Color.SuperDarkGray,
+                    RoundedCornerShape(16.dp),
+                ).padding(8.dp),
+        category = Category("Audio"),
+    )
+}

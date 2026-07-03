@@ -81,10 +81,9 @@ actual object Filesystem : FileSystem() {
 
     actual fun readText(path: Path): String = SYSTEM.source(path).buffer().readString(Charset.forName("UTF-8"))
 
-    actual fun readLines(path: Path): List<String> =
-        readText(path)
-            .replace("\r", "")
-            .split("\n")
+    actual fun readLines(path: Path): List<String> = readText(path)
+        .replace("\r", "")
+        .split("\n")
 
     actual fun writeText(
         path: Path,

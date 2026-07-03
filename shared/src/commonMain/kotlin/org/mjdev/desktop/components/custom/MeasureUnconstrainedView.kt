@@ -38,14 +38,13 @@ fun MeasureUnconstrainedView(
 
 @Preview
 @Composable
-fun PreviewMeasureUnconstrainedView() =
-    preview {
-        MeasureUnconstrainedView({
-            TextAny("test")
-        }, { size ->
-            TextAny(
-                modifier = Modifier.background(Color.White),
-                text = "test size: $size",
-            )
-        })
-    }
+fun PreviewMeasureUnconstrainedView() = preview {
+    MeasureUnconstrainedView({
+        TextAny("test")
+    }, { size ->
+        TextAny(
+            modifier = Modifier.background(Color.White),
+            text = "test size: $size",
+        )
+    })
+}

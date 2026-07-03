@@ -53,10 +53,9 @@ fun WifiLevelIcon(
 
 @Preview
 @Composable
-fun PreviewWifiLevelIcon() =
-    preview {
-        WifiLevelIcon(
-            level = 55,
-            color = Color.White,
-        )
-    }
+fun PreviewWifiLevelIcon() = preview {
+    WifiLevelIcon(
+        level = 55,
+        color = Color.White,
+    )
+}

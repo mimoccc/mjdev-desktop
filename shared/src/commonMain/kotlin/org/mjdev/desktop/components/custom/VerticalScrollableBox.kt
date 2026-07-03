@@ -36,7 +36,6 @@ fun VerticalScrollableBox(
 
 @Preview
 @Composable
-fun PreviewVerticalScrollableBox() =
-    preview {
-        VerticalScrollableBox()
-    }
+fun PreviewVerticalScrollableBox() = preview {
+    VerticalScrollableBox()
+}

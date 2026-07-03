@@ -24,7 +24,8 @@ class ControlCenterPageScope(
         }
 
         @Composable
-        fun <T> ControlCenterPageScope.remember(calculation: @DisallowComposableCalls () -> T): T = cache.cache(false, calculation)
+        fun <T> ControlCenterPageScope.remember(calculation: @DisallowComposableCalls () -> T): T =
+            cache.cache(false, calculation)
 
         @Composable
         fun <T> ControlCenterPageScope.rememberComputed(

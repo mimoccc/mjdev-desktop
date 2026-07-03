@@ -13,35 +13,33 @@ import org.mjdev.desktop.windows.ChromeWindow
 // todo : all users
 @Suppress("FunctionName", "unused")
 @Composable
-fun GreeterWindow() =
-    withDesktopContext {
-        val user: IUser? by rememberState(context.currentUser)
-        val isUserLoggedIn by rememberState(user?.isLoggedIn)
-        val onLogin: (user: IUser, password: String) -> Unit = { u, p ->
-            runAsync {
+fun GreeterWindow() = withDesktopContext {
+    val user: IUser? by rememberState(context.currentUser)
+    val isUserLoggedIn by rememberState(user?.isLoggedIn)
+    val onLogin: (user: IUser, password: String) -> Unit = { u, p ->
+        runAsync {
 //            context.currentUser.login( password).collectLatest { logState ->
 //                isUserLoggedIn = logState
 //            }
-            }
-        }
-        ChromeWindow(
-            position = DpOffset.Zero,
-            visible = (isUserLoggedIn ?: false).not(),
-            enabled = true,
-            transparent = true,
-            resizable = false,
-            alwaysOnTop = true,
-            size = context.containerSize,
-        ) {
-            Greeter(
-                onLogin = onLogin,
-            )
         }
     }
+    ChromeWindow(
+        position = DpOffset.Zero,
+        visible = (isUserLoggedIn ?: false).not(),
+        enabled = true,
+        transparent = true,
+        resizable = false,
+        alwaysOnTop = true,
+        size = context.containerSize,
+    ) {
+        Greeter(
+            onLogin = onLogin,
+        )
+    }
+}
 
 @Preview
 @Composable
-fun PreviewGreeterWindow() =
-    preview {
-        GreeterWindow()
-    }
+fun PreviewGreeterWindow() = preview {
+    GreeterWindow()
+}

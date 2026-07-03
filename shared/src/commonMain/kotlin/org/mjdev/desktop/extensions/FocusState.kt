@@ -41,10 +41,9 @@ object FocusState {
         get() = !isFocused
 
     @Composable
-    fun rememberFocusState(initial: FocusState = FocusHelper(false)) =
-        remember(initial) {
-            mutableStateOf(initial)
-        }
+    fun rememberFocusState(initial: FocusState = FocusHelper(false)) = remember(initial) {
+        mutableStateOf(initial)
+    }
 
     @Composable
     fun rememberFocusState(
@@ -54,36 +53,34 @@ object FocusState {
         mutableStateOf(initial)
     }
 
-    fun Modifier.focusState(focusState: MutableState<FocusState>): Modifier =
-        onFocusChanged { state ->
-            focusState.value = state
-        }
+    fun Modifier.focusState(focusState: MutableState<FocusState>): Modifier = onFocusChanged { state ->
+        focusState.value = state
+    }
 
     @Composable
     fun rememberFocusRequester(key: Any? = Unit) = remember(key) { FocusRequester() }
 
-    fun Modifier.bringIntoViewIfChildrenAreFocused(): Modifier =
-        composed(
-            inspectorInfo = debugInspectorInfo { name = "bringIntoViewIfChildrenAreFocused" },
-            factory = {
-                var myRect: Rect = Rect.Zero
-                this
-                    .onSizeChanged {
-                        myRect = Rect(Offset.Zero, Offset(it.width.toFloat(), it.height.toFloat()))
-                    }.bringIntoViewResponder(
-                        remember {
-                            object : BringIntoViewResponder {
-                                @ExperimentalFoundationApi
-                                override fun calculateRectForParent(localRect: Rect): Rect = myRect
+    fun Modifier.bringIntoViewIfChildrenAreFocused(): Modifier = composed(
+        inspectorInfo = debugInspectorInfo { name = "bringIntoViewIfChildrenAreFocused" },
+        factory = {
+            var myRect: Rect = Rect.Zero
+            this
+                .onSizeChanged {
+                    myRect = Rect(Offset.Zero, Offset(it.width.toFloat(), it.height.toFloat()))
+                }.bringIntoViewResponder(
+                    remember {
+                        object : BringIntoViewResponder {
+                            @ExperimentalFoundationApi
+                            override fun calculateRectForParent(localRect: Rect): Rect = myRect
 
-                                @ExperimentalFoundationApi
-                                override suspend fun bringChildIntoView(localRect: () -> Rect?) {
-                                }
+                            @ExperimentalFoundationApi
+                            override suspend fun bringChildIntoView(localRect: () -> Rect?) {
                             }
-                        },
-                    )
-            },
-        )
+                        }
+                    },
+                )
+        },
+    )
 
     @Suppress("SuspiciousModifierThen")
     @Composable
@@ -92,25 +89,24 @@ object FocusState {
         requestFocus: Boolean = true,
         scope: CoroutineScope = rememberCoroutineScope(),
         onTouch: (() -> Unit)? = null,
-    ): Modifier =
-        this then
-            focusRequester(
-                focusRequester,
-            ).pointerInput(this) {
-                detectTapGestures(
-                    onTap = {
-                        try {
-                            scope.launch {
-                                onTouch?.invoke()
-                                if (requestFocus) {
-                                    focusRequester.requestFocus()
-                                }
+    ): Modifier = this then
+        focusRequester(
+            focusRequester,
+        ).pointerInput(this) {
+            detectTapGestures(
+                onTap = {
+                    try {
+                        scope.launch {
+                            onTouch?.invoke()
+                            if (requestFocus) {
+                                focusRequester.requestFocus()
                             }
-                        } catch (e: Throwable) {
-                            // todo
-//                    Log.e(e)
                         }
-                    },
-                )
-            }
+                    } catch (e: Throwable) {
+                        // todo
+//                    Log.e(e)
+                    }
+                },
+            )
+        }
 }

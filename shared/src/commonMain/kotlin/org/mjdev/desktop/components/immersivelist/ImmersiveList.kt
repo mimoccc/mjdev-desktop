@@ -58,7 +58,6 @@ fun ImmersiveList(
 // todo
 @Preview
 @Composable
-fun PreviewImmersiveList() =
-    preview {
-        ImmersiveList()
-    }
+fun PreviewImmersiveList() = preview {
+    ImmersiveList()
+}

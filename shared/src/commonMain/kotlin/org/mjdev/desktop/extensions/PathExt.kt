@@ -80,28 +80,26 @@ object PathExt {
         predicate: (Path) -> Boolean,
     ) = listFiles(ext).filter(predicate)
 
-    fun Path.listFiles(ext: String? = null): List<Path> =
-        if (exists) {
-            Filesystem.listFiles(this).let { list ->
-                when {
-                    ext != null -> list.filter { f -> f.extension == ext }
-                    else -> list.toList()
-                }
+    fun Path.listFiles(ext: String? = null): List<Path> = if (exists) {
+        Filesystem.listFiles(this).let { list ->
+            when {
+                ext != null -> list.filter { f -> f.extension == ext }
+                else -> list.toList()
             }
-        } else {
-            emptyList()
         }
+    } else {
+        emptyList()
+    }
 
     fun Path.writeText(text: String) = Filesystem.writeText(this, text)
 
     fun Path.mkdirs() = Filesystem.createDirectories(this)
 
-    fun Path.delete() =
-        if (isDirectory) {
-            Filesystem.deleteDir(this)
-        } else {
-            Filesystem.delete(this)
-        }
+    fun Path.delete() = if (isDirectory) {
+        Filesystem.deleteDir(this)
+    } else {
+        Filesystem.delete(this)
+    }
 
     fun Path.createNewFile() = Filesystem.createNewFile(this)
 

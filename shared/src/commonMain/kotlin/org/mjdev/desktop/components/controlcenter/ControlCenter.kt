@@ -190,9 +190,8 @@ fun ControlCenter(
 
 @Preview
 @Composable
-fun PreviewControlCenter() =
-    preview {
-        ControlCenter(
-            controlCenterState = rememberVisibilityState(true),
-        )
-    }
+fun PreviewControlCenter() = preview {
+    ControlCenter(
+        controlCenterState = rememberVisibilityState(true),
+    )
+}

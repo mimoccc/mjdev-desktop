@@ -25,14 +25,13 @@ object ClickableSurfaceDefaults {
         focused: Boolean,
         pressed: Boolean,
         shape: ClickableSurfaceShape,
-    ): Shape =
-        when {
-            pressed && enabled -> shape.pressedShape
-            focused && enabled -> shape.focusedShape
-            focused && !enabled -> shape.focusedDisabledShape
-            enabled -> shape.shape
-            else -> shape.disabledShape
-        }
+    ): Shape = when {
+        pressed && enabled -> shape.pressedShape
+        focused && enabled -> shape.focusedShape
+        focused && !enabled -> shape.focusedDisabledShape
+        enabled -> shape.shape
+        else -> shape.disabledShape
+    }
 
     @ReadOnlyComposable
     @Composable
@@ -55,26 +54,24 @@ object ClickableSurfaceDefaults {
         focused: Boolean,
         pressed: Boolean,
         colors: ClickableSurfaceColors,
-    ): Color =
-        when {
-            pressed && enabled -> colors.pressedContainerColor
-            focused && enabled -> colors.focusedContainerColor
-            enabled -> colors.containerColor
-            else -> colors.disabledContainerColor
-        }
+    ): Color = when {
+        pressed && enabled -> colors.pressedContainerColor
+        focused && enabled -> colors.focusedContainerColor
+        enabled -> colors.containerColor
+        else -> colors.disabledContainerColor
+    }
 
     internal fun contentColor(
         enabled: Boolean,
         focused: Boolean,
         pressed: Boolean,
         colors: ClickableSurfaceColors,
-    ): Color =
-        when {
-            pressed && enabled -> colors.pressedContentColor
-            focused && enabled -> colors.focusedContentColor
-            enabled -> colors.contentColor
-            else -> colors.disabledContentColor
-        }
+    ): Color = when {
+        pressed && enabled -> colors.pressedContentColor
+        focused && enabled -> colors.focusedContentColor
+        enabled -> colors.contentColor
+        else -> colors.disabledContentColor
+    }
 
     @Suppress("ConstPropertyName")
     private const val DisabledContainerAlpha = 0.5f
@@ -107,14 +104,13 @@ object ClickableSurfaceDefaults {
         focused: Boolean,
         pressed: Boolean,
         scale: ClickableSurfaceScale,
-    ): Float =
-        when {
-            pressed && enabled -> scale.pressedScale
-            focused && enabled -> scale.focusedScale
-            focused && !enabled -> scale.focusedDisabledScale
-            enabled -> scale.scale
-            else -> scale.disabledScale
-        }
+    ): Float = when {
+        pressed && enabled -> scale.pressedScale
+        focused && enabled -> scale.focusedScale
+        focused && !enabled -> scale.focusedDisabledScale
+        enabled -> scale.scale
+        else -> scale.disabledScale
+    }
 
     fun scale(
         scale: Float = 1f,
@@ -135,14 +131,13 @@ object ClickableSurfaceDefaults {
         focused: Boolean,
         pressed: Boolean,
         border: ClickableSurfaceBorder,
-    ): Border =
-        when {
-            pressed && enabled -> border.pressedBorder
-            focused && enabled -> border.focusedBorder
-            focused && !enabled -> border.focusedDisabledBorder
-            enabled -> border.border
-            else -> border.disabledBorder
-        }
+    ): Border = when {
+        pressed && enabled -> border.pressedBorder
+        focused && enabled -> border.focusedBorder
+        focused && !enabled -> border.focusedDisabledBorder
+        enabled -> border.border
+        else -> border.disabledBorder
+    }
 
     @ReadOnlyComposable
     @Composable
@@ -170,16 +165,15 @@ object ClickableSurfaceDefaults {
         focused: Boolean,
         pressed: Boolean,
         glow: ClickableSurfaceGlow,
-    ): Glow =
-        if (enabled) {
-            when {
-                pressed -> glow.pressedGlow
-                focused -> glow.focusedGlow
-                else -> glow.glow
-            }
-        } else {
-            Glow.None
+    ): Glow = if (enabled) {
+        when {
+            pressed -> glow.pressedGlow
+            focused -> glow.focusedGlow
+            else -> glow.glow
         }
+    } else {
+        Glow.None
+    }
 
     fun glow(
         glow: Glow = Glow.None,

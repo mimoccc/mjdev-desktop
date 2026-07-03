@@ -32,7 +32,6 @@ fun InfoWindow(
 @Suppress("unused")
 @Preview
 @Composable
-fun PreviewInfoWindow() =
-    preview {
-        InfoWindow()
-    }
+fun PreviewInfoWindow() = preview {
+    InfoWindow()
+}

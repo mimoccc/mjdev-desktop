@@ -39,11 +39,10 @@ class Glow(
     fun copy(
         glowColor: Color? = null,
         glowElevation: Dp? = null,
-    ): Glow =
-        Glow(
-            elevationColor = glowColor ?: this.elevationColor,
-            elevation = glowElevation ?: this.elevation,
-        )
+    ): Glow = Glow(
+        elevationColor = glowColor ?: this.elevationColor,
+        elevation = glowElevation ?: this.elevation,
+    )
 
     companion object {
         val None = Glow(elevationColor = Color.Transparent, elevation = 0.dp)

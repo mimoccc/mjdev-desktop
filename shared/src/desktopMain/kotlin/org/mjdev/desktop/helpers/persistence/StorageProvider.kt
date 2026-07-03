@@ -34,10 +34,9 @@ actual open class StorageProvider actual constructor(
 
     actual open fun clear() = prefs.clear()
 
-    actual open fun getAll(): Map<String, String> =
-        prefs.keys().associate { key ->
-            prefs.get(key, null).let { value ->
-                key to value
-            }
+    actual open fun getAll(): Map<String, String> = prefs.keys().associate { key ->
+        prefs.get(key, null).let { value ->
+            key to value
         }
+    }
 }

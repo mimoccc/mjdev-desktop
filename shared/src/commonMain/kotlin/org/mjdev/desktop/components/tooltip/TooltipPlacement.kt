@@ -27,13 +27,12 @@ interface TooltipPlacement {
         private val windowMargin: Dp = 4.dp,
     ) : TooltipPlacement {
         @Composable
-        override fun positionProvider(cursorPosition: Offset) =
-            rememberPopupPositionProviderAtPosition(
-                positionPx = cursorPosition,
-                offset = offset,
-                alignment = alignment,
-                windowMargin = windowMargin,
-            )
+        override fun positionProvider(cursorPosition: Offset) = rememberPopupPositionProviderAtPosition(
+            positionPx = cursorPosition,
+            offset = offset,
+            alignment = alignment,
+            windowMargin = windowMargin,
+        )
     }
 
     class ComponentRect(
@@ -42,12 +41,11 @@ interface TooltipPlacement {
         private val offset: DpOffset = DpOffset.Zero,
     ) : TooltipPlacement {
         @Composable
-        override fun positionProvider(cursorPosition: Offset) =
-            rememberComponentRectPositionProvider(
-                anchor = anchor,
-                alignment = alignment,
-                offset = offset,
-            )
+        override fun positionProvider(cursorPosition: Offset) = rememberComponentRectPositionProvider(
+            anchor = anchor,
+            alignment = alignment,
+            offset = offset,
+        )
     }
 }
 
@@ -104,21 +102,20 @@ fun rememberPopupPositionProviderAtPosition(
     offset: DpOffset = DpOffset.Zero,
     alignment: Alignment = Alignment.BottomEnd,
     windowMargin: Dp = 4.dp,
-): PopupPositionProvider =
-    with(LocalDensity.current) {
-        val offsetPx = Offset(offset.x.toPx(), offset.y.toPx())
-        val windowMarginPx = windowMargin.roundToPx()
+): PopupPositionProvider = with(LocalDensity.current) {
+    val offsetPx = Offset(offset.x.toPx(), offset.y.toPx())
+    val windowMarginPx = windowMargin.roundToPx()
 
-        remember(positionPx, offsetPx, alignment, windowMarginPx) {
-            PopupPositionProviderAtPosition(
-                positionPx = positionPx,
-                isRelativeToAnchor = true,
-                offsetPx = offsetPx,
-                alignment = alignment,
-                windowMarginPx = windowMarginPx,
-            )
-        }
+    remember(positionPx, offsetPx, alignment, windowMarginPx) {
+        PopupPositionProviderAtPosition(
+            positionPx = positionPx,
+            isRelativeToAnchor = true,
+            offsetPx = offsetPx,
+            alignment = alignment,
+            windowMarginPx = windowMarginPx,
+        )
     }
+}
 
 @Composable
 fun rememberComponentRectPositionProvider(

@@ -69,32 +69,31 @@ fun ClassicCard(
 
 @Preview
 @Composable
-fun PreviewClassicCard() =
-    preview {
-        ClassicCard(
-            modifier = Modifier.size(320.dp, 200.dp),
-            colors =
-                CardDefaults.colors(
-                    containerColor = Color.White,
-                ),
-            border = CardDefaults.border(2.dp),
-            glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
-            contentPadding = PaddingValues(8.dp),
-            scale = CardDefaults.scale(1f),
-            image = {
-                ImageAny(
-                    src = AccountCircle,
-                    contentDescription = "",
-                )
-            },
-            title = {
-                TextAny("title")
-            },
-            subtitle = {
-                TextAny("subtitle")
-            },
-            description = {
-                TextAny("description")
-            },
-        )
-    }
+fun PreviewClassicCard() = preview {
+    ClassicCard(
+        modifier = Modifier.size(320.dp, 200.dp),
+        colors =
+            CardDefaults.colors(
+                containerColor = Color.White,
+            ),
+        border = CardDefaults.border(2.dp),
+        glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
+        contentPadding = PaddingValues(8.dp),
+        scale = CardDefaults.scale(1f),
+        image = {
+            ImageAny(
+                src = AccountCircle,
+                contentDescription = "",
+            )
+        },
+        title = {
+            TextAny("title")
+        },
+        subtitle = {
+            TextAny("subtitle")
+        },
+        description = {
+            TextAny("description")
+        },
+    )
+}

@@ -217,7 +217,6 @@ fun DockBarWindow(
 // todo
 @Preview
 @Composable
-fun PreviewDockBarWindow() =
-    preview {
-        DockBarWindow()
-    }
+fun PreviewDockBarWindow() = preview {
+    DockBarWindow()
+}

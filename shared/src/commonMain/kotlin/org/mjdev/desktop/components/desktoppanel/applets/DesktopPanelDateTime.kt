@@ -67,7 +67,6 @@ fun DesktopPanelDateTime(
 
 @Preview
 @Composable
-fun PreviewDesktopPanelDateTime() =
-    preview {
-        DesktopPanelDateTime()
-    }
+fun PreviewDesktopPanelDateTime() = preview {
+    DesktopPanelDateTime()
+}

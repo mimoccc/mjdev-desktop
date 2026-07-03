@@ -57,11 +57,10 @@ fun SettingsSwitchRow(
 
 @Preview
 @Composable
-fun PreviewSettingsSwitchRow() =
-    preview {
-        SettingsSwitchRow(
-            label = "Local folder",
-            checked = true,
-            onCheckedChange = {},
-        )
-    }
+fun PreviewSettingsSwitchRow() = preview {
+    SettingsSwitchRow(
+        label = "Local folder",
+        checked = true,
+        onCheckedChange = {},
+    )
+}

@@ -40,22 +40,22 @@ class App(
 
     override fun toString(): String = name
 
-    private fun PackageInfo.isSystemPackage(): Boolean = ((applicationInfo?.flags ?: 0) and ApplicationInfo.FLAG_SYSTEM) != 0
+    private fun PackageInfo.isSystemPackage(): Boolean =
+        ((applicationInfo?.flags ?: 0) and ApplicationInfo.FLAG_SYSTEM) != 0
 
     companion object {
         @SuppressLint("NewApi")
         private fun guessCategory(
             context: Context?,
             info: LauncherActivityInfo,
-        ): Category =
-            try {
-                ApplicationInfo
-                    .getCategoryTitle(
-                        context,
-                        info.applicationInfo.category,
-                    )?.let { Category(it.toString()) } ?: Category.Empty
-            } catch (e: Throwable) {
-                Category.Empty
-            }
+        ): Category = try {
+            ApplicationInfo
+                .getCategoryTitle(
+                    context,
+                    info.applicationInfo.category,
+                )?.let { Category(it.toString()) } ?: Category.Empty
+        } catch (e: Throwable) {
+            Category.Empty
+        }
     }
 }

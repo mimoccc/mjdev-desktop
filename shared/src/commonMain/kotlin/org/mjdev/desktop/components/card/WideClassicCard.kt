@@ -69,34 +69,33 @@ fun WideClassicCard(
 
 @Preview
 @Composable
-fun PreviewWideClassicCard() =
-    preview {
-        WideClassicCard(
-            colors =
-                CardDefaults.colors(
-                    containerColor = Color.White,
-                ),
-            border = CardDefaults.border(),
-            glow =
-                CardDefaults.glow(
-                    glow = Glow(Color.Green, 4.dp),
-                ),
-            contentPadding = PaddingValues(8.dp),
-            scale = CardDefaults.scale(1f),
-            image = {
-                ImageAny(
-                    src = AccountCircle,
-                    contentDescription = "",
-                )
-            },
-            title = {
-                TextAny("title")
-            },
-            subtitle = {
-                TextAny("subtitle")
-            },
-            description = {
-                TextAny("description")
-            },
-        )
-    }
+fun PreviewWideClassicCard() = preview {
+    WideClassicCard(
+        colors =
+            CardDefaults.colors(
+                containerColor = Color.White,
+            ),
+        border = CardDefaults.border(),
+        glow =
+            CardDefaults.glow(
+                glow = Glow(Color.Green, 4.dp),
+            ),
+        contentPadding = PaddingValues(8.dp),
+        scale = CardDefaults.scale(1f),
+        image = {
+            ImageAny(
+                src = AccountCircle,
+                contentDescription = "",
+            )
+        },
+        title = {
+            TextAny("title")
+        },
+        subtitle = {
+            TextAny("subtitle")
+        },
+        description = {
+            TextAny("description")
+        },
+    )
+}

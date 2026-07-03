@@ -88,30 +88,29 @@ class ProcessManager(
     }
 
     // todo : something raises error
-    override fun hasAppProcess(app: IApp?): Boolean =
-        runCatching {
-            val appCmd = app?.cmd
-            val appName = app?.name
-            val appFullName = app?.fullAppName
-            processes.toList().any { pw ->
-                (appName != null && pw.command.contains(appName)) ||
-                    (appCmd != null && pw.command.contains(appCmd)) ||
-                    (appFullName != null && pw.command.contains(appFullName)) ||
-                    (appName != null && pw.commandLine.contains(appName)) ||
-                    (appCmd != null && pw.commandLine.contains(appCmd)) ||
-                    (appFullName != null && pw.commandLine.contains(appFullName))
-            }
-        }.onFailure { e ->
-            Log.e(e)
-        }.getOrNull() ?: false
+    override fun hasAppProcess(app: IApp?): Boolean = runCatching {
+        val appCmd = app?.cmd
+        val appName = app?.name
+        val appFullName = app?.fullAppName
+        processes.toList().any { pw ->
+            (appName != null && pw.command.contains(appName)) ||
+                (appCmd != null && pw.command.contains(appCmd)) ||
+                (appFullName != null && pw.command.contains(appFullName)) ||
+                (appName != null && pw.commandLine.contains(appName)) ||
+                (appCmd != null && pw.commandLine.contains(appCmd)) ||
+                (appFullName != null && pw.commandLine.contains(appFullName))
+        }
+    }.onFailure { e ->
+        Log.e(e)
+    }.getOrNull() ?: false
 
     companion object {
-        fun SnapshotStateList<ProcessWrapper>.containsProcess(ph: ProcessHandle) =
-            ph.pid().let { pid ->
-                toList().any { p -> p.pid == pid }
-            }
+        fun SnapshotStateList<ProcessWrapper>.containsProcess(ph: ProcessHandle) = ph.pid().let { pid ->
+            toList().any { p -> p.pid == pid }
+        }
 
-        fun SnapshotStateList<ProcessWrapper>.containsProcess(ph: ProcessWrapper) = toList().any { p -> p.pid == ph.pid }
+        fun SnapshotStateList<ProcessWrapper>.containsProcess(ph: ProcessWrapper) =
+            toList().any { p -> p.pid == ph.pid }
 
         @Composable
         fun processManagerListener(onChanged: IProcessManager?.(processHandle: ProcessHandle?) -> Unit = {}) =

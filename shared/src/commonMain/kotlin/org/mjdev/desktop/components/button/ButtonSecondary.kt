@@ -36,7 +36,6 @@ fun ButtonSecondary(
 
 @Preview
 @Composable
-fun PreviewButtonSecondary() =
-    preview {
-        ButtonSecondary()
-    }
+fun PreviewButtonSecondary() = preview {
+    ButtonSecondary()
+}

@@ -25,84 +25,83 @@ import org.mjdev.desktop.helpers.shape.BarShape
 import org.mjdev.desktop.icons.settings.SettingsHome
 
 @Suppress("FunctionName")
-fun MainSettingsPage(context: IDesktopContext) =
-    ControlCenterPage(
-        context = context,
-        icon = SettingsHome,
-        name = "Home",
-        showHeader = false,
+fun MainSettingsPage(context: IDesktopContext) = ControlCenterPage(
+    context = context,
+    icon = SettingsHome,
+    name = "Home",
+    showHeader = false,
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter),
         ) {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.TopCenter),
+            Box(
+                modifier = Modifier.clip(RectangleShape),
+                contentAlignment = Alignment.BottomStart,
             ) {
-                Box(
-                    modifier = Modifier.clip(RectangleShape),
-                    contentAlignment = Alignment.BottomStart,
-                ) {
-                    val shape =
-                        BarShape(
-                            offset = 80.dp,
-                            circleRadius = 52.dp,
-                            cornerRadius = 0.dp,
-                            circleGap = 4.dp,
-                        )
-                    val brush =
-                        Brush.horizontalGradient(
-                            listOf(
-                                backgroundColor.darker(0.1f),
-                                backgroundColor.darker(0.1f),
-                                backgroundColor.darker(0.1f),
-                                backgroundColor.alpha(0.9f),
-                                backgroundColor.alpha(0.7f),
-                                backgroundColor.alpha(0.3f),
-                                backgroundColor.darker(0.1f).alpha(0.5f),
-                            ),
+                val shape =
+                    BarShape(
+                        offset = 80.dp,
+                        circleRadius = 52.dp,
+                        cornerRadius = 0.dp,
+                        circleGap = 4.dp,
+                    )
+                val brush =
+                    Brush.horizontalGradient(
+                        listOf(
+                            backgroundColor.darker(0.1f),
+                            backgroundColor.darker(0.1f),
+                            backgroundColor.darker(0.1f),
+                            backgroundColor.alpha(0.9f),
+                            backgroundColor.alpha(0.7f),
+                            backgroundColor.alpha(0.3f),
+                            backgroundColor.darker(0.1f).alpha(0.5f),
+                        ),
 //                    startX = 0f,
 //                    endX = 0f
-                        )
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .height(64.dp)
-                                .background(
-                                    brush = brush,
-                                    shape = shape,
-                                ),
                     )
-                    UserAvatar(
-                        avatarSize = 96.dp,
-                        titleTextSize = 20.sp,
-                        detailTextSize = 16.sp,
-                        onUserAvatarClick = {
-                            // todo
-                        },
-                        orientation = Orientation.Horizontal,
-                    )
-                }
-                HorizontalDivider(
-                    color = borderColor.alpha(0.5f),
-                    thickness = 2.dp,
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(64.dp)
+                            .background(
+                                brush = brush,
+                                shape = shape,
+                            ),
                 )
-                DateTime(
-                    modifier = Modifier.fillMaxWidth(),
-                    timeTextColor = textColor,
-                    dateTextColor = textColor,
-                    backgroundColor = backgroundColor,
+                UserAvatar(
+                    avatarSize = 96.dp,
+                    titleTextSize = 20.sp,
+                    detailTextSize = 16.sp,
+                    onUserAvatarClick = {
+                        // todo
+                    },
+                    orientation = Orientation.Horizontal,
                 )
             }
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter),
-            ) {
+            HorizontalDivider(
+                color = borderColor.alpha(0.5f),
+                thickness = 2.dp,
+            )
+            DateTime(
+                modifier = Modifier.fillMaxWidth(),
+                timeTextColor = textColor,
+                dateTextColor = textColor,
+                backgroundColor = backgroundColor,
+            )
+        }
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter),
+        ) {
 //            FlexibleBottomSheet(
 //                onDismissRequest = {},
 //                sheetState = rememberFlexibleBottomSheetState(
@@ -125,30 +124,29 @@ fun MainSettingsPage(context: IDesktopContext) =
 //                    color = Color.White,
 //                )
 //            }
-                Column(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .align(Alignment.BottomCenter),
-                ) {
-                    PowerBlock(
-                        shadowColor = borderColor.alpha(0.3f),
-                        onPowerButtonClick = {
-                            // todo : dialog
-                            runAsync {
-                                context.logOut()
-                            }
-                        },
-                    )
-                }
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .align(Alignment.BottomCenter),
+            ) {
+                PowerBlock(
+                    shadowColor = borderColor.alpha(0.3f),
+                    onPowerButtonClick = {
+                        // todo : dialog
+                        runAsync {
+                            context.logOut()
+                        }
+                    },
+                )
             }
         }
     }
+}
 
 @Preview
 @Composable
-fun PreviewMainSettingsPage() =
-    preview {
-        MainSettingsPage(context).Render()
-    }
+fun PreviewMainSettingsPage() = preview {
+    MainSettingsPage(context).Render()
+}

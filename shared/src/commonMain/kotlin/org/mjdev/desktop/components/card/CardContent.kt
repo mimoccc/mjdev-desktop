@@ -46,17 +46,16 @@ fun CardContent(
 
 @Preview
 @Composable
-fun PreviewCardContent() =
-    preview {
-        CardContent(
-            title = {
-                Text("title")
-            },
-            subtitle = {
-                Text("subtitle")
-            },
-            description = {
-                Text("description")
-            },
-        )
-    }
+fun PreviewCardContent() = preview {
+    CardContent(
+        title = {
+            Text("title")
+        },
+        subtitle = {
+            Text("subtitle")
+        },
+        description = {
+            Text("description")
+        },
+    )
+}

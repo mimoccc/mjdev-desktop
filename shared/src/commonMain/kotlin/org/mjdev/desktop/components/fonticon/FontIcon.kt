@@ -101,21 +101,20 @@ fun FontIcon(
 
 @Preview
 @Composable
-fun PreviewFontIcon() =
-    preview {
+fun PreviewFontIcon() = preview {
+    Column {
         Column {
-            Column {
-                FontIcon(iconId = 0)
-                FontIcon(iconName = "")
-                FontIcon(iconName = "tv")
-                FontIcon(iconName = "browser")
-            }
-            Spacer(modifier = Modifier.height(32.dp).fillMaxWidth())
-            Row {
-                FontIcon(iconId = 0)
-                FontIcon(iconName = "")
-                FontIcon(iconName = "tv")
-                FontIcon(iconName = "browser")
-            }
+            FontIcon(iconId = 0)
+            FontIcon(iconName = "")
+            FontIcon(iconName = "tv")
+            FontIcon(iconName = "browser")
+        }
+        Spacer(modifier = Modifier.height(32.dp).fillMaxWidth())
+        Row {
+            FontIcon(iconId = 0)
+            FontIcon(iconName = "")
+            FontIcon(iconName = "tv")
+            FontIcon(iconName = "browser")
         }
     }
+}

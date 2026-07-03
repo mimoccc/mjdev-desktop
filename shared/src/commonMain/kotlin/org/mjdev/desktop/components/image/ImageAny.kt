@@ -167,7 +167,6 @@ fun ImageAny(
 
 @Preview
 @Composable
-fun PreviewImageAny() =
-    preview {
-        ImageAny()
-    }
+fun PreviewImageAny() = preview {
+    ImageAny()
+}

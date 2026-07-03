@@ -16,8 +16,7 @@ import org.mjdev.desktop.managers.script.linux.ScriptManagerLinux
 
 // todo other platforms
 @Suppress("unused")
-fun scriptManager(api: DesktopContext) =
-    when (hostOs) {
-        OS.Linux -> ScriptManagerLinux(api)
-        else -> ScriptManagerStub(api)
-    }
+fun scriptManager(api: DesktopContext) = when (hostOs) {
+    OS.Linux -> ScriptManagerLinux(api)
+    else -> ScriptManagerStub(api)
+}

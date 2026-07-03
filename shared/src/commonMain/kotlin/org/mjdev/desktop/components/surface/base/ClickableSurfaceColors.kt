@@ -50,14 +50,13 @@ class ClickableSurfaceColors(
         return result
     }
 
-    override fun toString(): String =
-        "ClickableSurfaceColors(" +
-            "containerColor=$containerColor, " +
-            "contentColor=$contentColor, " +
-            "focusedContainerColor=$focusedContainerColor, " +
-            "focusedContentColor=$focusedContentColor, " +
-            "pressedContainerColor=$pressedContainerColor, " +
-            "pressedContentColor=$pressedContentColor, " +
-            "disabledContainerColor=$disabledContainerColor, " +
-            "disabledContentColor=$disabledContentColor)"
+    override fun toString(): String = "ClickableSurfaceColors(" +
+        "containerColor=$containerColor, " +
+        "contentColor=$contentColor, " +
+        "focusedContainerColor=$focusedContainerColor, " +
+        "focusedContentColor=$focusedContentColor, " +
+        "pressedContainerColor=$pressedContainerColor, " +
+        "pressedContentColor=$pressedContentColor, " +
+        "disabledContainerColor=$disabledContainerColor, " +
+        "disabledContentColor=$disabledContentColor)"
 }

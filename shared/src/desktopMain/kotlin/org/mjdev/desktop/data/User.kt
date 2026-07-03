@@ -65,19 +65,17 @@ class User(
         fun loadPicture(
             homeDir: File,
             picName: String,
-        ): File? =
-            File(homeDir, picName).let { f ->
-                if (f.exists()) f else null
-            }
+        ): File? = File(homeDir, picName).let { f ->
+            if (f.exists()) f else null
+        }
 
-        fun allUsers(context: IDesktopContext): List<User> =
-            "/etc/passwd"
-                .toPath()
-                .lines
-                .filter { t ->
-                    t.contains("/home")
-                }.map { dir ->
-                    User(dir)
-                }
+        fun allUsers(context: IDesktopContext): List<User> = "/etc/passwd"
+            .toPath()
+            .lines
+            .filter { t ->
+                t.contains("/home")
+            }.map { dir ->
+                User(dir)
+            }
     }
 }

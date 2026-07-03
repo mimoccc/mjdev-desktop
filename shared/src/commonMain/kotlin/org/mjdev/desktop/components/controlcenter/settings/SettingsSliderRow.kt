@@ -74,12 +74,11 @@ fun SettingsSliderRow(
 
 @Preview
 @Composable
-fun PreviewSettingsSliderRow() =
-    preview {
-        SettingsSliderRow(
-            label = "Rotation delay",
-            value = 60f,
-            valueRange = 5f..600f,
-            onValueChange = {},
-        )
-    }
+fun PreviewSettingsSliderRow() = preview {
+    SettingsSliderRow(
+        label = "Rotation delay",
+        value = 60f,
+        valueRange = 5f..600f,
+        onValueChange = {},
+    )
+}

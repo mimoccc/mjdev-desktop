@@ -39,13 +39,12 @@ fun TransparentButton(
 
 @Preview
 @Composable
-fun PreviewTransparentButton() =
-    preview {
-        TransparentButton {
-            Icon(
-                imageVector = AccountCircle,
-                contentDescription = "",
-                tint = Color.White,
-            )
-        }
+fun PreviewTransparentButton() = preview {
+    TransparentButton {
+        Icon(
+            imageVector = AccountCircle,
+            contentDescription = "",
+            tint = Color.White,
+        )
     }
+}

@@ -57,7 +57,6 @@ fun VideoView(
 
 @Preview
 @Composable
-fun PreviewVideoView() =
-    preview {
-        VideoView()
-    }
+fun PreviewVideoView() = preview {
+    VideoView()
+}

@@ -14,12 +14,11 @@ object ImageLoader {
     fun imageLoaderContext() = LocalPlatformContext.current
 
     @Composable
-    fun imageLoaderMemoryCache() =
-        MemoryCache
-            .Builder()
-            .maxSizePercent(imageLoaderContext(), 0.3)
-            .strongReferencesEnabled(true)
-            .build()
+    fun imageLoaderMemoryCache() = MemoryCache
+        .Builder()
+        .maxSizePercent(imageLoaderContext(), 0.3)
+        .strongReferencesEnabled(true)
+        .build()
 
     @Composable
     fun asyncImageLoader(

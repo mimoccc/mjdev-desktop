@@ -185,29 +185,27 @@ fun UserAvatar(
 
 @Preview
 @Composable
-fun PreviewUserAvatarHorizontalFill() =
-    preview {
-        UserAvatar(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .background(Color.SuperDarkGray),
-            orientation = Orientation.Horizontal,
-        )
-    }
+fun PreviewUserAvatarHorizontalFill() = preview {
+    UserAvatar(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(Color.SuperDarkGray),
+        orientation = Orientation.Horizontal,
+    )
+}
 
 @Preview
 @Composable
-fun PreviewUserAvatarVertical() =
-    preview {
-        UserAvatar(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .background(Color.SuperDarkGray),
-            orientation = Orientation.Vertical,
-            textAlign = TextAlign.Center,
-        )
-    }
+fun PreviewUserAvatarVertical() = preview {
+    UserAvatar(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(Color.SuperDarkGray),
+        orientation = Orientation.Vertical,
+        textAlign = TextAlign.Center,
+    )
+}

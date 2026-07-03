@@ -19,15 +19,35 @@ class Queue<E>(
     override fun hasNext(): Boolean = source.isNotEmpty() && source.size > currentIndex
 
     @Deprecated("Deprecated please use for safety nextOrNull().")
-    override fun next(): E =
+    override fun next(): E = when {
+        hasNext() -> {
+            source[currentIndex].apply {
+                currentIndex += 1
+            }
+        }
+
+        source.isEmpty() -> throw (IllegalStateException("Source is empty."))
+
+        else -> {
+            currentIndex = 0
+            @Suppress("DEPRECATION")
+            next()
+        }
+    }
+
+    fun nextOrNull(): E? = runCatching {
         when {
             hasNext() -> {
                 source[currentIndex].apply {
+//                    Log.d("New background request: $this")
                     currentIndex += 1
                 }
             }
 
-            source.isEmpty() -> throw (IllegalStateException("Source is empty."))
+            source.isEmpty() -> {
+//                Log.e("No background, empty list.")
+                null
+            }
 
             else -> {
                 currentIndex = 0
@@ -35,29 +55,7 @@ class Queue<E>(
                 next()
             }
         }
-
-    fun nextOrNull(): E? =
-        runCatching {
-            when {
-                hasNext() -> {
-                    source[currentIndex].apply {
-//                    Log.d("New background request: $this")
-                        currentIndex += 1
-                    }
-                }
-
-                source.isEmpty() -> {
-//                Log.e("No background, empty list.")
-                    null
-                }
-
-                else -> {
-                    currentIndex = 0
-                    @Suppress("DEPRECATION")
-                    next()
-                }
-            }
-        }.onFailure { e ->
-            Log.e(e)
-        }.getOrNull()
+    }.onFailure { e ->
+        Log.e(e)
+    }.getOrNull()
 }

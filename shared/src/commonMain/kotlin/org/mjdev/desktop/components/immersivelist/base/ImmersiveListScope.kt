@@ -34,11 +34,10 @@ import org.mjdev.desktop.helpers.compose.Gravity
 class ImmersiveListScope internal constructor(
     private val onFocused: (Int) -> Unit,
 ) {
-    fun Modifier.immersiveListItem(index: Int): Modifier =
-        this then
-            onFocusChanged {
-                if (it.isFocused) onFocused(index)
-            }
+    fun Modifier.immersiveListItem(index: Int): Modifier = this then
+        onFocusChanged {
+            if (it.isFocused) onFocused(index)
+        }
 }
 
 @Composable

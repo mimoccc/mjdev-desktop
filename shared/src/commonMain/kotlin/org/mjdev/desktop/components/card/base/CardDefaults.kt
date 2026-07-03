@@ -132,24 +132,23 @@ object CardDefaults {
         focusColor: Color = Color.Green,
         onUnFocusColor: Color = Color.Transparent,
         elevation: Dp = 10.dp,
-    ): CardGlow =
-        glow(
-            glow =
-                Glow(
-                    elevationColor = onUnFocusColor,
-                    elevation = elevation,
-                ),
-            focusedGlow =
-                Glow(
-                    elevationColor = focusColor,
-                    elevation = elevation,
-                ),
-            pressedGlow =
-                Glow(
-                    elevationColor = onUnFocusColor,
-                    elevation = elevation,
-                ),
-        )
+    ): CardGlow = glow(
+        glow =
+            Glow(
+                elevationColor = onUnFocusColor,
+                elevation = elevation,
+            ),
+        focusedGlow =
+            Glow(
+                elevationColor = focusColor,
+                elevation = elevation,
+            ),
+        pressedGlow =
+            Glow(
+                elevationColor = onUnFocusColor,
+                elevation = elevation,
+            ),
+    )
 
     fun scale(
         scale: Float = 1f,
@@ -204,49 +203,44 @@ object CardDefaults {
         pressedGlow = pressedGlow,
     )
 
-    fun CardColors.toClickableSurfaceColors() =
-        ClickableSurfaceColors(
-            containerColor = containerColor,
-            contentColor = contentColor,
-            focusedContainerColor = focusedContainerColor,
-            focusedContentColor = focusedContentColor,
-            pressedContainerColor = pressedContainerColor,
-            pressedContentColor = pressedContentColor,
-            disabledContainerColor = containerColor,
-            disabledContentColor = contentColor,
-        )
+    fun CardColors.toClickableSurfaceColors() = ClickableSurfaceColors(
+        containerColor = containerColor,
+        contentColor = contentColor,
+        focusedContainerColor = focusedContainerColor,
+        focusedContentColor = focusedContentColor,
+        pressedContainerColor = pressedContainerColor,
+        pressedContentColor = pressedContentColor,
+        disabledContainerColor = containerColor,
+        disabledContentColor = contentColor,
+    )
 
-    fun CardShape.toClickableSurfaceShape() =
-        ClickableSurfaceShape(
-            shape = shape,
-            focusedShape = focusedShape,
-            pressedShape = pressedShape,
-            disabledShape = shape,
-            focusedDisabledShape = shape,
-        )
+    fun CardShape.toClickableSurfaceShape() = ClickableSurfaceShape(
+        shape = shape,
+        focusedShape = focusedShape,
+        pressedShape = pressedShape,
+        disabledShape = shape,
+        focusedDisabledShape = shape,
+    )
 
-    fun CardScale.toClickableSurfaceScale() =
-        ClickableSurfaceScale(
-            scale = scale,
-            focusedScale = focusedScale,
-            pressedScale = pressedScale,
-            disabledScale = scale,
-            focusedDisabledScale = scale,
-        )
+    fun CardScale.toClickableSurfaceScale() = ClickableSurfaceScale(
+        scale = scale,
+        focusedScale = focusedScale,
+        pressedScale = pressedScale,
+        disabledScale = scale,
+        focusedDisabledScale = scale,
+    )
 
-    fun CardBorder.toClickableSurfaceBorder() =
-        ClickableSurfaceBorder(
-            border = border,
-            focusedBorder = focusedBorder,
-            pressedBorder = pressedBorder,
-            disabledBorder = border,
-            focusedDisabledBorder = border,
-        )
+    fun CardBorder.toClickableSurfaceBorder() = ClickableSurfaceBorder(
+        border = border,
+        focusedBorder = focusedBorder,
+        pressedBorder = pressedBorder,
+        disabledBorder = border,
+        focusedDisabledBorder = border,
+    )
 
-    fun CardGlow.toClickableSurfaceGlow() =
-        ClickableSurfaceGlow(
-            glow = glow,
-            focusedGlow = focusedGlow,
-            pressedGlow = pressedGlow,
-        )
+    fun CardGlow.toClickableSurfaceGlow() = ClickableSurfaceGlow(
+        glow = glow,
+        focusedGlow = focusedGlow,
+        pressedGlow = pressedGlow,
+    )
 }

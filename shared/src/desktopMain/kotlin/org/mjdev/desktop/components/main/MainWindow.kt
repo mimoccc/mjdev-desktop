@@ -35,94 +35,93 @@ import org.mjdev.desktop.windows.DesktopWindow
 
 // todo focus manager
 @Composable
-fun MainWindow() =
-    withDesktopContext {
-        val tooltipState: TooltipState = rememberTooltipState()
-        val controlCenterState =
-            rememberChromeWindowState(
-                visible = isDesign,
-            )
-        val panelState =
-            rememberChromeWindowState(
-                hideDelay = panelHideDelay,
-                visible = isDesign || !panelAutoHideEnabled,
-                enabled = panelAutoHideEnabled,
-            )
-        val menuState =
-            rememberChromeWindowState(
-                visible = isDesign,
-            )
-        val appsMenuState =
-            rememberAppsMenuState(
-                visible = isDesign,
-            )
-        val installWindowState = rememberVisibilityState()
-        val infoWindowState = rememberVisibilityState(false) // (api.isFirstStart || api.isDebug) // todo
-        val bottomPadding by rememberCalculated(
-            panelState.enabled,
-            panelState.height,
-        ) {
-            if (panelState.enabled) {
-                0.dp
-            } else {
-                max(0.dp, panelState.height)
-            }
+fun MainWindow() = withDesktopContext {
+    val tooltipState: TooltipState = rememberTooltipState()
+    val controlCenterState =
+        rememberChromeWindowState(
+            visible = isDesign,
+        )
+    val panelState =
+        rememberChromeWindowState(
+            hideDelay = panelHideDelay,
+            visible = isDesign || !panelAutoHideEnabled,
+            enabled = panelAutoHideEnabled,
+        )
+    val menuState =
+        rememberChromeWindowState(
+            visible = isDesign,
+        )
+    val appsMenuState =
+        rememberAppsMenuState(
+            visible = isDesign,
+        )
+    val installWindowState = rememberVisibilityState()
+    val infoWindowState = rememberVisibilityState(false) // (api.isFirstStart || api.isDebug) // todo
+    val bottomPadding by rememberCalculated(
+        panelState.enabled,
+        panelState.height,
+    ) {
+        if (panelState.enabled) {
+            0.dp
+        } else {
+            max(0.dp, panelState.height)
         }
-        val onTooltip: (item: Any?) -> Unit = { item ->
+    }
+    val onTooltip: (item: Any?) -> Unit = { item ->
 //        println("Tooltip: $item")
-            tooltipState.show(item)
-        }
-        // When the control center opens it covers the desktop, so the dock bar and any open menu
-        // step aside (this also frees focus so the control center can actually take it).
-        LaunchedEffect(controlCenterState.isVisible) {
-            if (controlCenterState.isVisible) {
-                panelState.hide()
-                if (menuState.isVisible) {
-                    menuState.hide()
-                }
-                if (appsMenuState.isVisible) {
-                    appsMenuState.hide()
-                }
+        tooltipState.show(item)
+    }
+    // When the control center opens it covers the desktop, so the dock bar and any open menu
+    // step aside (this also frees focus so the control center can actually take it).
+    LaunchedEffect(controlCenterState.isVisible) {
+        if (controlCenterState.isVisible) {
+            panelState.hide()
+            if (menuState.isVisible) {
+                menuState.hide()
+            }
+            if (appsMenuState.isVisible) {
+                appsMenuState.hide()
             }
         }
-        DesktopWindow(
-            panelState = panelState,
-            controlCenterState = controlCenterState,
-            menuState = menuState,
-        ) {
-            Desktop(
-                tooltipState = tooltipState,
-                onTooltip = onTooltip,
-                padding =
-                    PaddingValues(
-                        bottom = bottomPadding,
-                    ),
-                widgets = {
-                    MemoryChart(
-                        modifier =
-                            Modifier
-                                .size(350.dp, 300.dp)
-                                .align(Alignment.BottomEnd),
-                    )
+    }
+    DesktopWindow(
+        panelState = panelState,
+        controlCenterState = controlCenterState,
+        menuState = menuState,
+    ) {
+        Desktop(
+            tooltipState = tooltipState,
+            onTooltip = onTooltip,
+            padding =
+                PaddingValues(
+                    bottom = bottomPadding,
+                ),
+            widgets = {
+                MemoryChart(
+                    modifier =
+                        Modifier
+                            .size(350.dp, 300.dp)
+                            .align(Alignment.BottomEnd),
+                )
 //                WebView(
 //                    modifier = Modifier
 //                        .size(800.dp, 600.dp)
 //                        .align(Alignment.Center),
 //                    url = "https://www.google.com"
 //                )
-                },
-                onLeftMouseClick = {
-                    runAsync {
-                        panelState.hide()
-                        menuState.hide()
-                        controlCenterState.hide()
-                    }
-                },
-                onRightMouseClick = {
+            },
+            onLeftMouseClick = {
+                runAsync {
+                    panelState.hide()
+                    menuState.hide()
+                    controlCenterState.hide()
+                }
+            },
+            onRightMouseClick = {
 //                contextMenuState.show()
-                },
-            )
-        }
+            },
+        )
+    }
 //        DesktopPanelWindow(
 //            onTooltip = onTooltip,
 //            panelState = panelState,
@@ -139,82 +138,81 @@ fun MainWindow() =
 //                }
 //            },
 //        )
-        DockBarWindow(
-            onTooltip = onTooltip,
-            panelState = panelState,
-            menuState = menuState,
-            // Autohide is driven purely by pointer-leave (see DockBarWindow.onGlobalMouse), NOT by
-            // focus. Hiding on focus-loss flooded hide() under focus-follows-mouse (every pointer
-            // flicker over a non-focused window fired a hide) and flip-flopped the dock 16<->80.
-            onFocusChange = {},
-        )
-        AppsMenuWindow(
-            menuState = menuState,
-            panelState = panelState,
-            appsMenuState = appsMenuState,
-            onTooltip = onTooltip,
-            onFocusChange = { focused ->
-                Log.d("menu focus : $focused")
+    DockBarWindow(
+        onTooltip = onTooltip,
+        panelState = panelState,
+        menuState = menuState,
+        // Autohide is driven purely by pointer-leave (see DockBarWindow.onGlobalMouse), NOT by
+        // focus. Hiding on focus-loss flooded hide() under focus-follows-mouse (every pointer
+        // flicker over a non-focused window fired a hide) and flip-flopped the dock 16<->80.
+        onFocusChange = {},
+    )
+    AppsMenuWindow(
+        menuState = menuState,
+        panelState = panelState,
+        appsMenuState = appsMenuState,
+        onTooltip = onTooltip,
+        onFocusChange = { focused ->
+            Log.d("menu focus : $focused")
 //            if (!focused) {
 //                menuState.hide()
 //            }
-            },
-        )
-        ControlCenterWindow(
-            onTooltip = onTooltip,
-            controlCenterState = controlCenterState,
-            // Close on focus-loss = the "click outside" dismissal. Guard on isVisible so it does not
-            // fire a hide() on every focus flicker while already hidden (focus-follows-mouse would
-            // otherwise flood runAsync). Pointer-leave no longer hides it, so it stays open until a
-            // real click moves focus away (or a desktop click via onLeftMouseClick).
-            onFocusChange = { focused ->
-                if (!focused && controlCenterState.isVisible) {
-                    runAsync {
-                        controlCenterState.hide()
-                    }
-                }
-            },
-        )
-        GreeterWindow()
-        InfoWindow(
-            visibleState = infoWindowState,
-            showInstallWindow = {
+        },
+    )
+    ControlCenterWindow(
+        onTooltip = onTooltip,
+        controlCenterState = controlCenterState,
+        // Close on focus-loss = the "click outside" dismissal. Guard on isVisible so it does not
+        // fire a hide() on every focus flicker while already hidden (focus-follows-mouse would
+        // otherwise flood runAsync). Pointer-leave no longer hides it, so it stays open until a
+        // real click moves focus away (or a desktop click via onLeftMouseClick).
+        onFocusChange = { focused ->
+            if (!focused && controlCenterState.isVisible) {
                 runAsync {
-                    infoWindowState.hide()
-                    installWindowState.show()
-                }
-            },
-        )
-        InstallerWindow(
-            visibleState = installWindowState,
-        )
-        DisposableEffect(Unit) {
-            Log.i("App started with args: $appArgs")
-            Log.i("First start : $isFirstStart")
-            Log.i("Debug mode : $isDebug")
-            Shell {
-                if (!isDebug) {
-                    Log.i("Starting autostart apps")
-//                autoStartApps()
-                } else {
-                    Log.i("Starting autostart apps omitted in debug mode.")
+                    controlCenterState.hide()
                 }
             }
-            onDispose {
-                dispose()
-                Log.i("App ended.")
+        },
+    )
+    GreeterWindow()
+    InfoWindow(
+        visibleState = infoWindowState,
+        showInstallWindow = {
+            runAsync {
+                infoWindowState.hide()
+                installWindowState.show()
+            }
+        },
+    )
+    InstallerWindow(
+        visibleState = installWindowState,
+    )
+    DisposableEffect(Unit) {
+        Log.i("App started with args: $appArgs")
+        Log.i("First start : $isFirstStart")
+        Log.i("Debug mode : $isDebug")
+        Shell {
+            if (!isDebug) {
+                Log.i("Starting autostart apps")
+//                autoStartApps()
+            } else {
+                Log.i("Starting autostart apps omitted in debug mode.")
             }
         }
-        LaunchedEffect(menuState.isVisible) {
-            appsMenuState.isVisible = menuState.isVisible
+        onDispose {
+            dispose()
+            Log.i("App ended.")
         }
     }
+    LaunchedEffect(menuState.isVisible) {
+        appsMenuState.isVisible = menuState.isVisible
+    }
+}
 
 // todo
 @Suppress("unused")
 @Preview
 @Composable
-fun PreviewMainWindow() =
-    preview {
-        MainWindow()
-    }
+fun PreviewMainWindow() = preview {
+    MainWindow()
+}

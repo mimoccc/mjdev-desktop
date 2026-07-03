@@ -11,20 +11,18 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.settings.SettingsMonitor
 
 @Suppress("FunctionName")
-fun DisplaySettingsPage(context: IDesktopContext) =
-    ControlCenterPage(
-        context = context,
-        icon = SettingsMonitor,
-        name = "Display",
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
+fun DisplaySettingsPage(context: IDesktopContext) = ControlCenterPage(
+    context = context,
+    icon = SettingsMonitor,
+    name = "Display",
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    )
+}
 
 @Preview
 @Composable
-fun DisplaySettingsPagePreview() =
-    preview {
-        DisplaySettingsPage(context).Render()
-    }
+fun DisplaySettingsPagePreview() = preview {
+    DisplaySettingsPage(context).Render()
+}

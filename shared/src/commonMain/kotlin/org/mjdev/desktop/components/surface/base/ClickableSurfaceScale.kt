@@ -42,10 +42,9 @@ class ClickableSurfaceScale
             return result
         }
 
-        override fun toString(): String =
-            "ClickableSurfaceScale(scale=$scale, focusedScale=$focusedScale," +
-                "pressedScale=$pressedScale, disabledScale=$disabledScale, " +
-                "focusedDisabledScale=$focusedDisabledScale)"
+        override fun toString(): String = "ClickableSurfaceScale(scale=$scale, focusedScale=$focusedScale," +
+            "pressedScale=$pressedScale, disabledScale=$disabledScale, " +
+            "focusedDisabledScale=$focusedDisabledScale)"
 
         companion object {
             val None =

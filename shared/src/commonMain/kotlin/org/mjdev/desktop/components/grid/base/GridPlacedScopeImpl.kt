@@ -158,15 +158,14 @@ class GridPlacedScopeImpl(
         cells: GridPlacedCells,
         placementPolicy: GridPlacedPlacementPolicy,
         lastItem: GridPlacedContent?,
-    ): Int =
-        if (lastItem != null) {
-            when (placementPolicy.verticalDirection) {
-                GridPlacedPlacementPolicy.VerticalDirection.TOP_BOTTOM -> lastItem.top
-                GridPlacedPlacementPolicy.VerticalDirection.BOTTOM_TOP -> lastItem.bottom
-            }
-        } else {
-            cells.firstRow(placementPolicy)
+    ): Int = if (lastItem != null) {
+        when (placementPolicy.verticalDirection) {
+            GridPlacedPlacementPolicy.VerticalDirection.TOP_BOTTOM -> lastItem.top
+            GridPlacedPlacementPolicy.VerticalDirection.BOTTOM_TOP -> lastItem.bottom
         }
+    } else {
+        cells.firstRow(placementPolicy)
+    }
 
     private fun findNextRow(
         cells: GridPlacedCells,
@@ -185,15 +184,14 @@ class GridPlacedScopeImpl(
         cells: GridPlacedCells,
         placementPolicy: GridPlacedPlacementPolicy,
         lastItem: GridPlacedContent?,
-    ): Int =
-        if (lastItem != null) {
-            when (placementPolicy.horizontalDirection) {
-                GridPlacedPlacementPolicy.HorizontalDirection.START_END -> lastItem.left
-                GridPlacedPlacementPolicy.HorizontalDirection.END_START -> lastItem.right
-            }
-        } else {
-            cells.firstColumn(placementPolicy)
+    ): Int = if (lastItem != null) {
+        when (placementPolicy.horizontalDirection) {
+            GridPlacedPlacementPolicy.HorizontalDirection.START_END -> lastItem.left
+            GridPlacedPlacementPolicy.HorizontalDirection.END_START -> lastItem.right
         }
+    } else {
+        cells.firstColumn(placementPolicy)
+    }
 
     private fun findNextColumn(
         cells: GridPlacedCells,

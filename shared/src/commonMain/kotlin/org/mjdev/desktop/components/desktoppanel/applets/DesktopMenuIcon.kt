@@ -45,7 +45,6 @@ fun DesktopMenuIcon(
 
 @Preview
 @Composable
-fun PreviewDesktopMenuIcon() =
-    preview {
-        DesktopMenuIcon()
-    }
+fun PreviewDesktopMenuIcon() = preview {
+    DesktopMenuIcon()
+}

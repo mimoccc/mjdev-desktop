@@ -21,78 +21,76 @@ import org.mjdev.desktop.icons.settings.SettingsWifi
 import org.mjdev.desktop.log.Log
 
 @Suppress("FunctionName")
-fun WifiSettingsPage(context: IDesktopContext) =
-    ControlCenterPage(
-        context = context,
-        icon = SettingsWifi,
-        name = "Wifi",
-        condition = {
-            connectionManager.isWifiAdapterAvailable
-        },
-        saver = { ctx ->
-            PersistentPageSaver(ctx, "Assistant")
-        },
-    ) {
-        val shape = RoundedCornerShape(8.dp)
-        var isConnecting by mutableStateOf(false)
-        val wifiList: Map<String, WifiNetwork> by flowBlock(
-            emptyMap(),
-            250L,
-        ) { context.connectionManager.wifiNetworks }
-        val items: List<WifiNetwork> by rememberComputed(isConnecting) {
-            if (wifiList.isEmpty()) {
-                emptyList()
-            } else {
-                wifiList.map { e -> e.value }
-            }
-        }
-        val connect: (item: WifiNetwork) -> Unit =
-            remember {
-                { wn ->
-                    isConnecting = true
-                    context.connectionManager
-                        .connectWifi(wn.ssid)
-                        .onSuccess {
-                            Log.d("Connected to ${wn.ssid}")
-                            isConnecting = false
-                        }.onFailure { e ->
-                            Log.e(e)
-                            isConnecting = false
-                        }
-                }
-            }
-
-        ExpandableLazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            items = items,
-        ) { idx, item, expandedState ->
-            WifiRow(
-                modifier =
-                    Modifier
-                        .padding(4.dp)
-                        .fillMaxWidth()
-                        .background(
-                            Color.White.copy(alpha = 0.1f),
-                            shape,
-                        ).border(
-                            2.dp,
-                            if (item.isActive) textColor else borderColor,
-                            shape,
-                        ).padding(8.dp),
-                idx = idx,
-                item = item,
-                expandedState = expandedState,
-                isConnecting = isConnecting,
-                connect = {
-                    connect(item)
-                },
-            )
+fun WifiSettingsPage(context: IDesktopContext) = ControlCenterPage(
+    context = context,
+    icon = SettingsWifi,
+    name = "Wifi",
+    condition = {
+        connectionManager.isWifiAdapterAvailable
+    },
+    saver = { ctx ->
+        PersistentPageSaver(ctx, "Assistant")
+    },
+) {
+    val shape = RoundedCornerShape(8.dp)
+    var isConnecting by mutableStateOf(false)
+    val wifiList: Map<String, WifiNetwork> by flowBlock(
+        emptyMap(),
+        250L,
+    ) { context.connectionManager.wifiNetworks }
+    val items: List<WifiNetwork> by rememberComputed(isConnecting) {
+        if (wifiList.isEmpty()) {
+            emptyList()
+        } else {
+            wifiList.map { e -> e.value }
         }
     }
+    val connect: (item: WifiNetwork) -> Unit =
+        remember {
+            { wn ->
+                isConnecting = true
+                context.connectionManager
+                    .connectWifi(wn.ssid)
+                    .onSuccess {
+                        Log.d("Connected to ${wn.ssid}")
+                        isConnecting = false
+                    }.onFailure { e ->
+                        Log.e(e)
+                        isConnecting = false
+                    }
+            }
+        }
+
+    ExpandableLazyColumn(
+        modifier = Modifier.fillMaxWidth(),
+        items = items,
+    ) { idx, item, expandedState ->
+        WifiRow(
+            modifier =
+                Modifier
+                    .padding(4.dp)
+                    .fillMaxWidth()
+                    .background(
+                        Color.White.copy(alpha = 0.1f),
+                        shape,
+                    ).border(
+                        2.dp,
+                        if (item.isActive) textColor else borderColor,
+                        shape,
+                    ).padding(8.dp),
+            idx = idx,
+            item = item,
+            expandedState = expandedState,
+            isConnecting = isConnecting,
+            connect = {
+                connect(item)
+            },
+        )
+    }
+}
 
 @Preview
 @Composable
-fun WifiSettingsPagePreview() =
-    preview {
-        WifiSettingsPage(context).Render()
-    }
+fun WifiSettingsPagePreview() = preview {
+    WifiSettingsPage(context).Render()
+}

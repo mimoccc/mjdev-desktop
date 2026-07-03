@@ -125,32 +125,31 @@ class ThemeManagerLinux(
         }
     }
 
-    private fun createDesktopFile() =
-        runAsync {
-            runCatching {
-                desktopFile(themeDesktopFile) {
-                    mkDirs()
-                    deleteFile()
-                    desktopSection {
-                        Type = DesktopEntryType.Theme
-                        Name = THEME_MJDEV
-                        Comment = "dynamic system theme"
-                        Encoding = Charsets.UTF_8.name()
-                    }
-                    themeSection {
-                        GtkTheme = THEME_MJDEV
-                        MetacityTheme = THEME_ADWAITA_DARK
-                        IconTheme = THEME_ADWAITA_DARK
-                        CursorTheme = THEME_CURSOR_BLOOM
-                        ButtonLayout = "minimize,maximize,close:"
-                        UseOverlayScrollbars = true
-                    }
-                    write()
+    private fun createDesktopFile() = runAsync {
+        runCatching {
+            desktopFile(themeDesktopFile) {
+                mkDirs()
+                deleteFile()
+                desktopSection {
+                    Type = DesktopEntryType.Theme
+                    Name = THEME_MJDEV
+                    Comment = "dynamic system theme"
+                    Encoding = Charsets.UTF_8.name()
                 }
-            }.onFailure { e ->
-                Log.e(e)
+                themeSection {
+                    GtkTheme = THEME_MJDEV
+                    MetacityTheme = THEME_ADWAITA_DARK
+                    IconTheme = THEME_ADWAITA_DARK
+                    CursorTheme = THEME_CURSOR_BLOOM
+                    ButtonLayout = "minimize,maximize,close:"
+                    UseOverlayScrollbars = true
+                }
+                write()
             }
+        }.onFailure { e ->
+            Log.e(e)
         }
+    }
 
     private fun createCssFile(file: Path) {
         runCatching {

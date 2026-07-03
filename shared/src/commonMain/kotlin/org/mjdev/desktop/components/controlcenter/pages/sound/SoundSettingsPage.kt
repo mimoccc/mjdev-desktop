@@ -11,21 +11,19 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.settings.SettingsSound
 
 @Suppress("FunctionName")
-fun SoundSettingsPage(context: IDesktopContext) =
-    ControlCenterPage(
-        context = context,
-        icon = SettingsSound,
-        name = "Sound",
-        condition = { true }, // todo sound manager
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
+fun SoundSettingsPage(context: IDesktopContext) = ControlCenterPage(
+    context = context,
+    icon = SettingsSound,
+    name = "Sound",
+    condition = { true }, // todo sound manager
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    )
+}
 
 @Preview
 @Composable
-fun PreviewSoundSettingsPage() =
-    preview {
-        SoundSettingsPage(context).Render()
-    }
+fun PreviewSoundSettingsPage() = preview {
+    SoundSettingsPage(context).Render()
+}

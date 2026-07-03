@@ -123,9 +123,8 @@ class Theme(
             )
 
         // todo load from user settings
-        fun load(user: IUser): Theme =
-            themeCache[user.userName] ?: DEFAULT.apply {
-                themeCache[user.userName] = this
-            }
+        fun load(user: IUser): Theme = themeCache[user.userName] ?: DEFAULT.apply {
+            themeCache[user.userName] = this
+        }
     }
 }

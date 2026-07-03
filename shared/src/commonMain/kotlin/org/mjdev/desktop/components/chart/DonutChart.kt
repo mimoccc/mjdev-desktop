@@ -68,20 +68,19 @@ fun DonutChart(
 
 @Preview
 @Composable
-fun PreviewDonutChart() =
-    preview(480) {
-        DonutChart(
-            textColor = Color.White,
-            outerCircularColor = Color.White,
-            innerCircularColor = Color.White,
-            ratioLineColor = Color.White,
-            title = "Donut Chart",
-            legendPosition = LegendPosition.BOTTOM,
-            dataHandler = {
-                listOf(
-                    PieChartData(24.0, Color.Blue, "test1"),
-                    PieChartData(32.0, Color.Gray, "test2"),
-                )
-            },
-        )
-    }
+fun PreviewDonutChart() = preview(480) {
+    DonutChart(
+        textColor = Color.White,
+        outerCircularColor = Color.White,
+        innerCircularColor = Color.White,
+        ratioLineColor = Color.White,
+        title = "Donut Chart",
+        legendPosition = LegendPosition.BOTTOM,
+        dataHandler = {
+            listOf(
+                PieChartData(24.0, Color.Blue, "test1"),
+                PieChartData(32.0, Color.Gray, "test2"),
+            )
+        },
+    )
+}

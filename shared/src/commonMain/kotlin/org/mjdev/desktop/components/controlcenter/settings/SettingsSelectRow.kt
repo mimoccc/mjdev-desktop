@@ -97,12 +97,11 @@ fun SettingsSelectRow(
 
 @Preview
 @Composable
-fun PreviewSettingsSelectRow() =
-    preview {
-        SettingsSelectRow(
-            label = "Panel location",
-            selected = "Bottom",
-            options = listOf("Bottom", "Top", "Left", "Right"),
-            onSelected = {},
-        )
-    }
+fun PreviewSettingsSelectRow() = preview {
+    SettingsSelectRow(
+        label = "Panel location",
+        selected = "Bottom",
+        options = listOf("Bottom", "Top", "Left", "Right"),
+        onSelected = {},
+    )
+}

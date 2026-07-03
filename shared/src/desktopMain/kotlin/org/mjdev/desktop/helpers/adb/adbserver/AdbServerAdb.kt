@@ -43,12 +43,11 @@ class AdbServerAdb(
 
     override fun toString(): String = name
 
-    override fun equals(other: Any?): Boolean =
-        when (other) {
-            null -> false
-            !is IAdb -> false
-            else -> other.name.contentEquals(this.name) == true
-        }
+    override fun equals(other: Any?): Boolean = when (other) {
+        null -> false
+        !is IAdb -> false
+        else -> other.name.contentEquals(this.name) == true
+    }
 
     override fun hashCode(): Int {
         var result = host.hashCode()

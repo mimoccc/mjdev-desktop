@@ -48,38 +48,37 @@ class ActionsProvider(
     }
 
     // todo regexp
-    suspend fun tryAction(text: String): ActionException =
-        text.trim().lowercase().let { t ->
-            var action =
-                actions.firstOrNull { a ->
-                    a.text.contentEquals(t, true) || a.history.contains(t)
-                }
-            if (action != null) {
-                Log.i("got action $action, relevance: exact.")
-            } else {
-                val fuzzy: Pair<Int, Action>? =
-                    actions
-                        .map { a ->
-                            Pair(FuzzySearch.ratio(a.text, t), a)
-                        }.maxByOrNull { p ->
-                            p.first
-                        }?.let { p -> if (p.first > 70) p else null }
-                action = fuzzy?.second
-                if (action != null) {
-                    Log.i("got action ${fuzzy?.second}, relevance: ${fuzzy?.first}.")
-                }
+    suspend fun tryAction(text: String): ActionException = text.trim().lowercase().let { t ->
+        var action =
+            actions.firstOrNull { a ->
+                a.text.contentEquals(t, true) || a.history.contains(t)
             }
+        if (action != null) {
+            Log.i("got action $action, relevance: exact.")
+        } else {
+            val fuzzy: Pair<Int, Action>? =
+                actions
+                    .map { a ->
+                        Pair(FuzzySearch.ratio(a.text, t), a)
+                    }.maxByOrNull { p ->
+                        p.first
+                    }?.let { p -> if (p.first > 70) p else null }
+            action = fuzzy?.second
             if (action != null) {
-                action.lastSeen = currentTimeMillis
-                action.history.addIfNotExists(t) { t1, t2 -> t1.contentEquals(t2, true) }
-                action.action.invoke(ActionProviderScope(context)).let { r ->
-                    when (r) {
-                        is ActionFail, is ActionSuccess -> r
-                        else -> ActionSuccess(action.responseSuccess, r)
-                    }
-                }
-            } else {
-                ActionException.ActionNone
+                Log.i("got action ${fuzzy?.second}, relevance: ${fuzzy?.first}.")
             }
         }
+        if (action != null) {
+            action.lastSeen = currentTimeMillis
+            action.history.addIfNotExists(t) { t1, t2 -> t1.contentEquals(t2, true) }
+            action.action.invoke(ActionProviderScope(context)).let { r ->
+                when (r) {
+                    is ActionFail, is ActionSuccess -> r
+                    else -> ActionSuccess(action.responseSuccess, r)
+                }
+            }
+        } else {
+            ActionException.ActionNone
+        }
+    }
 }

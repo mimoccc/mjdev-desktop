@@ -357,25 +357,22 @@ class ListenerOnWindowRef<T>(
 }
 
 // todo move?
-fun windowStateListenerRef() =
-    ListenerOnWindowRef<java.awt.event.WindowStateListener>(
-        register = Window::addWindowStateListener,
-        unregister = Window::removeWindowStateListener,
-    )
+fun windowStateListenerRef() = ListenerOnWindowRef<java.awt.event.WindowStateListener>(
+    register = Window::addWindowStateListener,
+    unregister = Window::removeWindowStateListener,
+)
 
 // todo move?
-fun windowListenerRef() =
-    ListenerOnWindowRef<WindowListener>(
-        register = Window::addWindowListener,
-        unregister = Window::removeWindowListener,
-    )
+fun windowListenerRef() = ListenerOnWindowRef<WindowListener>(
+    register = Window::addWindowListener,
+    unregister = Window::removeWindowListener,
+)
 
 // todo move?
-fun componentListenerRef() =
-    ListenerOnWindowRef<ComponentListener>(
-        register = Component::addComponentListener,
-        unregister = Component::removeComponentListener,
-    )
+fun componentListenerRef() = ListenerOnWindowRef<ComponentListener>(
+    register = Component::addComponentListener,
+    unregister = Component::removeComponentListener,
+)
 
 // todo move?
 val GraphicsConfiguration.density: Density

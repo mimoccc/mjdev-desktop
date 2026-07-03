@@ -32,7 +32,6 @@ fun BrushedLayout(
 
 @Preview
 @Composable
-fun PreviewBrushedLayout() =
-    preview(320) {
-        BrushedLayout()
-    }
+fun PreviewBrushedLayout() = preview(320) {
+    BrushedLayout()
+}

@@ -57,10 +57,9 @@ class WindowsManager(
         get() = null
 
     // todo
-    private fun findWindows(app: App? = null): List<SystemWindow> =
-        listOf<SystemWindow>().let { list ->
-            if (app == null) list else list.filter { w -> w.windowClass == app.windowClass }
-        }
+    private fun findWindows(app: App? = null): List<SystemWindow> = listOf<SystemWindow>().let { list ->
+        if (app == null) list else list.filter { w -> w.windowClass == app.windowClass }
+    }
 
 //    init {
 //        Log.i("Current display : $currentDisplay")

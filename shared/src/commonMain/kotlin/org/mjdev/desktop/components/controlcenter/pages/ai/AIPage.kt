@@ -46,97 +46,96 @@ import org.mjdev.desktop.icons.chat.Chat
 import org.mjdev.desktop.icons.system.ContentCopy
 
 @Suppress("FunctionName")
-fun AIPage(context: IDesktopContext) =
-    ControlCenterPage(
-        context = context,
-        icon = Chat,
-        name = "Assistant",
-        condition = {
-            ai.isAvailable()
-        },
-        saver = { ctx ->
-            PersistentPageSaver(ctx, "Assistant") // todo name
-        },
-    ) {
-        val scrollState = rememberForeverLazyListState("Assistant")
-        val questionsList = remember { mutableStateListOf<Pair<String, String>>() }
-        val request = remember { mutableStateOf("") }
-        val onDone: () -> Unit = {
-            val what = request.value.replace("\n", "")
-            if (what.isNotEmpty()) {
-                questionsList.add(Pair(what, ""))
-                request.value = ""
-                scrollState.scrollWithAnimToLast(scope)
-                context.ai.ask(what) { _, res ->
-                    res
-                        .replace("* **", "")
-                        .replace("**", "")
-                        .trim()
-                        .let { resx ->
-                            questionsList.replaceLast(Pair(what, resx))
-                            scrollState.scrollWithAnimToLast(scope)
-                            context.ai.say(resx)
-                        }
-                }
-            }
-        }
-        Box(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            Row {
-                Column(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                ) {
-                    JetLimeColumn(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .background(
-                                    Color.Black.copy(alpha = 0.3f),
-                                    RoundedCornerShape(8.dp),
-                                ).verticalTouchScrollable(scrollState),
-                        itemsList = ItemsList(questionsList),
-                        style =
-                            JetLimeDefaults.columnStyle(
-                                lineThickness = 2.dp,
-                                lineBrush =
-                                    JetLimeDefaults.lineSolidBrush(
-                                        color = Color.White.alpha(0.6f),
-                                    ),
-                            ),
-                    ) { idx, item, position ->
-                        JetLimeEvent(
-                            style =
-                                JetLimeEventDefaults.eventStyle(
-                                    pointColor = Color.Black,
-                                    pointFillColor = Color.White.alpha(0.5f),
-                                    pointRadius = 8.dp,
-                                    position = position,
-                                    pointAnimation = JetLimeEventDefaults.pointAnimation(),
-                                    pointType = EventPointType.filled(0.8f),
-                                    pointStrokeWidth = 2.dp,
-                                    pointStrokeColor = Color.Black,
-                                ),
-                        ) {
-                            TimeLineItem(
-                                idx = idx,
-                                item = item,
-                            )
-                        }
+fun AIPage(context: IDesktopContext) = ControlCenterPage(
+    context = context,
+    icon = Chat,
+    name = "Assistant",
+    condition = {
+        ai.isAvailable()
+    },
+    saver = { ctx ->
+        PersistentPageSaver(ctx, "Assistant") // todo name
+    },
+) {
+    val scrollState = rememberForeverLazyListState("Assistant")
+    val questionsList = remember { mutableStateListOf<Pair<String, String>>() }
+    val request = remember { mutableStateOf("") }
+    val onDone: () -> Unit = {
+        val what = request.value.replace("\n", "")
+        if (what.isNotEmpty()) {
+            questionsList.add(Pair(what, ""))
+            request.value = ""
+            scrollState.scrollWithAnimToLast(scope)
+            context.ai.ask(what) { _, res ->
+                res
+                    .replace("* **", "")
+                    .replace("**", "")
+                    .trim()
+                    .let { resx ->
+                        questionsList.replaceLast(Pair(what, resx))
+                        scrollState.scrollWithAnimToLast(scope)
+                        context.ai.say(resx)
                     }
-                    TextArea(
-                        modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
-                        textState = request,
-                        onDone = onDone,
-                    )
-                }
             }
         }
     }
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Row {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+            ) {
+                JetLimeColumn(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .background(
+                                Color.Black.copy(alpha = 0.3f),
+                                RoundedCornerShape(8.dp),
+                            ).verticalTouchScrollable(scrollState),
+                    itemsList = ItemsList(questionsList),
+                    style =
+                        JetLimeDefaults.columnStyle(
+                            lineThickness = 2.dp,
+                            lineBrush =
+                                JetLimeDefaults.lineSolidBrush(
+                                    color = Color.White.alpha(0.6f),
+                                ),
+                        ),
+                ) { idx, item, position ->
+                    JetLimeEvent(
+                        style =
+                            JetLimeEventDefaults.eventStyle(
+                                pointColor = Color.Black,
+                                pointFillColor = Color.White.alpha(0.5f),
+                                pointRadius = 8.dp,
+                                position = position,
+                                pointAnimation = JetLimeEventDefaults.pointAnimation(),
+                                pointType = EventPointType.filled(0.8f),
+                                pointStrokeWidth = 2.dp,
+                                pointStrokeColor = Color.Black,
+                            ),
+                    ) {
+                        TimeLineItem(
+                            idx = idx,
+                            item = item,
+                        )
+                    }
+                }
+                TextArea(
+                    modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
+                    textState = request,
+                    onDone = onDone,
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun TimeLineItem(
@@ -210,7 +209,6 @@ fun TextBlock(
 
 @Preview
 @Composable
-fun PreviewAIPage() =
-    preview {
-        AIPage(context).Render()
-    }
+fun PreviewAIPage() = preview {
+    AIPage(context).Render()
+}

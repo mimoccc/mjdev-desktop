@@ -89,15 +89,13 @@ class DesktopFile(
         block: Section.() -> Unit,
     ) = (content[type.text] ?: content.add(type.text))?.apply(block)
 
-    fun desktopSection(block: DesktopSectionScope.() -> Unit) =
-        section(DesktopEntryType.DesktopEntry) {
-            DesktopSectionScope(this).apply(block)
-        }
+    fun desktopSection(block: DesktopSectionScope.() -> Unit) = section(DesktopEntryType.DesktopEntry) {
+        DesktopSectionScope(this).apply(block)
+    }
 
-    fun themeSection(block: ThemeSectionScope.() -> Unit) =
-        section(DesktopEntryType.Theme) {
-            ThemeSectionScope(this).apply(block)
-        }
+    fun themeSection(block: ThemeSectionScope.() -> Unit) = section(DesktopEntryType.Theme) {
+        ThemeSectionScope(this).apply(block)
+    }
 
     fun mkDirs(): DesktopFile {
         if (file.parent?.exists == false) file.parent?.mkdirs()

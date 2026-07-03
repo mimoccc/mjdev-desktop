@@ -186,10 +186,9 @@ class AppsManager(
                     }
                 }
 
-    fun findDesktopFileByName(deskFileName: String) =
-        allAppsDesktopFiles.filter { deskFile ->
-            deskFile.fileName.contentEquals(deskFileName)
-        }
+    fun findDesktopFileByName(deskFileName: String) = allAppsDesktopFiles.filter { deskFile ->
+        deskFile.fileName.contentEquals(deskFileName)
+    }
 
     override suspend fun startApp(app: IApp) {
         app.start()

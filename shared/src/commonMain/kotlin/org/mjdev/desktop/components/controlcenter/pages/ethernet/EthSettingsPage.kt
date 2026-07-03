@@ -11,24 +11,22 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.settings.SettingsEthernet
 
 @Suppress("FunctionName")
-fun EthSettingsPage(context: IDesktopContext) =
-    ControlCenterPage(
-        context = context,
-        icon = SettingsEthernet,
-        name = "Ethernet",
-        condition = {
-            false
+fun EthSettingsPage(context: IDesktopContext) = ControlCenterPage(
+    context = context,
+    icon = SettingsEthernet,
+    name = "Ethernet",
+    condition = {
+        false
 //        connectionManager.isEthAdapterAvailable
-        },
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
+    },
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    )
+}
 
 @Preview
 @Composable
-fun EthSettingsPagePreview() =
-    preview {
-        EthSettingsPage(context).Render()
-    }
+fun EthSettingsPagePreview() = preview {
+    EthSettingsPage(context).Render()
+}

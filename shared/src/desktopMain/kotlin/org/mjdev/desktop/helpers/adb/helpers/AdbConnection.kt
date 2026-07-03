@@ -118,7 +118,11 @@ internal class AdbConnection(
                     .map { it.split("=") }
                     .mapNotNull { if (it.size != 2) null else it[0] to it[1] }
                     .toMap()
-            if ("features" !in keyValues) throw IOException("Failed to parse features from connection string: $connectionString")
+            if ("features" !in
+                keyValues
+            ) {
+                throw IOException("Failed to parse features from connection string: $connectionString")
+            }
             val features = keyValues.getValue("features").split(",").toSet()
             return ConnectionString(features)
         }

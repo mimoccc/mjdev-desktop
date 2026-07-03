@@ -42,8 +42,7 @@ class ClickableSurfaceShape
             return result
         }
 
-        override fun toString(): String =
-            "ClickableSurfaceShape(shape=$shape, focusedShape=$focusedShape, " +
-                "pressedShape=$pressedShape, disabledShape=$disabledShape, " +
-                "focusedDisabledShape=$focusedDisabledShape)"
+        override fun toString(): String = "ClickableSurfaceShape(shape=$shape, focusedShape=$focusedShape, " +
+            "pressedShape=$pressedShape, disabledShape=$disabledShape, " +
+            "focusedDisabledShape=$focusedDisabledShape)"
     }

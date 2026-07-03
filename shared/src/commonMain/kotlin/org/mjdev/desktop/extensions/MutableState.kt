@@ -73,8 +73,7 @@ object MutableStateExt {
         value = !value
     }
 
-    fun <T> mutableStateListFlow(function: (List<T>) -> List<T>) =
-        MutableStateFlow<List<T>>(emptyList()).apply {
-            update(function)
-        }
+    fun <T> mutableStateListFlow(function: (List<T>) -> List<T>) = MutableStateFlow<List<T>>(emptyList()).apply {
+        update(function)
+    }
 }

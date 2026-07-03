@@ -139,148 +139,144 @@ fun AppBar(
 
 @Preview
 @Composable
-fun PreviewAppBarHorizontal() =
-    preview {
-        AppBar(
-            modifier =
-                Modifier
-                    .height(48.dp)
-                    .background(Color.Green),
-            orientation = Orientation.Horizontal,
-            fillCenter = false,
-            icon = {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(24.dp)
-                            .background(Color.Red),
-                )
-            },
-            title = {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(24.dp)
-                            .background(Color.Blue),
-                )
-            },
-            actions = {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(24.dp, 24.dp)
-                            .background(Color.Yellow),
-                )
-            },
-        )
-    }
+fun PreviewAppBarHorizontal() = preview {
+    AppBar(
+        modifier =
+            Modifier
+                .height(48.dp)
+                .background(Color.Green),
+        orientation = Orientation.Horizontal,
+        fillCenter = false,
+        icon = {
+            Box(
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .background(Color.Red),
+            )
+        },
+        title = {
+            Box(
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .background(Color.Blue),
+            )
+        },
+        actions = {
+            Box(
+                modifier =
+                    Modifier
+                        .size(24.dp, 24.dp)
+                        .background(Color.Yellow),
+            )
+        },
+    )
+}
 
 @Preview
 @Composable
-fun PreviewAppBarHorizontalFill() =
-    preview {
-        AppBar(
-            modifier =
-                Modifier
-                    .height(48.dp)
-                    .background(Color.Green),
-            orientation = Orientation.Horizontal,
-            fillCenter = true,
-            icon = {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(24.dp)
-                            .background(Color.Red),
-                )
-            },
-            title = {
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(24.dp)
-                            .background(Color.Blue),
-                )
-            },
-            actions = {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(24.dp, 24.dp)
-                            .background(Color.Yellow),
-                )
-            },
-        )
-    }
+fun PreviewAppBarHorizontalFill() = preview {
+    AppBar(
+        modifier =
+            Modifier
+                .height(48.dp)
+                .background(Color.Green),
+        orientation = Orientation.Horizontal,
+        fillCenter = true,
+        icon = {
+            Box(
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .background(Color.Red),
+            )
+        },
+        title = {
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(24.dp)
+                        .background(Color.Blue),
+            )
+        },
+        actions = {
+            Box(
+                modifier =
+                    Modifier
+                        .size(24.dp, 24.dp)
+                        .background(Color.Yellow),
+            )
+        },
+    )
+}
 
 @Preview
 @Composable
-fun PreviewAppBarVertical() =
-    preview {
-        AppBar(
-            modifier = Modifier.background(Color.Green),
-            orientation = Orientation.Vertical,
-            fillCenter = false,
-            icon = {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(24.dp)
-                            .background(Color.Red),
-                )
-            },
-            title = {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(24.dp)
-                            .background(Color.Blue),
-                )
-            },
-            actions = {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(24.dp)
-                            .background(Color.Yellow),
-                )
-            },
-        )
-    }
+fun PreviewAppBarVertical() = preview {
+    AppBar(
+        modifier = Modifier.background(Color.Green),
+        orientation = Orientation.Vertical,
+        fillCenter = false,
+        icon = {
+            Box(
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .background(Color.Red),
+            )
+        },
+        title = {
+            Box(
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .background(Color.Blue),
+            )
+        },
+        actions = {
+            Box(
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .background(Color.Yellow),
+            )
+        },
+    )
+}
 
 @Preview
 @Composable
-fun PreviewAppBarVerticalFill() =
-    preview {
-        AppBar(
-            modifier = Modifier.background(Color.Green),
-            orientation = Orientation.Vertical,
-            fillCenter = true,
-            icon = {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(24.dp)
-                            .background(Color.Red),
-                )
-            },
-            title = {
-                Box(
-                    modifier =
-                        Modifier
-                            .width(24.dp)
-                            .fillMaxHeight()
-                            .background(Color.Blue),
-                )
-            },
-            actions = {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(24.dp)
-                            .background(Color.Yellow),
-                )
-            },
-        )
-    }
+fun PreviewAppBarVerticalFill() = preview {
+    AppBar(
+        modifier = Modifier.background(Color.Green),
+        orientation = Orientation.Vertical,
+        fillCenter = true,
+        icon = {
+            Box(
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .background(Color.Red),
+            )
+        },
+        title = {
+            Box(
+                modifier =
+                    Modifier
+                        .width(24.dp)
+                        .fillMaxHeight()
+                        .background(Color.Blue),
+            )
+        },
+        actions = {
+            Box(
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .background(Color.Yellow),
+            )
+        },
+    )
+}

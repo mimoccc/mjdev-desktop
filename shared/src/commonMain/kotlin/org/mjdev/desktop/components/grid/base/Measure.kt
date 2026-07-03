@@ -21,26 +21,25 @@ object Measure {
         content: List<GridPlacedContent>,
         cellPlaces: Array<Array<CellPlacedInfo>>,
         constraints: Constraints,
-    ): List<Placeable> =
-        mapIndexed { index, measurable ->
-            val contentMetaInfo = content[index]
-            val maxWidth =
-                (contentMetaInfo.left..contentMetaInfo.right).sumOf { column ->
-                    cellPlaces[contentMetaInfo.top][column].width
-                }
-            val maxHeight =
-                (contentMetaInfo.top..contentMetaInfo.bottom).sumOf { row ->
-                    cellPlaces[row][contentMetaInfo.left].height
-                }
-            measurable.measure(
-                constraints.copy(
-                    minWidth = min(constraints.minWidth, maxWidth),
-                    maxWidth = maxWidth,
-                    minHeight = min(constraints.minHeight, maxHeight),
-                    maxHeight = maxHeight,
-                ),
-            )
-        }
+    ): List<Placeable> = mapIndexed { index, measurable ->
+        val contentMetaInfo = content[index]
+        val maxWidth =
+            (contentMetaInfo.left..contentMetaInfo.right).sumOf { column ->
+                cellPlaces[contentMetaInfo.top][column].width
+            }
+        val maxHeight =
+            (contentMetaInfo.top..contentMetaInfo.bottom).sumOf { row ->
+                cellPlaces[row][contentMetaInfo.left].height
+            }
+        measurable.measure(
+            constraints.copy(
+                minWidth = min(constraints.minWidth, maxWidth),
+                maxWidth = maxWidth,
+                minHeight = min(constraints.minHeight, maxHeight),
+                maxHeight = maxHeight,
+            ),
+        )
+    }
 
     fun MeasureScope.calculateCellPlaces(
         cells: GridPlacedCells,

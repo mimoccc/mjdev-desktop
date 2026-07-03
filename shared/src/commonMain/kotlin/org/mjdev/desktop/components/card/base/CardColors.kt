@@ -43,12 +43,11 @@ class CardColors(
         return result
     }
 
-    override fun toString(): String =
-        "CardColors(" +
-            "containerColor=$containerColor, " +
-            "contentColor=$contentColor, " +
-            "focusedContainerColor=$focusedContainerColor, " +
-            "focusedContentColor=$focusedContentColor, " +
-            "pressedContainerColor=$pressedContainerColor, " +
-            "pressedContentColor=$pressedContentColor)"
+    override fun toString(): String = "CardColors(" +
+        "containerColor=$containerColor, " +
+        "contentColor=$contentColor, " +
+        "focusedContainerColor=$focusedContainerColor, " +
+        "focusedContentColor=$focusedContentColor, " +
+        "pressedContainerColor=$pressedContainerColor, " +
+        "pressedContentColor=$pressedContentColor)"
 }

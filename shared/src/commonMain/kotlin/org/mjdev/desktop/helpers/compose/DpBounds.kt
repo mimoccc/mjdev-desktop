@@ -22,9 +22,8 @@ data class DpBounds(
     companion object {
         val Zero = DpBounds(0.dp, 0.dp, 0.dp, 0.dp)
 
-        fun LayoutCoordinates.toDpBounds(): DpBounds =
-            boundsInParent().let {
-                DpBounds(it.left.dp, it.top.dp, it.width.dp, it.height.dp)
-            }
+        fun LayoutCoordinates.toDpBounds(): DpBounds = boundsInParent().let {
+            DpBounds(it.left.dp, it.top.dp, it.width.dp, it.height.dp)
+        }
     }
 }

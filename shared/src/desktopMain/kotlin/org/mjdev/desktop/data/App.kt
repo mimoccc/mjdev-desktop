@@ -150,14 +150,13 @@ class App(
         return this
     }
 
-    override fun equals(other: Any?): Boolean =
-        when {
-            other is App -> {
-                other.fileName.contentEquals(file.name)
-            }
-
-            else -> false
+    override fun equals(other: Any?): Boolean = when {
+        other is App -> {
+            other.fileName.contentEquals(file.name)
         }
+
+        else -> false
+    }
 
     override fun hashCode(): Int {
         var result = file.hashCode()
@@ -197,16 +196,15 @@ class App(
 
         val Empty: App = App()
 
-        fun List<String>?.ifEmptyCategories(block: () -> List<String>) =
-            this
-                ?.filter { s ->
-                    s.isNotEmpty()
-                }.let { list ->
-                    when {
-                        list == null -> block()
-                        list.isEmpty() -> block()
-                        else -> list
-                    }
+        fun List<String>?.ifEmptyCategories(block: () -> List<String>) = this
+            ?.filter { s ->
+                s.isNotEmpty()
+            }.let { list ->
+                when {
+                    list == null -> block()
+                    list.isEmpty() -> block()
+                    else -> list
                 }
+            }
     }
 }

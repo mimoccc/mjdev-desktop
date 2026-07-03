@@ -76,33 +76,30 @@ class ConnectivityManagerLinux(
             },
         )
 
-    private fun rescanWifi() =
-        Shell.executeAndReadLines(
+    private fun rescanWifi() = Shell.executeAndReadLines(
+        CMD_NMCLI,
+        *CMD_NMCLI_RESCAN,
+    )
+
+    private fun getWifiNetworks() = Shell
+        .executeAndReadLines(
             CMD_NMCLI,
-            *CMD_NMCLI_RESCAN,
-        )
+            *CMD_NMCLI_GET_NETWORKS,
+        ).map { ws ->
+            WifiNetwork(ws.split(":"))
+        }.distinctBy { it.ssid }
+        .sortedByDescending { it.isActive }
 
-    private fun getWifiNetworks() =
-        Shell
-            .executeAndReadLines(
-                CMD_NMCLI,
-                *CMD_NMCLI_GET_NETWORKS,
-            ).map { ws ->
-                WifiNetwork(ws.split(":"))
-            }.distinctBy { it.ssid }
-            .sortedByDescending { it.isActive }
-
-    override fun connectWifi(ssid: String): Result<Boolean> =
-        Shell
-            .execute(
-                CMD_NMCLI,
-                "c",
-                "up",
-                "id",
-                ssid,
-            ).let { p ->
-                Result.success(p.isSuccess)
-            }
+    override fun connectWifi(ssid: String): Result<Boolean> = Shell
+        .execute(
+            CMD_NMCLI,
+            "c",
+            "up",
+            "id",
+            ssid,
+        ).let { p ->
+            Result.success(p.isSuccess)
+        }
 
     override fun connectWifi(
         ssid: String,

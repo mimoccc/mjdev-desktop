@@ -228,14 +228,24 @@ interface IAdb : AutoCloseable {
 
     @Throws(IOException::class)
     fun execCmd(vararg command: String): IAdbStream {
-        if (!supportsFeature("cmd")) throw UnsupportedOperationException("cmd is not supported on this version of Android")
+        if (!supportsFeature(
+                "cmd",
+            )
+        ) {
+            throw UnsupportedOperationException("cmd is not supported on this version of Android")
+        }
         val destination = (listOf("exec:cmd") + command).joinToString(" ")
         return open(destination)
     }
 
     @Throws(IOException::class)
     fun abbExec(vararg command: String): IAdbStream {
-        if (!supportsFeature("abb_exec")) throw UnsupportedOperationException("abb_exec is not supported on this version of Android")
+        if (!supportsFeature(
+                "abb_exec",
+            )
+        ) {
+            throw UnsupportedOperationException("abb_exec is not supported on this version of Android")
+        }
         val destination = "abb_exec:${command.joinToString("\u0000")}"
         return open(destination)
     }
@@ -353,8 +363,7 @@ interface IAdb : AutoCloseable {
             }
         }
 
-        private fun readMode(file: File): Int =
-            Files.getAttribute(file.toPath(), "unix:mode") as? Int
-                ?: throw RuntimeException("Unable to read file mode")
+        private fun readMode(file: File): Int = Files.getAttribute(file.toPath(), "unix:mode") as? Int
+            ?: throw RuntimeException("Unable to read file mode")
     }
 }

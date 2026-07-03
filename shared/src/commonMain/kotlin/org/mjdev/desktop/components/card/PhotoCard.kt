@@ -90,25 +90,23 @@ fun PhotoCard(
 fun computeCardWidth(
     api: IDesktopContext = LocalDesktopContext.current,
     ratio: Float = 2.5f,
-): Dp =
-    if (api.containerSize.let { it.height > it.width }) {
-        api.containerSize.width / ratio
-    } else {
-        api.containerSize.height / ratio
-    }
+): Dp = if (api.containerSize.let { it.height > it.width }) {
+    api.containerSize.width / ratio
+} else {
+    api.containerSize.height / ratio
+}
 
 @Preview
 @Composable
-fun PreviewPhotoCard() =
-    preview {
-        PhotoCard(
-            item = "test",
-            modifier = Modifier.size(200.dp, 128.dp),
-            scale = CardDefaults.scale(1f),
-            contentScale = ContentScale.Crop,
-            textColor = Color.Black,
-            showTitle = true,
-            focused = true,
-            aspectRatio = HorizontalImageAspectRatio,
-        )
-    }
+fun PreviewPhotoCard() = preview {
+    PhotoCard(
+        item = "test",
+        modifier = Modifier.size(200.dp, 128.dp),
+        scale = CardDefaults.scale(1f),
+        contentScale = ContentScale.Crop,
+        textColor = Color.Black,
+        showTitle = true,
+        focused = true,
+        aspectRatio = HorizontalImageAspectRatio,
+    )
+}

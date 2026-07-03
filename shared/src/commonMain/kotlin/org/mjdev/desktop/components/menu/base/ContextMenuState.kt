@@ -20,11 +20,10 @@ class ContextMenuState(
 
     companion object {
         @Composable
-        fun rememberContextMenuState(vararg items: String) =
-            remember {
-                ContextMenuState(
-                    items = items.asList(),
-                )
-            }
+        fun rememberContextMenuState(vararg items: String) = remember {
+            ContextMenuState(
+                items = items.asList(),
+            )
+        }
     }
 }

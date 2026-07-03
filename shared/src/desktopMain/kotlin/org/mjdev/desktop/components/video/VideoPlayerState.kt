@@ -27,7 +27,6 @@ actual class VideoPlayerState {
 }
 
 @Composable
-actual fun rememberVideoPlayerState() =
-    remember {
-        VideoPlayerState()
-    }
+actual fun rememberVideoPlayerState() = remember {
+    VideoPlayerState()
+}

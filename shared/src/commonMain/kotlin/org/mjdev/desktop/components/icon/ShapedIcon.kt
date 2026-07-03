@@ -72,7 +72,6 @@ fun ShapedIcon(
 
 @Preview
 @Composable
-fun PreviewShapedIcon() =
-    preview {
-        ShapedIcon()
-    }
+fun PreviewShapedIcon() = preview {
+    ShapedIcon()
+}

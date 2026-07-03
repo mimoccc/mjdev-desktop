@@ -15,9 +15,8 @@ import org.mjdev.desktop.managers.os.base.OSManagerStub
 import org.mjdev.desktop.managers.os.linux.OSManagerLinux
 
 @Suppress("FunctionName")
-fun OsManager(context: IDesktopContext) =
-    when (hostOs) {
-        // todo other platforms
-        OS.Linux -> OSManagerLinux(context)
-        else -> OSManagerStub(context)
-    }
+fun OsManager(context: IDesktopContext) = when (hostOs) {
+    // todo other platforms
+    OS.Linux -> OSManagerLinux(context)
+    else -> OSManagerStub(context)
+}

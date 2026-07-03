@@ -41,29 +41,26 @@ object Colors {
 
     fun Color.blue(red: Float) = copy(blue = red)
 
-    fun Color.r(r: Int): Color =
-        Color(
-            r,
-            this.green.toInt(),
-            this.blue.toInt(),
-            this.alpha.toInt(),
-        )
+    fun Color.r(r: Int): Color = Color(
+        r,
+        this.green.toInt(),
+        this.blue.toInt(),
+        this.alpha.toInt(),
+    )
 
-    fun Color.g(g: Int): Color =
-        Color(
-            this.red.toInt(),
-            g,
-            this.blue.toInt(),
-            this.alpha.toInt(),
-        )
+    fun Color.g(g: Int): Color = Color(
+        this.red.toInt(),
+        g,
+        this.blue.toInt(),
+        this.alpha.toInt(),
+    )
 
-    fun Color.b(b: Int): Color =
-        Color(
-            this.red.toInt(),
-            this.green.toInt(),
-            b,
-            this.alpha.toInt(),
-        )
+    fun Color.b(b: Int): Color = Color(
+        this.red.toInt(),
+        this.green.toInt(),
+        b,
+        this.alpha.toInt(),
+    )
 
     fun Color.invert(): Color {
         val a: Int = alpha.roundToInt()
@@ -78,48 +75,45 @@ object Colors {
         return Color(color)
     }
 
-    fun Color.lighter(factor: Float) =
-        copy(
-            red = red + factor,
-            green = green + factor,
-            blue = blue + factor,
-        )
+    fun Color.lighter(factor: Float) = copy(
+        red = red + factor,
+        green = green + factor,
+        blue = blue + factor,
+    )
 
-    fun Color.darker(factor: Float) =
-        copy(
-            red = red - factor,
-            green = green - factor,
-            blue = blue - factor,
-        )
+    fun Color.darker(factor: Float) = copy(
+        red = red - factor,
+        green = green - factor,
+        blue = blue - factor,
+    )
 
     @Suppress("FunctionName")
-    fun ContrastColorFilter(contrast: Float) =
-        ColorFilter.colorMatrix(
-            ColorMatrix(
-                floatArrayOf(
-                    contrast,
-                    0f,
-                    0f,
-                    0f,
-                    0f,
-                    0f,
-                    contrast,
-                    0f,
-                    0f,
-                    0f,
-                    0f,
-                    0f,
-                    contrast,
-                    0f,
-                    0f,
-                    0f,
-                    0f,
-                    0f,
-                    1f,
-                    0f,
-                ),
+    fun ContrastColorFilter(contrast: Float) = ColorFilter.colorMatrix(
+        ColorMatrix(
+            floatArrayOf(
+                contrast,
+                0f,
+                0f,
+                0f,
+                0f,
+                0f,
+                contrast,
+                0f,
+                0f,
+                0f,
+                0f,
+                0f,
+                contrast,
+                0f,
+                0f,
+                0f,
+                0f,
+                0f,
+                1f,
+                0f,
             ),
-        )
+        ),
+    )
 
 //    fun Color.rgbToHex(): String = copy(alpha = 1f).rgbaToHex()
 
@@ -141,30 +135,29 @@ object Colors {
     fun createVerticalColorBrush(
         color: Color,
         gravity: Gravity,
-    ): Brush =
-        Brush.verticalGradient(
-            when (gravity) {
-                Gravity.TOP ->
-                    listOf(
-                        color,
-                        color,
-                        color,
-                        color.copy(alpha = 0.8f),
-                        color.copy(alpha = 0.5f),
-                        Color.Transparent,
-                    )
+    ): Brush = Brush.verticalGradient(
+        when (gravity) {
+            Gravity.TOP ->
+                listOf(
+                    color,
+                    color,
+                    color,
+                    color.copy(alpha = 0.8f),
+                    color.copy(alpha = 0.5f),
+                    Color.Transparent,
+                )
 
-                Gravity.BOTTOM ->
-                    listOf(
-                        Color.Transparent,
-                        color.copy(alpha = 0.5f),
-                        color.copy(alpha = 0.8f),
-                        color,
-                        color,
-                        color,
-                    )
+            Gravity.BOTTOM ->
+                listOf(
+                    Color.Transparent,
+                    color.copy(alpha = 0.5f),
+                    color.copy(alpha = 0.8f),
+                    color,
+                    color,
+                    color,
+                )
 
-                else -> listOf(color)
-            },
-        )
+            else -> listOf(color)
+        },
+    )
 }

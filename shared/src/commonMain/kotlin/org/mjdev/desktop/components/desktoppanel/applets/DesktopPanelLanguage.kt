@@ -23,7 +23,6 @@ fun DesktopPanelLanguage(
 
 @Preview
 @Composable
-fun vDesktopPanelLanguage() =
-    preview {
-        DesktopPanelLanguage()
-    }
+fun vDesktopPanelLanguage() = preview {
+    DesktopPanelLanguage()
+}

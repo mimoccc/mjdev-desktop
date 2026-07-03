@@ -126,32 +126,31 @@ class DesktopContext(
     override fun dispose() {
     }
 
-    override fun createManager(cls: KClass<*>): IDelegate =
-        when (cls) {
-            IOSManager::class -> OsManager(this)
-            IPalette::class -> Palette(this)
-            ITranslator::class -> Translator(this)
-            IConnectivityManager::class -> ConnectivityManager(this)
-            IAiManager::class ->
-                AiManager(
-                    context = this,
-                    // todo user can configure
-                    pluginAI = AiPluginOpenAi(this@DesktopContext),
-                    pluginTTS = TTSPluginAndroid(this@DesktopContext),
-                    pluginSTT = STTPluginEmpty(this@DesktopContext),
-                )
+    override fun createManager(cls: KClass<*>): IDelegate = when (cls) {
+        IOSManager::class -> OsManager(this)
+        IPalette::class -> Palette(this)
+        ITranslator::class -> Translator(this)
+        IConnectivityManager::class -> ConnectivityManager(this)
+        IAiManager::class ->
+            AiManager(
+                context = this,
+                // todo user can configure
+                pluginAI = AiPluginOpenAi(this@DesktopContext),
+                pluginTTS = TTSPluginAndroid(this@DesktopContext),
+                pluginSTT = STTPluginEmpty(this@DesktopContext),
+            )
 
-            IAppsManager::class -> AppsManager(this)
-            IThemeManager::class -> ThemeManager(this)
-            IProcessManager::class -> ProcessManager(this)
-            IKeyManager::class -> KeysManager(this)
-            else ->
-                cls.companionObject
-                    ?.members
-                    ?.first {
-                        it.name == "EMPTY"
-                    }?.call() as IDelegate
-        }
+        IAppsManager::class -> AppsManager(this)
+        IThemeManager::class -> ThemeManager(this)
+        IProcessManager::class -> ProcessManager(this)
+        IKeyManager::class -> KeysManager(this)
+        else ->
+            cls.companionObject
+                ?.members
+                ?.first {
+                    it.name == "EMPTY"
+                }?.call() as IDelegate
+    }
 
     companion object {
         @Composable

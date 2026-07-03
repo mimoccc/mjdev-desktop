@@ -118,9 +118,8 @@ fun PasswordTextView(
 
 @Preview
 @Composable
-fun PreviewPasswordTextView() =
-    preview {
-        PasswordTextView(
-            password = mutableStateOf("test"),
-        )
-    }
+fun PreviewPasswordTextView() = preview {
+    PasswordTextView(
+        password = mutableStateOf("test"),
+    )
+}

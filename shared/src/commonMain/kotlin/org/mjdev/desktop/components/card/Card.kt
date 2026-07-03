@@ -61,15 +61,14 @@ fun Card(
 
 @Preview
 @Composable
-fun PreviewCard() =
-    preview {
-        Card(
-            modifier = Modifier.size(200.dp, 128.dp),
-            colors =
-                CardDefaults.colors(
-                    containerColor = Color.White,
-                ),
-            border = CardDefaults.border(2.dp),
-            glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
-        )
-    }
+fun PreviewCard() = preview {
+    Card(
+        modifier = Modifier.size(200.dp, 128.dp),
+        colors =
+            CardDefaults.colors(
+                containerColor = Color.White,
+            ),
+        border = CardDefaults.border(2.dp),
+        glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
+    )
+}

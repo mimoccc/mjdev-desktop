@@ -15,17 +15,16 @@ class PersistentPageSaver(
         context.storageProvider.put(key, data.asJson())
     }
 
-    override fun load(): Map<Int, Any> =
-        runCatching {
-            Log.d("Loading data for $key")
-            context.storageProvider.get(key)?.to<Map<Int, Any>>()
-        }.onFailure { e ->
-            Log.e(e)
-        }.getOrNull() ?: emptyMap<Int, Any>().also { data ->
-            if (data.isEmpty()) {
-                Log.d("No data found for $key, returning empty map.")
-            } else {
-                Log.d("Loaded data for $key: $data.")
-            }
+    override fun load(): Map<Int, Any> = runCatching {
+        Log.d("Loading data for $key")
+        context.storageProvider.get(key)?.to<Map<Int, Any>>()
+    }.onFailure { e ->
+        Log.e(e)
+    }.getOrNull() ?: emptyMap<Int, Any>().also { data ->
+        if (data.isEmpty()) {
+            Log.d("No data found for $key, returning empty map.")
+        } else {
+            Log.d("Loaded data for $key: $data.")
         }
+    }
 }

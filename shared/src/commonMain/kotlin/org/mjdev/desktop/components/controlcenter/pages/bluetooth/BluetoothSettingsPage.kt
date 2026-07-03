@@ -11,24 +11,22 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.network.Bluetooth
 
 @Suppress("FunctionName")
-fun BluetoothSettingsPage(context: IDesktopContext) =
-    ControlCenterPage(
-        context = context,
-        icon = Bluetooth,
-        name = "Bluetooth",
-        condition = {
-            false
+fun BluetoothSettingsPage(context: IDesktopContext) = ControlCenterPage(
+    context = context,
+    icon = Bluetooth,
+    name = "Bluetooth",
+    condition = {
+        false
 //        connectionManager.isBthAdapterAvailable
-        },
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
+    },
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    )
+}
 
 @Preview
 @Composable
-fun BluetoothSettingsPagePreview() =
-    preview {
-        BluetoothSettingsPage(context).Render()
-    }
+fun BluetoothSettingsPagePreview() = preview {
+    BluetoothSettingsPage(context).Render()
+}

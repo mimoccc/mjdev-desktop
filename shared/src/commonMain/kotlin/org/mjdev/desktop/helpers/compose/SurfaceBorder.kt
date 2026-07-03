@@ -26,30 +26,28 @@ import org.mjdev.desktop.components.surface.base.SurfaceShapeOutlineCache
 internal fun Modifier.surfaceBorder(
     shape: Shape,
     border: Border,
-): Modifier =
-    then(
-        SurfaceBorderElement(
-            shape = shape,
-            border = border,
-            inspectorInfo =
-                debugInspectorInfo {
-                    name = "tvSurfaceBorder"
-                    properties["shape"] = shape
-                    properties["border"] = border
-                },
-        ),
-    )
+): Modifier = then(
+    SurfaceBorderElement(
+        shape = shape,
+        border = border,
+        inspectorInfo =
+            debugInspectorInfo {
+                name = "tvSurfaceBorder"
+                properties["shape"] = shape
+                properties["border"] = border
+            },
+    ),
+)
 
 private class SurfaceBorderElement(
     private val shape: Shape,
     private val border: Border,
     private val inspectorInfo: InspectorInfo.() -> Unit,
 ) : ModifierNodeElement<SurfaceBorderNode>() {
-    override fun create(): SurfaceBorderNode =
-        SurfaceBorderNode(
-            shape = shape,
-            border = border,
-        )
+    override fun create(): SurfaceBorderNode = SurfaceBorderNode(
+        shape = shape,
+        border = border,
+    )
 
     override fun update(node: SurfaceBorderNode) {
         node.reactToUpdates(

@@ -21,22 +21,20 @@ class ActionProviderScope(
     suspend fun success(text: String) = ActionSuccess(text)
 
     // todo actions
-    suspend fun open(what: String): ActionException =
-        try {
-            context.open(what)
-            ActionSuccess()
-        } catch (e: Exception) {
-            ActionFail(e)
-        }
+    suspend fun open(what: String): ActionException = try {
+        context.open(what)
+        ActionSuccess()
+    } catch (e: Exception) {
+        ActionFail(e)
+    }
 
     suspend fun say(
         what: String,
         clearQueue: Boolean = false,
-    ): ActionException =
-        try {
-            ai.say(what, clearQueue)
-            ActionSuccess()
-        } catch (e: Exception) {
-            ActionFail(e)
-        }
+    ): ActionException = try {
+        ai.say(what, clearQueue)
+        ActionSuccess()
+    } catch (e: Exception) {
+        ActionFail(e)
+    }
 }

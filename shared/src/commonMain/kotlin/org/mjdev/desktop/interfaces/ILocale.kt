@@ -8,11 +8,10 @@ interface ILocale {
         fun from(
             country: String,
             displayName: String,
-        ): ILocale =
-            object : ILocale {
-                override val country: String = country
-                override val displayName: String = displayName
-            }
+        ): ILocale = object : ILocale {
+            override val country: String = country
+            override val displayName: String = displayName
+        }
 
         val DEFAULT = from("US", "EN")
     }

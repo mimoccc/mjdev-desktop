@@ -25,25 +25,23 @@ class DesktopConfigStore(
             .resolve(CONFIG_SUBDIR_NAME)
             .resolve(CONFIG_FILE_NAME)
 
-    fun load(): DesktopConfigData =
-        runCatching {
-            if (configFile.exists) {
-                fromJson<DesktopConfigData>(configFile.text)
-            } else {
-                null
-            }
-        }.onFailure { e ->
-            Log.e(e)
-        }.getOrNull() ?: DesktopConfigData()
+    fun load(): DesktopConfigData = runCatching {
+        if (configFile.exists) {
+            fromJson<DesktopConfigData>(configFile.text)
+        } else {
+            null
+        }
+    }.onFailure { e ->
+        Log.e(e)
+    }.getOrNull() ?: DesktopConfigData()
 
-    fun save(data: DesktopConfigData) =
-        runCatching {
-            configFile.parentFile.mkdirs()
-            configFile.writeText(data.toJson())
-            Log.d("Desktop config saved to $configFile")
-        }.onFailure { e ->
-            Log.e(e)
-        }.let {}
+    fun save(data: DesktopConfigData) = runCatching {
+        configFile.parentFile.mkdirs()
+        configFile.writeText(data.toJson())
+        Log.d("Desktop config saved to $configFile")
+    }.onFailure { e ->
+        Log.e(e)
+    }.let {}
 
     companion object {
         const val CONFIG_DIR_NAME = ".mjdev"

@@ -46,12 +46,11 @@ class Border(
         border: BorderStroke? = null,
         inset: Dp? = null,
         shape: Shape? = null,
-    ): Border =
-        Border(
-            border = border ?: this.border,
-            inset = inset ?: this.inset,
-            shape = shape ?: this.shape,
-        )
+    ): Border = Border(
+        border = border ?: this.border,
+        inset = inset ?: this.inset,
+        shape = shape ?: this.shape,
+    )
 
     companion object {
         val None =

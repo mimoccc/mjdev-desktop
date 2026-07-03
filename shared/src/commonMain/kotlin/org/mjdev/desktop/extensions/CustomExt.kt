@@ -121,37 +121,33 @@ object CustomExt {
 //        ignoreCase: Boolean = false
 //    ) = !trim().startsWith(prefix, ignoreCase)
 
-    suspend fun <T : Any> getAsync(block: () -> T): T =
-        suspendCoroutine { continuation ->
-            runCatching {
-                block()
-            }.onSuccess { result ->
-                continuation.resumeWith(Result.success(result))
-            }.onFailure { e ->
-                continuation.resumeWith(Result.failure(e))
-            }
+    suspend fun <T : Any> getAsync(block: () -> T): T = suspendCoroutine { continuation ->
+        runCatching {
+            block()
+        }.onSuccess { result ->
+            continuation.resumeWith(Result.success(result))
+        }.onFailure { e ->
+            continuation.resumeWith(Result.failure(e))
         }
+    }
 
-    inline fun <reified T> String.jsonToList(): List<T> =
-        runCatching {
-            fromJson<List<T>>(this)
-        }.onFailure { err ->
-            Log.e(err)
-        }.getOrNull() ?: emptyList()
+    inline fun <reified T> String.jsonToList(): List<T> = runCatching {
+        fromJson<List<T>>(this)
+    }.onFailure { err ->
+        Log.e(err)
+    }.getOrNull() ?: emptyList()
 
-    inline fun <reified T> String.to(): T? =
-        runCatching {
-            fromJson<T>(this)
-        }.onFailure { err ->
-            Log.e(err)
-        }.getOrNull()
+    inline fun <reified T> String.to(): T? = runCatching {
+        fromJson<T>(this)
+    }.onFailure { err ->
+        Log.e(err)
+    }.getOrNull()
 
-    inline fun <reified T> T.asJson(): String =
-        runCatching {
-            toJson()
-        }.onFailure { err ->
-            Log.e(err)
-        }.getOrDefault("")
+    inline fun <reified T> T.asJson(): String = runCatching {
+        toJson()
+    }.onFailure { err ->
+        Log.e(err)
+    }.getOrDefault("")
 
 //    @ExperimentalSerializationApi
 //    class DynamicLookupSerializer : KSerializer<Any> {

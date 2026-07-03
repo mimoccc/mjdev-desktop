@@ -59,7 +59,6 @@ fun GridPlaced(
 
 @Preview
 @Composable
-fun PreviewGridPlaced() =
-    preview {
-        GridPlaced()
-    }
+fun PreviewGridPlaced() = preview {
+    GridPlaced()
+}

@@ -88,33 +88,32 @@ fun CompactCard(
 
 @Preview
 @Composable
-fun CompactCardPreview() =
-    preview {
-        CompactCard(
-            modifier = Modifier.size(200.dp, 128.dp),
-            colors =
-                CardDefaults.colors(
-                    containerColor = Color.White,
-                ),
-            border = CardDefaults.border(),
-            glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
-            scale = CardDefaults.scale(1f),
-            scrimBrush = CardDefaults.ScrimBrush,
-            image = {
-                ImageAny(
-                    modifier = Modifier.fillMaxSize(),
-                    src = AccountCircle,
-                    contentDescription = "",
-                )
-            },
-            title = {
-                TextAny("title")
-            },
-            subtitle = {
-                TextAny("subtitle")
-            },
-            description = {
-                TextAny("description")
-            },
-        )
-    }
+fun CompactCardPreview() = preview {
+    CompactCard(
+        modifier = Modifier.size(200.dp, 128.dp),
+        colors =
+            CardDefaults.colors(
+                containerColor = Color.White,
+            ),
+        border = CardDefaults.border(),
+        glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
+        scale = CardDefaults.scale(1f),
+        scrimBrush = CardDefaults.ScrimBrush,
+        image = {
+            ImageAny(
+                modifier = Modifier.fillMaxSize(),
+                src = AccountCircle,
+                contentDescription = "",
+            )
+        },
+        title = {
+            TextAny("title")
+        },
+        subtitle = {
+            TextAny("subtitle")
+        },
+        description = {
+            TextAny("description")
+        },
+    )
+}

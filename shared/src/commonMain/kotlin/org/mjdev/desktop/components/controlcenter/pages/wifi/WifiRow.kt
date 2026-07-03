@@ -165,20 +165,18 @@ fun WifiRow(
 
 @Preview
 @Composable
-fun PreviewWifiRow() =
-    preview {
-        WifiRow(
-            item = WifiNetwork(),
-            expandedState = mutableStateOf(false),
-        )
-    }
+fun PreviewWifiRow() = preview {
+    WifiRow(
+        item = WifiNetwork(),
+        expandedState = mutableStateOf(false),
+    )
+}
 
 @Preview
 @Composable
-fun WifiRowPreview2() =
-    preview {
-        WifiRow(
-            item = WifiNetwork(),
-            expandedState = mutableStateOf(true),
-        )
-    }
+fun WifiRowPreview2() = preview {
+    WifiRow(
+        item = WifiNetwork(),
+        expandedState = mutableStateOf(true),
+    )
+}

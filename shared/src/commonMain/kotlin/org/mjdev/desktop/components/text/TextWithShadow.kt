@@ -59,10 +59,9 @@ fun TextWithShadow(
 
 @Preview
 @Composable
-fun PreviewTextWithShadow() =
-    preview {
-        TextWithShadow(
-            modifier = Modifier.height(48.dp).background(Color.White),
-            text = "...Test...", // App.Test
-        )
-    }
+fun PreviewTextWithShadow() = preview {
+    TextWithShadow(
+        modifier = Modifier.height(48.dp).background(Color.White),
+        text = "...Test...", // App.Test
+    )
+}

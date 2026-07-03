@@ -114,7 +114,9 @@ class CompositorMouseSource private constructor(
         ): CompositorMouseSource? {
             val path = socketPath()
             if (path == null) {
-                Log.d("CompositorMouseSource: no compositor socket (XDG_RUNTIME_DIR/mjdev-compositor.sock) — not connecting")
+                Log.d(
+                    "CompositorMouseSource: no compositor socket (XDG_RUNTIME_DIR/mjdev-compositor.sock) — not connecting",
+                )
                 return null
             }
             return runCatching {

@@ -55,13 +55,12 @@ data class ProviderConfig(
         const val DEFAULT_LOAD_COUNT = 10
 
         /** The default provider set: local backgrounds on, remote providers off. */
-        fun defaults(): MutableList<ProviderConfig> =
-            Provider.entries
-                .map { provider ->
-                    ProviderConfig(
-                        id = provider.id,
-                        enabled = provider == Provider.Local,
-                    )
-                }.toMutableList()
+        fun defaults(): MutableList<ProviderConfig> = Provider.entries
+            .map { provider ->
+                ProviderConfig(
+                    id = provider.id,
+                    enabled = provider == Provider.Local,
+                )
+            }.toMutableList()
     }
 }

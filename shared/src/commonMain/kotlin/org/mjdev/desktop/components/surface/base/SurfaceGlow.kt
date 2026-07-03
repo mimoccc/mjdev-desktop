@@ -60,12 +60,11 @@ private class SurfaceGlowElement(
     private val color: Color,
     private val inspectorInfo: InspectorInfo.() -> Unit,
 ) : ModifierNodeElement<SurfaceGlowNode>() {
-    override fun create(): SurfaceGlowNode =
-        SurfaceGlowNode(
-            shape = shape,
-            glowBlurRadiusPx = glowBlurRadiusPx,
-            color = color,
-        )
+    override fun create(): SurfaceGlowNode = SurfaceGlowNode(
+        shape = shape,
+        glowBlurRadiusPx = glowBlurRadiusPx,
+        color = color,
+    )
 
     override fun update(node: SurfaceGlowNode) {
         node.reactToUpdates(

@@ -11,25 +11,23 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.mobile.MobileFriendly
 
 @Suppress("FunctionName")
-fun DevicesPage(context: IDesktopContext) =
-    ControlCenterPage(
-        context = context,
-        icon = MobileFriendly,
-        name = "Connected devices",
-        condition = {
-            false
+fun DevicesPage(context: IDesktopContext) = ControlCenterPage(
+    context = context,
+    icon = MobileFriendly,
+    name = "Connected devices",
+    condition = {
+        false
 //        connectionManager.hasConnectedDevices
-        },
+    },
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-        }
     }
+}
 
 @Preview
 @Composable
-fun DevicesPagePreview() =
-    preview {
-        DevicesPage(context).Render()
-    }
+fun DevicesPagePreview() = preview {
+    DevicesPage(context).Render()
+}

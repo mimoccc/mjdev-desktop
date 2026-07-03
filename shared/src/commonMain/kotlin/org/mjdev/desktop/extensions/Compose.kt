@@ -69,14 +69,13 @@ object Compose {
     fun <E> List<E>.sortByRelevance(
         value: String,
         block: E.() -> String = { toString() },
-    ): List<E> =
-        map { e ->
-            Pair(FuzzySearch.ratio(block(e), value), e)
-        }.sortedByDescending { p ->
-            p.first
-        }.map { p ->
-            p.second
-        }
+    ): List<E> = map { e ->
+        Pair(FuzzySearch.ratio(block(e), value), e)
+    }.sortedByDescending { p ->
+        p.first
+    }.map { p ->
+        p.second
+    }
 
 //    operator fun PaddingValues.plus(dp: Dp) =
 //        copy(left = width + dp, height = height + dp)
@@ -107,14 +106,13 @@ object Compose {
     }
 
     // todo
-    fun Modifier.verticalTouchScrollable(state: LazyListState) =
-        this then
-            pointerInput(Unit) {
-                detectVerticalDragGestures { _, dragAmount ->
+    fun Modifier.verticalTouchScrollable(state: LazyListState) = this then
+        pointerInput(Unit) {
+            detectVerticalDragGestures { _, dragAmount ->
 //            Log.i("drag ammount : $dragAmount")
-                    state.dispatchRawDelta(-dragAmount)
-                }
+                state.dispatchRawDelta(-dragAmount)
             }
+        }
 
     @Composable
     fun runAsync(
@@ -297,27 +295,26 @@ object Compose {
 
 //    fun Modifier.greyScale(): Modifier = this then GreyScaleModifier()
 
-    fun Modifier.grayScale(): Modifier =
-        this then
-            drawWithContent {
-                val saturationFilter =
-                    ColorMatrix()
-                        .apply {
-                            setToSaturation(0f)
-                        }.let { cm ->
-                            ColorFilter.colorMatrix(cm)
-                        }
-                val paint =
-                    Paint().apply {
-                        colorFilter = saturationFilter
+    fun Modifier.grayScale(): Modifier = this then
+        drawWithContent {
+            val saturationFilter =
+                ColorMatrix()
+                    .apply {
+                        setToSaturation(0f)
+                    }.let { cm ->
+                        ColorFilter.colorMatrix(cm)
                     }
-                drawIntoCanvas { canvas ->
-                    val bounds = Rect(0f, 0f, size.width, size.height)
-                    canvas.saveLayer(bounds, paint)
-                    drawContent()
-                    canvas.restore()
+            val paint =
+                Paint().apply {
+                    colorFilter = saturationFilter
                 }
+            drawIntoCanvas { canvas ->
+                val bounds = Rect(0f, 0f, size.width, size.height)
+                canvas.saveLayer(bounds, paint)
+                drawContent()
+                canvas.restore()
             }
+        }
 
     // todo
     fun Modifier.applyTransform(transform: (bitmap: ImageBitmap) -> ImageBitmap = { bitmap -> bitmap }): Modifier =
@@ -336,49 +333,48 @@ object Compose {
             }
 
     // todo
-    fun Modifier.dither(): Modifier =
-        this then
-            drawWithContent {
-                val paint = Paint()
-                val size = IntSize(size.width.toInt(), size.height.toInt())
-                val bitmap = ImageBitmap(size.width, size.height)
-                val pixels = IntArray(size.width * size.height)
-                val bayerMatrix =
-                    arrayOf(
-                        arrayOf(0, 128, 32, 160),
-                        arrayOf(192, 64, 224, 96),
-                        arrayOf(48, 176, 16, 144),
-                        arrayOf(240, 112, 208, 80),
-                    )
-                drawIntoCanvas { canvas ->
-                    canvas.drawImage(bitmap, Offset.Zero, paint)
-                }
-                bitmap.readPixels(pixels)
-                val ditheredPixels =
-                    pixels
-                        .mapIndexed { index, pixel ->
-                            val x = index % size.width
-                            val y = index / size.width
-                            val color = Color(pixel)
-                            val intensity = (color.red * 255).toInt()
-                            val threshold = bayerMatrix[y % 4][x % 4]
-                            if (intensity > threshold) Color.White else Color.Black
-                        }.toTypedArray()
-                drawIntoCanvas { canvas ->
-                    for (y in 0 until size.height) {
-                        for (x in 0 until size.width) {
-                            paint.color = ditheredPixels[y * size.width + x]
-                            canvas.drawRect(
-                                Rect(
-                                    x.toFloat(),
-                                    y.toFloat(),
-                                    (x + 1).toFloat(),
-                                    (y + 1).toFloat(),
-                                ),
-                                paint,
-                            )
-                        }
+    fun Modifier.dither(): Modifier = this then
+        drawWithContent {
+            val paint = Paint()
+            val size = IntSize(size.width.toInt(), size.height.toInt())
+            val bitmap = ImageBitmap(size.width, size.height)
+            val pixels = IntArray(size.width * size.height)
+            val bayerMatrix =
+                arrayOf(
+                    arrayOf(0, 128, 32, 160),
+                    arrayOf(192, 64, 224, 96),
+                    arrayOf(48, 176, 16, 144),
+                    arrayOf(240, 112, 208, 80),
+                )
+            drawIntoCanvas { canvas ->
+                canvas.drawImage(bitmap, Offset.Zero, paint)
+            }
+            bitmap.readPixels(pixels)
+            val ditheredPixels =
+                pixels
+                    .mapIndexed { index, pixel ->
+                        val x = index % size.width
+                        val y = index / size.width
+                        val color = Color(pixel)
+                        val intensity = (color.red * 255).toInt()
+                        val threshold = bayerMatrix[y % 4][x % 4]
+                        if (intensity > threshold) Color.White else Color.Black
+                    }.toTypedArray()
+            drawIntoCanvas { canvas ->
+                for (y in 0 until size.height) {
+                    for (x in 0 until size.width) {
+                        paint.color = ditheredPixels[y * size.width + x]
+                        canvas.drawRect(
+                            Rect(
+                                x.toFloat(),
+                                y.toFloat(),
+                                (x + 1).toFloat(),
+                                (y + 1).toFloat(),
+                            ),
+                            paint,
+                        )
                     }
                 }
             }
+        }
 }

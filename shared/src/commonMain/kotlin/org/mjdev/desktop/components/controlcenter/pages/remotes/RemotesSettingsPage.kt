@@ -11,21 +11,19 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.custom.Mjdev
 
 @Suppress("FunctionName")
-fun RemotesSettingsPage(context: IDesktopContext) =
-    ControlCenterPage(
-        context = context,
-        icon = Mjdev, // todo
-        name = "Remote",
-        condition = { true },
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
+fun RemotesSettingsPage(context: IDesktopContext) = ControlCenterPage(
+    context = context,
+    icon = Mjdev, // todo
+    name = "Remote",
+    condition = { true },
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    )
+}
 
 @Preview
 @Composable
-fun RemotesSettingsPagePreview() =
-    preview {
-        RemotesSettingsPage(context).Render()
-    }
+fun RemotesSettingsPagePreview() = preview {
+    RemotesSettingsPage(context).Render()
+}

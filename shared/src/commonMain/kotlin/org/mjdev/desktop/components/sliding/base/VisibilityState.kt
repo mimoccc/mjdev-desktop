@@ -100,9 +100,8 @@ open class VisibilityState(
             visible: Boolean = false,
             enabled: Boolean = true,
             autoHideDelay: Long = 0L,
-        ): VisibilityState =
-            remember(visible, enabled) {
-                VisibilityState(visible, enabled, autoHideDelay)
-            }
+        ): VisibilityState = remember(visible, enabled) {
+            VisibilityState(visible, enabled, autoHideDelay)
+        }
     }
 }

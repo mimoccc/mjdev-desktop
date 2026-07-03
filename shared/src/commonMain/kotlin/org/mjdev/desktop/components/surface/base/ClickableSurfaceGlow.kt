@@ -34,7 +34,6 @@ class ClickableSurfaceGlow(
         return result
     }
 
-    override fun toString(): String =
-        "ClickableSurfaceGlow(glow=$glow, focusedGlow=$focusedGlow, " +
-            "pressedGlow=$pressedGlow)"
+    override fun toString(): String = "ClickableSurfaceGlow(glow=$glow, focusedGlow=$focusedGlow, " +
+        "pressedGlow=$pressedGlow)"
 }

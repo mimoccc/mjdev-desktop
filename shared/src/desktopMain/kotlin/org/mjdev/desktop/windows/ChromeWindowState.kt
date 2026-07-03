@@ -159,20 +159,18 @@ open class ChromeWindowState(
         )
     }.onFailure { e -> Log.e(e) }
 
-    suspend fun setSize(size: DpSize) =
-        runCatching {
-            Log.d("ChromeWindow setSize -> $size: ${geom()}")
-            window?.setSizeSafely(size, WindowPlacement.Floating)
-        }.onFailure { e -> Log.e(e) }
+    suspend fun setSize(size: DpSize) = runCatching {
+        Log.d("ChromeWindow setSize -> $size: ${geom()}")
+        window?.setSizeSafely(size, WindowPlacement.Floating)
+    }.onFailure { e -> Log.e(e) }
 
-    suspend fun setPosition(position: DpOffset) =
-        runCatching {
-            Log.d("ChromeWindow setPosition -> $position: ${geom()}")
-            window?.setPosition(
-                WindowPosition.Absolute(position.x, position.y),
-                WindowPlacement.Floating,
-            )
-        }.onFailure { e -> Log.e(e) }
+    suspend fun setPosition(position: DpOffset) = runCatching {
+        Log.d("ChromeWindow setPosition -> $position: ${geom()}")
+        window?.setPosition(
+            WindowPosition.Absolute(position.x, position.y),
+            WindowPlacement.Floating,
+        )
+    }.onFailure { e -> Log.e(e) }
 
     override suspend fun focus() {
         runCatching {

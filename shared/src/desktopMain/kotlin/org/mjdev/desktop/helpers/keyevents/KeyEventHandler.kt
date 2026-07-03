@@ -82,10 +82,9 @@ class KeyEventHandler(
         }
     }
 
-    private fun parseCharacter(event: AwtKeyEvent): Char =
-        Char(event.keyCode).let { c ->
-            if (event.isShiftDown) c.uppercaseChar() else c.lowercaseChar()
-        }
+    private fun parseCharacter(event: AwtKeyEvent): Char = Char(event.keyCode).let { c ->
+        if (event.isShiftDown) c.uppercaseChar() else c.lowercaseChar()
+    }
 
     fun onChar(block: (Char) -> Boolean) = addListener(null, block)
 

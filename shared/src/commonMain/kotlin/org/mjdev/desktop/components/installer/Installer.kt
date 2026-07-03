@@ -57,7 +57,6 @@ fun Installer(
 
 @Preview
 @Composable
-fun PreviewInstaller() =
-    preview(320, 320) {
-        Installer()
-    }
+fun PreviewInstaller() = preview(320, 320) {
+    Installer()
+}

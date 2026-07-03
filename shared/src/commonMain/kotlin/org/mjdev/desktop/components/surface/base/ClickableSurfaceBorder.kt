@@ -41,10 +41,9 @@ class ClickableSurfaceBorder
             return result
         }
 
-        override fun toString(): String =
-            "ClickableSurfaceBorder(border=$border, " +
-                "focusedBorder=$focusedBorder, " +
-                "pressedBorder=$pressedBorder, " +
-                "disabledBorder=$disabledBorder, " +
-                "focusedDisabledBorder=$focusedDisabledBorder)"
+        override fun toString(): String = "ClickableSurfaceBorder(border=$border, " +
+            "focusedBorder=$focusedBorder, " +
+            "pressedBorder=$pressedBorder, " +
+            "disabledBorder=$disabledBorder, " +
+            "focusedDisabledBorder=$focusedDisabledBorder)"
     }

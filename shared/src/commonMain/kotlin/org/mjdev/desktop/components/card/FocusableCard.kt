@@ -181,22 +181,21 @@ fun FocusableCard(
 
 @Preview
 @Composable
-fun PreviewFocusableCard() =
-    preview {
-        FocusableCard(
-            item = "test",
-            modifier = Modifier.size(200.dp, 128.dp),
-            colors =
-                CardDefaults.colors(
-                    containerColor = Color.White,
-                ),
-            border = CardDefaults.border(),
-            glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
-            scale = CardDefaults.scale(1f),
-            contentScale = ContentScale.Crop,
-            textColor = Color.Black,
-            showTitle = true,
-            focused = true,
-            aspectRatio = HorizontalImageAspectRatio,
-        )
-    }
+fun PreviewFocusableCard() = preview {
+    FocusableCard(
+        item = "test",
+        modifier = Modifier.size(200.dp, 128.dp),
+        colors =
+            CardDefaults.colors(
+                containerColor = Color.White,
+            ),
+        border = CardDefaults.border(),
+        glow = CardDefaults.glow(glow = Glow(Color.Green, 4.dp)),
+        scale = CardDefaults.scale(1f),
+        contentScale = ContentScale.Crop,
+        textColor = Color.Black,
+        showTitle = true,
+        focused = true,
+        aspectRatio = HorizontalImageAspectRatio,
+    )
+}

@@ -11,21 +11,19 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.custom.Mjdev
 
 @Suppress("FunctionName")
-fun AboutPage(context: IDesktopContext) =
-    ControlCenterPage(
-        context = context,
-        icon = Mjdev,
-        name = "About",
-        condition = { true },
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
+fun AboutPage(context: IDesktopContext) = ControlCenterPage(
+    context = context,
+    icon = Mjdev,
+    name = "About",
+    condition = { true },
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    )
+}
 
 @Preview
 @Composable
-fun PreviewAboutPage() =
-    preview {
-        AboutPage(context).Render()
-    }
+fun PreviewAboutPage() = preview {
+    AboutPage(context).Render()
+}

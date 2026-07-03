@@ -34,7 +34,6 @@ class CardBorder(
         return result
     }
 
-    override fun toString(): String =
-        "CardBorder(border=$border, focusedBorder=$focusedBorder, " +
-            "pressedBorder=$pressedBorder)"
+    override fun toString(): String = "CardBorder(border=$border, focusedBorder=$focusedBorder, " +
+        "pressedBorder=$pressedBorder)"
 }

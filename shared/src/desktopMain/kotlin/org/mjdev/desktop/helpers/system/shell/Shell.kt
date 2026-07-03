@@ -27,20 +27,19 @@ class Shell(
         }
     }
 
-    suspend fun autoStartApps() =
-        ProcessBuilder(
-            CMD_DEX,
-            "-a",
-        ).apply {
-            environment().putAll(environment.toMap())
-            redirectErrorStream(true)
-        }.also { processBuilder ->
-            runCatching {
-                processBuilder.start()
-            }.onFailure { e ->
-                Log.e(e)
-            }
+    suspend fun autoStartApps() = ProcessBuilder(
+        CMD_DEX,
+        "-a",
+    ).apply {
+        environment().putAll(environment.toMap())
+        redirectErrorStream(true)
+    }.also { processBuilder ->
+        runCatching {
+            processBuilder.start()
+        }.onFailure { e ->
+            Log.e(e)
         }
+    }
 
     suspend fun startApp(
         app: App,
@@ -78,57 +77,54 @@ class Shell(
             cmd: String,
             vararg args: String,
             onError: (Throwable) -> Unit = { e -> Log.e(e) },
-        ): String =
-            runCatching {
-                Runtime
-                    .getRuntime()
-                    .exec(arrayOf(cmd) + args)
-                    .apply {
-                        waitFor()
-                    }.onError { e ->
-                        onError(e)
-                    }
-            }.onFailure { e ->
-                onError(e)
-            }.getOrNull()
-                ?.inputReader()
-                ?.readText()
-                .orEmpty()
+        ): String = runCatching {
+            Runtime
+                .getRuntime()
+                .exec(arrayOf(cmd) + args)
+                .apply {
+                    waitFor()
+                }.onError { e ->
+                    onError(e)
+                }
+        }.onFailure { e ->
+            onError(e)
+        }.getOrNull()
+            ?.inputReader()
+            ?.readText()
+            .orEmpty()
 
         fun execute(
             cmd: String,
             vararg args: String,
-        ): Result<Process> =
-            runCatching {
-                Runtime
-                    .getRuntime()
-                    .exec(arrayOf(cmd) + args)
-                    .apply {
-                        waitFor()
-                    }.onError { e ->
-                        throw (e)
-                    }
-            }
+        ): Result<Process> = runCatching {
+            Runtime
+                .getRuntime()
+                .exec(arrayOf(cmd) + args)
+                .apply {
+                    waitFor()
+                }.onError { e ->
+                    throw (e)
+                }
+        }
 
         fun executeAndReadLines(
             cmd: String,
             vararg args: String,
             onError: (Throwable) -> Unit = { e -> Log.e(e) },
-        ): List<String> =
-            runCatching {
-                Runtime
-                    .getRuntime()
-                    .exec(arrayOf(cmd) + args)
-                    .apply {
-                        waitFor()
-                    }.onError { e ->
-                        onError(e)
-                    }
-            }.onFailure { e ->
-                onError(e)
-            }.getOrNull()
-                ?.inputReader()
-                ?.readLines() ?: emptyList()
+        ): List<String> = runCatching {
+            Runtime
+                .getRuntime()
+                .exec(arrayOf(cmd) + args)
+                .apply {
+                    waitFor()
+                }.onError { e ->
+                    onError(e)
+                }
+        }.onFailure { e ->
+            onError(e)
+        }.getOrNull()
+            ?.inputReader()
+            ?.readLines() ?: emptyList()
 
         fun Process.onText(onText: (String) -> Unit): Process {
             if (inputStream.available() > 0) {

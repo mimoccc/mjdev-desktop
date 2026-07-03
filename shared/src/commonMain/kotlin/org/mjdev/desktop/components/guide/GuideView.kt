@@ -60,11 +60,10 @@ fun GuideLines(
 
 @Preview
 @Composable
-fun PreviewGuideLines() =
-    preview(320, 320) {
-        GuideLines(
-            modifier = Modifier.fillMaxSize(),
-            cellSize = DpSize(32.dp, 32.dp),
-            color = Color.White,
-        )
-    }
+fun PreviewGuideLines() = preview(320, 320) {
+    GuideLines(
+        modifier = Modifier.fillMaxSize(),
+        cellSize = DpSize(32.dp, 32.dp),
+        color = Color.White,
+    )
+}

@@ -13,8 +13,7 @@ import org.mjdev.desktop.managers.theme.base.ThemeManagerStub
 
 // todo other platforms
 @Suppress("FunctionName")
-fun ThemeManager(context: IDesktopContext) =
-    // when (hostOs) {
+fun ThemeManager(context: IDesktopContext) = // when (hostOs) {
 //    OS.Linux -> ThemeManagerLinux(context)
 //    else ->
     ThemeManagerStub(context)

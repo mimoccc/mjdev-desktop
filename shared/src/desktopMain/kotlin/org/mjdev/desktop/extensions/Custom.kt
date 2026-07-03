@@ -40,14 +40,13 @@ object Custom {
                 block != Character.UnicodeBlock.SPECIALS
         }
 
-    fun Path.listDesktopFiles(ext: String = DesktopFile.EXTENSION): List<DesktopFile> =
-        if (this.exists) {
-            listFiles(ext) { f ->
-                DesktopFile(f)
-            }
-        } else {
-            emptyList()
+    fun Path.listDesktopFiles(ext: String = DesktopFile.EXTENSION): List<DesktopFile> = if (this.exists) {
+        listFiles(ext) { f ->
+            DesktopFile(f)
         }
+    } else {
+        emptyList()
+    }
 
     fun Path.readTextAsLocale(): Locale = if (this.exists) text.toLocale() else Locale.ENGLISH
 

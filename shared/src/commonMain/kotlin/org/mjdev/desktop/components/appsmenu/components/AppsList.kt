@@ -102,20 +102,19 @@ fun AppsList(
 
 @Preview
 @Composable
-fun PreviewAppsList() =
-    preview(320, 640) {
-        AppsList(
-            modifier =
-                Modifier
-                    .background(
-                        Color.SuperDarkGray,
-                        RoundedCornerShape(16.dp),
-                    ).padding(8.dp),
-            items =
-                listOf(
+fun PreviewAppsList() = preview(320, 640) {
+    AppsList(
+        modifier =
+            Modifier
+                .background(
+                    Color.SuperDarkGray,
+                    RoundedCornerShape(16.dp),
+                ).padding(8.dp),
+        items =
+            listOf(
 //            App.Test,
 //            App.Test,
 //            App.Test
-                ),
-        )
-    }
+            ),
+    )
+}

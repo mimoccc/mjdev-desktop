@@ -30,9 +30,8 @@ open class ApplicationScope(
         exitApplication(0)
     }
 
-    fun exitApplication(code: Int) =
-        runAsync {
-            onExitProcess(code)
-            isOpen = false
-        }
+    fun exitApplication(code: Int) = runAsync {
+        onExitProcess(code)
+        isOpen = false
+    }
 }

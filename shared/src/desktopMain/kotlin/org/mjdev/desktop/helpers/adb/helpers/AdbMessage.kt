@@ -21,7 +21,14 @@ internal class AdbMessage(
     private fun payloadStr(): String {
         if (payloadLength == 0) return ""
         return when (command) {
-            AdbConstants.CMD_AUTH -> if (arg0 == AdbConstants.AUTH_TYPE_RSA_PUBLIC) String(payload) else "auth[$payloadLength]"
+            AdbConstants.CMD_AUTH ->
+                if (arg0 ==
+                    AdbConstants.AUTH_TYPE_RSA_PUBLIC
+                ) {
+                    String(payload)
+                } else {
+                    "auth[$payloadLength]"
+                }
             AdbConstants.CMD_WRTE -> writePayloadStr()
             AdbConstants.CMD_OPEN -> String(payload, 0, payloadLength - 1)
             else -> "payload[$payloadLength]"
@@ -59,14 +66,13 @@ internal class AdbMessage(
 
     private fun argStr(arg: Int) = String.format("%X", arg)
 
-    private fun commandStr() =
-        when (command) {
-            AdbConstants.CMD_AUTH -> "AUTH"
-            AdbConstants.CMD_CNXN -> "CNXN"
-            AdbConstants.CMD_OPEN -> "OPEN"
-            AdbConstants.CMD_OKAY -> "OKAY"
-            AdbConstants.CMD_CLSE -> "CLSE"
-            AdbConstants.CMD_WRTE -> "WRTE"
-            else -> "????"
-        }
+    private fun commandStr() = when (command) {
+        AdbConstants.CMD_AUTH -> "AUTH"
+        AdbConstants.CMD_CNXN -> "CNXN"
+        AdbConstants.CMD_OPEN -> "OPEN"
+        AdbConstants.CMD_OKAY -> "OKAY"
+        AdbConstants.CMD_CLSE -> "CLSE"
+        AdbConstants.CMD_WRTE -> "WRTE"
+        else -> "????"
+    }
 }

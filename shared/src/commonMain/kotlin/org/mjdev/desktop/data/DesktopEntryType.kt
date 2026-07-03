@@ -10,9 +10,8 @@ enum class DesktopEntryType(
     ;
 
     companion object {
-        operator fun invoke(value: String?): DesktopEntryType =
-            value.orEmpty().trim().let { v ->
-                entries.firstOrNull { e -> e.text.contentEquals(v, true) } ?: Unknown
-            }
+        operator fun invoke(value: String?): DesktopEntryType = value.orEmpty().trim().let { v ->
+            entries.firstOrNull { e -> e.text.contentEquals(v, true) } ?: Unknown
+        }
     }
 }

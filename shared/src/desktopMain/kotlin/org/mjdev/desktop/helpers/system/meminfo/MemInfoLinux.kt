@@ -16,11 +16,10 @@ class MemInfoLinux(
     companion object {
         const val KB = 1024
 
-        private fun List<String>.parseLine(filter: String): Double =
-            firstOrNull { l ->
-                l.startsWith(filter)
-            }?.filter { l ->
-                l.isDigit()
-            }?.toDouble() ?: 0.0
+        private fun List<String>.parseLine(filter: String): Double = firstOrNull { l ->
+            l.startsWith(filter)
+        }?.filter { l ->
+            l.isDigit()
+        }?.toDouble() ?: 0.0
     }
 }

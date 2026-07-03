@@ -79,12 +79,11 @@ class GifDecoder {
 
     fun getHeight(): Int = height
 
-    fun getDuration(): Long =
-        frames
-            .sumOf { f ->
-                f.delay
-            }.times(loopCount)
-            .toLong()
+    fun getDuration(): Long = frames
+        .sumOf { f ->
+            f.delay
+        }.times(loopCount)
+        .toLong()
 
     fun getDelay(n: Int): Long {
         delay = -1
@@ -155,16 +154,15 @@ class GifDecoder {
         return status
     }
 
-    fun fromUrl(url: String): Int =
-        try {
-            val connection = java.net.URL(url).openConnection()
-            connection.connect()
-            fromSource(connection.getInputStream().source().buffer())
-        } catch (e: Exception) {
-            Log.e(e)
-            status = STATUS_OPEN_ERROR
-            status
-        }
+    fun fromUrl(url: String): Int = try {
+        val connection = java.net.URL(url).openConnection()
+        connection.connect()
+        fromSource(connection.getInputStream().source().buffer())
+    } catch (e: Exception) {
+        Log.e(e)
+        status = STATUS_OPEN_ERROR
+        status
+    }
 
     fun from(pathOrUrl: String): Int {
         init()
@@ -428,32 +426,31 @@ class GifDecoder {
     private fun loadManifest(
         dir: Path,
         src: String,
-    ): Boolean =
-        runCatching {
-            val info = dir.resolve("info")
-            if (!Filesystem.fileExists(info)) return false
-            val lines = Filesystem.readLines(info)
-            if (lines.size < 7 || lines[0] != "v1" || lines[1] != src) return false
-            val w = lines[2].toInt()
-            val h = lines[3].toInt()
-            val loop = lines[4].toInt()
-            val count = lines[5].toInt()
-            val delays = lines[6].split(",").mapNotNull { it.toIntOrNull() }
-            if (count <= 0 || delays.size != count) return false
-            val restored = mutableListOf<GifFrame>()
-            for (i in 0 until count) {
-                val f = dir.resolve("f$i")
-                if (!Filesystem.fileExists(f)) return false
-                restored.add(GifFrame(delays[i], f))
-            }
-            width = w
-            height = h
-            loopCount = loop
-            frameCount = count
-            frames.clear()
-            frames.addAll(restored)
-            true
-        }.getOrDefault(false)
+    ): Boolean = runCatching {
+        val info = dir.resolve("info")
+        if (!Filesystem.fileExists(info)) return false
+        val lines = Filesystem.readLines(info)
+        if (lines.size < 7 || lines[0] != "v1" || lines[1] != src) return false
+        val w = lines[2].toInt()
+        val h = lines[3].toInt()
+        val loop = lines[4].toInt()
+        val count = lines[5].toInt()
+        val delays = lines[6].split(",").mapNotNull { it.toIntOrNull() }
+        if (count <= 0 || delays.size != count) return false
+        val restored = mutableListOf<GifFrame>()
+        for (i in 0 until count) {
+            val f = dir.resolve("f$i")
+            if (!Filesystem.fileExists(f)) return false
+            restored.add(GifFrame(delays[i], f))
+        }
+        width = w
+        height = h
+        loopCount = loop
+        frameCount = count
+        frames.clear()
+        frames.addAll(restored)
+        true
+    }.getOrDefault(false)
 
     private fun readByte(): Int {
         val curByte =
@@ -660,29 +657,24 @@ class GifDecoder {
         // Max frames kept as live ImageBitmaps in RAM at once (rest stream from disk on demand).
         const val MAX_CACHED_BITMAPS = 4
 
-        fun fromSource(source: BufferedSource?): GifDecoder =
-            GifDecoder().apply {
-                fromSource(source)
-            }
+        fun fromSource(source: BufferedSource?): GifDecoder = GifDecoder().apply {
+            fromSource(source)
+        }
 
-        fun fromPath(source: Path): GifDecoder =
-            GifDecoder().apply {
-                fromPath(source)
-            }
+        fun fromPath(source: Path): GifDecoder = GifDecoder().apply {
+            fromPath(source)
+        }
 
-        fun fromUrl(source: String): GifDecoder =
-            GifDecoder().apply {
-                fromUrl(source)
-            }
+        fun fromUrl(source: String): GifDecoder = GifDecoder().apply {
+            fromUrl(source)
+        }
 
-        fun fromPathOrUrl(source: String): GifDecoder =
-            GifDecoder().apply {
-                fromPathOrUrl(source)
-            }
+        fun fromPathOrUrl(source: String): GifDecoder = GifDecoder().apply {
+            fromPathOrUrl(source)
+        }
 
-        fun fromFile(source: String): GifDecoder =
-            GifDecoder().apply {
-                fromFile(source)
-            }
+        fun fromFile(source: String): GifDecoder = GifDecoder().apply {
+            fromFile(source)
+        }
     }
 }

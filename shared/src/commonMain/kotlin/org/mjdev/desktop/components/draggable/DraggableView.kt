@@ -90,7 +90,6 @@ fun DraggableView(
 
 @Preview
 @Composable
-fun PreviewDraggableView() =
-    preview {
-        DraggableView()
-    }
+fun PreviewDraggableView() = preview {
+    DraggableView()
+}

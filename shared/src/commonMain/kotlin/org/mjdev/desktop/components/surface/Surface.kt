@@ -236,33 +236,31 @@ fun Modifier.tvSurfaceScale(
     return this.graphicsLayer(scaleX = animatedScale, scaleY = animatedScale)
 }
 
-fun defaultScaleAnimationSpec(interaction: Interaction): TweenSpec<Float> =
-    tween(
-        durationMillis =
-            when (interaction) {
-                is FocusInteraction.Focus -> SurfaceScaleTokens.focusDuration
-                is FocusInteraction.Unfocus -> SurfaceScaleTokens.unFocusDuration
-                is PressInteraction.Press -> SurfaceScaleTokens.pressedDuration
-                is PressInteraction.Release -> SurfaceScaleTokens.releaseDuration
-                is PressInteraction.Cancel -> SurfaceScaleTokens.releaseDuration
-                else -> SurfaceScaleTokens.releaseDuration
-            },
-        easing = SurfaceScaleTokens.enterEasing,
-    )
+fun defaultScaleAnimationSpec(interaction: Interaction): TweenSpec<Float> = tween(
+    durationMillis =
+        when (interaction) {
+            is FocusInteraction.Focus -> SurfaceScaleTokens.focusDuration
+            is FocusInteraction.Unfocus -> SurfaceScaleTokens.unFocusDuration
+            is PressInteraction.Press -> SurfaceScaleTokens.pressedDuration
+            is PressInteraction.Release -> SurfaceScaleTokens.releaseDuration
+            is PressInteraction.Cancel -> SurfaceScaleTokens.releaseDuration
+            else -> SurfaceScaleTokens.releaseDuration
+        },
+    easing = SurfaceScaleTokens.enterEasing,
+)
 
 fun stateAlpha(
     enabled: Boolean,
     focused: Boolean,
     pressed: Boolean,
     selected: Boolean,
-): Float =
-    when {
-        !enabled && pressed -> DisabledPressedStateAlpha
-        !enabled && focused -> DisabledFocusedStateAlpha
-        !enabled && selected -> DisabledSelectedStateAlpha
-        enabled -> EnabledContentAlpha
-        else -> DisabledDefaultStateAlpha
-    }
+): Float = when {
+    !enabled && pressed -> DisabledPressedStateAlpha
+    !enabled && focused -> DisabledFocusedStateAlpha
+    !enabled && selected -> DisabledSelectedStateAlpha
+    enabled -> EnabledContentAlpha
+    else -> DisabledDefaultStateAlpha
+}
 
 private const val DisabledPressedStateAlpha = 0.8f
 private const val DisabledFocusedStateAlpha = 0.8f
@@ -277,7 +275,6 @@ private const val NonFocusedZIndex = 0f
 
 @Preview
 @Composable
-fun PreviewSurface() =
-    preview {
-        Surface()
-    }
+fun PreviewSurface() = preview {
+    Surface()
+}

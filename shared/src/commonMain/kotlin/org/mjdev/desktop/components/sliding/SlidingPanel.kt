@@ -83,7 +83,6 @@ fun SlidingPanel(
 
 @Preview
 @Composable
-fun PreviewSlidingMenu() =
-    preview {
-        SlidingPanel()
-    }
+fun PreviewSlidingMenu() = preview {
+    SlidingPanel()
+}

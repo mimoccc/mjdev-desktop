@@ -11,21 +11,19 @@ import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.custom.Mjdev
 
 @Suppress("FunctionName")
-fun ThemeSettingsPage(context: IDesktopContext) =
-    ControlCenterPage(
-        context = context,
-        icon = Mjdev, // todo
-        name = "Theme",
-        condition = { true },
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
+fun ThemeSettingsPage(context: IDesktopContext) = ControlCenterPage(
+    context = context,
+    icon = Mjdev, // todo
+    name = "Theme",
+    condition = { true },
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    )
+}
 
 @Preview
 @Composable
-fun ThemeSettingsPagePreview() =
-    preview {
-        ThemeSettingsPage(context).Render()
-    }
+fun ThemeSettingsPagePreview() = preview {
+    ThemeSettingsPage(context).Render()
+}

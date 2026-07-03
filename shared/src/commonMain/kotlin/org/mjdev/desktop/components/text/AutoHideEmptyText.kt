@@ -64,20 +64,18 @@ fun AutoHideEmptyText(
 
 @Preview
 @Composable
-fun PreviewAutoHideEmptyText() =
-    preview {
-        AutoHideEmptyText(
-            modifier = Modifier.background(Color.White),
-            text = "test",
-        )
-    }
+fun PreviewAutoHideEmptyText() = preview {
+    AutoHideEmptyText(
+        modifier = Modifier.background(Color.White),
+        text = "test",
+    )
+}
 
 @Preview
 @Composable
-fun PreviewAutoHideEmptyTextEmpty() =
-    preview {
-        AutoHideEmptyText(
-            modifier = Modifier.background(Color.White),
-            text = "",
-        )
-    }
+fun PreviewAutoHideEmptyTextEmpty() = preview {
+    AutoHideEmptyText(
+        modifier = Modifier.background(Color.White),
+        text = "",
+    )
+}

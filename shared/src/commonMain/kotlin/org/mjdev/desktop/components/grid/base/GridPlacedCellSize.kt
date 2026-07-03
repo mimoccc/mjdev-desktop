@@ -46,6 +46,7 @@ sealed class GridPlacedCellSize {
             size: Float = 1f,
         ): MutableList<GridPlacedCellSize> = mutableListOfElement(count, Weight(size = size))
 
-        fun weight(vararg sizes: Float): MutableList<GridPlacedCellSize> = sizes.map { Weight(size = it) }.toMutableList()
+        fun weight(vararg sizes: Float): MutableList<GridPlacedCellSize> =
+            sizes.map { Weight(size = it) }.toMutableList()
     }
 }

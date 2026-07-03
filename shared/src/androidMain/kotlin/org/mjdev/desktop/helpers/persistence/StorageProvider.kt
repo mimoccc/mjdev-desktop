@@ -32,24 +32,20 @@ actual open class StorageProvider actual constructor(
     actual open fun get(
         key: String,
         default: String?,
-    ): String? =
-        prefs?.getString(
-            key,
-            default,
-        ) ?: throw IllegalStateException("SharedPreferences not initialized")
+    ): String? = prefs?.getString(
+        key,
+        default,
+    ) ?: throw IllegalStateException("SharedPreferences not initialized")
 
-    actual open fun remove(key: String) =
-        prefs?.edit {
-            remove(key)
-        } ?: throw IllegalStateException("SharedPreferences not initialized")
+    actual open fun remove(key: String) = prefs?.edit {
+        remove(key)
+    } ?: throw IllegalStateException("SharedPreferences not initialized")
 
-    actual open fun clear() =
-        prefs?.edit {
-            clear()
-        } ?: throw IllegalStateException("SharedPreferences not initialized")
+    actual open fun clear() = prefs?.edit {
+        clear()
+    } ?: throw IllegalStateException("SharedPreferences not initialized")
 
-    actual open fun getAll(): Map<String, String> =
-        prefs?.all?.mapValues { entry ->
-            entry.value?.toString() ?: ""
-        } ?: emptyMap()
+    actual open fun getAll(): Map<String, String> = prefs?.all?.mapValues { entry ->
+        entry.value?.toString() ?: ""
+    } ?: emptyMap()
 }

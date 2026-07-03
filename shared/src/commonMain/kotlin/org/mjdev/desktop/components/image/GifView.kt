@@ -147,21 +147,19 @@ class GifViewState {
             src: String,
             context: IDesktopContext = LocalDesktopContext.current,
             scope: CoroutineScope = context.scope,
-        ): GifViewState =
-            remember(src) {
-                GifViewState().apply {
-                    scope.launch {
-                        load(src)
-                    }
+        ): GifViewState = remember(src) {
+            GifViewState().apply {
+                scope.launch {
+                    load(src)
                 }
             }
+        }
     }
 }
 
 @Suppress("unused")
 @Preview
 @Composable
-fun PreviewGifView() =
-    preview {
-        GifView()
-    }
+fun PreviewGifView() = preview {
+    GifView()
+}

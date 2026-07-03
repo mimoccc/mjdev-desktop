@@ -46,28 +46,24 @@ data class GridPlacedCells(
         fun rowSize(
             index: Int,
             size: GridPlacedCellSize,
-        ): Builder =
-            apply {
-                rowSizes[index] = size
-            }
+        ): Builder = apply {
+            rowSizes[index] = size
+        }
 
-        fun rowsSize(size: GridPlacedCellSize): Builder =
-            apply {
-                rowSizes.fill(size)
-            }
+        fun rowsSize(size: GridPlacedCellSize): Builder = apply {
+            rowSizes.fill(size)
+        }
 
         fun columnSize(
             index: Int,
             size: GridPlacedCellSize,
-        ): Builder =
-            apply {
-                columnSizes[index] = size
-            }
+        ): Builder = apply {
+            columnSizes[index] = size
+        }
 
-        fun columnsSize(size: GridPlacedCellSize): Builder =
-            apply {
-                columnSizes.fill(size)
-            }
+        fun columnsSize(size: GridPlacedCellSize): Builder = apply {
+            columnSizes.fill(size)
+        }
 
         fun build(): GridPlacedCells = GridPlacedCells(rowSizes = rowSizes, columnSizes = columnSizes)
     }

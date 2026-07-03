@@ -79,9 +79,8 @@ fun PageHeader(
 
 @Preview
 @Composable
-fun PreviewPageHeader() =
-    preview {
-        PageHeader(
-            page = ControlCenterPage(context),
-        )
-    }
+fun PreviewPageHeader() = preview {
+    PageHeader(
+        page = ControlCenterPage(context),
+    )
+}

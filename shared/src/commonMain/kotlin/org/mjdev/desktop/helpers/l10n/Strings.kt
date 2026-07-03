@@ -55,16 +55,15 @@ fun localeTag(
     else -> "${language}_$region"
 }
 
-fun localeTagChain(locale: Locale) =
-    sequence {
-        if (locale.region != "") {
-            yield(localeTag(language = locale.language, region = locale.region))
-        }
-        if (locale.language != "") {
-            yield(localeTag(language = locale.language, region = ""))
-        }
-        yield(localeTag("", ""))
+fun localeTagChain(locale: Locale) = sequence {
+    if (locale.region != "") {
+        yield(localeTag(language = locale.language, region = locale.region))
     }
+    if (locale.language != "") {
+        yield(localeTag(language = locale.language, region = ""))
+    }
+    yield(localeTag("", ""))
+}
 
 fun findTranslation(locale: Locale): Map<Strings, String> {
     // We don't need to merge translations because each one should contain all the strings.

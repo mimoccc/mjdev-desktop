@@ -149,45 +149,38 @@ class DesktopContext(
 //        }
     }
 
-    suspend fun openMail(emailAddress: String) =
-        runCatching {
-            desktopUtils.mail(URI.create("mailto:$emailAddress"))
-        }
+    suspend fun openMail(emailAddress: String) = runCatching {
+        desktopUtils.mail(URI.create("mailto:$emailAddress"))
+    }
 
-    suspend fun openBrowser(url: String) =
-        runCatching {
-            desktopUtils.browse(URI.create(url))
-        }
+    suspend fun openBrowser(url: String) = runCatching {
+        desktopUtils.browse(URI.create(url))
+    }
 
-    suspend fun openDirectoryForFile(path: String) =
-        runCatching {
-            desktopUtils.browseFileDirectory(File(path))
-        }
+    suspend fun openDirectoryForFile(path: String) = runCatching {
+        desktopUtils.browseFileDirectory(File(path))
+    }
 
-    suspend fun moveToTrash(file: File) =
-        runCatching {
-            desktopUtils.moveToTrash(file)
-        }
+    suspend fun moveToTrash(file: File) = runCatching {
+        desktopUtils.moveToTrash(file)
+    }
 
-    suspend fun moveToTrash(filePath: String) =
-        runCatching {
-            moveToTrash(File(filePath))
-        }
+    suspend fun moveToTrash(filePath: String) = runCatching {
+        moveToTrash(File(filePath))
+    }
 
     // todo, may be need another function
     suspend fun open(what: String) {
         Shell.executeAndRead("xdg-open", what)
     }
 
-    suspend fun openFileInAssociated(file: File) =
-        runCatching {
-            desktopUtils.open(file)
-        }
+    suspend fun openFileInAssociated(file: File) = runCatching {
+        desktopUtils.open(file)
+    }
 
-    suspend fun openFileInAssociated(filePath: String) =
-        runCatching {
-            openFileInAssociated(File(filePath))
-        }
+    suspend fun openFileInAssociated(filePath: String) = runCatching {
+        openFileInAssociated(File(filePath))
+    }
 
 //    suspend fun beep() = runCatching {
 //        toolkit.beep()
@@ -220,10 +213,9 @@ class DesktopContext(
 
 //    override suspend fun logout() : Boolean = true // todo
 
-    fun lock() =
-        runAsync {
-            Shell.executeAndRead("/usr/bin/loginctl", "lock-sessions")
-        }
+    fun lock() = runAsync {
+        Shell.executeAndRead("/usr/bin/loginctl", "lock-sessions")
+    }
 
     override suspend fun logOut() {
         runAsync {
@@ -250,31 +242,30 @@ class DesktopContext(
         return false // todo
     }
 
-    override fun createManager(cls: KClass<*>): IDelegate =
-        when (cls) {
-            IOSManager::class -> OsManager(this)
-            IPalette::class -> Palette(this)
-            ITranslator::class -> Translator(this)
-            IConnectivityManager::class -> ConnectivityManager(this)
-            IAiManager::class ->
-                AiManager(
-                    context = this,
-                    // todo user can configure
-                    pluginAI = AiPluginOpenAi(this@DesktopContext),
-                    pluginTTS = TTSPluginSwift(this@DesktopContext),
-                    pluginSTT = STTPluginEmpty(this@DesktopContext),
-                )
+    override fun createManager(cls: KClass<*>): IDelegate = when (cls) {
+        IOSManager::class -> OsManager(this)
+        IPalette::class -> Palette(this)
+        ITranslator::class -> Translator(this)
+        IConnectivityManager::class -> ConnectivityManager(this)
+        IAiManager::class ->
+            AiManager(
+                context = this,
+                // todo user can configure
+                pluginAI = AiPluginOpenAi(this@DesktopContext),
+                pluginTTS = TTSPluginSwift(this@DesktopContext),
+                pluginSTT = STTPluginEmpty(this@DesktopContext),
+            )
 
-            IAppsManager::class -> AppsManager(this)
-            IThemeManager::class -> ThemeManager(this)
-            IProcessManager::class -> ProcessManager(this)
-            IKeyManager::class -> KeysManager(this)
-            else ->
-                cls.companionObject
-                    ?.members
-                    ?.first { it.name == "EMPTY" }
-                    ?.call() as IDelegate
-        }
+        IAppsManager::class -> AppsManager(this)
+        IThemeManager::class -> ThemeManager(this)
+        IProcessManager::class -> ProcessManager(this)
+        IKeyManager::class -> KeysManager(this)
+        else ->
+            cls.companionObject
+                ?.members
+                ?.first { it.name == "EMPTY" }
+                ?.call() as IDelegate
+    }
 
     override suspend fun restart() {
         Shell.executeAndRead("/usr/sbin/halt", "--reboot")
@@ -310,19 +301,18 @@ class DesktopContext(
             )
         }
 
-        suspend fun IDesktopContext.loadPicture(src: Any?): Bitmap? =
-            runCatching {
-                ImageRequest
-                    .Builder(platformContext!!)
-                    .data(
-                        when (src) {
-                            is Path -> src.toFile()
-                            else -> src.toString()
-                        },
-                    ).build()
-                    .let { req ->
-                        imageLoader?.execute(req)?.image?.toBitmap()
-                    }
-            }.getOrNull()
+        suspend fun IDesktopContext.loadPicture(src: Any?): Bitmap? = runCatching {
+            ImageRequest
+                .Builder(platformContext!!)
+                .data(
+                    when (src) {
+                        is Path -> src.toFile()
+                        else -> src.toString()
+                    },
+                ).build()
+                .let { req ->
+                    imageLoader?.execute(req)?.image?.toBitmap()
+                }
+        }.getOrNull()
     }
 }

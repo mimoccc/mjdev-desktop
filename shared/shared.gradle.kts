@@ -35,15 +35,15 @@ plugins {
 
 // <editor-fold desc="helpers">----------------------------------------------------------------------
 
-fun NamedDomainObjectContainer<KotlinSourceSet>.getOrCreate(name: String): KotlinSourceSet = findByName(name) ?: create(name)
+fun NamedDomainObjectContainer<KotlinSourceSet>.getOrCreate(name: String): KotlinSourceSet =
+    findByName(name) ?: create(name)
 
 fun NamedDomainObjectContainer<KotlinSourceSet>.desktopMain(block: KotlinSourceSet.() -> Unit = {}): KotlinSourceSet =
     getOrCreate("desktopMain").apply(block)
 
-fun KotlinTargetContainerWithPresetFunctions.desktopTarget(configure: Action<KotlinJvmTarget>) =
-    jvm("desktop").apply {
-        configure.execute(this)
-    }
+fun KotlinTargetContainerWithPresetFunctions.desktopTarget(configure: Action<KotlinJvmTarget>) = jvm("desktop").apply {
+    configure.execute(this)
+}
 
 val Project.compose: ComposeExtension
     get() = extensions.getByType()

@@ -15,23 +15,22 @@ class AiPluginOllama(
     private val context: IDesktopContext,
     private val apiKey: String = context.keysManager.loadKey("ollama"),
 ) : AIPlugin {
-    override suspend fun ask(question: String): String =
-        agent {
-            ollamaModel {
-                apiUrl(apiKey)
-            }
-            task("Provide information") {
-                addInstruction("Respond to user queries with relevant information.")
-            }
-            context {
-                addText(question)
-            }
-            finishResponse()
-        }.start().result.let { result ->
-            when (result) {
-                is Finished<*> -> result.response.toString()
-                is Stuck -> result.reason
-                is Fatal -> result.message
-            }
+    override suspend fun ask(question: String): String = agent {
+        ollamaModel {
+            apiUrl(apiKey)
         }
+        task("Provide information") {
+            addInstruction("Respond to user queries with relevant information.")
+        }
+        context {
+            addText(question)
+        }
+        finishResponse()
+    }.start().result.let { result ->
+        when (result) {
+            is Finished<*> -> result.response.toString()
+            is Stuck -> result.reason
+            is Fatal -> result.message
+        }
+    }
 }

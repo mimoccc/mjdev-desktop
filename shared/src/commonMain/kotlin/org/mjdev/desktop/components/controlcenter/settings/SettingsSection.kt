@@ -47,9 +47,8 @@ fun SettingsSection(
 
 @Preview
 @Composable
-fun PreviewSettingsSection() =
-    preview {
-        SettingsSection(title = "Background") {
-            TextAny(text = "content")
-        }
+fun PreviewSettingsSection() = preview {
+    SettingsSection(title = "Background") {
+        TextAny(text = "content")
     }
+}
