@@ -79,7 +79,9 @@ kotlinx-serialization-json = "1.9.0"
 ktor = "3.2.2"
 flock = "0.1.0"
 markwon = "4.6.2"
-html2text = "-SNAPSHOT"
+# pinned jitpack commit (= master HEAD). "-SNAPSHOT" made this a changing module that
+# gradle re-checked/re-downloaded on every cache expiry — the one dep busting the build cache.
+html2text = "3330c21f8d"
 napier = "2.7.1"
 cryptography = "0.5.0"
 ### libs ###########################################################################################
