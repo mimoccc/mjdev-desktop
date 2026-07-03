@@ -15,6 +15,10 @@ app-vendor = "mjdev"
 # deb packaging joins it with ", ". A clean/GNOME box lacks these (GNOME uses mutter, not wlroots),
 # so without them mjdevc fails to load (libwlroots-0.18.so missing) and the session black-screens.
 app-compositor-runtime-deps = "libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session"
+# Seconds apt-get waits for the dpkg lock (/var/lib/dpkg/lock-frontend) instead of failing
+# immediately when another apt/dpkg process holds it (unattended-upgrades, a parallel build, …).
+# Consumed by installDesktop/installSession (compositor.gradle.kts) and make-iso.sh.
+app-apt-lock-timeout = "600"
 java-language-version = "17"
 # app specific android
 android-compile-sdk = "36"

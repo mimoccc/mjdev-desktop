@@ -24,6 +24,9 @@ VERSION="$(read_catalog app-pkg-version)"
 [ -n "$APP_NAME" ] && [ -n "$VERSION" ] || { echo "cannot read app name/version from $CATALOG"; exit 1; }
 # wayland runtime stack for mjdevc — single source of truth in the version catalog (not hardcoded)
 RUNTIME_DEPS="$(read_catalog app-compositor-runtime-deps)"
+# apt-get must wait for the dpkg lock instead of failing ("Could not get lock
+# /var/lib/dpkg/lock-frontend") when another apt/dpkg runs — value from the catalog.
+APT_LOCK_TIMEOUT="$(read_catalog app-apt-lock-timeout)"
 
 # ---- config / args -------------------------------------------------------
 # trixie = Debian 13, the current stable ("latest public version"). A bare
@@ -97,10 +100,11 @@ mount -t sysfs sys "$ROOT/sys"
 # chroot can reach the mirror (without this apt-get update fails -> exit 100).
 cp -L /etc/resolv.conf "$ROOT/etc/resolv.conf" 2>/dev/null || true
 
-cat > "$ROOT/etc/apt/apt.conf.d/99lean" <<'EOF'
+cat > "$ROOT/etc/apt/apt.conf.d/99lean" <<EOF
 APT::Install-Recommends "false";
 APT::Install-Suggests "false";
 Acquire::Languages "none";
+DPkg::Lock::Timeout "$APT_LOCK_TIMEOUT";
 EOF
 
 # stage the desktop app deb, the compositor binary + session files, and every

@@ -168,6 +168,11 @@ tasks.register<Copy>("stageSession") {
 // shared with the deb Depends and make-iso.sh), never hardcoded here.
 val compositorRuntimeDeps: String = libs.versions.app.compositor.runtime.deps.get()
 
+// apt-get on the host must WAIT for the dpkg lock (unattended-upgrades, a parallel build, …)
+// instead of failing with "Could not get lock /var/lib/dpkg/lock-frontend" — catalog-driven.
+val aptLockTimeout: String = libs.versions.app.apt.lock.timeout.get()
+val aptGet = "apt-get -o DPkg::Lock::Timeout=$aptLockTimeout"
+
 fun sessionInstallLines(staged: File): List<String> = listOf(
     "#!/bin/sh",
     "set -e",
@@ -176,8 +181,8 @@ fun sessionInstallLines(staged: File): List<String> = listOf(
     // pulls libdrm/libgbm/libinput/libseat/libxkbcommon/libwayland/libdisplay-info/libliftoff;
     // xwayland = X display for the AWT-based Compose shell; libgl1-mesa-dri = the GL/EGL driver
     // (incl. llvmpipe software fallback). Without these mjdevc fails to even load -> black screen.
-    "apt-get update || true",
-    "apt-get install --no-install-recommends -y $compositorRuntimeDeps seatd || " +
+    "$aptGet update || true",
+    "$aptGet install --no-install-recommends -y $compositorRuntimeDeps seatd || " +
             "echo 'WARN: apt could not install the wayland runtime stack (offline or non-debian?) — the desktop may not start'",
     // the compositor opens /dev/dri/card0 + the seatd socket (group video); seatd must run and
     // the logged-in user must be in video/input/render (+ seat if present) or the session is black.
@@ -230,8 +235,8 @@ tasks.register<Exec>("installDesktop") {
         val script = staged.resolve("install-desktop.sh")
         // install the deb via apt so its Depends (the wayland runtime stack baked in by
         // packageFullDeb) are resolved; fall back to dpkg + apt -f if the apt form is unavailable.
-        val installDeb = "apt-get install --no-install-recommends -y '${deb.absolutePath}' || " +
-                "{ dpkg -i '${deb.absolutePath}' || true; apt-get install -f -y; }"
+        val installDeb = "$aptGet install --no-install-recommends -y '${deb.absolutePath}' || " +
+                "{ dpkg -i '${deb.absolutePath}' || true; $aptGet install -f -y; }"
         script.writeText((lines + installDeb).joinToString("\n") + "\n")
         // pkexec pops a graphical polkit auth dialog and runs the script as root; needs a polkit
         // agent in the session but no terminal. Fall back to a printed sudo command if absent.
