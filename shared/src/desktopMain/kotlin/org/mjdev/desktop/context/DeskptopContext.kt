@@ -44,6 +44,8 @@ import org.mjdev.desktop.managers.palette.IPalette
 import org.mjdev.desktop.managers.palette.Palette
 import org.mjdev.desktop.managers.process.IProcessManager
 import org.mjdev.desktop.managers.processes.ProcessManager
+import org.mjdev.desktop.managers.remote.IRemoteDesktopManager
+import org.mjdev.desktop.managers.remote.RemoteDesktopManager
 import org.mjdev.desktop.managers.theme.IThemeManager
 import org.mjdev.desktop.managers.theme.ThemeManager
 import org.mjdev.desktop.managers.translations.ITranslator
@@ -260,6 +262,7 @@ class DesktopContext(
         IThemeManager::class -> ThemeManager(this)
         IProcessManager::class -> ProcessManager(this)
         IKeyManager::class -> KeysManager(this)
+        IRemoteDesktopManager::class -> RemoteDesktopManager(this)
         else ->
             cls.companionObject
                 ?.members

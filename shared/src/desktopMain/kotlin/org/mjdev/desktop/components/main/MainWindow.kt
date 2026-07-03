@@ -198,6 +198,11 @@ fun MainWindow() = withDesktopContext {
         Log.i("App started with args: $appArgs")
         Log.i("First start : $isFirstStart")
         Log.i("Debug mode : $isDebug")
+        // Headless/kiosk convenience: start the remote-desktop (VNC) server at boot when
+        // MJDEV_VNC_AUTOSTART is set, so a machine with no local input can be driven remotely.
+        if (System.getenv("MJDEV_VNC_AUTOSTART")?.toBooleanStrictOrNull() == true) {
+            runAsync { context.remoteDesktop.start() }
+        }
         Shell {
             if (!isDebug) {
                 Log.i("Starting autostart apps")

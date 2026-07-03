@@ -36,6 +36,7 @@ import org.mjdev.desktop.managers.keys.IKeyManager
 import org.mjdev.desktop.managers.os.IOSManager
 import org.mjdev.desktop.managers.palette.IPalette
 import org.mjdev.desktop.managers.process.IProcessManager
+import org.mjdev.desktop.managers.remote.IRemoteDesktopManager
 import org.mjdev.desktop.managers.theme.IThemeManager
 import org.mjdev.desktop.managers.translations.ITranslator
 import kotlin.coroutines.CoroutineContext
@@ -74,6 +75,7 @@ abstract class IDesktopContext : IDisposable {
     open val palette: IPalette by this
     open val translator: ITranslator by this
     open val keysManager: IKeyManager by this
+    open val remoteDesktop: IRemoteDesktopManager by this
 
     abstract var isFirstStart: Boolean
     abstract var isInstalled: Boolean
