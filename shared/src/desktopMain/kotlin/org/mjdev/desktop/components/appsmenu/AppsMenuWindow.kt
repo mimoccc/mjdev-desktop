@@ -37,17 +37,20 @@ fun AppsMenuWindow(
     exitAnimation: ExitTransition = AppsMenuExitAnimation,
     searchTextState: MutableState<String> = rememberState(""),
     onFocusChange: ChromeWindowState.(Boolean) -> Unit = {},
+    // Close the menu through the desktop's single authority (DesktopState) so its intent stays in
+    // sync; callers wire this to desktopState.closeMenu(). Defaults to a direct hide for previews.
+    onCloseMenu: () -> Unit = { runAsync { menuState.hide() } },
     onAppClick: DesktopContextScope.(IApp) -> Unit = { app ->
         runAsync {
             app.start()
             searchTextState.clear()
-            menuState.hide()
+            onCloseMenu()
         }
     },
     onAppContextMenuClick: DesktopContextScope.(IApp) -> Unit = {},
     onCategoryContextMenuClick: DesktopContextScope.(Category) -> Unit = {},
     onUserAvatarClick: () -> Unit = {},
-    onActionClick: () -> Unit = { runAsync { menuState.hide() } },
+    onActionClick: () -> Unit = { onCloseMenu() },
     onTooltip: (item: Any?) -> Unit = {},
 ) = withDesktopContext {
     val size by rememberComputed(
@@ -90,20 +93,8 @@ fun AppsMenuWindow(
                 (menuState.enabled || appsMenuState.enabled)
         },
         onGlobalKey = {
-            onMenuKey {
-                runAsync {
-                    menuState.show()
-                    appsMenuState.show()
-                }
-                false
-            }
-            onEscape {
-                runAsync {
-                    menuState.hide()
-                    appsMenuState.hide()
-                }
-                true
-            }
+            // Escape and the menu/Super key are owned by DesktopState now (see DesktopStateDriver);
+            // here we only handle in-menu search typing while the menu is open.
             onBack {
                 appsMenuState.searchTextState.clear()
                 true

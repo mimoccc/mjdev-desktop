@@ -102,39 +102,6 @@ fun DockBarWindow(
             containerSize.height - size.height,
         )
     }
-    val mouseRange by rememberCalculated(
-        containerSize,
-        size,
-        position,
-    ) {
-        // While the control center is open the reveal hotspot stops at its left edge —
-        // otherwise touching the bottom of the control center itself would close it and
-        // pop the dock instead.
-        val revealWidth =
-            if (controlCenterState.isVisible) {
-                (containerSize.width - controlCenterState.size.width).coerceAtLeast(0.dp)
-            } else {
-                containerSize.width
-            }
-        MouseRange(
-            x = 0.dp,
-            y = containerSize.height - controlCenterDividerWidth,
-            width = revealWidth,
-            height = size.height,
-        )
-    }
-    // bounds of the *expanded* dock — used to autohide on pointer-leave (decoupled from focus,
-    // per the docking UX spec). The mouseRange above is only the thin bottom reveal hotspot, so
-    // it cannot tell when the pointer has left the visible dock; this range can.
-    val leaveRange by rememberCalculated(containerSize) {
-        val expandedHeight = panelHeight(true)
-        MouseRange(
-            x = 0.dp,
-            y = containerSize.height - expandedHeight,
-            width = containerSize.width,
-            height = expandedHeight,
-        )
-    }
     ChromeWindow(
         name = "DockBar",
         visible = true,
@@ -144,56 +111,6 @@ fun DockBarWindow(
         windowState = panelState,
         onCreated = {
             runAsync { panelState.applyBounds(position, size) }
-        },
-        isGlobalKeyHandlerEnabled = {
-            panelState.isVisible && panelState.enabled
-        },
-        onGlobalKey = {
-            onEscape {
-                runAsync {
-                    menuState.hide()
-                    panelState.hide()
-                }
-                true
-            }
-            onMenuKey {
-                runAsync {
-                    panelState.showOrFocus()
-                    menuState.showOrFocus()
-                }
-                true
-            }
-        },
-        isGlobalMouseHandlerEnabled = {
-            isUserLoggedIn && panelState.enabled
-        },
-        onGlobalMouse = {
-            onPointerEnter(mouseRange) {
-                runAsync {
-                    // show() only on a real reveal (not showOrFocus): re-focusing an already-open
-                    // dock churns focus-follows-mouse and flip-flops the size, drifting geometry.
-                    if (menuState.isNotVisible && panelState.isNotVisible) {
-                        // Revealing the dock while the control center is open would put the dock
-                        // BELOW the control center window (JVM z-order) and fight it for focus.
-                        // The two never show together: a deliberate reveal closes the control
-                        // center first (same as clicking outside it).
-                        if (controlCenterState.isVisible) {
-                            controlCenterState.hide()
-                        }
-                        panelState.show()
-                    }
-                }
-            }
-            // autohide when the pointer leaves the expanded dock (and no menu is open, which
-            // must keep the dock alive). Driven by pointer position, not focus, so it no longer
-            // gets stuck open over the non-focusable desktop.
-            onPointerLeave(leaveRange) {
-                runAsync {
-                    if (panelState.isVisible && menuState.isNotVisible) {
-                        panelState.hide()
-                    }
-                }
-            }
         },
     ) {
         DesktopPanel(
@@ -210,18 +127,7 @@ fun DockBarWindow(
             onAppContextMenuClick = onAppContextMenuClick,
             onLanguageClick = onLanguageClick,
             onTooltip = onTooltip,
-            onFocusChange = { focused ->
-                // Only re-show on a real transition into focus while hidden; re-showing an already
-                // visible dock on every focus flicker (focus-follows-mouse) was a churn source.
-                if (focused && panelState.isNotVisible) {
-                    runAsync {
-                        panelState.show()
-                        if (menuState.isVisible) {
-                            menuState.focus()
-                        }
-                    }
-                }
-            },
+            onFocusChange = {},
         )
     }
     // Single atomic driver for the dock's geometry: position + size applied absolutely together

@@ -57,17 +57,6 @@ fun ControlCenterWindow(
             0.dp,
         )
     }
-    val mouseRange by rememberCalculated(
-        containerSize,
-        size,
-    ) {
-        MouseRange(
-            x = containerSize.width - controlCenterDividerWidth,
-            y = 0.dp,
-            width = size.width,
-            height = containerSize.height,
-        )
-    }
     ChromeWindow(
         name = "ControlCenter",
         visible = true,
@@ -78,36 +67,6 @@ fun ControlCenterWindow(
         onCreated = {
             controlCenterState.size = size
             controlCenterState.position = position
-        },
-        isGlobalKeyHandlerEnabled = {
-            controlCenterState.isVisible && controlCenterState.enabled
-        },
-        onGlobalKey = {
-            onEscape {
-                runAsync {
-                    controlCenterState.hide()
-                }
-                true
-            }
-            onEscape {
-                runAsync {
-                    controlCenterState.hide()
-                }
-                true
-            }
-        },
-        isGlobalMouseHandlerEnabled = { isUserLoggedIn.orElse { false } },
-        onGlobalMouse = {
-            onPointerEnter(mouseRange) {
-                runAsync {
-//                    println("Pointer enter control center.")
-                    controlCenterState.showOrFocus()
-                }
-            }
-            // Intentionally NO pointer-leave autohide: the control center must stay open when the
-            // pointer moves off it (it vanished on every mouse-leave before, which felt broken).
-            // It closes on a click outside instead — the desktop's onLeftMouseClick hides it, and
-            // focus loss does too. Works in JVM and nested alike.
         },
     ) {
         ControlCenter(

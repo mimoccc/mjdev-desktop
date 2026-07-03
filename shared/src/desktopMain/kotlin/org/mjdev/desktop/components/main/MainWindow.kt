@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,6 +26,10 @@ import org.mjdev.desktop.components.sliding.base.VisibilityState.Companion.remem
 import org.mjdev.desktop.components.tooltip.TooltipState
 import org.mjdev.desktop.components.tooltip.TooltipWindow
 import org.mjdev.desktop.components.tooltip.rememberTooltipState
+import org.mjdev.desktop.state.DesktopState
+import org.mjdev.desktop.state.DesktopStateDriver
+import org.mjdev.desktop.data.PanelLocation
+import org.mjdev.desktop.state.SurfaceKind
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.isDesign
 import org.mjdev.desktop.extensions.Compose.preview
@@ -42,12 +47,13 @@ fun MainWindow() = withDesktopContext {
         rememberChromeWindowState(
             visible = isDesign,
         )
+    // The bar is visible by default now; DesktopState hides it only when a window overlaps it or
+    // the control center opens (see DesktopPolicy). No per-window autohide timer anymore.
     val panelState =
         rememberChromeWindowState(
-            hideDelay = panelHideDelay,
-            visible = isDesign || !panelAutoHideEnabled,
-            enabled = panelAutoHideEnabled,
+            visible = true,
         )
+    val desktopState = remember { DesktopState(scope) }
     val menuState =
         rememberChromeWindowState(
             visible = isDesign,
@@ -72,21 +78,51 @@ fun MainWindow() = withDesktopContext {
 //        println("Tooltip: $item")
         tooltipState.show(item)
     }
-    // When the control center opens it covers the desktop, so the dock bar and any open menu
-    // step aside (this also frees focus so the control center can actually take it).
-    // The dock is dropped IMMEDIATELY (isVisible, not hide()) — hide() honours the multi-second
-    // panelHideDelay, which left the dock lingering *below* the control center for seconds.
-    LaunchedEffect(controlCenterState.isVisible) {
-        if (controlCenterState.isVisible) {
-            panelState.isVisible = false
-            if (menuState.isVisible) {
-                menuState.hide()
-            }
-            if (appsMenuState.isVisible) {
-                appsMenuState.hide()
-            }
-        }
+    // Register the three surfaces with the central DesktopState. It owns all show/hide decisions
+    // (bar/menu/control-center coordination) via DesktopPolicy; the windows below just render.
+    DisposableEffect(desktopState, containerSize) {
+        val cw = containerSize.width.value.toDouble()
+        val ch = containerSize.height.value.toDouble()
+        val edge = controlCenterDividerWidth.value.toDouble()
+        fun rectOf(state: org.mjdev.desktop.windows.ChromeWindowState) =
+            DesktopState.ScreenRect(
+                left = state.position.x.value.toDouble(),
+                top = state.position.y.value.toDouble(),
+                right = (state.position.x + state.size.width).value.toDouble(),
+                bottom = (state.position.y + state.size.height).value.toDouble(),
+            )
+        desktopState.register(
+            kind = SurfaceKind.Bar,
+            window = panelState,
+            bounds = { rectOf(panelState) },
+            // reveal strip along whichever edge the dock lives on (only used when overlapped).
+            // Derived from PanelLocation so drag-to-edge later needs no change here.
+            revealHotspot = {
+                when (panelLocation) {
+                    PanelLocation.Bottom -> DesktopState.ScreenRect(0.0, ch - edge, cw, ch)
+                    PanelLocation.Top -> DesktopState.ScreenRect(0.0, 0.0, cw, edge)
+                    PanelLocation.Left -> DesktopState.ScreenRect(0.0, 0.0, edge, ch)
+                    PanelLocation.Right -> DesktopState.ScreenRect(cw - edge, 0.0, cw, ch)
+                }
+            },
+        )
+        desktopState.register(
+            kind = SurfaceKind.Menu,
+            window = menuState,
+            bounds = { rectOf(menuState) },
+            onApply = { visible -> appsMenuState.isVisible = visible },
+        )
+        desktopState.register(
+            kind = SurfaceKind.ControlCenter,
+            window = controlCenterState,
+            bounds = { rectOf(controlCenterState) },
+            // right reveal strip — hovering it opens the control center
+            revealHotspot = { DesktopState.ScreenRect(cw - edge, 0.0, cw, ch) },
+        )
+        onDispose { }
     }
+    // One place feeds global pointer + clicks + Escape into DesktopState.
+    DesktopStateDriver(desktopState)
     DesktopWindow(
         panelState = panelState,
         controlCenterState = controlCenterState,
@@ -113,11 +149,8 @@ fun MainWindow() = withDesktopContext {
 //                )
             },
             onLeftMouseClick = {
-                runAsync {
-                    panelState.hide()
-                    menuState.hide()
-                    controlCenterState.hide()
-                }
+                // desktop click = click outside every surface -> dismiss menu + control center
+                desktopState.dismissTransients()
             },
             onRightMouseClick = {
 //                contextMenuState.show()
@@ -145,9 +178,9 @@ fun MainWindow() = withDesktopContext {
         panelState = panelState,
         menuState = menuState,
         controlCenterState = controlCenterState,
-        // Autohide is driven purely by pointer-leave (see DockBarWindow.onGlobalMouse), NOT by
-        // focus. Hiding on focus-loss flooded hide() under focus-follows-mouse (every pointer
-        // flicker over a non-focused window fired a hide) and flip-flopped the dock 16<->80.
+        // The menu button toggles the apps menu through DesktopState (which also closes the
+        // control center). All show/hide policy lives there now, not in the window.
+        onMenuIconClicked = { desktopState.toggleMenu() },
         onFocusChange = {},
     )
     AppsMenuWindow(
@@ -155,27 +188,17 @@ fun MainWindow() = withDesktopContext {
         panelState = panelState,
         appsMenuState = appsMenuState,
         onTooltip = onTooltip,
-        onFocusChange = { focused ->
-            Log.d("menu focus : $focused")
-//            if (!focused) {
-//                menuState.hide()
-//            }
-        },
+        // Route menu-close (app launched, action clicked) through DesktopState so its intent stays
+        // in sync — a direct menuState.hide() would desync and the menu could pop back.
+        onCloseMenu = { desktopState.closeMenu() },
+        onFocusChange = {},
     )
     ControlCenterWindow(
         onTooltip = onTooltip,
         controlCenterState = controlCenterState,
-        // Close on focus-loss = the "click outside" dismissal. Guard on isVisible so it does not
-        // fire a hide() on every focus flicker while already hidden (focus-follows-mouse would
-        // otherwise flood runAsync). Pointer-leave no longer hides it, so it stays open until a
-        // real click moves focus away (or a desktop click via onLeftMouseClick).
-        onFocusChange = { focused ->
-            if (!focused && controlCenterState.isVisible) {
-                runAsync {
-                    controlCenterState.hide()
-                }
-            }
-        },
+        // Dismissal (click-outside / Escape) is owned by DesktopState now, so the window no longer
+        // hides itself on focus loss (that fought focus-follows-mouse).
+        onFocusChange = {},
     )
     // Standalone auto-hide tooltip window — every onTooltip above lands here.
     TooltipWindow(
@@ -215,9 +238,6 @@ fun MainWindow() = withDesktopContext {
             dispose()
             Log.i("App ended.")
         }
-    }
-    LaunchedEffect(menuState.isVisible) {
-        appsMenuState.isVisible = menuState.isVisible
     }
 }
 
