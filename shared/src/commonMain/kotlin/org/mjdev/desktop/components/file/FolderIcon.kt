@@ -14,10 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import okio.Path
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.draggable.DraggableView
 import org.mjdev.desktop.components.fonticon.FontIcon
 import org.mjdev.desktop.components.text.TextWithShadow

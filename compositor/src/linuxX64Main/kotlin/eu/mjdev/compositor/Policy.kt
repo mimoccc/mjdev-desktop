@@ -25,23 +25,26 @@ import mjdev.compositor.shim.mjc_view_set_layer
  *   a "mjdev::<role>" title prefix) are placed into dedicated layers
  * - everything else is a normal app window
  */
-class Policy(private val c: Compositor) {
-
-    private val shellClasses = setOf(
-        "mjdev-desktop",
-        "org.mjdev.desktop",
-        "eu.mjdev.desktop",
-        // default AWT WM_CLASS of the Compose desktop main class
-        "eu-mjdev-desktop-mainkt",
-    )
+class Policy(
+    private val c: Compositor,
+) {
+    private val shellClasses =
+        setOf(
+            "mjdev-desktop",
+            "org.mjdev.desktop",
+            "eu.mjdev.desktop",
+            // default AWT WM_CLASS of the Compose desktop main class
+            "eu-mjdev-desktop-mainkt",
+        )
 
     fun apply(info: WindowInfo) {
         val appId = info.appId?.lowercase().orEmpty()
-        val titleRole = info.title
-            ?.takeIf { it.startsWith(TITLE_PREFIX) }
-            ?.removePrefix(TITLE_PREFIX)
-            ?.substringBefore(' ')
-            ?.lowercase()
+        val titleRole =
+            info.title
+                ?.takeIf { it.startsWith(TITLE_PREFIX) }
+                ?.removePrefix(TITLE_PREFIX)
+                ?.substringBefore(' ')
+                ?.lowercase()
         val isShell = appId in shellClasses || titleRole != null
         info.shell = isShell
         if (!isShell) {
@@ -51,7 +54,8 @@ class Policy(private val c: Compositor) {
         when (info.role) {
             // ChromeWindow names: DesktopWindow/FullScreenWindow carry the wallpaper
             "wallpaper", "background", "desktop",
-            "desktopwindow", "fullscreenwindow" -> {
+            "desktopwindow", "fullscreenwindow",
+            -> {
                 mjc_view_set_layer(info.ptr, MJC_LAYER_BACKGROUND)
                 mjc_view_set_focusable(info.ptr, false)
             }
@@ -70,7 +74,11 @@ class Policy(private val c: Compositor) {
         }
     }
 
-    fun handleKey(keysym: UInt, modifiers: UInt, pressed: Boolean): Boolean {
+    fun handleKey(
+        keysym: UInt,
+        modifiers: UInt,
+        pressed: Boolean,
+    ): Boolean {
         if (!pressed) {
             return false
         }
@@ -93,9 +101,10 @@ class Policy(private val c: Compositor) {
     }
 
     private fun focusNext() {
-        val cycle = c.windows.all().filter {
-            it.mapped && !it.minimized && !it.shell
-        }
+        val cycle =
+            c.windows.all().filter {
+                it.mapped && !it.minimized && !it.shell
+            }
         if (cycle.isEmpty()) {
             return
         }

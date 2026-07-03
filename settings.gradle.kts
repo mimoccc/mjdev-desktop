@@ -1,14 +1,15 @@
 @file:Suppress("UnstableApiUsage")
 
-//<editor-fold desc="root project">-----------------------------------------------------------------
+// <editor-fold desc="root project">-----------------------------------------------------------------
+
 rootProject.name = "mjdev-desktop"
-//</editor-fold>------------------------------------------------------------------------------------
+// </editor-fold>------------------------------------------------------------------------------------
 
-//<editor-fold desc="features">---------------------------------------------------------------------
+// <editor-fold desc="features">---------------------------------------------------------------------
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-//</editor-fold>------------------------------------------------------------------------------------
+// </editor-fold>------------------------------------------------------------------------------------
 
-//<editor-fold desc="plugin management">------------------------------------------------------------
+// <editor-fold desc="plugin management">------------------------------------------------------------
 pluginManagement {
     repositories {
         mavenLocal()
@@ -42,9 +43,9 @@ pluginManagement {
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
-//</editor-fold>------------------------------------------------------------------------------------
+// </editor-fold>------------------------------------------------------------------------------------
 
-//<editor-fold desc="dependency management">--------------------------------------------------------
+// <editor-fold desc="dependency management">--------------------------------------------------------
 dependencyResolutionManagement {
     repositories {
         mavenLocal()
@@ -75,16 +76,16 @@ dependencyResolutionManagement {
         google()
     }
 }
-//</editor-fold>------------------------------------------------------------------------------------
+// </editor-fold>------------------------------------------------------------------------------------
 
-//<editor-fold desc="includes">---------------------------------------------------------------------
+// <editor-fold desc="includes">---------------------------------------------------------------------
 include(":shared")
 include(":androidApp")
 include(":desktopApp")
 include(":compositor")
-//</editor-fold>------------------------------------------------------------------------------------
+// </editor-fold>------------------------------------------------------------------------------------
 
-//<editor-fold desc="rename gradle build files">----------------------------------------------------
+// <editor-fold desc="rename gradle build files">----------------------------------------------------
 // Configure modules to use their own name as the build file name
 // app/build.gradle.kts → app/app.gradle.kts
 // features/home/build.gradle.kts → features/home/home.gradle.kts
@@ -97,4 +98,4 @@ rootProject.children.forEach { project ->
     }
     configureProject(project)
 }
-//</editor-fold>------------------------------------------------------------------------------------
+// </editor-fold>------------------------------------------------------------------------------------

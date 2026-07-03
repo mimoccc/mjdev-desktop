@@ -33,7 +33,10 @@ object Clog {
     }
 
     /** medium-verbose: pointer is sampled, the rest is dropped to keep logs readable */
-    fun pointer(x: Int, y: Int) {
+    fun pointer(
+        x: Int,
+        y: Int,
+    ) {
         if (!verbose) return
         if (pointerCount++ % POINTER_SAMPLE == 0L) {
             println("mjdevc: pointer ($x, $y) [#$pointerCount, 1/$POINTER_SAMPLE sampled]")

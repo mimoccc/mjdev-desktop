@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION") // ClipboardManager -> suspend Clipboard migration pending
+
 package org.mjdev.desktop.components.controlcenter.pages.ai
 
 import androidx.compose.foundation.background
@@ -20,6 +22,7 @@ import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pushpal.jetlime.EventPointType
 import com.pushpal.jetlime.ItemsList
@@ -27,7 +30,6 @@ import com.pushpal.jetlime.JetLimeColumn
 import com.pushpal.jetlime.JetLimeDefaults
 import com.pushpal.jetlime.JetLimeEvent
 import com.pushpal.jetlime.JetLimeEventDefaults
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.button.TransparentButton
 import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
 import org.mjdev.desktop.components.controlcenter.base.ControlCenterPageScope.Companion.remember

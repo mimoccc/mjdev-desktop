@@ -25,10 +25,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.blur.BlurPanel
 import org.mjdev.desktop.components.desktoppanel.applets.DesktopMenuIcon
 import org.mjdev.desktop.components.desktoppanel.applets.DesktopPanelDateTime

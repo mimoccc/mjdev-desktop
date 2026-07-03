@@ -24,72 +24,88 @@ val protocolsDir = layout.buildDirectory.dir("generated/protocols")
 val shimDir = layout.buildDirectory.dir("shim")
 
 // pkg-config is queried lazily and never fails configuration,
-// so the JVM desktop build stays usable on machines without wlroots
+// so the JVM desktop build stays usable on machines without wlroots.
+// providers.exec (not ProcessBuilder) keeps the call configuration-cache compatible —
+// gradle records it as a build input instead of reporting an external-process problem.
 fun pkgConfig(vararg args: String): List<String> = runCatching {
-    val process = ProcessBuilder(listOf("pkg-config") + args)
-        .redirectErrorStream(false)
-        .start()
-    val out = process.inputStream.bufferedReader().readText()
-    if (process.waitFor() != 0) emptyList()
-    else out.trim().split(Regex("\\s+")).filter { it.isNotBlank() }
+    val exec =
+        providers.exec {
+            commandLine(listOf("pkg-config") + args)
+            isIgnoreExitValue = true
+        }
+    if (exec.result.get().exitValue != 0) {
+        emptyList()
+    } else {
+        exec.standardOutput.asText
+            .get()
+            .trim()
+            .split(Regex("\\s+"))
+            .filter { it.isNotBlank() }
+    }
 }.getOrElse { emptyList() }
 
 val wlrPackages = arrayOf("wlroots-0.18", "wayland-server", "xkbcommon", "pixman-1")
 val wlrCflags: List<String>
     get() = pkgConfig("--cflags", *wlrPackages)
 val wlrLibs: List<String>
-    get() = pkgConfig("--libs", *wlrPackages).ifEmpty {
-        listOf("-lwlroots-0.18", "-lwayland-server", "-lxkbcommon")
-    }
+    get() =
+        pkgConfig("--libs", *wlrPackages).ifEmpty {
+            listOf("-lwlroots-0.18", "-lwayland-server", "-lxkbcommon")
+        }
 
 // the kotlin/native bundled linker does not search the system lib dirs
-val systemLibDirs = listOf(
-    "/usr/lib/x86_64-linux-gnu",
-    "/usr/lib",
-    "/usr/local/lib",
-).filter { file(it).isDirectory }.map { "-L$it" }
+val systemLibDirs =
+    listOf(
+        "/usr/lib/x86_64-linux-gnu",
+        "/usr/lib",
+        "/usr/local/lib",
+    ).filter { file(it).isDirectory }.map { "-L$it" }
 
-val generateProtocols = tasks.register<Exec>("generateProtocols") {
-    group = "mjdev"
-    description = "Generates wayland protocol headers used by the compositor shim."
-    val outDir = protocolsDir.get().asFile
-    val xdgShellXml = "/usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml"
-    inputs.files(xdgShellXml).optional()
-    outputs.dir(outDir)
-    commandLine(
-        "bash", "-c",
-        "mkdir -p '$outDir' && " +
-                "wayland-scanner server-header '$xdgShellXml' '$outDir/xdg-shell-protocol.h'"
-    )
-}
-
-val compileShim = tasks.register<Exec>("compileShim") {
-    group = "mjdev"
-    description = "Compiles the C shim over wlroots into a static library."
-    dependsOn(generateProtocols)
-    // capture everything as local values at configuration time so the doFirst closure
-    // never reaches back into the build script (required for configuration-cache safety)
-    val shimC = nativeDir.resolve("shim.c")
-    val shimH = nativeDir.resolve("shim.h")
-    val outDir = shimDir.get().asFile
-    val protoDir = protocolsDir.get().asFile
-    val includeDir = nativeDir
-    val cflags = wlrCflags.joinToString(" ")
-    inputs.files(shimC, shimH)
-    outputs.file(outDir.resolve("libmjcshim.a"))
-    doFirst {
+val generateProtocols =
+    tasks.register<Exec>("generateProtocols") {
+        group = "mjdev"
+        description = "Generates wayland protocol headers used by the compositor shim."
+        val outDir = protocolsDir.get().asFile
+        val xdgShellXml = "/usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml"
+        inputs.files(xdgShellXml).optional()
+        outputs.dir(outDir)
         commandLine(
-            "bash", "-c",
+            "bash",
+            "-c",
             "mkdir -p '$outDir' && " +
+                "wayland-scanner server-header '$xdgShellXml' '$outDir/xdg-shell-protocol.h'",
+        )
+    }
+
+val compileShim =
+    tasks.register<Exec>("compileShim") {
+        group = "mjdev"
+        description = "Compiles the C shim over wlroots into a static library."
+        dependsOn(generateProtocols)
+        // capture everything as local values at configuration time so the doFirst closure
+        // never reaches back into the build script (required for configuration-cache safety)
+        val shimC = nativeDir.resolve("shim.c")
+        val shimH = nativeDir.resolve("shim.h")
+        val outDir = shimDir.get().asFile
+        val protoDir = protocolsDir.get().asFile
+        val includeDir = nativeDir
+        val cflags = wlrCflags.joinToString(" ")
+        inputs.files(shimC, shimH)
+        outputs.file(outDir.resolve("libmjcshim.a"))
+        doFirst {
+            commandLine(
+                "bash",
+                "-c",
+                "mkdir -p '$outDir' && " +
                     "cc -O2 -fPIC -DWLR_USE_UNSTABLE -std=c11 " +
                     "-I'$protoDir' -I'$includeDir' $cflags " +
                     "-c '$shimC' -o '$outDir/shim.o' && " +
-                    "ar rcs '$outDir/libmjcshim.a' '$outDir/shim.o'"
-        )
+                    "ar rcs '$outDir/libmjcshim.a' '$outDir/shim.o'",
+            )
+        }
+        // placeholder, replaced in doFirst (Exec requires a commandLine at configuration)
+        commandLine("true")
     }
-    // placeholder, replaced in doFirst (Exec requires a commandLine at configuration)
-    commandLine("true")
-}
 
 kotlin {
     linuxX64 {
@@ -105,18 +121,28 @@ kotlin {
                 entryPoint = "eu.mjdev.compositor.main"
                 // link against the system glibc instead of the old bundled
                 // sysroot, system libs (wlroots & co) need modern symbols
-                val gccVersion = file("/usr/lib/gcc/x86_64-linux-gnu")
-                    .listFiles()?.map { it.name }?.maxByOrNull { it.toIntOrNull() ?: 0 }
+                val gccVersion =
+                    file("/usr/lib/gcc/x86_64-linux-gnu")
+                        .listFiles()
+                        ?.map { it.name }
+                        ?.maxByOrNull { it.toIntOrNull() ?: 0 }
                 if (gccVersion != null) {
-                    freeCompilerArgs += listOf(
-                        "-Xoverride-konan-properties=" +
+                    freeCompilerArgs +=
+                        listOf(
+                            "-Xoverride-konan-properties=" +
                                 "targetSysRoot.linux_x64=/;" +
                                 "libGcc.linux_x64=/usr/lib/gcc/x86_64-linux-gnu/$gccVersion;" +
-                                "crtFilesLocation.linux_x64=usr/lib/x86_64-linux-gnu"
-                    )
+                                "crtFilesLocation.linux_x64=usr/lib/x86_64-linux-gnu",
+                        )
                 }
                 linkerOpts(systemLibDirs)
-                linkerOpts(shimDir.get().asFile.resolve("libmjcshim.a").absolutePath)
+                linkerOpts(
+                    shimDir
+                        .get()
+                        .asFile
+                        .resolve("libmjcshim.a")
+                        .absolutePath,
+                )
                 linkerOpts(wlrLibs)
                 // the shim queries GL_RENDERER via EGL to decide hardware vs software GL for the
                 // shell (SKIKO_RENDER_API), so link the EGL + GLES2 dispatchers explicitly.
@@ -140,7 +166,8 @@ kotlin {
 // (you would keep running a stale executable).
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink>().configureEach {
     dependsOn(compileShim)
-    inputs.file(shimDir.map { it.file("libmjcshim.a") })
+    inputs
+        .file(shimDir.map { it.file("libmjcshim.a") })
         .withPropertyName("mjcShimLibrary")
 }
 // note: cinterop parses only the self contained shim.h,
@@ -166,11 +193,15 @@ tasks.register<Copy>("stageSession") {
 // stays configuration-cache safe (the function itself is never captured in the task action).
 // the wayland runtime stack mjdevc needs — from the version catalog (single source of truth,
 // shared with the deb Depends and make-iso.sh), never hardcoded here.
-val compositorRuntimeDeps: String = libs.versions.app.compositor.runtime.deps.get()
+val compositorRuntimeDeps: String =
+    libs.versions.app.compositor.runtime.deps
+        .get()
 
 // apt-get on the host must WAIT for the dpkg lock (unattended-upgrades, a parallel build, …)
 // instead of failing with "Could not get lock /var/lib/dpkg/lock-frontend" — catalog-driven.
-val aptLockTimeout: String = libs.versions.app.apt.lock.timeout.get()
+val aptLockTimeout: String =
+    libs.versions.app.apt.lock.timeout
+        .get()
 val aptGet = "apt-get -o DPkg::Lock::Timeout=$aptLockTimeout"
 
 fun sessionInstallLines(staged: File): List<String> = listOf(
@@ -183,7 +214,7 @@ fun sessionInstallLines(staged: File): List<String> = listOf(
     // (incl. llvmpipe software fallback). Without these mjdevc fails to even load -> black screen.
     "$aptGet update || true",
     "$aptGet install --no-install-recommends -y $compositorRuntimeDeps seatd || " +
-            "echo 'WARN: apt could not install the wayland runtime stack (offline or non-debian?) — the desktop may not start'",
+        "echo 'WARN: apt could not install the wayland runtime stack (offline or non-debian?) — the desktop may not start'",
     // the compositor opens /dev/dri/card0 + the seatd socket (group video); seatd must run and
     // the logged-in user must be in video/input/render (+ seat if present) or the session is black.
     "systemctl enable --now seatd 2>/dev/null || true",
@@ -194,8 +225,8 @@ fun sessionInstallLines(staged: File): List<String> = listOf(
     "install -Dm755 '${staged.resolve("mjdev-session")}' /usr/local/bin/mjdev-session",
     "install -Dm644 '${staged.resolve("mjdev.desktop")}' /usr/share/wayland-sessions/mjdev.desktop",
     "rm -f /usr/share/xsessions/mjdev-desktop.desktop " +
-            "/usr/share/gnome-session/sessions/mjdev-desktop.session " +
-            "/usr/share/applications/mjdev-desktop-mjdev-desktop.desktop",
+        "/usr/share/gnome-session/sessions/mjdev-desktop.session " +
+        "/usr/share/applications/mjdev-desktop-mjdev-desktop.desktop",
 )
 
 // sudo can't read a password from the Gradle daemon (no TTY), so these tasks don't exec it —
@@ -205,7 +236,11 @@ tasks.register("installSession") {
     group = "mjdev"
     description = "Stages the compositor + wayland session, prints the sudo install command."
     dependsOn("stageSession")
-    val staged = layout.buildDirectory.dir("session-install").get().asFile
+    val staged =
+        layout.buildDirectory
+            .dir("session-install")
+            .get()
+            .asFile
     val lines = sessionInstallLines(staged)
     doLast {
         val script = staged.resolve("install.sh")
@@ -223,25 +258,32 @@ tasks.register<Exec>("installDesktop") {
     group = "mjdev"
     description = "Builds compositor + session + app .deb and installs it via a pkexec authentication dialog."
     dependsOn("stageSession", ":desktopApp:packageReleaseDeb", ":packageFullDeb")
-    val staged = layout.buildDirectory.dir("session-install").get().asFile
+    val staged =
+        layout.buildDirectory
+            .dir("session-install")
+            .get()
+            .asFile
     val lines = sessionInstallLines(staged)
     // desktopApp overrides compose outputBaseDir to <root>/packages, so the .deb is written
     // to packages/main-release/deb (not desktopApp/build/compose/binaries/…)
     val debDir = rootProject.rootDir.resolve("packages/main-release/deb")
     isIgnoreExitValue = false
     doFirst {
-        val deb = debDir.listFiles { f -> f.extension == "deb" }?.firstOrNull()
-            ?: error("desktop .deb not found in $debDir — run :desktopApp:packageReleaseDeb")
+        val deb =
+            debDir.listFiles { f -> f.extension == "deb" }?.firstOrNull()
+                ?: error("desktop .deb not found in $debDir — run :desktopApp:packageReleaseDeb")
         val script = staged.resolve("install-desktop.sh")
         // install the deb via apt so its Depends (the wayland runtime stack baked in by
         // packageFullDeb) are resolved; fall back to dpkg + apt -f if the apt form is unavailable.
-        val installDeb = "$aptGet install --no-install-recommends -y '${deb.absolutePath}' || " +
+        val installDeb =
+            "$aptGet install --no-install-recommends -y '${deb.absolutePath}' || " +
                 "{ dpkg -i '${deb.absolutePath}' || true; $aptGet install -f -y; }"
         script.writeText((lines + installDeb).joinToString("\n") + "\n")
         // pkexec pops a graphical polkit auth dialog and runs the script as root; needs a polkit
         // agent in the session but no terminal. Fall back to a printed sudo command if absent.
-        val pkexec = listOf("/usr/bin/pkexec", "/usr/local/bin/pkexec")
-            .firstOrNull { File(it).canExecute() }
+        val pkexec =
+            listOf("/usr/bin/pkexec", "/usr/local/bin/pkexec")
+                .firstOrNull { File(it).canExecute() }
         if (pkexec != null) {
             println("Installing the mjdev desktop — approve the authentication dialog…")
             commandLine(pkexec, "sh", script.absolutePath)
@@ -259,9 +301,11 @@ tasks.register<Exec>("runNested") {
     description = "Runs the compositor nested inside the current Wayland session."
     dependsOn("linkMjdevcDebugExecutableLinuxX64")
     val shellCmd = (project.findProperty("shellCmd") as String?)
-    val binary = layout.buildDirectory
-        .file("bin/linuxX64/mjdevcDebugExecutable/mjdevc.kexe")
-        .get().asFile.absolutePath
+    val binary =
+        layout.buildDirectory
+            .file("bin/linuxX64/mjdevcDebugExecutable/mjdevc.kexe")
+            .get()
+            .asFile.absolutePath
     // x11 backend -> the host window manager decorates the nested window (frame + close +
     // move); 16:9 nested output (the compositor locks it against resize)
     environment("WLR_BACKENDS", "x11")
@@ -271,15 +315,16 @@ tasks.register<Exec>("runNested") {
         // the detached Gradle daemon often lacks a valid XAUTHORITY, and mutter writes a
         // per-session, randomly-suffixed auth file under XDG_RUNTIME_DIR
         environment("DISPLAY", System.getenv("DISPLAY") ?: ":0")
-        val xauthCandidates = buildList {
-            System.getenv("XAUTHORITY")?.let { add(File(it)) }
-            System.getenv("XDG_RUNTIME_DIR")?.let { dir ->
-                File(dir).listFiles()?.forEach { f ->
-                    if (f.name.startsWith(".mutter-Xwaylandauth.")) add(f)
+        val xauthCandidates =
+            buildList {
+                System.getenv("XAUTHORITY")?.let { add(File(it)) }
+                System.getenv("XDG_RUNTIME_DIR")?.let { dir ->
+                    File(dir).listFiles()?.forEach { f ->
+                        if (f.name.startsWith(".mutter-Xwaylandauth.")) add(f)
+                    }
                 }
+                add(File(System.getProperty("user.home"), ".Xauthority"))
             }
-            add(File(System.getProperty("user.home"), ".Xauthority"))
-        }
         xauthCandidates.firstOrNull { it.isFile }?.let { environment("XAUTHORITY", it.absolutePath) }
         val args = mutableListOf(binary)
         if (shellCmd != null) {
@@ -297,9 +342,11 @@ tasks.register<Exec>("runNestedDesktop") {
     group = "mjdev"
     description = "Runs the mjdev desktop app as a client inside the nested compositor."
     dependsOn("linkMjdevcDebugExecutableLinuxX64", ":desktopApp:createDistributable")
-    val binary = layout.buildDirectory
-        .file("bin/linuxX64/mjdevcDebugExecutable/mjdevc.kexe")
-        .get().asFile.absolutePath
+    val binary =
+        layout.buildDirectory
+            .file("bin/linuxX64/mjdevcDebugExecutable/mjdevc.kexe")
+            .get()
+            .asFile.absolutePath
     // desktopApp overrides outputBaseDir to <root>/packages, so createDistributable
     // writes the app image to packages/main/app/<name>/bin/<name> (not build/compose/…)
     val appDir = rootProject.rootDir.resolve("packages/main/app")
@@ -311,19 +358,22 @@ tasks.register<Exec>("runNestedDesktop") {
         // the detached Gradle daemon often lacks a valid XAUTHORITY, and mutter writes a
         // per-session, randomly-suffixed auth file under XDG_RUNTIME_DIR
         environment("DISPLAY", System.getenv("DISPLAY") ?: ":0")
-        val xauthCandidates = buildList {
-            System.getenv("XAUTHORITY")?.let { add(File(it)) }
-            System.getenv("XDG_RUNTIME_DIR")?.let { dir ->
-                File(dir).listFiles()?.forEach { f ->
-                    if (f.name.startsWith(".mutter-Xwaylandauth.")) add(f)
+        val xauthCandidates =
+            buildList {
+                System.getenv("XAUTHORITY")?.let { add(File(it)) }
+                System.getenv("XDG_RUNTIME_DIR")?.let { dir ->
+                    File(dir).listFiles()?.forEach { f ->
+                        if (f.name.startsWith(".mutter-Xwaylandauth.")) add(f)
+                    }
                 }
+                add(File(System.getProperty("user.home"), ".Xauthority"))
             }
-            add(File(System.getProperty("user.home"), ".Xauthority"))
-        }
         xauthCandidates.firstOrNull { it.isFile }?.let { environment("XAUTHORITY", it.absolutePath) }
-        val launcher = appDir.walkTopDown()
-            .firstOrNull { it.isFile && it.parentFile?.name == "bin" && it.canExecute() }
-            ?: error("desktop launcher not found under $appDir — run :desktopApp:createDistributable")
+        val launcher =
+            appDir
+                .walkTopDown()
+                .firstOrNull { it.isFile && it.parentFile?.name == "bin" && it.canExecute() }
+                ?: error("desktop launcher not found under $appDir — run :desktopApp:createDistributable")
         commandLine(binary, "--shell-cmd", launcher.absolutePath)
     }
     commandLine("true")

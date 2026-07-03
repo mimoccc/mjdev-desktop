@@ -10,7 +10,7 @@ package org.mjdev.desktop.components.surface.base
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Shape
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @Immutable
 class ClickableSurfaceShape

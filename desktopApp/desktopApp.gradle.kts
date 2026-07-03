@@ -7,7 +7,11 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(libs.versions.java.language.version.get().toInt())
+    jvmToolchain(
+        libs.versions.java.language.version
+            .get()
+            .toInt(),
+    )
 }
 
 dependencies {
@@ -35,19 +39,36 @@ compose.desktop {
             System.getenv("JAVA_HOME"),
             "/usr/lib/jvm/java-21-openjdk-amd64",
             "/usr/lib/jvm/java-17-openjdk-amd64",
-        ).filterNotNull().firstOrNull { rootProject.file("$it/bin/jpackage").canExecute() }
+        ).filterNotNull()
+            .firstOrNull { rootProject.file("$it/bin/jpackage").canExecute() }
             ?.let { javaHome = it }
         nativeDistributions {
-            packageName = libs.versions.app.name.get()
-            packageVersion = libs.versions.app.pkg.version.get()
-            description = libs.versions.app.description.get()
-            copyright = libs.versions.app.copyright.get()
+            packageName =
+                libs.versions.app.name
+                    .get()
+            packageVersion =
+                libs.versions.app.pkg.version
+                    .get()
+            description =
+                libs.versions.app.description
+                    .get()
+            copyright =
+                libs.versions.app.copyright
+                    .get()
             outputBaseDir.set(rootProject.rootDir.resolve("packages"))
             linux {
-                appCategory = libs.versions.app.category.get()
-                debMaintainer = libs.versions.app.maintainer.get()
-                menuGroup = libs.versions.app.menu.group.get()
-                vendor = libs.versions.app.vendor.get()
+                appCategory =
+                    libs.versions.app.category
+                        .get()
+                debMaintainer =
+                    libs.versions.app.maintainer
+                        .get()
+                menuGroup =
+                    libs.versions.app.menu.group
+                        .get()
+                vendor =
+                    libs.versions.app.vendor
+                        .get()
             }
             // macOS code signing + notarization. Requires a paid Apple Developer ID certificate
             // installed in the build keychain — credentials come from env (CI secrets), never

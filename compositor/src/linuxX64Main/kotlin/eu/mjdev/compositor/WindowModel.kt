@@ -43,7 +43,7 @@ class WindowInfo(
     var shell: Boolean = false
     var role: String? = null
 
-    /* pulls current strings/pid from the native view */
+    // pulls current strings/pid from the native view
     fun refresh() {
         appId = mjc_view_app_id(ptr)?.toKString() ?: appId
         title = mjc_view_title(ptr)?.toKString() ?: title
@@ -61,9 +61,8 @@ class WindowInfo(
     }
 
     /** short identity for log lines */
-    fun describe(): String =
-        "id=$id app=${appId ?: "-"} title=\"${title ?: "-"}\" pid=$pid " +
-            "shell=$shell xwayland=$xwayland geom=[${geometry()}]"
+    fun describe(): String = "id=$id app=${appId ?: "-"} title=\"${title ?: "-"}\" pid=$pid " +
+        "shell=$shell xwayland=$xwayland geom=[${geometry()}]"
 
     fun toJson(): JsonObject = buildJsonObject {
         put("id", id.toLong())
@@ -93,24 +92,23 @@ class WindowInfo(
 class WindowModel {
     private val byPtr = LinkedHashMap<Long, WindowInfo>()
 
-    fun add(view: CPointer<mjc_view>, xwayland: Boolean): WindowInfo {
+    fun add(
+        view: CPointer<mjc_view>,
+        xwayland: Boolean,
+    ): WindowInfo {
         val info = WindowInfo(view, mjc_view_id(view), xwayland)
         byPtr[view.rawValue.toLong()] = info
         return info
     }
 
-    fun get(view: CPointer<mjc_view>): WindowInfo? =
-        byPtr[view.rawValue.toLong()]
+    fun get(view: CPointer<mjc_view>): WindowInfo? = byPtr[view.rawValue.toLong()]
 
-    fun remove(view: CPointer<mjc_view>): WindowInfo? =
-        byPtr.remove(view.rawValue.toLong())
+    fun remove(view: CPointer<mjc_view>): WindowInfo? = byPtr.remove(view.rawValue.toLong())
 
-    fun byId(id: Long): WindowInfo? =
-        byPtr.values.firstOrNull { it.id.toLong() == id }
+    fun byId(id: Long): WindowInfo? = byPtr.values.firstOrNull { it.id.toLong() == id }
 
     fun all(): List<WindowInfo> = byPtr.values.toList()
 
-    /* windows visible to clients of the IPC api (no shell internals) */
-    fun listed(): List<WindowInfo> =
-        byPtr.values.filter { it.mapped && !it.shell }
+    // windows visible to clients of the IPC api (no shell internals)
+    fun listed(): List<WindowInfo> = byPtr.values.filter { it.mapped && !it.shell }
 }

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION") // ClipboardManager -> suspend Clipboard migration pending
+
 package org.mjdev.desktop.components.text
 
 import androidx.compose.foundation.layout.Row
@@ -16,8 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.input.SelectableOutlineEditText
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Modifier.onMousePress

@@ -18,11 +18,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.text.TextAny
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,7 +42,7 @@ fun BlurPanelHaze(
         }
         LargeTopAppBar(
             // Need to make app bar transparent to see the content behind
-            colors = TopAppBarDefaults.largeTopAppBarColors(Color.Transparent),
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
             title = {
                 TextAny("Test Blur Panel Haze")
             },

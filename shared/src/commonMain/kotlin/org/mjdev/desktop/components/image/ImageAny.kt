@@ -22,10 +22,10 @@ import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultFilterQ
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import okio.Path
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.video.VideoView
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.Compose.runAsync

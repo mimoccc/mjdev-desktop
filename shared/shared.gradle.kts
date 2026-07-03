@@ -123,6 +123,11 @@ targets {
 // <editor-fold desc="source sets / dependencies">---------------------------------------------------
 
 kotlin {
+    // expect/actual classes are used across the source sets by design; the flag silences
+    // the per-file "expect/actual classes are in Beta" build warning (KT-61573)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
 //    linuxX64 {
 //        compilations.getByName("main") {
 //            cinterops {
@@ -150,18 +155,19 @@ kotlin {
                 // reflection
                 implementation(kotlin("reflect"))
                 // preview
-                implementation(compose.components.uiToolingPreview)
-                // base
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material)
-                implementation(compose.material3)
-                implementation(compose.materialIconsExtended)
-                implementation(compose.ui)
-                implementation(compose.animation)
-                implementation(compose.animationGraphics)
-                implementation(compose.components.resources)
-                implementation(compose.components.uiToolingPreview)
+                implementation(libs.compose.components.ui.tooling.preview)
+                // the non-deprecated androidx.compose.ui.tooling.preview.Preview annotation
+                implementation(libs.compose.ui.tooling.preview)
+                // base (direct coordinates — the compose.* accessors are deprecated)
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.material)
+                implementation(libs.compose.material3)
+                implementation(libs.compose.material.icons.extended)
+                implementation(libs.compose.ui)
+                implementation(libs.compose.animation)
+                implementation(libs.compose.animation.graphics)
+                implementation(libs.compose.components.resources)
                 // lifecycles
                 implementation(libs.androidx.lifecycle.viewmodel)
                 implementation(libs.androidx.lifecycle.runtime.compose)
@@ -279,7 +285,7 @@ kotlin {
                 // preview
 //                implementation(compose.components.uiToolingPreview)
                 // preview rendering in the IDE (org.jetbrains.compose.ui:ui-tooling)
-                implementation(compose.uiTooling)
+                implementation(libs.compose.ui.tooling)
                 // activity
                 implementation(libs.androidx.activity.compose)
                 // network client
@@ -303,7 +309,7 @@ kotlin {
                 // reflection
                 implementation(kotlin("reflect"))
                 // preview
-                implementation(compose.components.uiToolingPreview)
+                implementation(libs.compose.components.ui.tooling.preview)
                 // desktop
                 implementation(compose.desktop.currentOs)
                 // coroutines

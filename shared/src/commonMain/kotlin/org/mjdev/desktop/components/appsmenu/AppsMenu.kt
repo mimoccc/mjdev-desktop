@@ -27,11 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.appsmenu.AppsMenuState.Companion.rememberAppsMenuState
 import org.mjdev.desktop.components.appsmenu.components.AppsBottomBar
 import org.mjdev.desktop.components.appsmenu.components.AppsList

@@ -3,7 +3,7 @@ package org.mjdev.desktop.components.gallery
 // import androidx.compose.animation.AnimatedVisibility
 // import androidx.compose.animation.slideInVertically
 // import androidx.compose.animation.slideOutVertically
-// import androidx.compose.desktop.ui.tooling.preview.Preview
+// import androidx.compose.ui.tooling.preview.Preview
 // import androidx.compose.foundation.background
 // import androidx.compose.foundation.layout.Box
 // import androidx.compose.foundation.layout.Column
@@ -25,7 +25,7 @@ package org.mjdev.desktop.components.gallery
 // import org.mjdev.desktop.extensions.Colors.invert
 // import org.mjdev.desktop.extensions.Compose.preview
 // import org.mjdev.desktop.helpers.compose.Gravity
-// import org.jetbrains.compose.ui.tooling.preview.Preview
+// import androidx.compose.ui.tooling.preview.Preview
 //
 // // todo
 // @Composable

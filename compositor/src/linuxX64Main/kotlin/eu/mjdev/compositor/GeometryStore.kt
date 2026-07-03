@@ -10,11 +10,11 @@
 
 package eu.mjdev.compositor
 
+import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
-import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.toKString
@@ -38,7 +38,6 @@ import platform.posix.mkdir
  * across compositor restarts, so windows reopen where the user left them.
  */
 class GeometryStore {
-
     private val json = Json { ignoreUnknownKeys = true }
     private val serializer =
         MapSerializer(String.serializer(), ListSerializer(Int.serializer()))
@@ -47,8 +46,9 @@ class GeometryStore {
 
     init {
         val home = getenv("HOME")?.toKString() ?: "/tmp"
-        val stateBase = getenv("XDG_STATE_HOME")?.toKString()
-            ?: "$home/.local/state"
+        val stateBase =
+            getenv("XDG_STATE_HOME")?.toKString()
+                ?: "$home/.local/state"
         val dir = "$stateBase/mjdev"
         mkdir(stateBase, DIR_MODE)
         mkdir(dir, DIR_MODE)
@@ -91,21 +91,21 @@ class GeometryStore {
         }
     }
 
-    private fun keyOf(info: WindowInfo): String? =
-        info.appId?.lowercase()?.takeIf { it.isNotBlank() }
+    private fun keyOf(info: WindowInfo): String? = info.appId?.lowercase()?.takeIf { it.isNotBlank() }
 
     private fun load() {
         val file = fopen(path, "r") ?: return
         try {
-            val content = buildString {
-                memScoped {
-                    val buffer = allocArray<ByteVar>(READ_CHUNK)
-                    while (true) {
-                        val line = fgets(buffer, READ_CHUNK, file) ?: break
-                        append(line.toKString())
+            val content =
+                buildString {
+                    memScoped {
+                        val buffer = allocArray<ByteVar>(READ_CHUNK)
+                        while (true) {
+                            val line = fgets(buffer, READ_CHUNK, file) ?: break
+                            append(line.toKString())
+                        }
                     }
                 }
-            }
             if (content.isNotBlank()) {
                 entries.putAll(json.decodeFromString(serializer, content))
             }

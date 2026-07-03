@@ -78,7 +78,11 @@ val collectKtlintReports by tasks.registering(Copy::class) {
     into(reportsDir.dir("ktlint"))
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     // ensure reports are produced before we collect them
-    mustRunAfter(allprojects.flatMap { p -> p.tasks.matching { it.name == "ktlintCheck" || it.name == "ktlintFormat" } })
+    mustRunAfter(
+        allprojects.flatMap { p ->
+            p.tasks.matching { it.name == "ktlintCheck" || it.name == "ktlintFormat" }
+        },
+    )
 }
 
 // Runs after every build: auto-format, ktlint report, and (gated) dependency-update report -> /reports
@@ -98,7 +102,7 @@ allprojects {
     }
 }
 
-//buildConfig {
+// buildConfig {
 //    generateAtSync = true
 //    sourceSets  {
 //        main {
@@ -123,13 +127,13 @@ allprojects {
 //    buildConfigField("FILE", File("aFile"))
 //    buildConfigField("URI", uri("https://example.io"))
 //    buildConfigField("com.github.gmazzo.buildconfig.demos.kts.SomeData", "DATA", "SomeData(\"a\", 1)")
-//}
+// }
 
-//dependencies {
+// dependencies {
 //    kover(project(":composeApp"))
-//}
+// }
 
-//kover { reports { total { xml { onCheck = true } } } }
+// kover { reports { total { xml { onCheck = true } } } }
 
 // Aggregate task: build every distributable that this host can produce.
 //  - desktop: Deb + AppImage + Rpm (per the targetFormats in composeApp), release mode
@@ -137,31 +141,37 @@ allprojects {
 //  - ios:     only when an iOS Kotlin target is configured AND the host is macOS
 //             (Kotlin/Native for iOS cannot build on Linux/Windows) — wired below if present.
 // captured at configuration time -> all the tasks below stay configuration-cache safe
-val appNameV = libs.versions.app.name.get()
-val versionV = libs.versions.app.pkg.version.get()
+val appNameV =
+    libs.versions.app.name
+        .get()
+val versionV =
+    libs.versions.app.pkg.version
+        .get()
 val pkgDirV = rootDir.resolve("packages/main-release")
 val appImageToolPath = rootDir.resolve(".gradle/tools/appimagetool-x86_64.AppImage").absolutePath
 
 // Downloads appimagetool before the build (only if not already present / on PATH).
-val ensureAppImageTool = tasks.register<EnsureAppImageToolTask>("ensureAppImageTool") {
-    group = "mjdev"
-    description = "Downloads appimagetool (single-file .AppImage builder) if not already present."
-    toolPath.set(appImageToolPath)
-    outputs.file(appImageToolPath)
-}
+val ensureAppImageTool =
+    tasks.register<EnsureAppImageToolTask>("ensureAppImageTool") {
+        group = "mjdev"
+        description = "Downloads appimagetool (single-file .AppImage builder) if not already present."
+        toolPath.set(appImageToolPath)
+        outputs.file(appImageToolPath)
+    }
 
 // Wraps the jpackage app-image directory into a single, CLI-runnable .AppImage file.
-val packageAppImageFile = tasks.register<PackageAppImageTask>("packageAppImageFile") {
-    group = "mjdev"
-    description = "Builds a single-file .AppImage from the jpackage app-image (skips if appimagetool unavailable)."
-    dependsOn(ensureAppImageTool, ":desktopApp:packageReleaseAppImage")
-    appName.set(appNameV)
-    appImagePath.set(pkgDirV.resolve("app/$appNameV").absolutePath)
-    outputPath.set(pkgDirV.resolve("appimage/$appNameV.AppImage").absolutePath)
-    toolPath.set(appImageToolPath)
-    inputs.dir(pkgDirV.resolve("app/$appNameV"))
-    outputs.file(pkgDirV.resolve("appimage/$appNameV.AppImage"))
-}
+val packageAppImageFile =
+    tasks.register<PackageAppImageTask>("packageAppImageFile") {
+        group = "mjdev"
+        description = "Builds a single-file .AppImage from the jpackage app-image (skips if appimagetool unavailable)."
+        dependsOn(ensureAppImageTool, ":desktopApp:packageReleaseAppImage")
+        appName.set(appNameV)
+        appImagePath.set(pkgDirV.resolve("app/$appNameV").absolutePath)
+        outputPath.set(pkgDirV.resolve("appimage/$appNameV.AppImage").absolutePath)
+        toolPath.set(appImageToolPath)
+        inputs.dir(pkgDirV.resolve("app/$appNameV"))
+        outputs.file(pkgDirV.resolve("appimage/$appNameV.AppImage"))
+    }
 
 // Turns the jpackage desktop .deb into a *complete, self-installable* package: injects the
 // compositor + session + wayland-sessions entry and declares the wayland runtime stack in
@@ -169,40 +179,60 @@ val packageAppImageFile = tasks.register<PackageAppImageTask>("packageAppImageFi
 // xwayland/mesa/... and the desktop actually starts. Overwrites the deb in place so every
 // downstream consumer (collectReleases, makeIso, installDesktop) uses the full deb.
 // runtime wayland stack from the version catalog (single source of truth — not hardcoded here).
-val compositorRuntimeDeps = libs.versions.app.compositor.runtime.deps.get().trim().split(Regex("\\s+"))
-val packageFullDeb = tasks.register<PackageFullDebTask>("packageFullDeb") {
-    group = "mjdev"
-    description = "Repacks the desktop .deb with the compositor + session + wayland runtime Depends (self-installable)."
-    dependsOn(":desktopApp:packageReleaseDeb", ":compositor:stageSession")
-    debDir.set(pkgDirV.resolve("deb").absolutePath)
-    sessionDir.set(rootDir.resolve("compositor/build/session-install").absolutePath)
-    runtimeDepends.set(compositorRuntimeDeps)
-    inputs.dir(rootDir.resolve("compositor/build/session-install"))
-    outputs.dir(pkgDirV.resolve("deb"))
-}
+val compositorRuntimeDeps =
+    libs.versions.app.compositor.runtime.deps
+        .get()
+        .trim()
+        .split(Regex("\\s+"))
+val packageFullDeb =
+    tasks.register<PackageFullDebTask>("packageFullDeb") {
+        group = "mjdev"
+        description =
+            "Repacks the desktop .deb with the compositor + session + wayland runtime Depends (self-installable)."
+        dependsOn(":desktopApp:packageReleaseDeb", ":compositor:stageSession")
+        debDir.set(pkgDirV.resolve("deb").absolutePath)
+        sessionDir.set(rootDir.resolve("compositor/build/session-install").absolutePath)
+        runtimeDepends.set(compositorRuntimeDeps)
+        inputs.dir(rootDir.resolve("compositor/build/session-install"))
+        outputs.dir(pkgDirV.resolve("deb"))
+    }
 
 // Copies all distributables into releases/ with version in the filename
 // (mjdev-desktop-<version>.<ext>). Copy = configuration-cache safe.
-val collectReleases = tasks.register<Copy>("collectReleases") {
-    group = "mjdev"
-    description = "Copies the built distributables into releases/ (versioned filenames)."
-    dependsOn(
-        ":desktopApp:packageReleaseDistributionForCurrentOS",
-        ":androidApp:assembleRelease",
-        packageAppImageFile,
-        packageFullDeb,
-    )
-    // local copies so the rename closures capture plain Strings (configuration-cache safe)
-    val base = "$appNameV-$versionV"
-    into(layout.projectDirectory.dir("releases"))
-    from(pkgDirV.resolve("deb")) { include("*.deb"); rename { "$base.deb" } }
-    from(pkgDirV.resolve("rpm")) { include("*.rpm"); rename { "$base.rpm" } }
-    from(pkgDirV.resolve("exe")) { include("*.exe"); rename { "$base.exe" } } // present only on a Windows host
-    from(pkgDirV.resolve("appimage")) { include("*.AppImage"); rename { "$base.AppImage" } }
-    from(rootDir.resolve("androidApp/build/outputs/apk/release")) {
-        include("*.apk"); rename { "$base.apk" }
+val collectReleases =
+    tasks.register<Copy>("collectReleases") {
+        group = "mjdev"
+        description = "Copies the built distributables into releases/ (versioned filenames)."
+        dependsOn(
+            ":desktopApp:packageReleaseDistributionForCurrentOS",
+            ":androidApp:assembleRelease",
+            packageAppImageFile,
+            packageFullDeb,
+        )
+        // local copies so the rename closures capture plain Strings (configuration-cache safe)
+        val base = "$appNameV-$versionV"
+        into(layout.projectDirectory.dir("releases"))
+        from(pkgDirV.resolve("deb")) {
+            include("*.deb")
+            rename { "$base.deb" }
+        }
+        from(pkgDirV.resolve("rpm")) {
+            include("*.rpm")
+            rename { "$base.rpm" }
+        }
+        from(pkgDirV.resolve("exe")) {
+            include("*.exe")
+            rename { "$base.exe" }
+        } // present only on a Windows host
+        from(pkgDirV.resolve("appimage")) {
+            include("*.AppImage")
+            rename { "$base.AppImage" }
+        }
+        from(rootDir.resolve("androidApp/build/outputs/apk/release")) {
+            include("*.apk")
+            rename { "$base.apk" }
+        }
     }
-}
 
 // Builds the bootable live ISO (releases/<app>-<ver>.iso) from the freshly built
 // desktop deb + compositor/session + the theme debs in deb-packages/, via make-iso.sh.
@@ -210,60 +240,84 @@ val collectReleases = tasks.register<Copy>("collectReleases") {
 // the script directly; otherwise pkexec shows a graphical password dialog (sudo cannot
 // prompt without a TTY). If the iso toolchain isn't installed the task logs a skip and
 // returns 0, so it never breaks buildAll on a plain dev machine.
-val makeIso = tasks.register("makeIso") {
-    group = "mjdev"
-    description = "Builds the minimal bootable mjdev desktop live ISO into releases/ (needs root / pkexec)."
-    dependsOn(packageFullDeb)
-    // capture plain Strings at configuration time — the doLast closure must not reference
-    // script-level vals (that captures the script instance, which is null under the
-    // configuration cache -> "Cannot invoke getDebDirV() because this$0 is null").
-    val isoOutPath = rootDir.resolve("releases/$appNameV-$versionV.iso").absolutePath
-    val makeIsoScriptPath = rootDir.resolve("make-iso.sh").absolutePath
-    val debDirPath = pkgDirV.resolve("deb").absolutePath
-    val sessionStagePath = rootDir.resolve("compositor/build/session-install").absolutePath
-    val extraDebsPath = rootDir.resolve("deb-packages").absolutePath
-    inputs.dir(pkgDirV.resolve("deb"))
-    inputs.dir(rootDir.resolve("compositor/build/session-install"))
-    inputs.dir(rootDir.resolve("deb-packages"))
-    outputs.file(isoOutPath)
-    doLast {
-        val isoTools = listOf("debootstrap", "mksquashfs", "xorriso", "grub-mkrescue")
-        // debootstrap/grub-mkrescue live in /usr/sbin — which is often absent from the Gradle
-        // daemon's PATH (notably on CI), so search the sbin dirs too or makeIso wrongly skips.
-        val toolDirs = (System.getenv("PATH").orEmpty().split(File.pathSeparator) +
-            listOf("/usr/sbin", "/sbin", "/usr/local/sbin")).filter { it.isNotEmpty() }
-        val missing = isoTools.filter { tool -> toolDirs.none { dir -> File(dir, tool).canExecute() } }
-        if (missing.isNotEmpty()) {
-            logger.warn("::warning::makeIso: skipping ISO — missing tools: ${missing.joinToString(" ")} " +
-                "(apt install debootstrap squashfs-tools xorriso grub-common grub-pc-bin grub-efi-amd64-bin)")
-            return@doLast
-        }
-        val deb = File(debDirPath).listFiles { f -> f.extension == "deb" }?.firstOrNull()
-            ?: error("desktop .deb not found in $debDirPath — run :desktopApp:packageReleaseDeb")
-        val args = mutableListOf<String>()
-        val isRoot = (System.getenv("USER") == "root") ||
-            runCatching { ProcessBuilder("id", "-u").start().inputStream.bufferedReader().readText().trim() == "0" }.getOrDefault(false)
-        when {
-            isRoot -> {}
-            File("/usr/bin/pkexec").canExecute() && !System.getenv("DISPLAY").isNullOrBlank() -> args += "pkexec"
-            else -> args += "sudo"
-        }
-        args += listOf("/bin/bash", makeIsoScriptPath,
-            "--deb", deb.absolutePath,
-            "--compositor-bin", File(sessionStagePath, "mjdevc").absolutePath,
-            "--session-dir", sessionStagePath,
-            "--extra-debs", extraDebsPath,
-            "--out", isoOutPath)
-        logger.lifecycle("makeIso: ${args.joinToString(" ")}")
-        val code = ProcessBuilder(args).inheritIO().start().waitFor()
-        if (code != 0) {
-            logger.warn(
-                "::warning::makeIso: make-iso.sh failed (exit $code) — ISO skipped; " +
-                    "other distributables are still published",
-            )
+val makeIso =
+    tasks.register("makeIso") {
+        group = "mjdev"
+        description = "Builds the minimal bootable mjdev desktop live ISO into releases/ (needs root / pkexec)."
+        dependsOn(packageFullDeb)
+        // capture plain Strings at configuration time — the doLast closure must not reference
+        // script-level vals (that captures the script instance, which is null under the
+        // configuration cache -> "Cannot invoke getDebDirV() because this$0 is null").
+        val isoOutPath = rootDir.resolve("releases/$appNameV-$versionV.iso").absolutePath
+        val makeIsoScriptPath = rootDir.resolve("make-iso.sh").absolutePath
+        val debDirPath = pkgDirV.resolve("deb").absolutePath
+        val sessionStagePath = rootDir.resolve("compositor/build/session-install").absolutePath
+        val extraDebsPath = rootDir.resolve("deb-packages").absolutePath
+        inputs.dir(pkgDirV.resolve("deb"))
+        inputs.dir(rootDir.resolve("compositor/build/session-install"))
+        inputs.dir(rootDir.resolve("deb-packages"))
+        outputs.file(isoOutPath)
+        doLast {
+            val isoTools = listOf("debootstrap", "mksquashfs", "xorriso", "grub-mkrescue")
+            // debootstrap/grub-mkrescue live in /usr/sbin — which is often absent from the Gradle
+            // daemon's PATH (notably on CI), so search the sbin dirs too or makeIso wrongly skips.
+            val toolDirs =
+                (
+                    System.getenv("PATH").orEmpty().split(File.pathSeparator) +
+                        listOf("/usr/sbin", "/sbin", "/usr/local/sbin")
+                ).filter { it.isNotEmpty() }
+            val missing = isoTools.filter { tool -> toolDirs.none { dir -> File(dir, tool).canExecute() } }
+            if (missing.isNotEmpty()) {
+                logger.warn(
+                    "::warning::makeIso: skipping ISO — missing tools: ${missing.joinToString(" ")} " +
+                        "(apt install debootstrap squashfs-tools xorriso grub-common grub-pc-bin grub-efi-amd64-bin)",
+                )
+                return@doLast
+            }
+            val deb =
+                File(debDirPath).listFiles { f -> f.extension == "deb" }?.firstOrNull()
+                    ?: error("desktop .deb not found in $debDirPath — run :desktopApp:packageReleaseDeb")
+            val args = mutableListOf<String>()
+            val isRoot =
+                (System.getenv("USER") == "root") ||
+                    runCatching {
+                        ProcessBuilder("id", "-u")
+                            .start()
+                            .inputStream
+                            .bufferedReader()
+                            .readText()
+                            .trim() == "0"
+                    }.getOrDefault(false)
+            when {
+                isRoot -> {}
+                File("/usr/bin/pkexec").canExecute() && !System.getenv("DISPLAY").isNullOrBlank() -> args += "pkexec"
+                else -> args += "sudo"
+            }
+            args +=
+                listOf(
+                    "/bin/bash",
+                    makeIsoScriptPath,
+                    "--deb",
+                    deb.absolutePath,
+                    "--compositor-bin",
+                    File(sessionStagePath, "mjdevc").absolutePath,
+                    "--session-dir",
+                    sessionStagePath,
+                    "--extra-debs",
+                    extraDebsPath,
+                    "--out",
+                    isoOutPath,
+                )
+            logger.lifecycle("makeIso: ${args.joinToString(" ")}")
+            val code = ProcessBuilder(args).inheritIO().start().waitFor()
+            if (code != 0) {
+                logger.warn(
+                    "::warning::makeIso: make-iso.sh failed (exit $code) — ISO skipped; " +
+                        "other distributables are still published",
+                )
+            }
         }
     }
-}
 
 // Boots the built ISO in QEMU (no root needed).
 tasks.register("runIsoQemu") {
@@ -280,22 +334,27 @@ tasks.register("runIsoQemu") {
 // make-iso.sh is slow or fails; makeIso never fails the aggregate (warn-only on error).
 makeIso.configure { mustRunAfter(collectReleases) }
 
-val buildAll = tasks.register("buildAll") {
-    group = "mjdev"
-    description = "Builds all distributables this host can produce, collects them into releases/ (stable names), and generates reports into reports/ — like every build."
-    dependsOn(collectReleases, makeIso, postBuildCodeCheck)
-}
+val buildAll =
+    tasks.register("buildAll") {
+        group = "mjdev"
+        description =
+            "Builds all distributables this host can produce, collects them into releases/ (stable names), and generates reports into reports/ — like every build."
+        dependsOn(collectReleases, makeIso, postBuildCodeCheck)
+    }
 
 // Attach iOS framework build only when an iOS target actually exists in composeApp
 // (it never does on a Linux/Windows host — Kotlin/Native iOS requires macOS + Xcode).
 project(":shared").afterEvaluate {
-    val iosTask = tasks.names.firstOrNull {
-        it.startsWith("linkReleaseFrameworkIos") || it == "embedAndSignAppleFrameworkForXcode"
-    }
+    val iosTask =
+        tasks.names.firstOrNull {
+            it.startsWith("linkReleaseFrameworkIos") || it == "embedAndSignAppleFrameworkForXcode"
+        }
     if (iosTask != null) {
         buildAll.configure { dependsOn("${this@afterEvaluate.path}:$iosTask") }
         logger.lifecycle("buildAll: iOS target found — wiring ${this@afterEvaluate.path}:$iosTask")
     } else {
-        logger.info("buildAll: no iOS target configured (needs macOS + Xcode + an ios* target in composeApp) — iOS skipped")
+        logger.info(
+            "buildAll: no iOS target configured (needs macOS + Xcode + an ios* target in composeApp) — iOS skipped",
+        )
     }
 }

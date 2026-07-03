@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "DEPRECATION") // BringIntoViewResponder -> BringIntoViewModifierNode migration pending
 
 package org.mjdev.desktop.extensions
 

@@ -54,7 +54,7 @@ class Config(
                     "--socket" -> socket = args[++i]
                     "--help", "-h" -> {
                         println(
-                            "mjdevc [--shell-cmd CMD] [--startup CMD]... [--session] [--socket PATH]"
+                            "mjdevc [--shell-cmd CMD] [--startup CMD]... [--session] [--socket PATH]",
                         )
                         platform.posix.exit(0)
                     }
@@ -72,9 +72,12 @@ class Config(
     }
 }
 
-class Compositor(val config: Config) {
-    val server: CPointer<mjc_server> = mjc_create()
-        ?: error("mjdevc: cannot allocate server")
+class Compositor(
+    val config: Config,
+) {
+    val server: CPointer<mjc_server> =
+        mjc_create()
+            ?: error("mjdevc: cannot allocate server")
     val windows = WindowModel()
     val policy = Policy(this)
     val ipc = IpcServer(this)
@@ -87,22 +90,23 @@ class Compositor(val config: Config) {
         signal(SIGPIPE, SIG_IGN)
         val ref = StableRef.create(this)
         self = ref
-        val started = memScoped {
-            val cbs = alloc<mjc_callbacks>()
-            cbs.view_new = staticCFunction(::cbViewNew)
-            cbs.view_map = staticCFunction(::cbViewMap)
-            cbs.view_unmap = staticCFunction(::cbViewUnmap)
-            cbs.view_destroy = staticCFunction(::cbViewDestroy)
-            cbs.view_title = staticCFunction(::cbViewTitle)
-            cbs.view_app_id = staticCFunction(::cbViewAppId)
-            cbs.focus_change = staticCFunction(::cbFocusChange)
-            cbs.key = staticCFunction(::cbKey)
-            cbs.fd_event = staticCFunction(::cbFdEvent)
-            cbs.child_exit = staticCFunction(::cbChildExit)
-            cbs.ready = staticCFunction(::cbReady)
-            cbs.pointer = staticCFunction(::cbPointer)
-            mjc_start(server, cbs.ptr, ref.asCPointer())
-        }
+        val started =
+            memScoped {
+                val cbs = alloc<mjc_callbacks>()
+                cbs.view_new = staticCFunction(::cbViewNew)
+                cbs.view_map = staticCFunction(::cbViewMap)
+                cbs.view_unmap = staticCFunction(::cbViewUnmap)
+                cbs.view_destroy = staticCFunction(::cbViewDestroy)
+                cbs.view_title = staticCFunction(::cbViewTitle)
+                cbs.view_app_id = staticCFunction(::cbViewAppId)
+                cbs.focus_change = staticCFunction(::cbFocusChange)
+                cbs.key = staticCFunction(::cbKey)
+                cbs.fd_event = staticCFunction(::cbFdEvent)
+                cbs.child_exit = staticCFunction(::cbChildExit)
+                cbs.ready = staticCFunction(::cbReady)
+                cbs.pointer = staticCFunction(::cbPointer)
+                mjc_start(server, cbs.ptr, ref.asCPointer())
+            }
         if (!started) {
             Clog.log("backend failed to start")
             ref.dispose()
@@ -126,7 +130,10 @@ class Compositor(val config: Config) {
 
     // callback dispatch ------------------------------------------------
 
-    fun onViewNew(view: CPointer<mjc_view>, xwayland: Boolean) {
+    fun onViewNew(
+        view: CPointer<mjc_view>,
+        xwayland: Boolean,
+    ) {
         val info = windows.add(view, xwayland)
         Clog.v("view new: ${info.describe()}")
     }
@@ -161,7 +168,10 @@ class Compositor(val config: Config) {
         }
     }
 
-    fun onViewTitle(view: CPointer<mjc_view>, title: String?) {
+    fun onViewTitle(
+        view: CPointer<mjc_view>,
+        title: String?,
+    ) {
         val info = windows.get(view) ?: return
         info.title = title
         policy.apply(info)
@@ -170,7 +180,10 @@ class Compositor(val config: Config) {
         }
     }
 
-    fun onViewAppId(view: CPointer<mjc_view>, appId: String?) {
+    fun onViewAppId(
+        view: CPointer<mjc_view>,
+        appId: String?,
+    ) {
         val info = windows.get(view) ?: return
         info.appId = appId
         policy.apply(info)
@@ -184,44 +197,68 @@ class Compositor(val config: Config) {
         ipc.broadcastEvent("focus-changed", info)
     }
 
-    fun onKey(keysym: UInt, modifiers: UInt, pressed: Boolean): Boolean =
-        policy.handleKey(keysym, modifiers, pressed)
+    fun onKey(
+        keysym: UInt,
+        modifiers: UInt,
+        pressed: Boolean,
+    ): Boolean = policy.handleKey(keysym, modifiers, pressed)
 
-    fun onFdEvent(fd: Int, mask: UInt): Int = ipc.handleFd(fd, mask)
+    fun onFdEvent(
+        fd: Int,
+        mask: UInt,
+    ): Int = ipc.handleFd(fd, mask)
 
-    fun onChildExit(pid: Int, status: Int) = session.onChildExit(pid, status)
+    fun onChildExit(
+        pid: Int,
+        status: Int,
+    ) = session.onChildExit(pid, status)
 
     fun onReady() = session.onReady()
 
-    fun onPointer(x: Int, y: Int) {
+    fun onPointer(
+        x: Int,
+        y: Int,
+    ) {
         Clog.pointer(x, y)
         ipc.broadcastPointer(x, y)
     }
 }
 
-private fun ctx(ud: COpaquePointer?): Compositor =
-    ud!!.asStableRef<Compositor>().get()
+private fun ctx(ud: COpaquePointer?): Compositor = ud!!.asStableRef<Compositor>().get()
 
-private fun cbViewNew(ud: COpaquePointer?, view: CPointer<mjc_view>?, xwayland: Boolean) {
+private fun cbViewNew(
+    ud: COpaquePointer?,
+    view: CPointer<mjc_view>?,
+    xwayland: Boolean,
+) {
     ctx(ud).onViewNew(view ?: return, xwayland)
 }
 
-private fun cbViewMap(ud: COpaquePointer?, view: CPointer<mjc_view>?) {
+private fun cbViewMap(
+    ud: COpaquePointer?,
+    view: CPointer<mjc_view>?,
+) {
     ctx(ud).onViewMap(view ?: return)
 }
 
-private fun cbViewUnmap(ud: COpaquePointer?, view: CPointer<mjc_view>?) {
+private fun cbViewUnmap(
+    ud: COpaquePointer?,
+    view: CPointer<mjc_view>?,
+) {
     ctx(ud).onViewUnmap(view ?: return)
 }
 
-private fun cbViewDestroy(ud: COpaquePointer?, view: CPointer<mjc_view>?) {
+private fun cbViewDestroy(
+    ud: COpaquePointer?,
+    view: CPointer<mjc_view>?,
+) {
     ctx(ud).onViewDestroy(view ?: return)
 }
 
 private fun cbViewTitle(
     ud: COpaquePointer?,
     view: CPointer<mjc_view>?,
-    title: CPointer<kotlinx.cinterop.ByteVar>?
+    title: CPointer<kotlinx.cinterop.ByteVar>?,
 ) {
     ctx(ud).onViewTitle(view ?: return, title?.toKString())
 }
@@ -229,12 +266,15 @@ private fun cbViewTitle(
 private fun cbViewAppId(
     ud: COpaquePointer?,
     view: CPointer<mjc_view>?,
-    appId: CPointer<kotlinx.cinterop.ByteVar>?
+    appId: CPointer<kotlinx.cinterop.ByteVar>?,
 ) {
     ctx(ud).onViewAppId(view ?: return, appId?.toKString())
 }
 
-private fun cbFocusChange(ud: COpaquePointer?, view: CPointer<mjc_view>?) {
+private fun cbFocusChange(
+    ud: COpaquePointer?,
+    view: CPointer<mjc_view>?,
+) {
     ctx(ud).onFocusChange(view)
 }
 
@@ -242,13 +282,20 @@ private fun cbKey(
     ud: COpaquePointer?,
     keysym: UInt,
     modifiers: UInt,
-    pressed: Boolean
+    pressed: Boolean,
 ): Boolean = ctx(ud).onKey(keysym, modifiers, pressed)
 
-private fun cbFdEvent(ud: COpaquePointer?, fd: Int, mask: UInt): Int =
-    ctx(ud).onFdEvent(fd, mask)
+private fun cbFdEvent(
+    ud: COpaquePointer?,
+    fd: Int,
+    mask: UInt,
+): Int = ctx(ud).onFdEvent(fd, mask)
 
-private fun cbChildExit(ud: COpaquePointer?, pid: Int, status: Int) {
+private fun cbChildExit(
+    ud: COpaquePointer?,
+    pid: Int,
+    status: Int,
+) {
     ctx(ud).onChildExit(pid, status)
 }
 
@@ -256,7 +303,11 @@ private fun cbReady(ud: COpaquePointer?) {
     ctx(ud).onReady()
 }
 
-private fun cbPointer(ud: COpaquePointer?, x: Int, y: Int) {
+private fun cbPointer(
+    ud: COpaquePointer?,
+    x: Int,
+    y: Int,
+) {
     ctx(ud).onPointer(x, y)
 }
 

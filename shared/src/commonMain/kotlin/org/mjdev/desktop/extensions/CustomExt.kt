@@ -5,8 +5,8 @@ import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone.Companion.currentSystemDefault
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import org.mjdev.desktop.extensions.System.currentTime
 import org.mjdev.desktop.helpers.generic.JsonHelper.fromJson
@@ -14,6 +14,7 @@ import org.mjdev.desktop.helpers.generic.JsonHelper.toJson
 import org.mjdev.desktop.log.Log
 import kotlin.coroutines.suspendCoroutine
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 @Suppress("unused")
@@ -32,11 +33,11 @@ object CustomExt {
     private fun Instant.formatDate(): String {
         val localDateTime = toLocalDateTime(currentSystemDefault())
         val day =
-            localDateTime.date.dayOfMonth
+            localDateTime.date.day
                 .toString()
                 .padStart(2, '0')
         val month =
-            localDateTime.date.monthNumber
+            localDateTime.date.month.number
                 .toString()
                 .padStart(2, '0')
         val year = localDateTime.date.year.toString()

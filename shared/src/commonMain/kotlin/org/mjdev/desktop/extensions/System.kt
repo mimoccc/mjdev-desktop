@@ -1,8 +1,8 @@
 package org.mjdev.desktop.extensions
 
-import kotlinx.datetime.Instant
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 object System {

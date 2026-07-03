@@ -19,27 +19,27 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.put
 import mjdev.compositor.shim.MJC_EVENT_ERROR
 import mjdev.compositor.shim.MJC_EVENT_HANGUP
 import mjdev.compositor.shim.MJC_EVENT_READABLE
+import mjdev.compositor.shim.mjc_key
 import mjdev.compositor.shim.mjc_loop_add_fd
 import mjdev.compositor.shim.mjc_loop_remove_fd
-import mjdev.compositor.shim.mjc_key
 import mjdev.compositor.shim.mjc_pointer_button
 import mjdev.compositor.shim.mjc_pointer_move
-import mjdev.compositor.shim.mjc_view_focus
+import mjdev.compositor.shim.mjc_unix_accept
+import mjdev.compositor.shim.mjc_unix_listen
 import mjdev.compositor.shim.mjc_view_close
+import mjdev.compositor.shim.mjc_view_focus
 import mjdev.compositor.shim.mjc_view_is_maximized
 import mjdev.compositor.shim.mjc_view_set_maximized
 import mjdev.compositor.shim.mjc_view_set_minimized
 import mjdev.compositor.shim.mjc_view_set_position
-import mjdev.compositor.shim.mjc_unix_accept
-import mjdev.compositor.shim.mjc_unix_listen
 import platform.posix.EAGAIN
 import platform.posix.EWOULDBLOCK
 import platform.posix.close
@@ -74,9 +74,12 @@ private const val BTN_LEFT = 0x110
  *   {"event":"window-title","window":{...}}
  *   {"event":"focus-changed","window":{...}|null}
  */
-class IpcServer(private val c: Compositor) {
-
-    private class Client(val fd: Int) {
+class IpcServer(
+    private val c: Compositor,
+) {
+    private class Client(
+        val fd: Int,
+    ) {
         val buffer = StringBuilder()
         var subscribed = false
     }
@@ -106,7 +109,10 @@ class IpcServer(private val c: Compositor) {
         }
     }
 
-    fun handleFd(fd: Int, mask: UInt): Int {
+    fun handleFd(
+        fd: Int,
+        mask: UInt,
+    ): Int {
         if (fd == serverFd) {
             acceptClients()
             return 0
@@ -129,8 +135,9 @@ class IpcServer(private val c: Compositor) {
             clients[fd] = Client(fd)
             Clog.v("ipc client connected fd=$fd (clients=${clients.size})")
             mjc_loop_add_fd(
-                c.server, fd,
-                (MJC_EVENT_READABLE or MJC_EVENT_HANGUP or MJC_EVENT_ERROR).convert()
+                c.server,
+                fd,
+                (MJC_EVENT_READABLE or MJC_EVENT_HANGUP or MJC_EVENT_ERROR).convert(),
             )
         }
     }
@@ -139,9 +146,10 @@ class IpcServer(private val c: Compositor) {
         val client = clients[fd] ?: return
         val chunk = ByteArray(4096)
         while (true) {
-            val n = chunk.usePinned { pinned ->
-                read(fd, pinned.addressOf(0), chunk.size.convert()).toInt()
-            }
+            val n =
+                chunk.usePinned { pinned ->
+                    read(fd, pinned.addressOf(0), chunk.size.convert()).toInt()
+                }
             when {
                 n > 0 -> client.buffer.append(chunk.decodeToString(0, n))
                 n == 0 -> {
@@ -174,69 +182,90 @@ class IpcServer(private val c: Compositor) {
             val line = text.substring(0, newline).trim()
             client.buffer.deleteRange(0, newline + 1)
             if (line.isNotEmpty()) {
-                val response = runCatching { handleRequest(client, line) }
-                    .getOrElse { error ->
-                        buildJsonObject {
-                            put("ok", false)
-                            put("error", error.message ?: "invalid request")
+                val response =
+                    runCatching { handleRequest(client, line) }
+                        .getOrElse { error ->
+                            buildJsonObject {
+                                put("ok", false)
+                                put("error", error.message ?: "invalid request")
+                            }
                         }
-                    }
                 send(client.fd, response)
             }
         }
     }
 
-    private fun handleRequest(client: Client, line: String): JsonObject {
+    private fun handleRequest(
+        client: Client,
+        line: String,
+    ): JsonObject {
         val request = json.parseToJsonElement(line).jsonObject
-        val cmd = request["cmd"]?.jsonPrimitive?.content
-            ?: return error("missing cmd")
+        val cmd =
+            request["cmd"]?.jsonPrimitive?.content
+                ?: return error("missing cmd")
         Clog.v("ipc <- fd=${client.fd}: $line")
         return when (cmd) {
             "list-windows" -> {
                 val all = request["all"]?.jsonPrimitive?.content?.toBoolean() == true
-                val windows = if (all) {
-                    c.windows.all().filter { it.mapped }
-                } else {
-                    c.windows.listed()
-                }
+                val windows =
+                    if (all) {
+                        c.windows.all().filter { it.mapped }
+                    } else {
+                        c.windows.listed()
+                    }
                 ok { put("windows", JsonArray(windows.map { it.toJson() })) }
             }
 
             "windows-for-app" -> {
-                val appId = request["app_id"]?.jsonPrimitive?.content
-                    ?: return error("missing app_id")
+                val appId =
+                    request["app_id"]?.jsonPrimitive?.content
+                        ?: return error("missing app_id")
                 ok {
-                    put("windows", JsonArray(
-                        c.windows.listed().filter {
-                            it.appId?.contains(appId, ignoreCase = true) == true
-                        }.map { it.toJson() }
-                    ))
+                    put(
+                        "windows",
+                        JsonArray(
+                            c.windows
+                                .listed()
+                                .filter {
+                                    it.appId?.contains(appId, ignoreCase = true) == true
+                                }.map { it.toJson() },
+                        ),
+                    )
                 }
             }
 
-            "activate" -> withWindow(request) { info ->
-                if (info.minimized) {
-                    mjc_view_set_minimized(info.ptr, false)
-                    info.minimized = false
+            "activate" ->
+                withWindow(request) { info ->
+                    if (info.minimized) {
+                        mjc_view_set_minimized(info.ptr, false)
+                        info.minimized = false
+                    }
+                    mjc_view_focus(info.ptr)
                 }
-                mjc_view_focus(info.ptr)
-            }
 
             "close" -> withWindow(request) { mjc_view_close(it.ptr) }
 
-            "minimize" -> withWindow(request) { info ->
-                val minimized = request["minimized"]
-                    ?.jsonPrimitive?.content?.toBoolean() ?: true
-                mjc_view_set_minimized(info.ptr, minimized)
-                info.minimized = minimized
-            }
+            "minimize" ->
+                withWindow(request) { info ->
+                    val minimized =
+                        request["minimized"]
+                            ?.jsonPrimitive
+                            ?.content
+                            ?.toBoolean() ?: true
+                    mjc_view_set_minimized(info.ptr, minimized)
+                    info.minimized = minimized
+                }
 
-            "maximize" -> withWindow(request) { info ->
-                val maximized = request["maximized"]
-                    ?.jsonPrimitive?.content?.toBoolean()
-                    ?: !mjc_view_is_maximized(info.ptr)
-                mjc_view_set_maximized(info.ptr, maximized)
-            }
+            "maximize" ->
+                withWindow(request) { info ->
+                    val maximized =
+                        request["maximized"]
+                            ?.jsonPrimitive
+                            ?.content
+                            ?.toBoolean()
+                            ?: !mjc_view_is_maximized(info.ptr)
+                    mjc_view_set_maximized(info.ptr, maximized)
+                }
 
             "subscribe" -> {
                 client.subscribed = true
@@ -300,7 +329,7 @@ class IpcServer(private val c: Compositor) {
 
     private inline fun withWindow(
         request: JsonObject,
-        block: (WindowInfo) -> Unit
+        block: (WindowInfo) -> Unit,
     ): JsonObject {
         val id = request["id"]?.jsonPrimitive?.long ?: return error("missing id")
         val info = c.windows.byId(id) ?: return error("no window $id")
@@ -308,43 +337,53 @@ class IpcServer(private val c: Compositor) {
         return ok { }
     }
 
-    private inline fun ok(block: kotlinx.serialization.json.JsonObjectBuilder.() -> Unit) =
-        buildJsonObject {
-            put("ok", true)
-            block()
-        }
+    private inline fun ok(block: kotlinx.serialization.json.JsonObjectBuilder.() -> Unit) = buildJsonObject {
+        put("ok", true)
+        block()
+    }
 
     private fun error(message: String) = buildJsonObject {
         put("ok", false)
         put("error", message)
     }
 
-    fun broadcastEvent(event: String, info: WindowInfo?) {
+    fun broadcastEvent(
+        event: String,
+        info: WindowInfo?,
+    ) {
         val subscribers = clients.values.count { it.subscribed }
         if (subscribers == 0) {
             return
         }
         Clog.v("ipc -> $event to $subscribers subscriber(s): ${info?.describe() ?: "null"}")
-        val payload = buildJsonObject {
-            put("event", event)
-            put("window", info?.toJson() ?: JsonNull)
-        }
+        val payload =
+            buildJsonObject {
+                put("event", event)
+                put("window", info?.toJson() ?: JsonNull)
+            }
         clients.values.filter { it.subscribed }.forEach { send(it.fd, payload) }
     }
 
-    fun broadcastPointer(x: Int, y: Int) {
+    fun broadcastPointer(
+        x: Int,
+        y: Int,
+    ) {
         if (clients.values.none { it.subscribed }) {
             return
         }
-        val payload = buildJsonObject {
-            put("event", "pointer")
-            put("x", x)
-            put("y", y)
-        }
+        val payload =
+            buildJsonObject {
+                put("event", "pointer")
+                put("x", x)
+                put("y", y)
+            }
         clients.values.filter { it.subscribed }.forEach { send(it.fd, payload) }
     }
 
-    private fun send(fd: Int, payload: JsonObject) {
+    private fun send(
+        fd: Int,
+        payload: JsonObject,
+    ) {
         val data = (payload.toString() + "\n").encodeToByteArray()
         data.usePinned { pinned ->
             var offset = 0

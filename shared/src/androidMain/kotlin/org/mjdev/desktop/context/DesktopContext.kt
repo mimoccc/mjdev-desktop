@@ -49,7 +49,7 @@ import kotlin.reflect.full.companionObject
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class DesktopContext(
-    @SuppressLint("RestrictedApi")
+    @param:SuppressLint("RestrictedApi")
     val context: ComponentActivity? = null,
     override val scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     override val imageLoader: ImageLoader? = null,

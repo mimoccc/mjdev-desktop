@@ -1,10 +1,10 @@
 package org.mjdev.desktop.components.dockbar
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
@@ -111,11 +111,12 @@ fun DockBarWindow(
         // While the control center is open the reveal hotspot stops at its left edge —
         // otherwise touching the bottom of the control center itself would close it and
         // pop the dock instead.
-        val revealWidth = if (controlCenterState.isVisible) {
-            (containerSize.width - controlCenterState.size.width).coerceAtLeast(0.dp)
-        } else {
-            containerSize.width
-        }
+        val revealWidth =
+            if (controlCenterState.isVisible) {
+                (containerSize.width - controlCenterState.size.width).coerceAtLeast(0.dp)
+            } else {
+                containerSize.width
+            }
         MouseRange(
             x = 0.dp,
             y = containerSize.height - controlCenterDividerWidth,
@@ -231,10 +232,11 @@ fun DockBarWindow(
         // when show/hide flips interleave (the bar then lands mid-screen). Re-pinning the
         // absolute position after every size change makes the final geometry always
         // (0, containerH - height), whatever the intermediate moves did.
-        panelState.position = DpOffset(
-            0.dp,
-            containerSize.height - size.height,
-        )
+        panelState.position =
+            DpOffset(
+                0.dp,
+                containerSize.height - size.height,
+            )
     }
 }
 

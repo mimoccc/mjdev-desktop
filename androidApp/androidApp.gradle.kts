@@ -6,19 +6,39 @@ plugins {
 
 android {
     namespace = "org.mjdev.desktop"
-    compileSdk = libs.versions.android.compile.sdk.get().toInt()
+    compileSdk =
+        libs.versions.android.compile.sdk
+            .get()
+            .toInt()
     // shared resources packaged into the APK (lost when composeApp was split):
     //  - assets  <- commonMain/resources (icon fonts, translations, widgets, …)
     //  - resources <- commonMain/composeResources
-    sourceSets["main"].assets.srcDirs(rootDir.resolve("shared/src/commonMain/resources"))
-    sourceSets["main"].resources.srcDirs(rootDir.resolve("shared/src/commonMain/composeResources"))
+    sourceSets["main"].assets.directories.add(rootDir.resolve("shared/src/commonMain/resources").path)
+    sourceSets["main"].resources.directories.add(rootDir.resolve("shared/src/commonMain/composeResources").path)
     defaultConfig {
         applicationId = "org.mjdev.desktop"
-        minSdk = libs.versions.android.min.sdk.get().toInt()
-        targetSdk = libs.versions.android.target.sdk.get().toInt()
-        versionCode = libs.versions.app.pkg.version.get().replace(".", "").toInt()
-        versionName = libs.versions.app.pkg.version.get()
-        resValue("string", "app_name", libs.versions.app.name.get())
+        minSdk =
+            libs.versions.android.min.sdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.android.target.sdk
+                .get()
+                .toInt()
+        versionCode =
+            libs.versions.app.pkg.version
+                .get()
+                .replace(".", "")
+                .toInt()
+        versionName =
+            libs.versions.app.pkg.version
+                .get()
+        resValue(
+            "string",
+            "app_name",
+            libs.versions.app.name
+                .get(),
+        )
     }
     packaging {
         resources {
@@ -33,18 +53,25 @@ android {
     // properties (local ~/.gradle/gradle.properties) — never hardcoded. When no release
     // keystore is configured we fall back to the debug key so the release APK is still
     // *signed* and installable (an unsigned APK is rejected by Android on install).
-    val releaseStoreFile = (providers.environmentVariable("ANDROID_KEYSTORE_FILE").orNull
-        ?: providers.gradleProperty("android.keystore.file").orNull)?.let(::file)
-    val releaseStorePassword = providers.environmentVariable("ANDROID_KEYSTORE_PASSWORD").orNull
-        ?: providers.gradleProperty("android.keystore.password").orNull
-    val releaseKeyAlias = providers.environmentVariable("ANDROID_KEY_ALIAS").orNull
-        ?: providers.gradleProperty("android.key.alias").orNull
-    val releaseKeyPassword = providers.environmentVariable("ANDROID_KEY_PASSWORD").orNull
-        ?: providers.gradleProperty("android.key.password").orNull
-    val hasReleaseKeystore = releaseStoreFile?.exists() == true &&
-        !releaseStorePassword.isNullOrBlank() &&
-        !releaseKeyAlias.isNullOrBlank() &&
-        !releaseKeyPassword.isNullOrBlank()
+    val releaseStoreFile =
+        (
+            providers.environmentVariable("ANDROID_KEYSTORE_FILE").orNull
+                ?: providers.gradleProperty("android.keystore.file").orNull
+        )?.let(::file)
+    val releaseStorePassword =
+        providers.environmentVariable("ANDROID_KEYSTORE_PASSWORD").orNull
+            ?: providers.gradleProperty("android.keystore.password").orNull
+    val releaseKeyAlias =
+        providers.environmentVariable("ANDROID_KEY_ALIAS").orNull
+            ?: providers.gradleProperty("android.key.alias").orNull
+    val releaseKeyPassword =
+        providers.environmentVariable("ANDROID_KEY_PASSWORD").orNull
+            ?: providers.gradleProperty("android.key.password").orNull
+    val hasReleaseKeystore =
+        releaseStoreFile?.exists() == true &&
+            !releaseStorePassword.isNullOrBlank() &&
+            !releaseKeyAlias.isNullOrBlank() &&
+            !releaseKeyPassword.isNullOrBlank()
 
     signingConfigs {
         if (hasReleaseKeystore) {
@@ -74,18 +101,21 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        // app_name resValue above — declared per-module so the deprecated global
+        // android.defaults.buildfeatures.resvalues property could be dropped
+        resValues = true
     }
 }
 
 dependencies {
     implementation(projects.shared)
-    implementation(compose.runtime)
-    implementation(compose.foundation)
-    implementation(compose.material3)
-    implementation(compose.materialIconsExtended)
-    implementation(compose.ui)
-    implementation(compose.components.resources)
-    implementation(compose.components.uiToolingPreview)
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.material.icons.extended)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.components.resources)
+    implementation(libs.compose.components.ui.tooling.preview)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel)

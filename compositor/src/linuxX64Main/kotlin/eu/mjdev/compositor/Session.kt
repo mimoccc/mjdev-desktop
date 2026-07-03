@@ -23,8 +23,9 @@ import platform.posix.setenv
  * optional extra startup commands. Ends the compositor when the
  * shell exits cleanly or keeps restarting it after crashes.
  */
-class Session(private val c: Compositor) {
-
+class Session(
+    private val c: Compositor,
+) {
     private var shellPid = -1
     private var crashRestarts = 0
 
@@ -39,8 +40,8 @@ class Session(private val c: Compositor) {
         mjc_spawn(
             c.server,
             "dbus-update-activation-environment --systemd " +
-                    "WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE " +
-                    "2>/dev/null || true"
+                "WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE " +
+                "2>/dev/null || true",
         )
 
         if (c.config.sessionMode) {
@@ -60,7 +61,10 @@ class Session(private val c: Compositor) {
         println("mjdevc: shell started pid=$shellPid: $cmd")
     }
 
-    fun onChildExit(pid: Int, status: Int) {
+    fun onChildExit(
+        pid: Int,
+        status: Int,
+    ) {
         if (pid != shellPid || shellPid < 0) {
             return
         }
