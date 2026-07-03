@@ -95,12 +95,11 @@ fun DockBarWindow(
         )
     }
     val position by rememberComputed(size) {
-        // Bottom anchor that survives the bottom-right moveBy in ChromeWindowState.size:
-        // start at (containerW, containerH); the first 0 -> size grow's moveBy lands it at
-        // (containerW - width, containerH - height) = (0, containerH - height).
+        // True absolute bottom-anchored top-left: (0, containerH - height). Applied atomically
+        // via panelState.applyBounds so it never races the size change (no relative moveBy).
         DpOffset(
-            containerSize.width,
-            containerSize.height,
+            0.dp,
+            containerSize.height - size.height,
         )
     }
     val mouseRange by rememberCalculated(
@@ -144,8 +143,7 @@ fun DockBarWindow(
         onFocusChange = onFocusChange,
         windowState = panelState,
         onCreated = {
-            panelState.position = position
-            panelState.size = size
+            runAsync { panelState.applyBounds(position, size) }
         },
         isGlobalKeyHandlerEnabled = {
             panelState.isVisible && panelState.enabled
@@ -226,17 +224,11 @@ fun DockBarWindow(
             },
         )
     }
+    // Single atomic driver for the dock's geometry: position + size applied absolutely together
+    // on every change, so the "grew to full height but stayed at the collapsed anchor -> only a
+    // 12px line visible" race can't happen.
     LaunchedEffect(size, position) {
-        panelState.size = size
-        // Deterministic bottom anchor: the size setter's relative moveBy dance can drift
-        // when show/hide flips interleave (the bar then lands mid-screen). Re-pinning the
-        // absolute position after every size change makes the final geometry always
-        // (0, containerH - height), whatever the intermediate moves did.
-        panelState.position =
-            DpOffset(
-                0.dp,
-                containerSize.height - size.height,
-            )
+        panelState.applyBounds(position, size)
     }
 }
 

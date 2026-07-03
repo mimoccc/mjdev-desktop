@@ -19,32 +19,11 @@
       preview {
   -------------------------------------------
 
-- 2 - build cache hapruje, neustale se pri buildu stahuju uz stahnute knihovny, to je antipattern gradle.
-    mozna opraveno skontroluj.
+- tooltip ma u control center spatne souradnice vypada tp debilne, tos neotestoval.
+- v runDesktop nefunguje rotace pozadi, z jakyho duvodu kurnajs kdyz v runDesktopNested to jde?
+  pujde to na android vubec kdyz je to takhle doslova rozmrdane?
+- v runDesktop nefunguje bottom bar, dock se NIKDY nezobrazi. muzes se kurva jebat dolu mysi kolik kurva chces.
+- uplne nova skurvena novinka je ze taby v controlbare jsou jaksi neklikatelne do pici tu!!! resp. na ikonku je nutne kliknut 658765678x aby se tab pojebany prepol. do pici.
+- vnc - zatim netestuju nemam nervy resit ze to istotne nejde, nebo jde mozna tak na 1/10, to otestuju pozdejc.
+- ostatni jsem kuli dojebanemu vsemu cos dojebat mohl otestovat nemohl
 
-- 3 - buildAll konci : Build Fail, skontrolovat
-
-- 4 -  chyba asi gradle tasku nejspis: Could not get lock /var/lib/dpkg/lock-frontend. It is held by process 186117 (apt-get),
-  skontrolovat generovani iso a vse kde se pozuivaji commandy linuxu
-
-- 5 - tooltip v desktopu vyhodit stavajici logiku a tooltip bude samostatne auto hide (fadeout and delay) chromewindow.
-
-- 6 -  when control center is shown and then user is going to a dock bottom bar, dock bottom bar
-  is below control center, focus jvm issue. fix it.
-
-- 7 - bottom bar is show in center of desktop, this should never happen.
-  your fixes little bit improve stability but this shows thats not enough.
-
-- 8 - memory widget have time to time unstable color, diferrent on another in some cases.
-
-- 9 - stabilize mouse focuses and events, this is probably done. check it by runDesktopNested
-   and by simulating mouse moves and clicks and key buttons, there is already built interface in composer i think
-
-- 10 - handles that are on sliding windows change to 12dp please, there is 9dp i think yet.
-
-- 11 - in log, when building, there is a lot of warnings and errors, i want to have
-  clean log  if possible.
-
-- 12 - control center, when shown should hide menu and bottom bar if it is visible.
-
-- 13 - remote desktop or a connection aka VNC (any standardized protocol) to desktop by ip address, aka X11

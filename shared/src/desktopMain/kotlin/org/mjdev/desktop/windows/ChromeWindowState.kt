@@ -82,11 +82,15 @@ open class ChromeWindowState(
     val isFocused
         get() = window?.isFocused ?: false
 
+    // Guard: when true the position/size setters only update the backing field and skip their
+    // async apply coroutines — [applyBounds] is driving the window directly and atomically.
+    private var applyingBounds = false
+
     override var position: DpOffset = position
         set(value) {
             Log.d("ChromeWindow position: $field -> $value")
             field = value
-            if (isCreated) {
+            if (isCreated && !applyingBounds) {
                 scope.launch {
                     setPosition(value)
                 }
@@ -98,7 +102,7 @@ open class ChromeWindowState(
             Log.d("ChromeWindow size: $field -> $value")
             val oldSize = field
             field = value
-            if (isCreated) {
+            if (isCreated && !applyingBounds) {
                 scope.launch {
                     moveBy(
                         value.width - oldSize.width,
@@ -108,6 +112,28 @@ open class ChromeWindowState(
                 }
             }
         }
+
+    /**
+     * Sets position AND size to absolute values in ONE ordered coroutine, with no relative
+     * moveBy. The default reactive setters each launch their own coroutine and the size setter
+     * uses a relative moveBy — for a bottom-anchored window (the dock) those race and land the
+     * window at the wrong position/size (grown to full height but still at the collapsed anchor,
+     * so only a thin sliver is on-screen). Driving both absolutely here is order-independent, so
+     * the final geometry is always exactly `(position, size)`.
+     */
+    suspend fun applyBounds(
+        position: DpOffset,
+        size: DpSize,
+    ) {
+        applyingBounds = true
+        this.size = size // backing field only — no async apply (guard is set)
+        this.position = position
+        applyingBounds = false
+        // size first (AWT keeps the top-left fixed and extends downward), then the absolute
+        // position pulls the top up to the anchor — the reverse would flash off-screen.
+        setSize(size)
+        setPosition(position)
+    }
 
     override var isMinimized: Boolean = false
 
