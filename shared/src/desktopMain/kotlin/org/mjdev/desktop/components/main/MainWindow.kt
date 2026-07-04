@@ -7,6 +7,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,7 +54,11 @@ fun MainWindow() = withDesktopContext {
         rememberChromeWindowState(
             visible = true,
         )
-    val desktopState = remember { DesktopState(scope) }
+    // UI-thread scope: DesktopState shows/hides/focuses AWT windows, which must run on the EDT.
+    // context.scope is Dispatchers.Default (background) — using it made windows "show" in state
+    // but never actually raise/render.
+    val uiScope = rememberCoroutineScope()
+    val desktopState = remember { DesktopState(uiScope) }
     val menuState =
         rememberChromeWindowState(
             visible = isDesign,
@@ -129,6 +134,12 @@ fun MainWindow() = withDesktopContext {
     }
     // One place feeds global pointer + clicks + Escape into DesktopState.
     DesktopStateDriver(desktopState)
+    // The apps-menu CONTENT (SlidingPanel) is gated on appsMenuState.isVisible; mirror it to the
+    // menu window's visibility on the Compose (Main) thread so the content always renders when the
+    // window opens. (onApply also sets it, but this guarantees it on the UI thread.)
+    LaunchedEffect(menuState.isVisible) {
+        appsMenuState.isVisible = menuState.isVisible
+    }
     DesktopWindow(
         panelState = panelState,
         controlCenterState = controlCenterState,
