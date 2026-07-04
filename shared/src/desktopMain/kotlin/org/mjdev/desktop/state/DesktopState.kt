@@ -80,7 +80,12 @@ class DesktopState(
         // now the pointer must leave and re-enter to reveal again.
         val inCcHotspot =
             surfaces[SurfaceKind.ControlCenter]?.revealHotspot?.invoke()?.contains(px, py) == true
-        if (inCcHotspot && !pointerWasInCcHotspot) controlCenterOpen = true
+        // opening the control center also closes the menu for real (not just covers it), so it
+        // won't reappear when the control center later closes.
+        if (inCcHotspot && !pointerWasInCcHotspot) {
+            controlCenterOpen = true
+            menuOpen = false
+        }
         pointerWasInCcHotspot = inCcHotspot
         // the bar's zone = the bar itself plus its bottom reveal strip; only matters when overlapped
         val inBarZone =
@@ -139,6 +144,7 @@ class DesktopState(
 
     fun openControlCenter() {
         controlCenterOpen = true
+        menuOpen = false // opening the control center closes the menu (symmetric with openMenu)
         reconcile()
     }
 
