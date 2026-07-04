@@ -105,6 +105,10 @@ fun DockBarWindow(
     ChromeWindow(
         name = "DockBar",
         visible = true,
+        // Always on top: the bar (and its thin reveal handle when collapsed) must sit above the
+        // desktop window, or a click that raises the desktop would bury the handle and it stops
+        // working.
+        alwaysOnTop = true,
         position = position,
         size = size,
         onFocusChange = onFocusChange,

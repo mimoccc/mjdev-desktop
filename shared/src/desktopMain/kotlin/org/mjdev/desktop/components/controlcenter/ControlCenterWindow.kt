@@ -60,6 +60,9 @@ fun ControlCenterWindow(
     ChromeWindow(
         name = "ControlCenter",
         visible = true,
+        // Always on top: the control center (and its right-edge reveal handle) must stay above the
+        // desktop window so the handle is always reachable.
+        alwaysOnTop = true,
         windowState = controlCenterState,
         onFocusChange = onFocusChange,
         position = position,
