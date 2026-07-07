@@ -264,6 +264,11 @@ tasks.register<Exec>("installDesktop") {
             .get()
             .asFile
     val lines = sessionInstallLines(staged)
+    // captured as a local val (not referenced from the script's top-level `aptGet` inside
+    // doFirst below) — the configuration cache cannot deserialize a script-object reference,
+    // and referencing a top-level val from inside doFirst implicitly captures one. See
+    // https://docs.gradle.org/9.2.1/userguide/configuration_cache_requirements.html#config_cache:requirements:disallowed_types
+    val aptGetCmd = aptGet
     // desktopApp overrides compose outputBaseDir to <root>/packages, so the .deb is written
     // to packages/main-release/deb (not desktopApp/build/compose/binaries/…)
     val debDir = rootProject.rootDir.resolve("packages/main-release/deb")
@@ -276,8 +281,8 @@ tasks.register<Exec>("installDesktop") {
         // install the deb via apt so its Depends (the wayland runtime stack baked in by
         // packageFullDeb) are resolved; fall back to dpkg + apt -f if the apt form is unavailable.
         val installDeb =
-            "$aptGet install --no-install-recommends -y '${deb.absolutePath}' || " +
-                "{ dpkg -i '${deb.absolutePath}' || true; $aptGet install -f -y; }"
+            "$aptGetCmd install --no-install-recommends -y '${deb.absolutePath}' || " +
+                "{ dpkg -i '${deb.absolutePath}' || true; $aptGetCmd install -f -y; }"
         script.writeText((lines + installDeb).joinToString("\n") + "\n")
         // pkexec pops a graphical polkit auth dialog and runs the script as root; needs a polkit
         // agent in the session but no terminal. Fall back to a printed sudo command if absent.
