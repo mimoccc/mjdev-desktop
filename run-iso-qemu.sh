@@ -33,6 +33,8 @@ RAM="${MJDEV_QEMU_RAM:-4096}"
 CPUS="${MJDEV_QEMU_CPUS:-4}"
 VNC_HOST="${MJDEV_QEMU_VNC_HOST:-127.0.0.1}"
 VNC_DISPLAY="${MJDEV_QEMU_VNC_DISPLAY:-0}"
+QEMU_WIDTH="${MJDEV_QEMU_WIDTH:-1024}"
+QEMU_HEIGHT="${MJDEV_QEMU_HEIGHT:-768}"
 
 command -v qemu-system-x86_64 >/dev/null 2>&1 || { echo "qemu-system-x86_64 not found (apt install qemu-system-x86)"; exit 1; }
 [ -f "$ISO" ] || { echo "iso not found: $ISO"; echo "build it first: ./gradlew makeIso"; exit 1; }
@@ -42,6 +44,11 @@ ARGS=(
     -smp "$CPUS"
     -cdrom "$ISO"
     -boot d
+    # absolute-position pointer: without it qemu emulates a relative PS/2 mouse, which needs an
+    # explicit grab-click and maps host motion to guest deltas — clicks (e.g. the bar's menu
+    # icon) land in the wrong place or don't register at all until grabbed.
+    -usb
+    -device usb-tablet
 )
 
 # hardware acceleration when the host exposes it
@@ -59,20 +66,23 @@ if [ "$VNC" = "1" ]; then
     # Independent of the guest compositor — no in-image vnc server / wlroots screencopy
     # needed. Listens on $VNC_HOST:(5900+$VNC_DISPLAY).
     if qemu-system-x86_64 -display help 2>/dev/null | grep -q egl-headless; then
-        ARGS+=(-device virtio-vga-gl -display "egl-headless,gl=on")
+        ARGS+=(-device "virtio-vga-gl,xres=$QEMU_WIDTH,yres=$QEMU_HEIGHT" -display "egl-headless,gl=on")
     else
         echo ">> egl-headless unavailable - VNC without GL (compositor falls back to llvmpipe)"
-        ARGS+=(-device virtio-vga)
+        ARGS+=(-device "virtio-vga,xres=$QEMU_WIDTH,yres=$QEMU_HEIGHT")
     fi
     ARGS+=(-vnc "$VNC_HOST:$VNC_DISPLAY")
     echo ">> VNC: connect to $VNC_HOST:$((5900 + VNC_DISPLAY))  (e.g. vncviewer $VNC_HOST:$VNC_DISPLAY)"
 # virtio-gpu with GL gives the wayland compositor a real GPU path; gtk display
 # with gl=on renders it on the host. Fall back to a plain virtio-gpu if the
-# host qemu has no GL display backend.
+# host qemu has no GL display backend. xres/yres pin the guest's initial mode so
+# the window opens at a predictable size instead of whatever default the guest picks.
 elif qemu-system-x86_64 -display help 2>/dev/null | grep -q gtk; then
-    ARGS+=(-device virtio-vga-gl -display gtk,gl=on)
+    # zoom-to-fit=off: without it gtk scales the guest framebuffer to whatever window
+    # size it started with instead of sizing the window to xres/yres.
+    ARGS+=(-device "virtio-vga-gl,xres=$QEMU_WIDTH,yres=$QEMU_HEIGHT" -display gtk,gl=on,zoom-to-fit=off)
 else
-    ARGS+=(-device virtio-vga -display sdl)
+    ARGS+=(-device "virtio-vga,xres=$QEMU_WIDTH,yres=$QEMU_HEIGHT" -display sdl)
 fi
 
 echo ">> booting $ISO"
