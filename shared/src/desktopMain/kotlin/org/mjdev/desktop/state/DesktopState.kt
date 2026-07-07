@@ -39,6 +39,7 @@ class DesktopState(
         val bounds: () -> ScreenRect,
         val revealHotspot: () -> ScreenRect?,
         val focusOnShow: Boolean,
+        val raiseOnShow: Boolean,
         val onApply: (visible: Boolean) -> Unit,
     )
 
@@ -60,9 +61,10 @@ class DesktopState(
         bounds: () -> ScreenRect,
         revealHotspot: () -> ScreenRect? = { null },
         focusOnShow: Boolean = false,
+        raiseOnShow: Boolean = false,
         onApply: (visible: Boolean) -> Unit = {},
     ) {
-        surfaces[kind] = Surface(window, bounds, revealHotspot, focusOnShow, onApply)
+        surfaces[kind] = Surface(window, bounds, revealHotspot, focusOnShow, raiseOnShow, onApply)
         reconcile()
     }
 
@@ -185,8 +187,10 @@ class DesktopState(
             if (visible) {
                 surface.window.show()
                 // grab keyboard focus on open so Escape reaches it right away (control center /
-                // menu). The bar never steals focus.
+                // menu). The bar never steals focus, only raises (see raiseOnShow) so an
+                // always-on-top pin isn't needed to stay above whatever app was on top before.
                 if (surface.focusOnShow) surface.window.focus()
+                if (surface.raiseOnShow) surface.window.raise()
             } else {
                 surface.window.hide(force = true)
             }

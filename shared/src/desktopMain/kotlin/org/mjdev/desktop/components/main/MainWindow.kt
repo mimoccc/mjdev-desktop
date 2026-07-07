@@ -104,6 +104,10 @@ fun MainWindow() = withDesktopContext {
             kind = SurfaceKind.Bar,
             window = panelState,
             bounds = { rectOf(panelState) },
+            // raise (toFront, no keyboard focus steal) on reveal so it visibly comes back above
+            // whatever app window was overlapping it, without a permanent alwaysOnTop pin that
+            // would keep it above external apps even when it shouldn't be.
+            raiseOnShow = true,
             // reveal strip along whichever edge the dock lives on (only used when overlapped).
             // Derived from PanelLocation so drag-to-edge later needs no change here.
             revealHotspot = {

@@ -208,6 +208,14 @@ open class ChromeWindowState(
         }.onFailure { e -> Log.e(e) }
     }
 
+    /** Raises the window above others without stealing keyboard focus (unlike [focus]). */
+    suspend fun raise() {
+        runCatching {
+            Log.d("ChromeWindow raise: ${geom()}")
+            window?.toFront()
+        }.onFailure { e -> Log.e(e) }
+    }
+
     suspend fun showOrFocus() {
         if (isNotVisible) {
             show()

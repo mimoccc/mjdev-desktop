@@ -60,9 +60,9 @@ fun ControlCenterWindow(
     ChromeWindow(
         name = "ControlCenter",
         visible = true,
-        // Always on top: the control center (and its right-edge reveal handle) must stay above the
-        // desktop window so the handle is always reachable.
-        alwaysOnTop = true,
+        // Not alwaysOnTop: DesktopState's focusOnShow (see MainWindow's register call) already
+        // raises + focuses this window whenever the reveal hotspot is entered — a normal
+        // toFront(), not a permanent OS-level pin that would keep it above external apps too.
         windowState = controlCenterState,
         onFocusChange = onFocusChange,
         position = position,
