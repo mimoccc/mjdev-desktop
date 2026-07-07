@@ -44,7 +44,7 @@ fun BackgroundImage(
         modifier = modifier.background(backgroundColor),
     ) {
         val imagesSize by rememberComputed(images.size) { images.size }
-        val backgroundQueue by rememberComputed(imagesSize) { Queue(images) }
+        val backgroundQueue by rememberComputed(images.size, imagesSize) { Queue(images) }
         var currentBackground: Any by remember { mutableStateOf(backgroundColor) }
         Crossfade(
             targetState = currentBackground,

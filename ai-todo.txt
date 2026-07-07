@@ -8,22 +8,9 @@
 * update dependencies from report in reports folder, on every updated library check
   that builds run and or ommit/revert update if impossible
 
-- 1 - ktlint rule bude pokud to jde jeden radek max 80-120 znaku
-  a zarovnavat za = takhle:
-  -------------------------------------------
-  fun PreviewAppBarVerticalFill() = preview {
-  -------------------------------------------
-  a ne takhle:
-  -------------------------------------------
-  fun PreviewAppBarVerticalFill() =
-      preview {
-  -------------------------------------------
-
-- tooltip ma u control center spatne souradnice vypada tp debilne, tos neotestoval.
-- v runDesktop nefunguje rotace pozadi, z jakyho duvodu kurnajs kdyz v runDesktopNested to jde?
-  pujde to na android vubec kdyz je to takhle doslova rozmrdane?
-- v runDesktop nefunguje bottom bar, dock se NIKDY nezobrazi. muzes se kurva jebat dolu mysi kolik kurva chces.
-- uplne nova skurvena novinka je ze taby v controlbare jsou jaksi neklikatelne do pici tu!!! resp. na ikonku je nutne kliknut 658765678x aby se tab pojebany prepol. do pici.
-- vnc - zatim netestuju nemam nervy resit ze to istotne nejde, nebo jde mozna tak na 1/10, to otestuju pozdejc.
-- ostatni jsem kuli dojebanemu vsemu cos dojebat mohl otestovat nemohl
-
+- 1 - rozbil jsi task installDesktop kurva
+- 2 - ano bottom bar ma byt allways top ale netyce se to jinych externich app
+- 3 - potrebuju zrychlit nacteni menu, radeji at se nejprv okno vyrenderuje a pak nactou apky do listu
+  uzivatel ma pocit pri kliknuti na menu, ze se nic nedeje. nemen co neni nutne potreba.
+- 4 - chci mit docky jako control center a spodni dock bar animovane, to tam predtim bylo, znicil jsi to
+- 5 - nastav qemu display vetsi, a zkontroluj jestli funguje klik na menu ikonku.
