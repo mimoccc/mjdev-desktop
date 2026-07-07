@@ -39,7 +39,8 @@
       "Bash(./gradlew :compositor:help --task installDesktop -q)",
       "Bash(git ls-tree *)",
       "Bash(grep -iE \"iso|live-build|debootstrap|\\\\.sh$\")",
-      "Bash(echo \"EXIT: $?\")"
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(./gradlew :compositor:installDesktop --dry-run)"
     ]
   }
 }

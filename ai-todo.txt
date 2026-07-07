@@ -7,10 +7,3 @@
   and also check build can complete after update
 * update dependencies from report in reports folder, on every updated library check
   that builds run and or ommit/revert update if impossible
-
-- 1 - rozbil jsi task installDesktop kurva
-- 2 - ano bottom bar ma byt allways top ale netyce se to jinych externich app
-- 3 - potrebuju zrychlit nacteni menu, radeji at se nejprv okno vyrenderuje a pak nactou apky do listu
-  uzivatel ma pocit pri kliknuti na menu, ze se nic nedeje. nemen co neni nutne potreba.
-- 4 - chci mit docky jako control center a spodni dock bar animovane, to tam predtim bylo, znicil jsi to
-- 5 - nastav qemu display vetsi, a zkontroluj jestli funguje klik na menu ikonku.
