@@ -143,3 +143,59 @@ Output `packages/` directory structure: `packages/main-release/{deb,rpm,appimage
 Format: `<type>(<scope>): <description>` — types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`. Description under 50 characters, imperative mood, lowercase.
 
 Branch naming: `<type>/<issue-number>-<short-description>` — types: `feature`, `bugfix`, `hotfix`, `release`, `support`.
+
+- Do not modify files before explaining the root cause.
+- Do not perform unrelated refactoring.
+- Preserve existing public APIs unless the task requires a change.
+- Prefer small immutable classes and enums over hardcoded string values.
+- Prefer expression bodies where they improve clarity.
+- Avoid the not-null assertion operator.
+- Keep functions small.
+- If a function has more than one parameter, place parameters on separate lines.
+- Run Gradle checks after every code change.
+- Never edit generated files manually.
+- Never change secrets, signing configuration, or production infrastructure without approval.
+- Always show git diff before considering the task complete.
+- To fix issues use crash@psippr.org, for every issue made identification number and branch
+- same as from crash@psippr.org use files: ai-non-finished.txt, ai-nonfinished-progress.txt
+- fix all errors safely, using diff and commits on branch main, keep graphic design, code style and logic
+- app is p2p app, offline first all events from p2p -> db -> ui
+- high priority events are send directly
+- content must be allways synced thru handshake and uuid list
+- everything include events must have uuid
+- db is clean automatically every event after 30 days, content untouched, cleaning use flag : deleted
+- nothing can be physically deleted, always ude delete flag
+- keep p2p as much as possible
+- no additional apis or dependencies of 3rd parties
+- keep code clean everything possible to enums, one class ene file, noo monolites, if needed const objects, parse big classes to smallest parts in package due meanings
+- do not hardcode strings and constants if possible, or use const object/s
+- crash id of branch : crash_<email uuid>
+- never post passwords and details outside machine
+- use all md files for to avoid security or bug recurrence and regressions of bugs
+- do not print password to text files / outputs / code / console output no other files out of repository
+- do not print api keys to text files / outputs / code / console output no other files out of repository
+- use codemagic / xcode cloud when possible
+- do not push to main repo without user agreement
+- try to remove all the server dependencies as much as possible
+- keep code clean and readable
+- comment all the constants / classes / functions / enums / objects
+- do not use magic numbers
+- keep app workable and bug safe and connectable to p2p network and not crash
+- do not share code nowhere outside repository
+- keep code buildable and fail-safe
+- allways use clear prompt and full of idea in prompt by developer and or email in crash@psippr.org
+- only use selected marked emails in crash@psippr.org
+- move fixed issues from crash@psippr.org to archive when branch created and pushed fixed code
+- keep for every target build action in IntelliJ IDEA and buildAll action
+- do not remove functions/methods/constants, made new instead and comment old ones
+- keep history of changes
+- commit have one line fix label, no descriptions, no copyrigts no co-author strings
+- Implement only the approved fix
+- Add a regression test
+- Do not refactor unrelated code
+- Run the relevant Gradle checks
+- Analyze this crash report and the relevant repository files
+- Do not modify files non-related to issue
+- Do not run destructive commands
+- Identify the root cause and propose a minimal fix
+- Always use all skills found in repo, exclude claude-logs

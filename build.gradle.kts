@@ -25,7 +25,7 @@ plugins {
 // ============================================================================
 //  Code quality + dependency reporting  ->  /reports
 //  - ben-manes: stable-only dependency-update report (rejects alpha/rc/dev/tethys/snapshot)
-//  - ktlint:    auto-format after build + report; report-only (never breaks the build)
+//  - ktlint:    auto-format after build + report; report-only (never fails the build)
 //  - After every build: auto-format code, ktlint report, and (gated) dependency report.
 //    Dependency check is ON by default; disable with  -PdepCheck=false
 // ============================================================================
@@ -101,39 +101,6 @@ allprojects {
         finalizedBy(rootProject.tasks.named("postBuildCodeCheck"))
     }
 }
-
-// buildConfig {
-//    generateAtSync = true
-//    sourceSets  {
-//        main {
-//            packageName = "org.mjdev.desktop"
-//            useKotlin = true
-//            useJava = true
-//            useGroovy = true
-//            useScala = true
-//            useXml = true
-//            useProperties = true
-//        }
-//    }
-//    buildConfigField("APP_NAME", project.name)
-//    buildConfigField("APP_VERSION", provider { "\"${project.version}\"" })
-//    buildConfigField("APP_SECRET", "Z3JhZGxlLWphdmEtYnVpbGRjb25maWctcGx1Z2lu")
-//    buildConfigField<String>("OPTIONAL", null)
-//    buildConfigField("BUILD_TIME", System.currentTimeMillis())
-//    buildConfigField("FEATURE_ENABLED", true)
-//    buildConfigField("MAGIC_NUMBERS", intArrayOf(1, 2, 3, 4))
-//    buildConfigField("STRING_LIST", arrayOf("a", "b", "c"))
-//    buildConfigField("MAP", mapOf("a" to 1, "b" to 2))
-//    buildConfigField("FILE", File("aFile"))
-//    buildConfigField("URI", uri("https://example.io"))
-//    buildConfigField("com.github.gmazzo.buildconfig.demos.kts.SomeData", "DATA", "SomeData(\"a\", 1)")
-// }
-
-// dependencies {
-//    kover(project(":composeApp"))
-// }
-
-// kover { reports { total { xml { onCheck = true } } } }
 
 // Aggregate task: build every distributable that this host can produce.
 //  - desktop: Deb + AppImage + Rpm (per the targetFormats in composeApp), release mode
@@ -343,7 +310,7 @@ val buildAll =
     }
 
 // Attach iOS framework build only when an iOS target actually exists in composeApp
-// (it never does on a Linux/Windows host — Kotlin/Native iOS requires macOS + Xcode).
+// (it never does on a Linux/Windows host — Kotlin/Native for iOS requires macOS + Xcode).
 project(":shared").afterEvaluate {
     val iosTask =
         tasks.names.firstOrNull {

@@ -1,0 +1,293 @@
+package org.mjdev.desktop.tabs.remote
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.SupervisorJob
+import org.mjdev.desktop.managers.remote.IRemoteDesktopManager
+import org.mjdev.desktop.managers.remote.RemoteConnection
+import org.mjdev.desktop.managers.remote.ConnectionState
+import org.mjdev.desktop.managers.remote.AudioStreamState
+import org.mjdev.desktop.managers.remote.RemoteClientHandle
+import org.mjdev.desktop.managers.remote.RemoteClientConnectionState
+import androidx.compose.remote.client.RemoteComposeView as LibraryRemoteComposeView
+import kotlin.collections.buildList
+
+/**
+ * Plugin rozhraní pro Tab, který chce zobrazovat vzdálené Compose UI s audio.
+ * 
+ * Implementace tohoto rozhraní (např. ve vašem Tab systému) zajišťuje:
+ * 1. Životní cyklus připojení (connect/disconnect při otevření/zavření tabu).
+ * 2. Zobrazení UI přes [RemoteComposeView] s audio ovládáním.
+ * 3. Propagaci stavu do UI tabu (ikona, tooltip, kontextové menu, volume indikátor).
+ */
+interface IRemoteTabPlugin {
+
+    /** Unikátní ID tabu (slouží jako connection ID). */
+    val tabId: String
+
+    /** Reference na Remote Desktop Manager. */
+    val remoteManager: IRemoteDesktopManager
+
+    /** Cílový hostitel. */
+    val targetHost: String
+
+    /** Cílový port (default 8080). */
+    val targetPort: Int = 8080
+
+    /** WebSocket cesta (default "/compose"). */
+    val targetPath: String = "/compose"
+
+    /** Zda povolit audio streaming (default true). */
+    val enableAudio: Boolean = true
+
+    /** Aktuální stav připojení (pro UI indikátory). */
+    val connectionState: State<ConnectionState>
+
+    /** Poslední chyba připojení. */
+    val lastError: State<String?>
+
+    /** Audio stream stav. */
+    val audioState: State<AudioStreamState>
+
+    /** Aktuální hlasitost (0.0 - 1.0). */
+    val volume: State<Float>
+
+    /** Zda je audio ztlumené. */
+    val isMuted: State<Boolean>
+
+    /** Indikuje, zda je tab v režimu "view-only". */
+    val isViewOnly: Boolean = false
+
+    /**
+     * Inicializuje připojení. Volat při vytvoření/aktivaci tabu.
+     * Vrací [Job] pro sledování dokončení připojení.
+     */
+    fun connect(): Job
+
+    /**
+     * Uzavře připojení. Volat při zavření tabu.
+     */
+    fun disconnect()
+
+    /**
+     * Přepne view-only režim.
+     */
+    fun setViewOnly(viewOnly: Boolean)
+
+    /**
+     * Nastaví hlasitost (0.0 - 1.0).
+     */
+    fun setVolume(volume: Float)
+
+    /**
+     * Přepne mute stav.
+     */
+    fun setMuted(muted: Boolean)
+
+    /**
+     * Composable obsah tabu – zobrazuje vzdálené UI nebo stavové zprávy.
+     * Toto je hlavní entry point pro GUI propagaci.
+     */
+    @Composable
+    fun TabContent()
+
+    /**
+     * Volitelné: Akce pro kontextové menu tabu (reconnect, disconnect, copy address atd.).
+     */
+    val contextActions: List<TabContextAction> = emptyList()
+}
+
+/** Akce pro kontextové menu tabu. */
+data class TabContextAction(
+    val label: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
+    val action: () -> Unit
+)
+
+/**
+ * Výchozí implementace pluginu pro jednoduché použití.
+ * Tab systém může instancovat tuto třídu a delegovat na ni.
+ */
+class DefaultRemoteTabPlugin(
+    override val tabId: String,
+    override val remoteManager: IRemoteDesktopManager,
+    override val targetHost: String,
+    override val targetPort: Int = 8080,
+    override val targetPath: String = "/compose",
+    override val enableAudio: Boolean = true,
+    override val isViewOnly: Boolean = false
+) : IRemoteTabPlugin {
+
+    private var connection: RemoteConnection? = null
+    private var connectJob: Job? = null
+    private val pluginScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    // State pro UI
+    override val connectionState = mutableStateOf(ConnectionState.Disconnected)
+    override val lastError = mutableStateOf<String?>(null)
+    override val audioState = mutableStateOf(AudioStreamState.Disconnected)
+    override val volume = mutableStateOf(1.0f)
+    override val isMuted = mutableStateOf(false)
+
+    override fun connect(): Job {
+        if (connection != null) return Job() // Už běží
+        
+        connectJob = pluginScope.launch {
+            try {
+                val conn = remoteManager.createConnection(
+                    id = tabId,
+                    host = targetHost,
+                    port = targetPort,
+                    path = targetPath,
+                    enableAudio = enableAudio
+                )
+                connection = conn
+            } catch (e: Exception) {
+                lastError.value = e.message
+                connectionState.value = ConnectionState.Error
+            }
+        }
+        return connectJob!!
+    }
+
+    override fun disconnect() {
+        connection?.let { conn ->
+            pluginScope.launch {
+                remoteManager.closeConnection(conn)
+            }
+        }
+        connectJob?.cancel()
+        connection = null
+        connectionState.value = ConnectionState.Disconnected
+        audioState.value = AudioStreamState.Disconnected
+    }
+
+    override fun setViewOnly(viewOnly: Boolean) {
+        connection?.let { it.setViewOnly(viewOnly) }
+    }
+
+    override fun setVolume(volume: Float) {
+        connection?.clientHandle?.setVolume(volume)
+        this.volume.value = volume.coerceIn(0.0f, 1.0f)
+    }
+
+    override fun setMuted(muted: Boolean) {
+        connection?.clientHandle?.setMuted(muted)
+        this.isMuted.value = muted
+    }
+
+    @Composable
+    override fun TabContent() {
+        // Create a disconnected connection placeholder if no real connection exists
+        val disconnectedConnection = remember {
+            object : RemoteConnection.Disconnected(tabId) {
+                override val clientHandle: RemoteClientHandle
+                    get() = object : RemoteClientHandle() {
+                        override val connectionState = mutableStateOf(RemoteClientConnectionState.Disconnected)
+                        override val lastError = mutableStateOf<String?>(null)
+                        override val isAudioAvailable = false
+                        override val volume = mutableStateOf(1.0f)
+                        override val isMuted = mutableStateOf(false)
+                        override val audioState = mutableStateOf(AudioStreamState.Disconnected)
+                        override fun setVolume(volume: Float) {}
+                        override fun setMuted(muted: Boolean) {}
+                        override suspend fun connect(uri: String) {}
+                        override fun disconnect() {}
+                        @Composable
+                        override fun RemoteComposeView(
+                            modifier: androidx.compose.ui.Modifier = androidx.compose.ui.Modifier,
+                            placeholder: @Composable () -> Unit = { },
+                            errorContent: @Composable (Throwable) -> Unit = { }
+                        ) {
+                            placeholder()
+                        }
+                    }
+            }
+        }
+        
+        val conn = connection ?: disconnectedConnection
+        val handle = conn.clientHandle
+        
+        // Sync state from handle to plugin state for UI using derivedStateOf
+        val handleAudioState by handle.audioState
+        val handleVolume by handle.volume
+        val handleMuted by handle.isMuted
+        val handleConnectionState by handle.connectionState
+        val handleLastError by handle.lastError
+        
+        // Derived state for connection state mapping
+        val mappedConnectionState = derivedStateOf {
+            when (handleConnectionState) {
+                RemoteClientConnectionState.Connected -> ConnectionState.Connected
+                RemoteClientConnectionState.Connecting -> ConnectionState.Connecting
+                RemoteClientConnectionState.Error -> ConnectionState.Error
+                RemoteClientConnectionState.Closed -> ConnectionState.Closed
+                else -> ConnectionState.Disconnected
+            }
+        }
+        
+        // Update plugin state from handle (runs during composition)
+        SideEffect {
+            audioState.value = handleAudioState
+            volume.value = handleVolume
+            isMuted.value = handleMuted
+            connectionState.value = mappedConnectionState.value
+            lastError.value = handleLastError
+        }
+        
+        // Use the remote compose view directly from the library
+        LibraryRemoteComposeView(
+            client = (handle as? androidx.compose.remote.client.RemoteComposeClient) ?: androidx.compose.remote.client.RemoteComposeClient(),
+            modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+            placeholder = { 
+                androidx.compose.material3.Text("Připojuji k $targetHost:$targetPort...") 
+            },
+            errorContent = { throwable ->
+                androidx.compose.material3.Text("Chyba připojení: ${throwable.message}")
+            }
+        )
+    }
+
+    override val contextActions: List<TabContextAction>
+        get() = buildList {
+            when (connectionState.value) {
+                ConnectionState.Connected -> {
+                    add(TabContextAction("Odpojit", action = { disconnect() }))
+                    add(TabContextAction("Reconnect", action = { disconnect(); connect() }))
+                    add(TabContextAction("View Only: ${if (isViewOnly) "On" else "Off"}", action = { setViewOnly(!isViewOnly) }))
+                    if (enableAudio) {
+                        val audioStateVal = audioState.value
+                        val isMutedVal = isMuted.value
+                        val volumeVal = volume.value
+                        add(TabContextAction(
+                            "Audio: ${when (audioStateVal) { AudioStreamState.Streaming -> "Přehrává"; AudioStreamState.Connecting -> "Připojuji..."; AudioStreamState.Error -> "Chyba"; else -> "Nepřipojeno" }} | ${if (isMutedVal) "Mute" else "${(volumeVal * 100).roundToInt()}%"}",
+                            action = { setMuted(!isMutedVal) }
+                        ))
+                    }
+                }
+                ConnectionState.Error -> {
+                    add(TabContextAction("Zkusit znovu", action = { connect() }))
+                    add(TabContextAction("Zavřít tab", action = { disconnect() }))
+                }
+                else -> {
+                    add(TabContextAction("Připojit", action = { connect() }))
+                }
+            }
+        }
+    
+    fun dispose() {
+        pluginScope.cancel()
+        disconnect()
+    }
+}

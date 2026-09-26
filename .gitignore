@@ -70,3 +70,4 @@ composeApp/src/commonMain/resources/keys/*.key
 ### ideas & fixes
 /ideas/
 /fix-it/
+.aider*

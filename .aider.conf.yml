@@ -1,0 +1,35 @@
+# .aider.conf.yml - Project config for KMP/CMP development
+## Model settings - OpenRouter
+model: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
+weak-model: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
+## API keys (nebo použij env var OPENROUTER_API_KEY)
+# api-key:
+#   - openrouter=tvuj_api_key_zde
+## Always load coding conventions
+read:
+  - CONVENTIONS.md
+  - CLAUDE.md
+## Always load coding conventions (read-only)
+#read-only:
+#  - CONVENTIONS.md
+#  - CLAUDE.md
+## Git behavior
+auto-commits: false
+dirty-commits: false
+attribute-author: false
+attribute-committer: false
+## Code quality
+auto-lint: true
+lint-cmd:
+  - "kotlin: ./gradlew lintKotlin"
+  - "kotlin: ./gradlew detekt"
+## Repository map - context for KMP structure
+map-tokens: 2048
+map-refresh: auto
+## UI preferences
+dark-mode: true
+pretty: true
+stream: true
+## Cache for faster responses
+cache-prompts: true
+cache-keepalive-pings: 2
