@@ -1,6 +1,7 @@
 # .aider.conf.yml - Project config for KMP/CMP development
 ## Model settings - OpenRouter
-model: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
+model: openrouter/anthropic/claude-sonnet-5
+#model: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
 weak-model: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
 ## API keys (nebo použij env var OPENROUTER_API_KEY)
 # api-key:
