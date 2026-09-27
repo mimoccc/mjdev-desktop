@@ -22,8 +22,7 @@ attribute-committer: false
 ## Code quality
 auto-lint: true
 lint-cmd:
-  - "kotlin: ./gradlew lintKotlin"
-  - "kotlin: ./gradlew detekt"
+  - "kotlin: ./gradlew ktlintCheck"
 ## Repository map - context for KMP structure
 map-tokens: 2048
 map-refresh: auto

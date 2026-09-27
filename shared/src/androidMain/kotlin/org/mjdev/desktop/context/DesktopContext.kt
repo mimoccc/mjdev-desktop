@@ -44,6 +44,8 @@ import org.mjdev.desktop.managers.processes.ProcessManager
 import org.mjdev.desktop.managers.theme.IThemeManager
 import org.mjdev.desktop.managers.theme.ThemeManager
 import org.mjdev.desktop.managers.translations.ITranslator
+import org.mjdev.desktop.managers.volume.IVolumeManager
+import org.mjdev.desktop.managers.volume.VolumeManager
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
 
@@ -144,6 +146,7 @@ class DesktopContext(
         IThemeManager::class -> ThemeManager(this)
         IProcessManager::class -> ProcessManager(this)
         IKeyManager::class -> KeysManager(this)
+        IVolumeManager::class -> VolumeManager(this)
         else ->
             cls.companionObject
                 ?.members

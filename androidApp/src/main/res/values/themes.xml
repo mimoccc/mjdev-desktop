@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Základní téma aplikace použité v AndroidManifest.xml (android:theme="@style/Theme.Mjdev").
+        Parent je platformní Theme.Material.Light.NoActionBar - nezávisí na Material3/AppCompat,
+        takže nemůže spadnout na chybějící resource kvůli chybějící knihovně.
+        UI samotné je celé v Compose, takže toto téma slouží jen jako téma okna/aktivity
+        (barva pozadí, žádná action bar lišta) před tím, než Compose obsah převezme vykreslování.
+    -->
+    <style name="Theme.Mjdev" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+    </style>
+</resources>

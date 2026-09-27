@@ -39,6 +39,7 @@ import org.mjdev.desktop.managers.process.IProcessManager
 import org.mjdev.desktop.managers.remote.IRemoteDesktopManager
 import org.mjdev.desktop.managers.theme.IThemeManager
 import org.mjdev.desktop.managers.translations.ITranslator
+import org.mjdev.desktop.managers.volume.IVolumeManager
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.reflect.KClass
@@ -76,6 +77,9 @@ abstract class IDesktopContext : IDisposable {
     open val translator: ITranslator by this
     open val keysManager: IKeyManager by this
     open val remoteDesktop: IRemoteDesktopManager by this
+
+    // System output volume / mute control - see IVolumeManager for platform implementations.
+    open val volumeManager: IVolumeManager by this
 
     abstract var isFirstStart: Boolean
     abstract var isInstalled: Boolean
