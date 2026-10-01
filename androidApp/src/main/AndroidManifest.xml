@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name="com.mjdev.android.MjdevApplication"
+        android:name="org.mjdev.desktop.app.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -13,7 +13,7 @@
         tools:targetApi="31">
         
         <activity
-            android:name="com.mjdev.android.MainActivity"
+            android:name="org.mjdev.desktop.activity.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/Theme.Mjdev"

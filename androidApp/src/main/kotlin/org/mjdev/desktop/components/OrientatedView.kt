@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 
@@ -18,7 +19,8 @@ fun OrientatedView(
     Box(
         modifier = modifier
     ) {
-        if (context.platformContext?.resources?.configuration?.orientation == ORIENTATION_PORTRAIT) {
+        // LocalConfiguration is observed by compose, the activity handles rotation without recreation
+        if (LocalConfiguration.current.orientation == ORIENTATION_PORTRAIT) {
             portrait()
         } else {
             landscape()

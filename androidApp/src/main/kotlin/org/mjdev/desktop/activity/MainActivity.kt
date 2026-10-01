@@ -99,10 +99,9 @@ class MainActivity : ComponentActivity() {
 private fun ActivityMain(activity: ComponentActivity? = null) {
     DesktopTheme {
         Scaffold(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .background(Black),
+            modifier = Modifier.fillMaxSize(),
+            // default container is white, the activity background follows the desktop color instead
+            containerColor = Color.Transparent,
         ) { paddingValues ->
             Box(
                 modifier =

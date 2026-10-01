@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +37,10 @@ import org.mjdev.desktop.extensions.MutableStateExt.rememberCalculated
 fun MainView(onBackgroundChange: (Color) -> Unit = {}) =
     withDesktopContext {
         val tooltipState: TooltipState = rememberTooltipState()
+        // wallpaper change is the only other trigger, the activity background must follow the desktop from start
+        LaunchedEffect(backgroundColor) {
+            onBackgroundChange(backgroundColor)
+        }
         val appsMenuState =
             rememberAppsMenuState(
                 visible = isDesign,
@@ -45,9 +50,10 @@ fun MainView(onBackgroundChange: (Color) -> Unit = {}) =
                 visible = isDesign,
             )
         val panelState =
+            // touch has no hover to reveal an auto-hidden panel, so it stays pinned visible
             rememberVisibilityState(
-                visible = isDesign || !panelAutoHideEnabled,
-                enabled = panelAutoHideEnabled,
+                visible = true,
+                enabled = false,
                 autoHideDelay = panelHideDelay,
             )
         val bottomPadding by rememberCalculated(

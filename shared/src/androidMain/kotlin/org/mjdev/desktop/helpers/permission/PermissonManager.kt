@@ -16,6 +16,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
@@ -75,12 +78,18 @@ fun rememberPermissionManager(
                 onPermissionsResult = onPermissionsResult,
             )
         _ps = permissionsState
+        // the system dialog pauses/resumes the activity, ask only once or it loops forever
+        var requested by rememberSaveable { mutableStateOf(false) }
         DisposableEffect(
             key1 = lifecycleOwner,
             effect = {
                 val observer =
                     LifecycleEventObserver { _, event ->
-                        if (event == Lifecycle.Event.ON_RESUME) {
+                        if (event == Lifecycle.Event.ON_RESUME &&
+                            !requested &&
+                            !permissionsState.allPermissionsGranted
+                        ) {
+                            requested = true
                             permissionsState.launchMultiplePermissionRequest()
                         }
                     }
