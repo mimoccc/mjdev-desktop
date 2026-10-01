@@ -1,5 +1,6 @@
 package org.mjdev.desktop.plugins
 
+import androidx.compose.runtime.Composable
 import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.plugins.remote.RemoteDocument
 import org.mjdev.desktop.plugins.remote.RemoteVariables
@@ -19,6 +20,13 @@ interface IDesktopPlugin {
     /** Period in milliseconds between two calls of [variables]. */
     val refreshMs: Long
         get() = PluginDefaults.DEFAULT_REFRESH_MS
+
+    /**
+     * Optional interactive UI. When not null the desktop draws it instead of the [document] (the
+     * document then only supplies size and anchor); used by built-in widgets that need buttons.
+     */
+    val content: (@Composable (IDesktopContext) -> Unit)?
+        get() = null
 
     /** Produces the current values the [document] binds to. Called off the UI thread. */
     fun variables(context: IDesktopContext): RemoteVariables

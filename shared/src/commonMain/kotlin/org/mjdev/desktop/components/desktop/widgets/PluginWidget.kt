@@ -55,11 +55,16 @@ fun PluginWidget(
                     .size(document.width.dp, document.height.dp)
                     .align(RemoteAlign.parse(document.anchor, RemoteAlign.BOTTOM_END).alignment),
         ) {
-            RemoteDocumentPlayer(
-                document = document,
-                variables = variables,
-                modifier = Modifier.fillMaxSize(),
-            )
+            val custom = plugin.content
+            if (custom != null) {
+                custom(context)
+            } else {
+                RemoteDocumentPlayer(
+                    document = document,
+                    variables = variables,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
         }
     }
 }

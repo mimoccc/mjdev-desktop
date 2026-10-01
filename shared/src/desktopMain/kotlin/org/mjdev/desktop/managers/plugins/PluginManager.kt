@@ -15,6 +15,7 @@ import org.mjdev.desktop.plugins.IDesktopPlugin
 import org.mjdev.desktop.plugins.MemoryWidgetPlugin
 import org.mjdev.desktop.plugins.PluginDefaults
 import org.mjdev.desktop.plugins.PluginInfo
+import org.mjdev.desktop.plugins.music.MusicWidgetPlugin
 import java.io.File
 import java.net.URLClassLoader
 import java.util.ServiceLoader
@@ -43,6 +44,13 @@ class PluginManager(
 
     private val builtIn = MemoryWidgetPlugin()
 
+    // every plugin shipped inside the desktop, by id; the memory chart above is kept as before
+    private val builtInPlugins: Map<String, IDesktopPlugin> =
+        mapOf(
+            MemoryWidgetPlugin.ID to builtIn,
+            MusicWidgetPlugin.ID to MusicWidgetPlugin(),
+        )
+
     private val jars = mutableMapOf<String, File>()
     private val loaders = mutableMapOf<String, URLClassLoader>()
     private val instances = mutableMapOf<String, IDesktopPlugin>()
@@ -58,7 +66,7 @@ class PluginManager(
 
     override fun refresh() {
         jars.clear()
-        val found = mutableListOf(builtInInfo())
+        val found = (listOf(builtInInfo(), musicInfo())).toMutableList()
         scanJars().forEach { jar ->
             val metadata = PluginJarReader.readMetadata(jar)
             when {
@@ -104,7 +112,7 @@ class PluginManager(
         return when {
             info == null || !info.enabled -> null
             instances.containsKey(id) -> instances[id]
-            info.builtIn -> builtIn.also { instances[id] = it; it.onEnabled() }
+            info.builtIn -> builtInPlugins[id]?.also { instances[id] = it; it.onEnabled() }
             else -> load(id)
         }
     }
@@ -144,6 +152,13 @@ class PluginManager(
     private fun builtInInfo() = PluginInfo(
         metadata = MemoryWidgetPlugin.METADATA,
         enabled = MemoryWidgetPlugin.ID in state.enabled,
+        builtIn = true,
+        source = BUILT_IN_SOURCE,
+    )
+
+    private fun musicInfo() = PluginInfo(
+        metadata = MusicWidgetPlugin.METADATA,
+        enabled = MusicWidgetPlugin.ID in state.enabled,
         builtIn = true,
         source = BUILT_IN_SOURCE,
     )

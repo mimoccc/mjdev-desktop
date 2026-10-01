@@ -43,3 +43,12 @@ are read without loading any class, and nothing is loaded until the user switche
 Only enable plugins you trust.
 
 State (which plugins are enabled) is stored in `~/.mjdev/desktop/plugins.json`.
+
+## Built-in widgets
+
+- **Memory** (`builtin.memory`) — donut chart, drawn from a `RemoteDocument`.
+- **Music player** (`builtin.music`) — plays the files of the user's Music folder (mp3, flac, ogg,
+  wav, m4a, aac, opus; sub-folders up to 3 levels) with seek bar and previous / play-pause / next.
+  Off by default; switch it on in the control center Plugins tab. A document cannot hold buttons, so
+  it uses the optional `IDesktopPlugin.content` composable (the document then only gives size and
+  anchor). Audio comes from the klibs.io library ComposeMediaPlayer (`composemediaplayer-audio`).
