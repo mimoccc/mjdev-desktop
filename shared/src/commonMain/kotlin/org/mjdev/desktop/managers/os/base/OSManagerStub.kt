@@ -14,15 +14,15 @@ import org.mjdev.desktop.managers.os.IOSManager
 open class OSManagerStub(
     val context: IDesktopContext,
 ) : IOSManager {
-    open val prettyName: String = ""
+    override val prettyName: String = ""
     open val name: String = ""
     open val versionId: String = ""
     open val version: String = ""
     open val versionCodeName: String = ""
     open val id: String = ""
     open val idLike: String = ""
-    open val homeUrl: String = ""
-    open val supportUrl: String = ""
+    override val homeUrl: String = ""
+    override val supportUrl: String = ""
     open val bugReportUrl: String = ""
     open val privacyPolicyUrl: String = ""
     open val codename: String = ""

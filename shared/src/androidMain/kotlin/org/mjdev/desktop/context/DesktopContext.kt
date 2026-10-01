@@ -39,6 +39,7 @@ import org.mjdev.desktop.managers.os.IOSManager
 import org.mjdev.desktop.managers.os.OsManager
 import org.mjdev.desktop.managers.palette.IPalette
 import org.mjdev.desktop.managers.palette.Palette
+import org.mjdev.desktop.managers.plugins.IPluginManager
 import org.mjdev.desktop.managers.process.IProcessManager
 import org.mjdev.desktop.managers.processes.ProcessManager
 import org.mjdev.desktop.managers.theme.IThemeManager
@@ -147,6 +148,8 @@ class DesktopContext(
         IProcessManager::class -> ProcessManager(this)
         IKeyManager::class -> KeysManager(this)
         IVolumeManager::class -> VolumeManager(this)
+        // Plugins are loaded from jars on the JVM desktop only.
+        IPluginManager::class -> IPluginManager.EMPTY
         else ->
             cls.companionObject
                 ?.members

@@ -21,6 +21,9 @@ fun ChromeWindow(
     name: String? = null,
     visible: Boolean = true,
     transparent: Boolean = true,
+    // Ask the compositor to blur whatever is rendered below this window (needs a compositor
+    // built with scenefx and a window with transparent pixels, see WindowTitle).
+    blur: Boolean = false,
     resizable: Boolean = false,
     enabled: Boolean = true,
     focusable: Boolean = true,
@@ -75,7 +78,7 @@ fun ChromeWindow(
             // Encode the window role into the title as "mjdev::<name>" so the mjdev compositor
             // can layer shell windows correctly (background / panel / top). The window is
             // undecorated, so the title is never visible; on a non-mjdev WM it is just ignored.
-            title = name?.let { "mjdev::$it" } ?: "",
+            title = WindowTitle.encode(name, blur),
             icon = null,
             undecorated = true,
             transparent = transparent,
@@ -89,7 +92,10 @@ fun ChromeWindow(
             stateHelper = windowState.stateHelper,
             focusHelper = windowState.focusHelper,
             content = {
-                content()
+                // exposes the live screen bounds so glass backdrops can line up with the wallpaper
+                ProvideWindowBounds(window) {
+                    content()
+                }
             },
         )
         updateWindowState(visible, wnState, windowState)

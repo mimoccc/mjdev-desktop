@@ -1,5 +1,7 @@
 package org.mjdev.desktop.context
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.DpSize
 import coil3.ImageLoader
 import coil3.PlatformContext
@@ -15,6 +17,7 @@ import org.mjdev.desktop.components.controlcenter.pages.devices.DevicesPage
 import org.mjdev.desktop.components.controlcenter.pages.display.DisplaySettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.ethernet.EthSettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.main.MainSettingsPage
+import org.mjdev.desktop.components.controlcenter.pages.plugins.PluginsSettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.remotes.RemotesSettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.sound.SoundSettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.theme.ThemeSettingsPage
@@ -35,6 +38,7 @@ import org.mjdev.desktop.managers.connectivity.IConnectivityManager
 import org.mjdev.desktop.managers.keys.IKeyManager
 import org.mjdev.desktop.managers.os.IOSManager
 import org.mjdev.desktop.managers.palette.IPalette
+import org.mjdev.desktop.managers.plugins.IPluginManager
 import org.mjdev.desktop.managers.process.IProcessManager
 import org.mjdev.desktop.managers.remote.IRemoteDesktopManager
 import org.mjdev.desktop.managers.theme.IThemeManager
@@ -61,11 +65,18 @@ abstract class IDesktopContext : IDisposable {
             DevicesPage(this),
             RemotesSettingsPage(this),
             ThemeSettingsPage(this),
+            PluginsSettingsPage(this),
             AIPage(this),
             AboutPage(this),
         )
 
     val storageProvider = StorageProvider(this)
+
+    /**
+     * Source of the wallpaper the desktop currently shows (path, url, bitmap or a plain color), or
+     * null before the first one is chosen. Other shell windows read it to draw frosted glass.
+     */
+    val wallpaper: MutableState<Any?> = mutableStateOf(null)
 
     open val osManager: IOSManager by this
     open val connectionManager: IConnectivityManager by this
@@ -80,6 +91,9 @@ abstract class IDesktopContext : IDisposable {
 
     // System output volume / mute control - see IVolumeManager for platform implementations.
     open val volumeManager: IVolumeManager by this
+
+    // Discovers and toggles desktop widget plugins from ~/.mjdev/plugins - see IPluginManager.
+    open val pluginManager: IPluginManager by this
 
     abstract var isFirstStart: Boolean
     abstract var isInstalled: Boolean

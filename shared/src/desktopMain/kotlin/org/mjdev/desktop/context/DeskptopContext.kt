@@ -42,6 +42,8 @@ import org.mjdev.desktop.managers.os.IOSManager
 import org.mjdev.desktop.managers.os.OsManager
 import org.mjdev.desktop.managers.palette.IPalette
 import org.mjdev.desktop.managers.palette.Palette
+import org.mjdev.desktop.managers.plugins.IPluginManager
+import org.mjdev.desktop.managers.plugins.PluginManager
 import org.mjdev.desktop.managers.process.IProcessManager
 import org.mjdev.desktop.managers.processes.ProcessManager
 import org.mjdev.desktop.managers.remote.IRemoteDesktopManager
@@ -49,12 +51,16 @@ import org.mjdev.desktop.managers.remote.RemoteDesktopManager
 import org.mjdev.desktop.managers.theme.IThemeManager
 import org.mjdev.desktop.managers.theme.ThemeManager
 import org.mjdev.desktop.managers.translations.ITranslator
+import org.mjdev.desktop.managers.volume.IVolumeManager
+import org.mjdev.desktop.managers.volume.VolumeManager
 import java.awt.Desktop
 import java.awt.Toolkit
 import java.io.File
 import java.net.URI
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
+import kotlin.reflect.full.companionObjectInstance
+import kotlin.reflect.jvm.isAccessible
 
 @Suppress("RedundantSuspendModifier", "unused", "MemberVisibilityCanBePrivate")
 class DesktopContext(
@@ -263,12 +269,24 @@ class DesktopContext(
         IProcessManager::class -> ProcessManager(this)
         IKeyManager::class -> KeysManager(this)
         IRemoteDesktopManager::class -> RemoteDesktopManager(this)
-        else ->
-            cls.companionObject
-                ?.members
-                ?.first { it.name == "EMPTY" }
-                ?.call() as IDelegate
+        IVolumeManager::class -> VolumeManager(this)
+        IPluginManager::class -> PluginManager(this)
+        else -> createEmptyManager(cls)
     }
+
+    /**
+     * Resolves the `EMPTY` fallback of a manager's companion. The backing field is private
+     * static, so the getter must be made accessible before it is called reflectively.
+     */
+    private fun createEmptyManager(cls: KClass<*>): IDelegate = runCatching {
+        cls.companionObject
+            ?.members
+            ?.firstOrNull { it.name == "EMPTY" }
+            ?.also { it.isAccessible = true }
+            ?.call(cls.companionObjectInstance) as? IDelegate
+    }.onFailure { e ->
+        Log.e(e)
+    }.getOrNull() ?: error("No manager available for $cls")
 
     override suspend fun restart() {
         Shell.executeAndRead("/usr/sbin/halt", "--reboot")

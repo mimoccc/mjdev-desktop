@@ -12,7 +12,9 @@ import org.mjdev.desktop.providers.background.ProviderSmug
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 data class ProviderConfig(
-    val id: String,
+    // Default value is required: it gives Gson a no-args constructor, otherwise it falls back to
+    // sun.misc.Unsafe which is unavailable on some JVMs and crashed config loading.
+    val id: String = "",
     var enabled: Boolean = false,
     var loadCount: Int = DEFAULT_LOAD_COUNT,
 ) {

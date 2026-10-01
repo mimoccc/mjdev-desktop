@@ -15,6 +15,11 @@ app-vendor = "mjdev"
 # deb packaging joins it with ", ". A clean/GNOME box lacks these (GNOME uses mutter, not wlroots),
 # so without them mjdevc fails to load (libwlroots-0.18.so missing) and the session black-screens.
 app-compositor-runtime-deps = "libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session"
+# Optional backdrop blur for compositor windows (https://github.com/wlrfx/scenefx). pkg-config names
+# tried in order, the first installed one is used (scenefx 0.2 targets wlroots 0.18). When none is
+# installed mjdevc builds without blur exactly as before; the shell asks for blur per window via the
+# "blur" title flag and the compositor then logs/ignores it.
+app-compositor-scenefx-packages = "scenefx-0.2 scenefx-0.3 scenefx"
 # Seconds apt-get waits for the dpkg lock (/var/lib/dpkg/lock-frontend) instead of failing
 # immediately when another apt/dpkg process holds it (unattended-upgrades, a parallel build, …).
 # Consumed by installDesktop/installSession (compositor.gradle.kts) and make-iso.sh.

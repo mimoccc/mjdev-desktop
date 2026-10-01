@@ -14,8 +14,10 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import mjdev.compositor.shim.MJC_LAYER_BACKGROUND
 import mjdev.compositor.shim.MJC_LAYER_TOP
 import mjdev.compositor.shim.MJC_MOD_ALT
+import mjdev.compositor.shim.mjc_blur_supported
 import mjdev.compositor.shim.mjc_view_close
 import mjdev.compositor.shim.mjc_view_focus
+import mjdev.compositor.shim.mjc_view_set_blur
 import mjdev.compositor.shim.mjc_view_set_focusable
 import mjdev.compositor.shim.mjc_view_set_layer
 
@@ -51,6 +53,7 @@ class Policy(
             return
         }
         info.role = titleRole ?: "window"
+        applyBlurFlag(info)
         when (info.role) {
             // ChromeWindow names: DesktopWindow/FullScreenWindow carry the wallpaper
             "wallpaper", "background", "desktop",
@@ -72,6 +75,24 @@ class Policy(
                 mjc_view_set_layer(info.ptr, MJC_LAYER_TOP)
             }
         }
+    }
+
+    /**
+     * The shell asks for a blurred backdrop by appending a flag to the window title, e.g.
+     * "mjdev::ControlCenter blur". The shell decides which windows are blurred, the compositor
+     * only renders it. A no-op when the compositor was built without scenefx.
+     */
+    private fun applyBlurFlag(info: WindowInfo) {
+        val wantsBlur =
+            info.title
+                ?.substringAfter(' ', "")
+                ?.split(' ')
+                ?.contains(FLAG_BLUR) == true
+        if (wantsBlur == info.blurFromTitle) {
+            return
+        }
+        info.blurFromTitle = wantsBlur
+        mjc_view_set_blur(info.ptr, wantsBlur && mjc_blur_supported())
     }
 
     fun handleKey(
@@ -115,6 +136,9 @@ class Policy(
 
     companion object {
         const val TITLE_PREFIX = "mjdev::"
+
+        /** title flag (after the role, separated by a space) that requests a blurred backdrop */
+        const val FLAG_BLUR = "blur"
         val XKB_KEY_TAB = 0xff09u
         val XKB_KEY_F4 = 0xffc1u
     }

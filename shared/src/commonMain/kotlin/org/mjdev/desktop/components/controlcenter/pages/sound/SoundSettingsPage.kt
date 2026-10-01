@@ -1,27 +1,17 @@
 package org.mjdev.desktop.components.controlcenter.pages.sound
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.VolumeOff
-import androidx.compose.material.icons.automirrored.filled.VolumeUp
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
+import org.mjdev.desktop.components.controlcenter.settings.SettingsPageColumn
+import org.mjdev.desktop.components.controlcenter.settings.SettingsSection
+import org.mjdev.desktop.components.controlcenter.settings.SettingsSelectRow
+import org.mjdev.desktop.components.controlcenter.settings.SettingsSliderRow
+import org.mjdev.desktop.components.controlcenter.settings.SettingsSwitchRow
 import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.icons.settings.SettingsSound
@@ -40,7 +30,7 @@ import org.mjdev.desktop.icons.settings.SettingsSound
 
 /**
  * Control center page allowing the user to control the system output volume
- * and toggle mute, backed by [IDesktopContext.volumeManager].
+ * and toggle mute, backed by [IDesktopContext.volumeManager]. Colored from the wallpaper palette.
  */
 @Suppress("FunctionName")
 fun SoundSettingsPage(context: IDesktopContext) = ControlCenterPage(
@@ -51,36 +41,41 @@ fun SoundSettingsPage(context: IDesktopContext) = ControlCenterPage(
 ) {
     var volume by remember { mutableStateOf(context.volumeManager.volume) }
     var muted by remember { mutableStateOf(context.volumeManager.isMuted) }
-    Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(SoundSettingsPageDefaults.contentPadding),
-        verticalArrangement = Arrangement.spacedBy(SoundSettingsPageDefaults.itemSpacing),
-    ) {
-        Text(text = SoundSettingsPageDefaults.volumeLabel)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconButton(
-                onClick = {
-                    muted = context.volumeManager.toggleMute()
-                },
-            ) {
-                Icon(
-                    imageVector = if (muted) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp,
-                    contentDescription = SoundSettingsPageDefaults.muteToggleDescription,
+    var outputs by remember { mutableStateOf(context.volumeManager.outputs) }
+    SettingsPageColumn {
+        if (outputs.isNotEmpty()) {
+            SettingsSection(title = SoundSettingsPageDefaults.deviceTitle) {
+                SettingsSelectRow(
+                    label = SoundSettingsPageDefaults.deviceLabel,
+                    selected = outputs.firstOrNull { it.isDefault }?.name.orEmpty(),
+                    options = outputs.map { it.name },
+                    onSelected = { name ->
+                        context.volumeManager.setDefaultOutput(name)
+                        // Re-read so the picker shows what the system really selected.
+                        outputs = context.volumeManager.outputs
+                        volume = context.volumeManager.volume
+                        muted = context.volumeManager.isMuted
+                    },
                 )
             }
-            Slider(
-                modifier = Modifier.fillMaxWidth(),
+        }
+        SettingsSection(title = SoundSettingsPageDefaults.outputTitle) {
+            SettingsSliderRow(
+                label = SoundSettingsPageDefaults.volumeLabel,
                 value = volume,
+                valueRange = SoundSettingsPageDefaults.volumeRange,
+                format = { value -> "${(value * SoundSettingsPageDefaults.PERCENT).toInt()}%" },
                 onValueChange = { newValue ->
                     volume = newValue
                     context.volumeManager.setVolume(newValue)
                 },
-                valueRange = SoundSettingsPageDefaults.volumeRange,
+            )
+            SettingsSwitchRow(
+                label = SoundSettingsPageDefaults.muteLabel,
+                checked = muted,
+                onCheckedChange = {
+                    muted = context.volumeManager.toggleMute()
+                },
             )
         }
     }

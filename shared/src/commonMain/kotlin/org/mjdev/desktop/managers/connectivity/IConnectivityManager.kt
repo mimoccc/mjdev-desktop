@@ -31,6 +31,31 @@ interface IConnectivityManager : IDelegate {
 
     val hasConnectedDevices: Boolean
 
+    /** True while the bluetooth adapter is switched on. */
+    val isBluetoothPowered: Boolean
+        get() = false
+
+    /** Connects or disconnects the network device named [device]; no-op where unsupported. */
+    fun setDeviceConnected(
+        device: String,
+        connected: Boolean,
+    ): Result<Boolean> = Result.success(false)
+
+    /**
+     * Details of the network device [device] (connection, addresses, DNS, ...) keyed by their
+     * system field name, see [org.mjdev.desktop.data.NetDetail]; empty when unsupported.
+     */
+    fun deviceDetails(device: String): Map<String, String> = emptyMap()
+
+    /** Switches the bluetooth adapter on or off; no-op where unsupported. */
+    fun setBluetoothPowered(powered: Boolean): Result<Boolean> = Result.success(false)
+
+    /** Connects or disconnects the bluetooth device with [address]; no-op where unsupported. */
+    fun setBluetoothDeviceConnected(
+        address: String,
+        connected: Boolean,
+    ): Result<Boolean> = Result.success(false)
+
     fun connectWifi(ssid: String): Result<Boolean> = Result.success(false)
 
     fun connectWifi(

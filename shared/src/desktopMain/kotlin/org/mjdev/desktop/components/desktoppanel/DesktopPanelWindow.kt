@@ -95,6 +95,7 @@ fun DesktopPanelWindow(
     ChromeWindow(
         name = "DesktopPanel",
         visible = true,
+        blur = true,
         position = position,
         size = size,
         onFocusChange = onFocusChange,

@@ -60,6 +60,7 @@ fun ControlCenterWindow(
     ChromeWindow(
         name = "ControlCenter",
         visible = true,
+        blur = true,
         // Not alwaysOnTop: DesktopState's focusOnShow (see MainWindow's register call) already
         // raises + focuses this window whenever the reveal hotspot is entered — a normal
         // toFront(), not a permanent OS-level pin that would keep it above external apps too.

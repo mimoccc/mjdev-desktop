@@ -25,6 +25,7 @@ import kotlinx.serialization.json.put
 import mjdev.compositor.shim.mjc_view_app_id
 import mjdev.compositor.shim.mjc_view_get_geometry
 import mjdev.compositor.shim.mjc_view_id
+import mjdev.compositor.shim.mjc_view_is_blurred
 import mjdev.compositor.shim.mjc_view_is_maximized
 import mjdev.compositor.shim.mjc_view_pid
 import mjdev.compositor.shim.mjc_view_title
@@ -42,6 +43,9 @@ class WindowInfo(
     var focused: Boolean = false
     var shell: Boolean = false
     var role: String? = null
+
+    // true while the window title carries the blur flag, see Policy.FLAG_BLUR
+    var blurFromTitle: Boolean = false
 
     // pulls current strings/pid from the native view
     fun refresh() {
@@ -86,6 +90,7 @@ class WindowInfo(
         }
         put("focused", focused)
         put("shell", shell)
+        put("blurred", mjc_view_is_blurred(ptr))
     }
 }
 

@@ -19,6 +19,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.float
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -27,6 +28,8 @@ import kotlinx.serialization.json.put
 import mjdev.compositor.shim.MJC_EVENT_ERROR
 import mjdev.compositor.shim.MJC_EVENT_HANGUP
 import mjdev.compositor.shim.MJC_EVENT_READABLE
+import mjdev.compositor.shim.mjc_blur_configure
+import mjdev.compositor.shim.mjc_blur_supported
 import mjdev.compositor.shim.mjc_key
 import mjdev.compositor.shim.mjc_loop_add_fd
 import mjdev.compositor.shim.mjc_loop_remove_fd
@@ -37,6 +40,7 @@ import mjdev.compositor.shim.mjc_unix_listen
 import mjdev.compositor.shim.mjc_view_close
 import mjdev.compositor.shim.mjc_view_focus
 import mjdev.compositor.shim.mjc_view_is_maximized
+import mjdev.compositor.shim.mjc_view_set_blur
 import mjdev.compositor.shim.mjc_view_set_maximized
 import mjdev.compositor.shim.mjc_view_set_minimized
 import mjdev.compositor.shim.mjc_view_set_position
@@ -50,6 +54,14 @@ import platform.posix.write
 
 /** evdev code for the left mouse button (linux input-event-codes.h BTN_LEFT) */
 private const val BTN_LEFT = 0x110
+
+/** default blur strength used by "blur-config" when a field is omitted */
+private const val BLUR_PASSES = 3
+private const val BLUR_RADIUS = 5
+private const val BLUR_NOISE = 0.02f
+
+/** brightness, contrast and saturation value that leaves the blurred image unchanged */
+private const val BLUR_NEUTRAL = 1.0f
 
 /**
  * Line based JSON api on a unix socket.
@@ -67,6 +79,8 @@ private const val BTN_LEFT = 0x110
  *   {"cmd":"click","x":100,"y":200}                // optional x/y, then press+release
  *   {"cmd":"key","code":1,"pressed":true}          // evdev code; omit pressed to tap
  *   {"cmd":"move","id":1,"x":100,"y":100}          // move a window to absolute position
+ *   {"cmd":"blur","id":3,"enabled":true}           // blur whatever is below any window
+ *   {"cmd":"blur-config","passes":3,"radius":5}    // optional: noise, brightness, contrast, saturation
  *
  * Events (only for subscribed clients):
  *   {"event":"window-opened","window":{...}}
@@ -271,6 +285,33 @@ class IpcServer(
                 client.subscribed = true
                 ok { }
             }
+
+            // backdrop blur needs a compositor built with scenefx
+            "blur" ->
+                if (!mjc_blur_supported()) {
+                    error("blur is not available: compositor built without scenefx")
+                } else {
+                    withWindow(request) { info ->
+                        val enabled = request["enabled"]?.jsonPrimitive?.content?.toBoolean() ?: true
+                        mjc_view_set_blur(info.ptr, enabled)
+                    }
+                }
+
+            "blur-config" ->
+                if (!mjc_blur_supported()) {
+                    error("blur is not available: compositor built without scenefx")
+                } else {
+                    mjc_blur_configure(
+                        c.server,
+                        request["passes"]?.jsonPrimitive?.int ?: BLUR_PASSES,
+                        request["radius"]?.jsonPrimitive?.int ?: BLUR_RADIUS,
+                        request["noise"]?.jsonPrimitive?.float ?: BLUR_NOISE,
+                        request["brightness"]?.jsonPrimitive?.float ?: BLUR_NEUTRAL,
+                        request["contrast"]?.jsonPrimitive?.float ?: BLUR_NEUTRAL,
+                        request["saturation"]?.jsonPrimitive?.float ?: BLUR_NEUTRAL,
+                    )
+                    ok { }
+                }
 
             // input injection for automated/headless testing (drives the seat directly)
             "pointer-move" -> {

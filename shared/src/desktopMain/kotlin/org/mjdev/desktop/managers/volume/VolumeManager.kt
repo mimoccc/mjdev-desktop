@@ -17,6 +17,13 @@ class VolumeManager(
 
         // Regex used to parse the percentage value out of `pactl get-sink-volume` output.
         private val VOLUME_REGEX = Regex("(\\d+)%")
+
+        // pactl arguments used to discover the output devices.
+        private const val CMD_GET_DEFAULT_SINK = "get-default-sink"
+        private val CMD_LIST_SINKS = arrayOf("list", "short", "sinks")
+
+        // Column of the sink name in `pactl list short sinks` (index, name, module, ...).
+        private const val SINK_NAME_COLUMN = 1
     }
 
     override val volume: Float
@@ -41,6 +48,30 @@ class VolumeManager(
                 process.waitFor()
                 output.contains("yes", ignoreCase = true)
             }.getOrNull() ?: false
+
+    override val outputs: List<AudioOutput>
+        get() {
+            val default = runCatching { runPactl(CMD_GET_DEFAULT_SINK).trim() }.getOrDefault("")
+            return runCatching { runPactl(*CMD_LIST_SINKS) }
+                .getOrDefault("")
+                .lineSequence()
+                .mapNotNull { line -> line.split('\t').getOrNull(SINK_NAME_COLUMN)?.takeIf { it.isNotBlank() } }
+                .map { name -> AudioOutput(name = name, isDefault = name == default) }
+                .toList()
+        }
+
+    override fun setDefaultOutput(name: String) {
+        runCatching {
+            ProcessBuilder("pactl", "set-default-sink", name).start().waitFor()
+        }
+    }
+
+    private fun runPactl(vararg args: String): String {
+        val process = ProcessBuilder("pactl", *args).start()
+        val output = process.inputStream.bufferedReader().use(BufferedReader::readText)
+        process.waitFor()
+        return output
+    }
 
     override fun setVolume(volume: Float) {
         val clamped = volume.coerceIn(0f, 1f)

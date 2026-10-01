@@ -112,7 +112,10 @@ fun Window(
                     WindowEventsAdapter(
                         this,
                         currentOnCloseRequest,
-                        onOpened,
+                        { opened ->
+                            WindowTransparencyDiagnostics.log(currentName, opened, currentTransparent)
+                            onOpened(opened)
+                        },
                         onClosing,
                         onClosed,
                         onActivated,

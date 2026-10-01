@@ -81,6 +81,7 @@ fun AppsMenuWindow(
     ChromeWindow(
         name = "AppsMenu",
         visible = menuState.isVisible,
+        blur = true,
         // Not alwaysOnTop: DesktopState's focusOnShow (see MainWindow's register call) already
         // raises + focuses this window on open — a normal toFront(), not a permanent OS-level
         // pin that would keep it above external apps too.

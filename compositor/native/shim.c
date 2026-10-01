@@ -41,7 +41,14 @@
 #include <wlr/types/wlr_output.h>
 #include <wlr/types/wlr_output_layout.h>
 #include <wlr/types/wlr_pointer.h>
+#ifdef MJC_WITH_SCENEFX
+/* scenefx is a drop-in superset of the wlroots scene graph that adds backdrop blur. It replaces
+ * (not complements) wlr/types/wlr_scene.h, the two headers must never be included together. */
+#include <scenefx/render/fx_renderer/fx_renderer.h>
+#include <scenefx/types/wlr_scene.h>
+#else
 #include <wlr/types/wlr_scene.h>
+#endif
 #include <wlr/types/wlr_seat.h>
 #include <wlr/types/wlr_xcursor_manager.h>
 #include <wlr/types/wlr_xdg_decoration_v1.h>
@@ -70,6 +77,10 @@ struct mjc_server {
     struct wlr_scene_output_layout *scene_layout;
     struct wlr_output_layout *output_layout;
     struct wlr_scene_tree *layers[5];
+#ifdef MJC_WITH_SCENEFX
+    /* result of the software-GL probe (the scenefx renderer cannot be probed itself) */
+    bool software_gl;
+#endif
 
     struct wlr_xdg_shell *xdg_shell;
     struct wlr_xdg_decoration_manager_v1 *xdg_decoration_mgr;
@@ -141,6 +152,8 @@ struct mjc_view {
     /* re-center once the client commits its post-unmaximize size */
     bool pending_center;
     bool focusable;
+    /* backdrop blur requested; applied to the scene buffers whenever they exist */
+    bool blur;
     mjc_layer layer;
     struct wlr_scene_tree *scene_tree;
     /* floating geometry remembered while maximized (x/y are scene coords) */
@@ -168,6 +181,28 @@ struct mjc_view {
     struct wl_listener request_configure;
     struct wl_listener set_geometry;
 };
+
+#ifdef MJC_WITH_SCENEFX
+static void view_blur_iterator(struct wlr_scene_buffer *buffer, int sx, int sy, void *data) {
+    (void) sx;
+    (void) sy;
+    wlr_scene_buffer_set_backdrop_blur(buffer, *(bool *) data);
+}
+
+/* push the requested blur state onto every scene buffer of the view (when its scene node
+ * does not exist yet - xwayland before map - the stored flag is applied at map time) */
+static void view_apply_blur(struct mjc_view *view) {
+    if (view->scene_tree == NULL) {
+        return;
+    }
+    bool enabled = view->blur;
+    wlr_scene_node_for_each_buffer(&view->scene_tree->node, view_blur_iterator, &enabled);
+}
+#else
+static void view_apply_blur(struct mjc_view *view) {
+    (void) view;
+}
+#endif
 
 struct mjc_popup {
     struct wlr_xdg_popup *xdg_popup;
@@ -944,6 +979,7 @@ static void server_new_xdg_toplevel(struct wl_listener *listener, void *data) {
         server->layers[MJC_LAYER_NORMAL], xdg_toplevel->base);
     view->scene_tree->node.data = view;
     xdg_toplevel->base->data = view->scene_tree;
+    view_apply_blur(view);
 
     view->map.notify = xdg_toplevel_map;
     wl_signal_add(&xdg_toplevel->base->surface->events.map, &view->map);
@@ -1059,6 +1095,7 @@ static void xwayland_surface_map(struct wl_listener *listener, void *data) {
     view->scene_tree = wlr_scene_tree_create(server->layers[layer]);
     view->scene_tree->node.data = view;
     wlr_scene_surface_create(view->scene_tree, xsurface->surface);
+    view_apply_blur(view);
     wlr_scene_node_set_position(&view->scene_tree->node,
         xsurface->x, xsurface->y);
 
@@ -1334,7 +1371,20 @@ bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdat
         return false;
     }
 
+#ifdef MJC_WITH_SCENEFX
+    /* The scenefx renderer is not the wlroots gles2 renderer, so the software-GL probe cannot
+     * run on it. Probe with a short-lived plain renderer first, then create the blur renderer. */
+    {
+        struct wlr_renderer *probe = wlr_renderer_autocreate(server->backend);
+        server->software_gl = probe != NULL && mjc_renderer_is_software(probe);
+        if (probe != NULL) {
+            wlr_renderer_destroy(probe);
+        }
+    }
+    server->renderer = fx_renderer_create(server->backend);
+#else
     server->renderer = wlr_renderer_autocreate(server->backend);
+#endif
     if (server->renderer == NULL) {
         fprintf(stderr, "mjdevc: failed to create wlr_renderer\n");
         return false;
@@ -1436,7 +1486,11 @@ bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdat
     /* GPU vs software decision for the Compose shell (Skiko), exported into its environment
      * before it is spawned. Software GL (VM / no GPU) -> Skiko CPU raster (else it crashes with
      * "Cannot create Linux GL context"); real GPU -> leave unset so Skiko uses hardware GL. */
+#ifdef MJC_WITH_SCENEFX
+    if (server->software_gl) {
+#else
     if (mjc_renderer_is_software(server->renderer)) {
+#endif
         setenv("SKIKO_RENDER_API", "SOFTWARE", true);
         fprintf(stderr, "mjdevc: software GL renderer -> SKIKO_RENDER_API=SOFTWARE for the shell\n");
     } else {
@@ -1735,6 +1789,44 @@ void mjc_view_set_focusable(mjc_view *view, bool focusable) {
     if (!focusable) {
         clear_focus_if(view->server, view);
     }
+}
+
+/* ------------------------------------------------------------------ */
+/* backdrop blur (scenefx)                                             */
+/* ------------------------------------------------------------------ */
+
+bool mjc_blur_supported(void) {
+#ifdef MJC_WITH_SCENEFX
+    return true;
+#else
+    return false;
+#endif
+}
+
+void mjc_blur_configure(mjc_server *server, int passes, int radius, float noise,
+        float brightness, float contrast, float saturation) {
+#ifdef MJC_WITH_SCENEFX
+    struct blur_data data = blur_data_get_default();
+    data.num_passes = passes;
+    data.radius = radius;
+    data.noise = noise;
+    data.brightness = brightness;
+    data.contrast = contrast;
+    data.saturation = saturation;
+    wlr_scene_set_blur_data(server->scene, data);
+#else
+    (void) server; (void) passes; (void) radius; (void) noise;
+    (void) brightness; (void) contrast; (void) saturation;
+#endif
+}
+
+void mjc_view_set_blur(mjc_view *view, bool enabled) {
+    view->blur = enabled;
+    view_apply_blur(view);
+}
+
+bool mjc_view_is_blurred(mjc_view *view) {
+    return view->blur;
 }
 
 void mjc_view_set_position(mjc_view *view, int x, int y) {

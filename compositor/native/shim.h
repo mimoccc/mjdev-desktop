@@ -113,6 +113,15 @@ void mjc_view_set_focusable(mjc_view *view, bool focusable);
 void mjc_view_set_position(mjc_view *view, int x, int y);
 void mjc_view_set_geometry(mjc_view *view, int x, int y, int width, int height);
 
+/* backdrop blur: everything rendered below the view is blurred. Needs the compositor to be
+ * built with scenefx; without it mjc_blur_supported() is false and the rest are no-ops. The
+ * view must have transparent pixels (an alpha window) for the blur to be visible. */
+bool mjc_blur_supported(void);
+void mjc_blur_configure(mjc_server *server, int passes, int radius, float noise,
+    float brightness, float contrast, float saturation);
+void mjc_view_set_blur(mjc_view *view, bool enabled);
+bool mjc_view_is_blurred(mjc_view *view);
+
 /* input injection (ipc-driven, for automated/headless testing) */
 void mjc_pointer_move(mjc_server *server, int x, int y);
 void mjc_pointer_button(mjc_server *server, uint32_t button, bool pressed);

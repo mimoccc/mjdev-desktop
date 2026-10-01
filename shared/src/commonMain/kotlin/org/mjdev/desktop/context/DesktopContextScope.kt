@@ -16,6 +16,7 @@ import org.mjdev.desktop.interfaces.ITheme
 import org.mjdev.desktop.interfaces.IUser
 import org.mjdev.desktop.managers.apps.IAppsManager
 import org.mjdev.desktop.managers.palette.IPalette
+import org.mjdev.desktop.managers.plugins.IPluginManager
 import org.mjdev.desktop.managers.process.IProcessManager
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -106,6 +107,9 @@ open class DesktopContextScope(
 //    val desktopUtils
 //        get() = context.desktopUtils
 
+    val pluginManager: IPluginManager
+        get() = context.pluginManager
+
     val controlCenterPages
         get() = context.controlCenterPages
 
@@ -123,6 +127,12 @@ open class DesktopContextScope(
         get() = context.palette.disabledColor
     val focusBorderColor: Color
         get() = context.palette.textColor
+
+    // Accent colors derived from the wallpaper palette, used by control center pages.
+    val selectedBgColor: Color
+        get() = context.palette.selectedBgColor
+    val selectedFgColor: Color
+        get() = context.palette.selectedFgColor
 
     val menuPadding: Dp = context.theme.appMenuOuterPadding
 

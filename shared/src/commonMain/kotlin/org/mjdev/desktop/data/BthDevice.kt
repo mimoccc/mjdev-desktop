@@ -10,4 +10,10 @@ package org.mjdev.desktop.data
 
 data class BthDevice(
     val name: String = "",
+    /** Bluetooth hardware address, e.g. `AA:BB:CC:DD:EE:FF`; empty when unknown. */
+    val address: String = "",
+    /** True while the device is connected. */
+    val connected: Boolean = false,
+    /** True when the device has been paired before. */
+    val paired: Boolean = false,
 )

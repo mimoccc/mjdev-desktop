@@ -20,6 +20,13 @@ interface IVolumeManager : IDelegate {
     /** Toggles mute state and returns the new state. */
     fun toggleMute(): Boolean
 
+    /** Audio output devices known to the system; empty when the platform cannot list them. */
+    val outputs: List<AudioOutput>
+        get() = emptyList()
+
+    /** Makes the output named [name] the default one. No-op where unsupported. */
+    fun setDefaultOutput(name: String) {}
+
     companion object {
         /** No-op fallback used when no platform manager is available. */
         val EMPTY =

@@ -17,7 +17,7 @@ import org.mjdev.desktop.components.appsmenu.AppsMenuState.Companion.rememberApp
 import org.mjdev.desktop.components.appsmenu.AppsMenuWindow
 import org.mjdev.desktop.components.controlcenter.ControlCenterWindow
 import org.mjdev.desktop.components.desktop.Desktop
-import org.mjdev.desktop.components.desktop.widgets.MemoryChart
+import org.mjdev.desktop.components.desktop.widgets.PluginWidgets
 import org.mjdev.desktop.components.desktoppanel.DesktopPanelWindow
 import org.mjdev.desktop.components.dockbar.DockBarWindow
 import org.mjdev.desktop.components.greeter.GreeterWindow
@@ -156,12 +156,12 @@ fun MainWindow() = withDesktopContext {
                     bottom = bottomPadding,
                 ),
             widgets = {
-                MemoryChart(
-                    modifier =
-                        Modifier
-                            .size(350.dp, 300.dp)
-                            .align(Alignment.BottomEnd),
-                )
+                // Widgets are plugins now (the memory chart is the built-in one), switched on and
+                // off in the control center Plugins tab. Previous direct usage kept for history:
+                // MemoryChart(
+                //     modifier = Modifier.size(350.dp, 300.dp).align(Alignment.BottomEnd),
+                // )
+                PluginWidgets()
 //                WebView(
 //                    modifier = Modifier
 //                        .size(800.dp, 600.dp)

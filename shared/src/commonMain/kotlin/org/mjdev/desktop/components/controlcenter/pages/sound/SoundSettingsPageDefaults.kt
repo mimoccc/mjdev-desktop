@@ -19,6 +19,21 @@ object SoundSettingsPageDefaults {
     /** Label displayed above the volume slider. */
     const val volumeLabel: String = "Volume"
 
+    /** Title of the output settings section. */
+    const val outputTitle: String = "Output"
+
+    /** Title of the output device section. */
+    const val deviceTitle: String = "Output device"
+
+    /** Label of the output device picker. */
+    const val deviceLabel: String = "Play sound through"
+
+    /** Label of the mute switch. */
+    const val muteLabel: String = "Muted"
+
+    /** Multiplier converting the 0..1 volume into a percentage. */
+    const val PERCENT: Int = 100
+
     /** Accessibility description for the mute toggle button. */
     const val muteToggleDescription: String = "Toggle mute"
 }

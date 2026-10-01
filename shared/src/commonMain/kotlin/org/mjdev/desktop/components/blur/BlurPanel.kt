@@ -58,16 +58,22 @@ fun BlurPanel(
         contentAlignment = contentAlignment,
         propagateMinConstraints = propagateMinConstraints,
     ) {
-        ImageAny(
-            modifier =
-                modifier
-                    .fillMaxSize()
-                    .alpha(alpha)
-                    .background(transparentGradientBrush)
-                    .blur(blurRadius, edgeTreatment = BlurredEdgeTreatment.Unbounded),
-            src = painterResource(resourceId),
-            contentScale = if (maxHeight > maxWidth) ContentScale.FillHeight else ContentScale.FillWidth,
-        )
+        // Real frosted glass (blurred wallpaper copy) when the desktop wallpaper is known; the
+        // previous static blurred picture stays as fallback for previews and platforms without it.
+        if (context.wallpaper.value != null) {
+            GlassBackdrop(modifier = Modifier.matchParentSize())
+        } else {
+            ImageAny(
+                modifier =
+                    modifier
+                        .fillMaxSize()
+                        .alpha(alpha)
+                        .background(transparentGradientBrush)
+                        .blur(blurRadius, edgeTreatment = BlurredEdgeTreatment.Unbounded),
+                src = painterResource(resourceId),
+                contentScale = if (maxHeight > maxWidth) ContentScale.FillHeight else ContentScale.FillWidth,
+            )
+        }
         Box(
             modifier =
                 Modifier

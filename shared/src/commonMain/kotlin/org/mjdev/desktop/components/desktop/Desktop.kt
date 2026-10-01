@@ -55,6 +55,7 @@ fun Desktop(
             switchDelay = theme.backgroundRotationDelay,
             images = backgrounds,
             onChange = { src ->
+                context.wallpaper.value = src
                 context.palette
                     .apply {
                         update(src)

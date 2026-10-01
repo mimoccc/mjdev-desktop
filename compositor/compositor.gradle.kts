@@ -44,7 +44,18 @@ fun pkgConfig(vararg args: String): List<String> = runCatching {
     }
 }.getOrElse { emptyList() }
 
-val wlrPackages = arrayOf("wlroots-0.18", "wayland-server", "xkbcommon", "pixman-1")
+// scenefx adds backdrop blur and is optional: the first installed candidate from the version
+// catalog is linked in and switches the shim to its renderer (-DMJC_WITH_SCENEFX); without it the
+// shim builds exactly as before and blur requests are ignored.
+val scenefxPackage: String? =
+    libs.versions.app.compositor.scenefx.packages
+        .get()
+        .split(" ")
+        .firstOrNull { candidate -> pkgConfig("--modversion", candidate).isNotEmpty() }
+val scenefxDefine: String = if (scenefxPackage != null) "-DMJC_WITH_SCENEFX" else ""
+
+val wlrPackages =
+    listOfNotNull("wlroots-0.18", "wayland-server", "xkbcommon", "pixman-1", scenefxPackage).toTypedArray()
 val wlrCflags: List<String>
     get() = pkgConfig("--cflags", *wlrPackages)
 val wlrLibs: List<String>
@@ -89,7 +100,7 @@ val compileShim =
         val outDir = shimDir.get().asFile
         val protoDir = protocolsDir.get().asFile
         val includeDir = nativeDir
-        val cflags = wlrCflags.joinToString(" ")
+        val cflags = (wlrCflags + scenefxDefine).filter { it.isNotBlank() }.joinToString(" ")
         inputs.files(shimC, shimH)
         outputs.file(outDir.resolve("libmjcshim.a"))
         doFirst {
