@@ -150,6 +150,13 @@ kotlin {
     sourceSets {
 
         // common dependencies
+        // multiplatform unit tests (part of Kotlin itself, no third party)
+        commonTest {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+
         commonMain {
             dependencies {
                 // reflection
@@ -199,6 +206,8 @@ kotlin {
                 implementation(libs.haze)
                 // vlc
                 implementation(libs.vlcj)
+                // audio player of the music widget (multiplatform)
+                implementation(libs.composemediaplayer.audio)
                 // mo po gettext
                 implementation(libs.gettext.lib)
                 // timeline
