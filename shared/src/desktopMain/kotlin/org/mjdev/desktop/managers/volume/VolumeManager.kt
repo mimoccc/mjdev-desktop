@@ -20,20 +20,27 @@ class VolumeManager(
     }
 
     override val volume: Float
-        get() = runCatching {
-            val process = ProcessBuilder("pactl", "get-sink-volume", DEFAULT_SINK).start()
-            val output = process.inputStream.bufferedReader().use(BufferedReader::readText)
-            process.waitFor()
-            VOLUME_REGEX.find(output)?.groupValues?.get(1)?.toFloatOrNull()?.div(100f)
-        }.getOrNull() ?: 0f
+        get() =
+            runCatching {
+                val process = ProcessBuilder("pactl", "get-sink-volume", DEFAULT_SINK).start()
+                val output = process.inputStream.bufferedReader().use(BufferedReader::readText)
+                process.waitFor()
+                VOLUME_REGEX
+                    .find(output)
+                    ?.groupValues
+                    ?.get(1)
+                    ?.toFloatOrNull()
+                    ?.div(100f)
+            }.getOrNull() ?: 0f
 
     override val isMuted: Boolean
-        get() = runCatching {
-            val process = ProcessBuilder("pactl", "get-sink-mute", DEFAULT_SINK).start()
-            val output = process.inputStream.bufferedReader().use(BufferedReader::readText)
-            process.waitFor()
-            output.contains("yes", ignoreCase = true)
-        }.getOrNull() ?: false
+        get() =
+            runCatching {
+                val process = ProcessBuilder("pactl", "get-sink-mute", DEFAULT_SINK).start()
+                val output = process.inputStream.bufferedReader().use(BufferedReader::readText)
+                process.waitFor()
+                output.contains("yes", ignoreCase = true)
+            }.getOrNull() ?: false
 
     override fun setVolume(volume: Float) {
         val clamped = volume.coerceIn(0f, 1f)

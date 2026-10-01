@@ -29,9 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.mjdev.desktop.managers.remote.AudioStreamState
 import org.mjdev.desktop.managers.remote.ConnectionState
-import org.mjdev.desktop.managers.remote.RemoteConnection
-import org.mjdev.desktop.managers.remote.RemoteClientHandle
 import org.mjdev.desktop.managers.remote.RemoteClientConnectionState
+import org.mjdev.desktop.managers.remote.RemoteClientHandle
+import org.mjdev.desktop.managers.remote.RemoteConnection
 import kotlin.math.roundToInt
 
 /**
@@ -49,15 +49,16 @@ fun RemoteComposeView(
     connection: RemoteConnection,
     modifier: Modifier = Modifier,
     showConnectionInfo: Boolean = true,
-    showAudioControls: Boolean = true
+    showAudioControls: Boolean = true,
 ) {
     val state by connection.state
     val error by connection.lastError
     val handle = connection.clientHandle
 
-    Box(modifier
-        .fillMaxSize()
-        .background(Color.Black)
+    Box(
+        modifier
+            .fillMaxSize()
+            .background(Color.Black),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             // Main content area
@@ -67,7 +68,10 @@ fun RemoteComposeView(
                         CenteredText("Odpojeno\nKlikněte pro připojení", Color.Gray)
                     }
                     ConnectionState.Connecting -> {
-                        CenteredText("Připojuji k ${connection.host}:${connection.port}${connection.path}...", Color.Yellow)
+                        CenteredText(
+                            "Připojuji k ${connection.host}:${connection.port}${connection.path}...",
+                            Color.Yellow,
+                        )
                     }
                     ConnectionState.Connected -> {
                         handle?.let { h ->
@@ -76,7 +80,7 @@ fun RemoteComposeView(
                                 placeholder = { CenteredText("Načítání UI...", Color.White) },
                                 errorContent = { throwable ->
                                     CenteredText("Chyba renderování: ${throwable.message}", Color.Red)
-                                }
+                                },
                             )
                         } ?: CenteredText("Klient nenainicializován", Color.Red)
                     }
@@ -112,50 +116,58 @@ private fun AudioControlBar(handle: RemoteClientHandle) {
     val effectiveVolume = if (isMuted) 0f else volume
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .background(Color.Black.copy(alpha = 0.8f))
-            .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .background(Color.Black.copy(alpha = 0.8f))
+                .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.CenterVertically,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement =
+                androidx.compose.foundation.layout.Arrangement
+                    .spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             // Audio status indicator
             Box(
-                modifier = Modifier
-                    .size(12.dp)
-                    .background(when (audioState) {
-                        AudioStreamState.Streaming -> Color.Green
-                        AudioStreamState.Connecting -> Color.Yellow
-                        AudioStreamState.Error -> Color.Red
-                        else -> Color.Gray
-                    })
-            )
-            
-            Text(
-                text = when (audioState) {
-                    AudioStreamState.Streaming -> "Audio: Přehrává"
-                    AudioStreamState.Connecting -> "Audio: Připojuji..."
-                    AudioStreamState.Error -> "Audio: Chyba"
-                    AudioStreamState.Disconnected -> "Audio: Odpojeno"
-                    AudioStreamState.Closed -> "Audio: Uzavřeno"
-                },
-                color = Color.White,
-                fontSize = 12.sp
+                modifier =
+                    Modifier
+                        .size(12.dp)
+                        .background(
+                            when (audioState) {
+                                AudioStreamState.Streaming -> Color.Green
+                                AudioStreamState.Connecting -> Color.Yellow
+                                AudioStreamState.Error -> Color.Red
+                                else -> Color.Gray
+                            },
+                        ),
             )
 
-            androidx.compose.foundation.layout.Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text =
+                    when (audioState) {
+                        AudioStreamState.Streaming -> "Audio: Přehrává"
+                        AudioStreamState.Connecting -> "Audio: Připojuji..."
+                        AudioStreamState.Error -> "Audio: Chyba"
+                        AudioStreamState.Disconnected -> "Audio: Odpojeno"
+                        AudioStreamState.Closed -> "Audio: Uzavřeno"
+                    },
+                color = Color.White,
+                fontSize = 12.sp,
+            )
+
+            androidx.compose.foundation.layout
+                .Spacer(modifier = Modifier.weight(1f))
 
             // Mute button
             IconButton(onClick = { handle.setMuted(!isMuted) }) {
                 Icon(
                     imageVector = if (isMuted || volume == 0f) Icons.Filled.VolumeOff else Icons.Filled.VolumeUp,
                     contentDescription = if (isMuted) "Zapnout zvuk" else "Ztlumit",
-                    tint = Color.White
+                    tint = Color.White,
                 )
             }
 
@@ -165,36 +177,42 @@ private fun AudioControlBar(handle: RemoteClientHandle) {
                 value = effectiveVolume,
                 onValueChange = { handle.setVolume(it) },
                 enabled = isAudioConnected && !isMuted,
-                colors = androidx.compose.material.SliderDefaults.colors(
-                    thumbColor = Color.White,
-                    activeTrackColor = Color.Cyan,
-                    inactiveTrackColor = Color.White.copy(alpha = 0.3f),
-                    disabledThumbColor = Color.White.copy(alpha = 0.5f),
-                    disabledActiveTrackColor = Color.Cyan.copy(alpha = 0.5f)
-                )
+                colors =
+                    androidx.compose.material.SliderDefaults.colors(
+                        thumbColor = Color.White,
+                        activeTrackColor = Color.Cyan,
+                        inactiveTrackColor = Color.White.copy(alpha = 0.3f),
+                        disabledThumbColor = Color.White.copy(alpha = 0.5f),
+                        disabledActiveTrackColor = Color.Cyan.copy(alpha = 0.5f),
+                    ),
             )
 
             Text(
                 text = "${(effectiveVolume * 100).roundToInt()}%",
                 color = Color.White,
-                fontSize = 12.sp
+                fontSize = 12.sp,
             )
         }
     }
 }
 
 @Composable
-private fun CenteredText(text: String, color: Color) {
+private fun CenteredText(
+    text: String,
+    color: Color,
+) {
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = text,
             color = color,
             fontSize = 14.sp,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            style = androidx.compose.ui.text.TextStyle(fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
+            style =
+                androidx.compose.ui.text
+                    .TextStyle(fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace),
         )
     }
 }
@@ -202,21 +220,26 @@ private fun CenteredText(text: String, color: Color) {
 @Composable
 private fun ConnectionInfoOverlay(connection: RemoteConnection) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.TopStart
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        contentAlignment = Alignment.TopStart,
     ) {
         Box(
-            modifier = Modifier
-                .background(Color.Black.copy(alpha = 0.6f))
-                .padding(8.dp)
+            modifier =
+                Modifier
+                    .background(Color.Black.copy(alpha = 0.6f))
+                    .padding(8.dp),
         ) {
             Text(
                 text = "${connection.id} @ ${connection.host}:${connection.port}${connection.path} ${if (connection.enableAudio) "🔊" else "🔇"}",
                 color = Color.White,
                 fontSize = 12.sp,
-                style = androidx.compose.ui.text.TextStyle(fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
+                style =
+                    androidx.compose.ui.text.TextStyle(
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                    ),
             )
         }
     }
@@ -228,29 +251,31 @@ private fun ConnectionInfoOverlay(connection: RemoteConnection) {
 @Preview
 @Composable
 private fun PreviewRemoteComposeView() {
-    val fakeConn = RemoteConnection.Connected(
-        id = "preview-tab",
-        host = "192.168.1.50",
-        port = 8080,
-        path = "/compose",
-        enableAudio = true,
-        clientHandle = null,
-        state = androidx.compose.runtime.mutableStateOf(ConnectionState.Connected)
-    )
+    val fakeConn =
+        RemoteConnection.Connected(
+            id = "preview-tab",
+            host = "192.168.1.50",
+            port = 8080,
+            path = "/compose",
+            enableAudio = true,
+            clientHandle = null,
+            state = androidx.compose.runtime.mutableStateOf(ConnectionState.Connected),
+        )
     RemoteComposeView(connection = fakeConn, modifier = Modifier.size(800.dp, 600.dp))
 }
 
 @Preview
 @Composable
 private fun PreviewRemoteComposeViewConnecting() {
-    val fakeConn = RemoteConnection.Connected(
-        id = "preview-tab-2",
-        host = "10.0.0.1",
-        port = 8080,
-        path = "/compose",
-        enableAudio = true,
-        clientHandle = null,
-        state = mutableStateOf(ConnectionState.Connecting)
-    )
+    val fakeConn =
+        RemoteConnection.Connected(
+            id = "preview-tab-2",
+            host = "10.0.0.1",
+            port = 8080,
+            path = "/compose",
+            enableAudio = true,
+            clientHandle = null,
+            state = mutableStateOf(ConnectionState.Connecting),
+        )
     RemoteComposeView(connection = fakeConn, modifier = Modifier.size(400.dp, 300.dp))
 }

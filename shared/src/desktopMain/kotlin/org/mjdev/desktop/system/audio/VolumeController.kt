@@ -18,7 +18,12 @@ actual object VolumeController {
         val process = ProcessBuilder("pactl", "get-sink-volume", DEFAULT_SINK).start()
         val output = process.inputStream.bufferedReader().use(BufferedReader::readText)
         process.waitFor()
-        VOLUME_REGEX.find(output)?.groupValues?.get(1)?.toFloatOrNull()?.div(100f)
+        VOLUME_REGEX
+            .find(output)
+            ?.groupValues
+            ?.get(1)
+            ?.toFloatOrNull()
+            ?.div(100f)
     }.getOrNull() ?: 0f
 
     actual fun setVolume(volume: Float) {

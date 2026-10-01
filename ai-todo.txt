@@ -7,3 +7,6 @@
   and also check build can complete after update
 * update dependencies from report in reports folder, on every updated library check
   that builds run and or ommit/revert update if impossible
+
+- zaimplemntuj vsechny taby dle ukazky audio tabu
+- zkontroluj zda je vsechno komentovano

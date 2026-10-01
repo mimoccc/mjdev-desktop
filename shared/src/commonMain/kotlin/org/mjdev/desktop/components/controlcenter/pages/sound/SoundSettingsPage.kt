@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.VolumeOff
-import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.automirrored.filled.VolumeOff
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
@@ -52,9 +52,10 @@ fun SoundSettingsPage(context: IDesktopContext) = ControlCenterPage(
     var volume by remember { mutableStateOf(context.volumeManager.volume) }
     var muted by remember { mutableStateOf(context.volumeManager.isMuted) }
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(SoundSettingsPageDefaults.contentPadding),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(SoundSettingsPageDefaults.contentPadding),
         verticalArrangement = Arrangement.spacedBy(SoundSettingsPageDefaults.itemSpacing),
     ) {
         Text(text = SoundSettingsPageDefaults.volumeLabel)
@@ -68,7 +69,7 @@ fun SoundSettingsPage(context: IDesktopContext) = ControlCenterPage(
                 },
             ) {
                 Icon(
-                    imageVector = if (muted) Icons.Filled.VolumeOff else Icons.Filled.VolumeUp,
+                    imageVector = if (muted) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp,
                     contentDescription = SoundSettingsPageDefaults.muteToggleDescription,
                 )
             }

@@ -33,6 +33,7 @@ gradle = "9.0.1"
 androidx-activity-compose = "1.10.1"
 androidx-lifecycle = "2.9.1"
 androidx-ui-tooling = "1.8.3"
+androidx-compose-remote = "1.0.0-alpha12"
 app-icon = "1.2.6"
 coil = "3.2.0"
 compose-plugin = "1.10.0"
@@ -116,6 +117,14 @@ androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:life
 androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-ui-tooling" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splash-screen" }
+androidx-compose-remote-core = { module = "androidx.compose.remote:remote-core", version.ref = "androidx-compose-remote" }
+androidx-compose-remote-creation = { module = "androidx.compose.remote:remote-creation", version.ref = "androidx-compose-remote" }
+androidx-compose-remote-creation-core = { module = "androidx.compose.remote:remote-creation-core", version.ref = "androidx-compose-remote" }
+androidx-compose-remote-creation-android = { module = "androidx.compose.remote:remote-creation-android", version.ref = "androidx-compose-remote" }
+androidx-compose-remote-creation-jvm = { module = "androidx.compose.remote:remote-creation-jvm", version.ref = "androidx-compose-remote" }
+androidx-compose-remote-creation-compose = { module = "androidx.compose.remote:remote-creation-compose", version.ref = "androidx-compose-remote" }
+androidx-compose-remote-player-core = { module = "androidx.compose.remote:remote-player-core", version.ref = "androidx-compose-remote" }
+androidx-compose-remote-player-view = { module = "androidx.compose.remote:remote-player-view", version.ref = "androidx-compose-remote" }
 # timeline
 jetlime = { module = "io.github.pushpalroy:jetlime", version.ref = "jetlime" }
 # translations

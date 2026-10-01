@@ -1,10 +1,13 @@
 package org.mjdev.desktop.managers.remote
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CoroutineScope
 import org.mjdev.desktop.managers.base.IDelegate
 
 /**
@@ -12,7 +15,6 @@ import org.mjdev.desktop.managers.base.IDelegate
  * pro zobrazení vzdálených Compose UI v tabech včetně audio streamingu.
  */
 interface IRemoteDesktopManager : IDelegate {
-
     // ──────────────────────────────────────────────────────────────
     // SERVER (sdílení lokálního desktopu přes Compose Remote)
     // ──────────────────────────────────────────────────────────────
@@ -20,9 +22,14 @@ interface IRemoteDesktopManager : IDelegate {
     val isRunning: Boolean get() = runningState.value
     val port: Int
     val addresses: List<String>
+
     suspend fun start()
+
     suspend fun stop()
-    suspend fun toggle() { if (isRunning) stop() else start() }
+
+    suspend fun toggle() {
+        if (isRunning) stop() else start()
+    }
 
     // ──────────────────────────────────────────────────────────────
     // CLIENT (zobrazení vzdálených Compose UI v tabech)
@@ -45,7 +52,7 @@ interface IRemoteDesktopManager : IDelegate {
         host: String,
         port: Int = 8080,
         path: String = "/compose",
-        enableAudio: Boolean = true
+        enableAudio: Boolean = true,
     ): RemoteConnection
 
     /** Uzavře a odebere připojení. */
@@ -60,15 +67,28 @@ interface IRemoteDesktopManager : IDelegate {
                 override val runningState = mutableStateOf(false)
                 override val port = 8080
                 override val addresses = emptyList<String>()
-                override val remoteConnections = mutableStateListOf<RemoteConnection>()
+                private val _connections = mutableStateListOf<RemoteConnection>()
+                override val remoteConnections: State<List<RemoteConnection>> = derivedStateOf { _connections.toList() }
 
                 override suspend fun start() = Unit
+
                 override suspend fun stop() = Unit
+
                 override suspend fun createConnection(
-                    id: String, host: String, port: Int, path: String, enableAudio: Boolean
+                    id: String,
+                    host: String,
+                    port: Int,
+                    path: String,
+                    enableAudio: Boolean,
                 ): RemoteConnection = RemoteConnection.Disconnected(id)
-                override suspend fun closeConnection(connection: RemoteConnection) = Unit
-                override suspend fun closeAllConnections() = Unit
+
+                override suspend fun closeConnection(connection: RemoteConnection) {
+                    _connections.remove(connection)
+                }
+
+                override suspend fun closeAllConnections() {
+                    _connections.clear()
+                }
             }
     }
 }
@@ -76,38 +96,65 @@ interface IRemoteDesktopManager : IDelegate {
 /**
  * Opaque handle pro klientskou instanci Compose Remote.
  * Skrývá platformě-závislou implementaci (RemoteComposeClient + Audio) za commonMain API.
+ * TODO: Implementovat jako expect/actual pro různé platformy
  */
-expect class RemoteClientHandle internal constructor() {
+class RemoteClientHandle(
+    enableAudio: Boolean,
+    host: String,
+    port: Int,
+    clientScope: CoroutineScope,
+) {
     /** Stav připojení klienta. */
-    val connectionState: State<RemoteClientConnectionState>
+    val connectionState: State<RemoteClientConnectionState> =
+        mutableStateOf(RemoteClientConnectionState.Disconnected)
+
     /** Poslední chyba. */
-    val lastError: State<String?>
+    val lastError: State<String?> = mutableStateOf(null)
+
     /** Iniciuje připojení k URI (ws://...). */
-    suspend fun connect(uri: String)
+    suspend fun connect(uri: String) {
+        // TODO: Implementace platformě-závislá
+    }
+
     /** Odpojí klienta. */
-    fun disconnect()
+    fun disconnect() {
+        // TODO: Implementace platformě-závislá
+    }
+
     /** Vykreslí vzdálené UI do Compose hierarchie. */
     @Composable
-    fun RemoteComposeView(
+    fun remoteComposeView(
         modifier: androidx.compose.ui.Modifier = androidx.compose.ui.Modifier,
         placeholder: @Composable () -> Unit = { },
-        errorContent: @Composable (Throwable) -> Unit = { }
-    )
+        errorContent: @Composable (Throwable) -> Unit = { },
+    ) {
+        placeholder()
+    }
     // ──────────────────────────────────────────────────────────────
     // AUDIO API
     // ──────────────────────────────────────────────────────────────
+
     /** Zda je audio dostupné pro toto připojení. */
-    val isAudioAvailable: Boolean
+    val isAudioAvailable: Boolean = enableAudio
+
     /** Aktuální hlasitost (0.0 - 1.0). */
-    val volume: State<Float>
+    val volume: State<Float> = mutableStateOf(1.0f)
+
     /** Nastaví hlasitost (0.0 - 1.0). */
-    fun setVolume(volume: Float)
+    fun setVolume(volume: Float) {
+        // TODO: Implementace platformě-závislá
+    }
+
     /** Zda je audio ztlumené. */
-    val isMuted: State<Boolean>
+    val isMuted: State<Boolean> = mutableStateOf(false)
+
     /** Přepne mute stav. */
-    fun setMuted(muted: Boolean)
+    fun setMuted(muted: Boolean) {
+        // TODO: Implementace platformě-závislá
+    }
+
     /** Audio stream stav. */
-    val audioState: State<AudioStreamState>
+    val audioState: State<AudioStreamState> = mutableStateOf(AudioStreamState.Disconnected)
 }
 
 /** Stavy audio streamu. */
@@ -116,7 +163,7 @@ enum class AudioStreamState {
     Connecting,
     Streaming,
     Error,
-    Closed
+    Closed,
 }
 
 /** Stavy připojení klienta (platformě-nezávislé). */
@@ -125,7 +172,7 @@ enum class RemoteClientConnectionState {
     Connecting,
     Connected,
     Error,
-    Closed
+    Closed,
 }
 
 /**
@@ -137,8 +184,10 @@ sealed interface RemoteConnection {
     val host: String
     val port: Int
     val path: String
+
     /** Zda je audio povoleno pro toto připojení. */
     val enableAudio: Boolean
+
     /** Handle klienta pro rendering a ovládání. */
     val clientHandle: RemoteClientHandle?
     val state: State<ConnectionState>
@@ -152,7 +201,7 @@ sealed interface RemoteConnection {
         override val enableAudio: Boolean,
         override val clientHandle: RemoteClientHandle,
         override val state: State<ConnectionState> = mutableStateOf(ConnectionState.Connecting),
-        override val lastError: State<String?> = mutableStateOf(null)
+        override val lastError: State<String?> = mutableStateOf(null),
     ) : RemoteConnection
 
     data class Disconnected(
@@ -163,7 +212,7 @@ sealed interface RemoteConnection {
         override val enableAudio: Boolean = true,
         override val clientHandle: RemoteClientHandle? = null,
         override val state: State<ConnectionState> = mutableStateOf(ConnectionState.Disconnected),
-        override val lastError: State<String?> = mutableStateOf(null)
+        override val lastError: State<String?> = mutableStateOf(null),
     ) : RemoteConnection
 
     companion object {
@@ -176,5 +225,5 @@ enum class ConnectionState {
     Connecting,
     Connected,
     Error,
-    Closed
+    Closed,
 }

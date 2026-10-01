@@ -226,6 +226,14 @@ kotlin {
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.serialization.kotlinx.json)
+                // remote compose (Android-only, commented out until proper implementation)
+                // implementation(libs.androidx.compose.remote.core)
+                // implementation(libs.androidx.compose.remote.creation)
+                // implementation(libs.androidx.compose.remote.creation.core)
+                // implementation(libs.androidx.compose.remote.creation.jvm)
+                // implementation(libs.androidx.compose.remote.creation.compose)
+                // implementation(libs.androidx.compose.remote.player.core)
+                // implementation(libs.androidx.compose.remote.player.view)
                 // okhttp
                 implementation(libs.okhttp3.client)
                 implementation(libs.okhttp3.logging.interceptor)
@@ -296,6 +304,14 @@ kotlin {
                 implementation(libs.androidx.core.splashscreen)
                 // permissions
                 implementation(libs.accompanist.permissions)
+                // remote compose (Android-only - requires AGP 9.1.0+ and compileSdk 37)
+                // implementation(libs.androidx.compose.remote.core)
+                // implementation(libs.androidx.compose.remote.creation)
+                // implementation(libs.androidx.compose.remote.creation.core)
+                // implementation(libs.androidx.compose.remote.creation.android)
+                // implementation(libs.androidx.compose.remote.creation.compose)
+                // implementation(libs.androidx.compose.remote.player.core)
+                // implementation(libs.androidx.compose.remote.player.view)
                 // sensors
                 // implementation("io.github.shadmanadman:KSensor:0.59.0")
                 // adb
