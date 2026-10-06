@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.mjdev.desktop.data.widgets.WidgetKey
 
 /** Desktop widget layer: shows every plugin the user enabled in the control center. */
 @Suppress("FunctionName")
@@ -14,7 +15,7 @@ fun PluginWidgets() = withDesktopContext {
         .forEach { info ->
             key(info.id) {
                 val plugin = remember(info.id) { pluginManager.instance(info.id) }
-                if (plugin != null) PluginWidget(plugin)
+                if (plugin != null) PluginWidget(plugin, positionKey = WidgetKey.Plugin.of(info.id))
             }
         }
 }

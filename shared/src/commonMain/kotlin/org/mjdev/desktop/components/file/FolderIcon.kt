@@ -22,6 +22,7 @@ import org.mjdev.desktop.components.draggable.DraggableView
 import org.mjdev.desktop.components.fonticon.FontIcon
 import org.mjdev.desktop.components.text.TextWithShadow
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.mjdev.desktop.data.widgets.WidgetKey
 import org.mjdev.desktop.extensions.Colors.alpha
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.DpSizeExt.plus
@@ -62,6 +63,8 @@ fun FolderIcon(
         onContextMenuClick = onContextMenuClick,
         onDragStart = onDragStart,
         onDragEnd = onDragEnd,
+        initialPosition = widgetPositions.position(WidgetKey.Folder.of(path.toString())),
+        onPositionChange = { offset -> widgetPositions.save(WidgetKey.Folder.of(path.toString()), offset) },
     ) {
         Column(
             modifier = Modifier.wrapContentSize().aspectRatio(1f),

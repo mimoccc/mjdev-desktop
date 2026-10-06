@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -33,6 +34,8 @@ import org.mjdev.desktop.plugins.remote.RemoteVariables
 fun PluginWidget(
     plugin: IDesktopPlugin,
     modifier: Modifier = Modifier,
+    // id the dragged position is saved under; null = position is not remembered
+    positionKey: String? = null,
 ) = withDesktopContext {
     val document = remember(plugin) { plugin.document }
     var variables by remember(plugin) { mutableStateOf(RemoteVariables()) }
@@ -54,6 +57,8 @@ fun PluginWidget(
                 Modifier
                     .size(document.width.dp, document.height.dp)
                     .align(RemoteAlign.parse(document.anchor, RemoteAlign.BOTTOM_END).alignment),
+            initialPosition = positionKey?.let { key -> widgetPositions.position(key) } ?: Offset.Zero,
+            onPositionChange = { offset -> positionKey?.let { key -> widgetPositions.save(key, offset) } },
         ) {
             val custom = plugin.content
             if (custom != null) {

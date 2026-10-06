@@ -11,6 +11,7 @@ import com.aay.compose.donutChart.model.PieChartData
 import org.mjdev.desktop.components.chart.DonutChart
 import org.mjdev.desktop.components.draggable.DraggableView
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.mjdev.desktop.data.widgets.WidgetKey
 import org.mjdev.desktop.extensions.Compose.preview
 import org.mjdev.desktop.extensions.DoubleExt.toMemorySizeReadable
 import org.mjdev.desktop.helpers.system.meminfo.MemInfo
@@ -29,9 +30,12 @@ fun MemoryChart(
     updateTimeOut: Long = 10000,
     dragEnabled: Boolean = true,
 ) = withDesktopContext {
+    val positionKey = WidgetKey.BuiltIn.of(WidgetKey.MEMORY_CHART)
     DraggableView(
         modifier = modifier,
         dragEnabled = dragEnabled,
+        initialPosition = widgetPositions.position(positionKey),
+        onPositionChange = { offset -> widgetPositions.save(positionKey, offset) },
     ) {
         DonutChart(
             modifier = modifier,

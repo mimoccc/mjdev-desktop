@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import org.mjdev.desktop.data.Category
 import org.mjdev.desktop.data.PanelLocation
+import org.mjdev.desktop.data.widgets.WidgetPositionStore
 import org.mjdev.desktop.helpers.property.ObservableProperty
 import org.mjdev.desktop.interfaces.IApp
 import org.mjdev.desktop.interfaces.ILocale
@@ -161,6 +162,10 @@ open class DesktopContextScope(
     /** Wallpapers of the current user that can be listened to (see [ObservableProperty]). */
     val backgroundsProperty: ObservableProperty<List<Any>>
         get() = context.currentUser.config.backgroundsProperty
+
+    /** Saved desktop widget positions of the current user. */
+    val widgetPositions: WidgetPositionStore
+        get() = WidgetPositionStore.forUser(context.currentUser)
 
     val processManager: IProcessManager
         get() = context.processManager
