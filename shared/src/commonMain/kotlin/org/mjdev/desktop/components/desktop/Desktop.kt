@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +39,8 @@ fun Desktop(
     // Tooltips are no longer rendered here — components push into TooltipState via
     // onTooltip and the desktop shell shows them in a standalone auto-hide window
     // (see desktopMain TooltipWindow).
+    // listened, so wallpapers that finish loading after the first frame are shown too
+    val wallpapers by backgroundsProperty.changes.collectAsState()
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -53,7 +57,7 @@ fun Desktop(
                         }
                     },
             switchDelay = theme.backgroundRotationDelay,
-            images = backgrounds,
+            images = wallpapers,
             onChange = { src ->
                 context.wallpaper.value = src
                 context.palette

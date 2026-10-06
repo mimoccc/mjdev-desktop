@@ -100,9 +100,21 @@ class DesktopContext(
         open(what.toString())
     }
 
+    // logged-in user, remembered once found: the process user cannot change while running, and
+    // re-resolving on every access (reads /etc/passwd + runs whoami) fell back to User.DEFAULT
+    // whenever whoami failed once, which switched the desktop config and wiped the wallpapers
+    private var resolvedUser: IUser? = null
+
     // todo state
     override val currentUser: IUser
-        get() = allUsers.firstOrNull { u -> u.isLoggedIn } ?: User.DEFAULT
+        get() = resolvedUser ?: resolveLoggedInUser()
+
+    // finds the logged-in user; only a real match is remembered, User.DEFAULT is retried next time
+    private fun resolveLoggedInUser(): IUser = allUsers
+        .firstOrNull { u -> u.isLoggedIn }
+        ?.also { user -> resolvedUser = user }
+        ?: User.DEFAULT
+
     override val theme: ITheme
         get() = currentUser.theme
     override val containerSize: DpSize

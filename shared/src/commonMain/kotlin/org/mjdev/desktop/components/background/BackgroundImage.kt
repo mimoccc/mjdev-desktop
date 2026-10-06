@@ -23,7 +23,6 @@ import org.mjdev.desktop.extensions.Colors.SuperDarkGray
 import org.mjdev.desktop.extensions.Colors.alpha
 import org.mjdev.desktop.extensions.Compose.Crossfade
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.extensions.MutableStateExt.rememberComputed
 import org.mjdev.desktop.helpers.generic.Queue
 import org.mjdev.desktop.log.Log
 import kotlin.math.min
@@ -43,8 +42,8 @@ fun BackgroundImage(
     Box(
         modifier = modifier.background(backgroundColor),
     ) {
-        val imagesSize by rememberComputed(images.size) { images.size }
-        val backgroundQueue by rememberComputed(images.size, imagesSize) { Queue(images) }
+        // keyed by the list itself (not only its size), so any new wallpaper list restarts the queue
+        val backgroundQueue = remember(images) { Queue(images) }
         var currentBackground: Any by remember { mutableStateOf(backgroundColor) }
         Crossfade(
             targetState = currentBackground,
@@ -96,7 +95,9 @@ fun BackgroundImage(
                     ),
             )
         }
-        LaunchedEffect(imagesSize) {
+        // a new list (e.g. loaded after the first frame) shows its first wallpaper right away,
+        // which also restarts the rotation below when it was stuck on the fallback color
+        LaunchedEffect(images) {
             currentBackground = backgroundQueue.nextOrNull() ?: backgroundColor
         }
         // todo duration from movie or gif
