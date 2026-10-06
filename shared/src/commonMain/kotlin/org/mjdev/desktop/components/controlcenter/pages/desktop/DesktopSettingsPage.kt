@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +46,7 @@ import org.mjdev.desktop.icons.settings.SettingsMonitor
 @Suppress("FunctionName")
 fun DesktopSettingsPage(context: IDesktopContext) = ControlCenterPage(
     context = context,
-    icon = SettingsMonitor,
+    icon = Icons.Filled.Dashboard,
     name = "Desktop",
 ) {
     val store = remember { DesktopConfigStore(currentUser) }
@@ -218,6 +220,8 @@ fun DesktopSettingsPage(context: IDesktopContext) = ControlCenterPage(
                     .padding(16.dp)
                     .border(1.dp, borderColor.alpha(0.6f), RoundedCornerShape(8.dp))
                     .clickable {
+                        // the wallpaper tab owns the excluded folders and may have changed them
+                        data = data.copy(excludedWallpaperFolders = store.load().excludedWallpaperFolders)
                         store.save(data)
                         data.applyTo(currentUser.theme)
                         runAsync {

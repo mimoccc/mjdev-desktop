@@ -2,6 +2,8 @@ package org.mjdev.desktop.components.controlcenter.pages.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +29,7 @@ import org.mjdev.desktop.icons.settings.SettingsHome
 @Suppress("FunctionName")
 fun MainSettingsPage(context: IDesktopContext) = ControlCenterPage(
     context = context,
-    icon = SettingsHome,
+    icon = Icons.Filled.Home,
     name = "Home",
     showHeader = false,
 ) {

@@ -1,5 +1,7 @@
 package org.mjdev.desktop.components.controlcenter.pages.sound
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +37,7 @@ import org.mjdev.desktop.icons.settings.SettingsSound
 @Suppress("FunctionName")
 fun SoundSettingsPage(context: IDesktopContext) = ControlCenterPage(
     context = context,
-    icon = SettingsSound,
+    icon = Icons.Filled.VolumeUp,
     name = "Sound",
     condition = { true },
 ) {

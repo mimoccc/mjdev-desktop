@@ -1,14 +1,16 @@
 package org.mjdev.desktop.components.controlcenter.pages.display
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Monitor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
+import org.mjdev.desktop.components.controlcenter.settings.SettingsInfoRow
 import org.mjdev.desktop.components.controlcenter.settings.SettingsPageColumn
 import org.mjdev.desktop.components.controlcenter.settings.SettingsSection
 import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.components.controlcenter.settings.SettingsInfoRow
 import org.mjdev.desktop.icons.settings.SettingsMonitor
 
 /** Static labels used by [DisplaySettingsPage]. */
@@ -26,7 +28,7 @@ private object DisplayLabels {
 @Suppress("FunctionName")
 fun DisplaySettingsPage(context: IDesktopContext) = ControlCenterPage(
     context = context,
-    icon = SettingsMonitor,
+    icon = Icons.Filled.Monitor,
     name = "Display",
 ) {
     SettingsPageColumn {

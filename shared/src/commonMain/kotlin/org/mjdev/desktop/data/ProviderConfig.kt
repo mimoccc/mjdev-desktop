@@ -2,8 +2,8 @@ package org.mjdev.desktop.data
 
 import org.mjdev.desktop.helpers.compose.ImagesProvider
 import org.mjdev.desktop.interfaces.IUser
+import org.mjdev.desktop.providers.background.ProviderBackgroundFolders
 import org.mjdev.desktop.providers.background.ProviderErzvo
-import org.mjdev.desktop.providers.background.ProviderLocal
 import org.mjdev.desktop.providers.background.ProviderSmug
 
 /**
@@ -27,10 +27,13 @@ data class ProviderConfig(
         get() = Provider.byId(id)?.hasLoadCount ?: false
 
     /** Builds the live [ImagesProvider] for this config, or null when disabled / unknown. */
-    fun build(user: IUser): ImagesProvider? {
+    fun build(
+        user: IUser,
+        excludedFolders: Set<String> = emptySet(),
+    ): ImagesProvider? {
         if (!enabled) return null
         return when (Provider.byId(id)) {
-            Provider.Local -> ProviderLocal(user)
+            Provider.Local -> ProviderBackgroundFolders(user, excludedFolders)
             Provider.Smug -> ProviderSmug(loadCount)
             Provider.Erzvo -> ProviderErzvo(loadCount)
             null -> null

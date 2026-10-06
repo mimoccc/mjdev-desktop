@@ -40,6 +40,8 @@ data class DesktopConfigData(
     var appMenuOuterPadding: Float = 2f,
     // background sources
     var providers: MutableList<ProviderConfig> = ProviderConfig.defaults(),
+    // keys (absolute paths) of local wallpaper folders the user switched off
+    var excludedWallpaperFolders: MutableList<String> = mutableListOf(),
 ) {
     /** Writes every value back onto the live [theme] so the running desktop picks them up. */
     fun applyTo(theme: ITheme) {
@@ -61,7 +63,8 @@ data class DesktopConfigData(
     }
 
     /** Builds the enabled background providers for this config. */
-    fun buildProviders(user: IUser): List<ImagesProvider> = providers.mapNotNull { it.build(user) }
+    fun buildProviders(user: IUser): List<ImagesProvider> =
+        providers.mapNotNull { it.build(user, excludedWallpaperFolders.toSet()) }
 
     private inline fun <reified T : Enum<T>> String.toEnum(default: T): T =
         enumValues<T>().firstOrNull { it.name == this } ?: default
@@ -71,6 +74,7 @@ data class DesktopConfigData(
         fun fromTheme(
             theme: ITheme,
             providers: MutableList<ProviderConfig> = ProviderConfig.defaults(),
+            excludedWallpaperFolders: MutableList<String> = mutableListOf(),
         ): DesktopConfigData = DesktopConfigData(
             backgroundColorArgb = theme.backgroundColor.toArgbInt(),
             backgroundRotationDelay = theme.backgroundRotationDelay,
@@ -88,6 +92,7 @@ data class DesktopConfigData(
             appMenuMinHeightRatio = theme.appMenuMinHeightRatio,
             appMenuOuterPadding = theme.appMenuOuterPadding.value,
             providers = providers,
+            excludedWallpaperFolders = excludedWallpaperFolders,
         )
 
         private fun Color.toArgbInt(): Int {

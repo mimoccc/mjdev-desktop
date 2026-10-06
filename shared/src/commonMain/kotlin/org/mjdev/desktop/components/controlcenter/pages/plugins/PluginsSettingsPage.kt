@@ -1,5 +1,7 @@
 package org.mjdev.desktop.components.controlcenter.pages.plugins
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Extension
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,7 +23,7 @@ import org.mjdev.desktop.extensions.Compose.preview
 @Suppress("FunctionName")
 fun PluginsSettingsPage(context: IDesktopContext) = ControlCenterPage(
     context = context,
-    icon = PluginsPageDefaults.fallbackIcon,
+    icon = Icons.Filled.Extension,
     name = "Plugins",
     condition = { true },
 ) {

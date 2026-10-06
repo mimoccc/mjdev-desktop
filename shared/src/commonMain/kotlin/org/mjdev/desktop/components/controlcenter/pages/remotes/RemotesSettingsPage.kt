@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SettingsRemote
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -28,7 +30,7 @@ import org.mjdev.desktop.icons.custom.Mjdev
 @Suppress("FunctionName")
 fun RemotesSettingsPage(context: IDesktopContext) = ControlCenterPage(
     context = context,
-    icon = Mjdev, // todo dedicated icon
+    icon = Icons.Filled.SettingsRemote,
     name = "Remote",
     condition = { true },
 ) {

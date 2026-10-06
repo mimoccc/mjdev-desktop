@@ -1,14 +1,16 @@
 package org.mjdev.desktop.components.controlcenter.pages.theme
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import org.mjdev.desktop.components.controlcenter.base.ControlCenterPage
+import org.mjdev.desktop.components.controlcenter.settings.SettingsColorRow
 import org.mjdev.desktop.components.controlcenter.settings.SettingsPageColumn
 import org.mjdev.desktop.components.controlcenter.settings.SettingsSection
 import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
-import org.mjdev.desktop.components.controlcenter.settings.SettingsColorRow
 import org.mjdev.desktop.icons.custom.Mjdev
 
 /** Static labels used by [ThemeSettingsPage]. */
@@ -30,7 +32,7 @@ private object ThemeLabels {
 @Suppress("FunctionName")
 fun ThemeSettingsPage(context: IDesktopContext) = ControlCenterPage(
     context = context,
-    icon = Mjdev, // todo dedicated theme icon
+    icon = Icons.Filled.Palette,
     name = "Theme",
     condition = { true },
 ) {

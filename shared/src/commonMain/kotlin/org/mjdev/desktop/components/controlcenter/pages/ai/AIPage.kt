@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
@@ -50,7 +52,7 @@ import org.mjdev.desktop.icons.system.ContentCopy
 @Suppress("FunctionName")
 fun AIPage(context: IDesktopContext) = ControlCenterPage(
     context = context,
-    icon = Chat,
+    icon = Icons.Filled.AutoAwesome,
     name = "Assistant",
     condition = {
         ai.isAvailable()

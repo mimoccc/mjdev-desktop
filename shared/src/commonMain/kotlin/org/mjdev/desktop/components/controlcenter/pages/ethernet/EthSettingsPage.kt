@@ -1,5 +1,7 @@
 package org.mjdev.desktop.components.controlcenter.pages.ethernet
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SettingsEthernet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,7 +25,7 @@ private const val REFRESH_MS = 1000L
 @Suppress("FunctionName")
 fun EthSettingsPage(context: IDesktopContext) = ControlCenterPage(
     context = context,
-    icon = SettingsEthernet,
+    icon = Icons.Filled.SettingsEthernet,
     name = "Ethernet",
     condition = {
         connectionManager.isEthAdapterAvailable

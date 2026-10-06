@@ -1,5 +1,7 @@
 package org.mjdev.desktop.components.controlcenter.pages.devices
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Devices
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,7 +24,7 @@ private const val REFRESH_MS = 1000L
 @Suppress("FunctionName")
 fun DevicesPage(context: IDesktopContext) = ControlCenterPage(
     context = context,
-    icon = MobileFriendly,
+    icon = Icons.Filled.Devices,
     name = "Connected devices",
     condition = {
         connectionManager.hasConnectedDevices

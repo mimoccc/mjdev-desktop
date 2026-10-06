@@ -21,6 +21,7 @@ import org.mjdev.desktop.components.controlcenter.pages.plugins.PluginsSettingsP
 import org.mjdev.desktop.components.controlcenter.pages.remotes.RemotesSettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.sound.SoundSettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.theme.ThemeSettingsPage
+import org.mjdev.desktop.components.controlcenter.pages.wallpaper.WallpaperSettingsPage
 import org.mjdev.desktop.components.controlcenter.pages.wifi.WifiSettingsPage
 import org.mjdev.desktop.data.Category
 import org.mjdev.desktop.helpers.persistence.StorageProvider
@@ -62,9 +63,10 @@ abstract class IDesktopContext : IDisposable {
             BluetoothSettingsPage(this),
             DisplaySettingsPage(this),
             DesktopSettingsPage(this),
+            WallpaperSettingsPage(this),
             DevicesPage(this),
             RemotesSettingsPage(this),
-            ThemeSettingsPage(this),
+            // theme palette moved to WallpaperSettingsPage
             PluginsSettingsPage(this),
             AIPage(this),
             AboutPage(this),

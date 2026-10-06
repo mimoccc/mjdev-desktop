@@ -1,5 +1,7 @@
 package org.mjdev.desktop.components.controlcenter.pages.about
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +35,7 @@ private object AboutLabels {
 @Suppress("FunctionName")
 fun AboutPage(context: IDesktopContext) = ControlCenterPage(
     context = context,
-    icon = Mjdev,
+    icon = Icons.Filled.Info,
     name = "About",
     condition = { true },
 ) {

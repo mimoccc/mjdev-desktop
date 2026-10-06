@@ -1,5 +1,7 @@
 package org.mjdev.desktop.components.controlcenter.pages.bluetooth
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,7 +44,7 @@ private const val REFRESH_MS = 5_000L
 @Suppress("FunctionName")
 fun BluetoothSettingsPage(context: IDesktopContext) = ControlCenterPage(
     context = context,
-    icon = Bluetooth,
+    icon = Icons.Filled.Bluetooth,
     name = "Bluetooth",
     condition = {
         connectionManager.isBthAdapterAvailable
@@ -53,6 +55,7 @@ fun BluetoothSettingsPage(context: IDesktopContext) = ControlCenterPage(
     var powered by remember { mutableStateOf(false) }
     var devices by remember { mutableStateOf<List<BthDevice>>(emptyList()) }
     var busy by remember { mutableStateOf(false) }
+
     suspend fun reload() = withContext(Dispatchers.Default) {
         powered = manager.isBluetoothPowered
         devices = manager.bthNetworks.values.sortedWith(compareBy({ !it.connected }, { it.name }))

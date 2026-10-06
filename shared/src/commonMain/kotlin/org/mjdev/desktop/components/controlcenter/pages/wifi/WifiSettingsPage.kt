@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,7 +25,7 @@ import org.mjdev.desktop.log.Log
 @Suppress("FunctionName")
 fun WifiSettingsPage(context: IDesktopContext) = ControlCenterPage(
     context = context,
-    icon = SettingsWifi,
+    icon = Icons.Filled.Wifi,
     name = "Wifi",
     condition = {
         connectionManager.isWifiAdapterAvailable
