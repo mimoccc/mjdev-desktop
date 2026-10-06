@@ -31,9 +31,9 @@ import kotlin.math.min
 @Composable
 fun BackgroundImage(
     modifier: Modifier = Modifier,
-    switchDelay: Long = 60000L,
-    fadeInDuration: Long = 60000L / 8,
-    fadeOutDuration: Long = 60000L / 4,
+    switchDelay: Long = BackgroundImageDefaults.SWITCH_DELAY_MS,
+    fadeInDuration: Long = BackgroundImageDefaults.FADE_IN_DURATION_MS,
+    fadeOutDuration: Long = BackgroundImageDefaults.FADE_OUT_DURATION_MS,
     backgroundColor: Color = Color.SuperDarkGray,
     images: List<Any> = listOf(),
     onError: (Throwable) -> Unit = { e -> Log.e(e) },

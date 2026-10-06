@@ -23,6 +23,15 @@ interface IPalette :
 
     fun update(src: Any?)
 
+    /**
+     * Like [update], but the colors move from the current to the new ones over [transitionMs],
+     * in sync with the wallpaper crossfade. Defaults to the immediate [update].
+     */
+    fun update(
+        src: Any?,
+        transitionMs: Long,
+    ) = update(src)
+
     companion object {
         val EMPTY =
             object : IPalette {

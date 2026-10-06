@@ -15,6 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.extensions.Colors.SuperDarkGray
@@ -108,41 +110,68 @@ class Palette(
     override val focusBorderColor: Color
         get() = selectedFgColor
 
+    // running color transition; a newer wallpaper cancels it and continues from the current colors
+    private var transitionJob: Job? = null
+
+    // immediate change (old behaviour)
+    override fun update(src: Any?) = update(src, NO_TRANSITION_MS)
+
     // todo cutPartPercent to user prefs as precision
-    override fun update(src: Any?) {
-        scope.launch(Dispatchers.Default) {
-            context.loadPicture(src)?.let { image ->
-                val width = image.width
-                val height = image.height
-                val cutWidth = (width / 100) * cutPercent
-                val cutHeight = (height / 100) * cutPercent
-                // One bulk readPixels, then sample the four corners directly from the IntArray —
-                // no four intermediate cut() bitmaps, no per-pixel Color boxing.
-                val pixels = image.pixels
-                val colors =
-                    PaletteColors(
-                        dominantArgbColor(pixels, width, 0, 0, cutWidth, cutHeight),
-                        dominantArgbColor(pixels, width, width - cutWidth, 0, cutWidth, cutHeight),
-                        dominantArgbColor(pixels, width, 0, height - cutHeight, cutWidth, cutHeight),
-                        dominantArgbColor(pixels, width, width - cutWidth, height - cutHeight, cutWidth, cutHeight),
-                    )
-                val background = colors.darkestColor
-                // Derive text from the NEW background (assigned below), not the stale state value,
-                // which made the derived colors lag one wallpaper behind.
-                val text =
-                    if (background.isLightColor) {
-                        background.darker(textFactor)
-                    } else {
-                        background.lighter(textFactor)
-                    }
-                // One atomic snapshot: writing the two states separately let the UI recompose
-                // between them (new background + stale text) — a transient color mismatch.
-                Snapshot.withMutableSnapshot {
-                    backgroundColorState.value = background
-                    textColorState.value = text
+    override fun update(
+        src: Any?,
+        transitionMs: Long,
+    ) {
+        transitionJob?.cancel()
+        transitionJob =
+            scope.launch(Dispatchers.Default) {
+                context.loadPicture(src)?.let { image ->
+                    val width = image.width
+                    val height = image.height
+                    val cutWidth = (width / 100) * cutPercent
+                    val cutHeight = (height / 100) * cutPercent
+                    // One bulk readPixels, then sample the four corners directly from the IntArray —
+                    // no four intermediate cut() bitmaps, no per-pixel Color boxing.
+                    val pixels = image.pixels
+                    val colors =
+                        PaletteColors(
+                            dominantArgbColor(pixels, width, 0, 0, cutWidth, cutHeight),
+                            dominantArgbColor(pixels, width, width - cutWidth, 0, cutWidth, cutHeight),
+                            dominantArgbColor(pixels, width, 0, height - cutHeight, cutWidth, cutHeight),
+                            dominantArgbColor(pixels, width, width - cutWidth, height - cutHeight, cutWidth, cutHeight),
+                        )
+                    val background = colors.darkestColor
+                    // Derive text from the NEW background (assigned below), not the stale state value,
+                    // which made the derived colors lag one wallpaper behind.
+                    val text =
+                        if (background.isLightColor) {
+                            background.darker(textFactor)
+                        } else {
+                            background.lighter(textFactor)
+                        }
+                    transitionTo(background, text, transitionMs)
                 }
+                createFromPalette()
             }
-            createFromPalette()
+    }
+
+    // Moves background + text step by step to the targets; every other color derives from these
+    // two, so the whole desktop follows. Each step is one atomic snapshot: writing the two states
+    // separately let the UI recompose between them (new background + stale text).
+    private suspend fun transitionTo(
+        background: Color,
+        text: Color,
+        transitionMs: Long,
+    ) {
+        val startBackground = backgroundColorState.value
+        val startText = textColorState.value
+        val steps = PaletteTransition.steps(transitionMs)
+        for (step in 1..steps) {
+            val fraction = step.toFloat() / steps
+            Snapshot.withMutableSnapshot {
+                backgroundColorState.value = PaletteTransition.colorAt(startBackground, background, fraction)
+                textColorState.value = PaletteTransition.colorAt(startText, text, fraction)
+            }
+            if (step < steps) delay(PaletteTransition.FRAME_MS)
         }
     }
 
@@ -151,6 +180,11 @@ class Palette(
     fun createFromPalette() = context.themeManager.createFromPalette()
 
     fun clearSystemTheme() = context.themeManager.clearSystemTheme()
+
+    companion object {
+        /** Transition time of an immediate palette change. */
+        const val NO_TRANSITION_MS = 0L
+    }
 
     data class PaletteColors(
         val leftTopDominantColor: Color,

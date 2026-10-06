@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.mjdev.desktop.components.adb.AdbScreenMirror
 import org.mjdev.desktop.components.background.BackgroundImage
+import org.mjdev.desktop.components.background.BackgroundImageDefaults
 import org.mjdev.desktop.components.file.FolderView
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.extensions.Compose.preview
@@ -62,7 +63,8 @@ fun Desktop(
                 context.wallpaper.value = src
                 context.palette
                     .apply {
-                        update(src)
+                        // colors move together with the wallpaper fade-in
+                        update(src, BackgroundImageDefaults.FADE_IN_DURATION_MS)
                     }.also { p ->
                         context.currentUser.theme.backgroundColor = p.backgroundColor
                         onBackgroundChange(p.backgroundColor)
