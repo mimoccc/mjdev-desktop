@@ -99,7 +99,11 @@ object RemoteOpPainter {
                 else -> boundsX + (boundsW - measured.size.width) / 2f
             }
         val top = op.y * size.height + (op.h * size.height - measured.size.height) / 2f
-        drawText(textMeasurer, text, Offset(left, top), style)
+        // old call, kept for history: drawText(textMeasurer, text, Offset(left, top), style)
+        // TextMeasurer caches layouts by size-affecting attributes only (not color), so an
+        // unchanged text ("Memory") kept the color of the previous wallpaper; the current color is
+        // therefore passed explicitly when drawing the measured layout
+        drawText(textLayoutResult = measured, color = color, topLeft = Offset(left, top))
     }
 
     /** Replaces every `{name}` with its value from [variables]; unknown names stay empty. */
