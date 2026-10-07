@@ -29,8 +29,11 @@ class User(
         get() = dataItems[5]
     override val shell: String
         get() = dataItems[6]
+
+    // old lookup (only ~/.face, missing on GNOME / Ubuntu), kept for history:
+    // get() = loadPicture(dataItems[5], ".face") ?: AccountCircle
     override val picture: Any
-        get() = loadPicture(dataItems[5], ".face") ?: AccountCircle
+        get() = UserPicture.find(File(home), userName) ?: AccountCircle
     override val homeDir: Path
         get() = home.toPath()
     override val isLoggedIn
