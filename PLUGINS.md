@@ -35,6 +35,8 @@ data: `RECT`, `ARC`, `TEXT` ops with geometry normalized to 0..1) and return liv
 placeholders). Colors use palette tokens (`BACKGROUND`, `TEXT`, `ICONS`, `BORDER`, `SELECTED`) so a
 widget follows the wallpaper; `#RRGGBB` / `#AARRGGBB` are also accepted. See
 `MemoryWidgetPlugin` for a complete example. `RemoteDocument.encode()` / `decode()` give the JSON form.
+The widget is placed by `anchor` (e.g. `BOTTOM_END`) and can be shifted from there with the optional
+`offsetX` / `offsetY` (dp, negative = left / up; both 0 by default).
 
 ## Security
 
@@ -48,7 +50,10 @@ State (which plugins are enabled) is stored in `~/.mjdev/desktop/plugins.json`.
 
 - **Memory** (`builtin.memory`) — donut chart, drawn from a `RemoteDocument`.
 - **Music player** (`builtin.music`) — plays the files of the user's Music folder (mp3, flac, ogg,
-  wav, m4a, aac, opus; sub-folders up to 3 levels) with seek bar and previous / play-pause / next.
+  wav, m4a, aac, opus; sub-folders up to 3 levels) as a card (design `screenshots/widgets/music.jpg`):
+  header with the playing time of the track, raised card with the previous / current / next track,
+  title with its folder name, seek bar with times and previous / play-pause / next. Colors follow
+  the desktop palette. It sits in the right column just above the memory widget.
   Off by default; switch it on in the control center Plugins tab. A document cannot hold buttons, so
   it uses the optional `IDesktopPlugin.content` composable (the document then only gives size and
   anchor). Audio comes from the klibs.io library ComposeMediaPlayer (`composemediaplayer-audio`).

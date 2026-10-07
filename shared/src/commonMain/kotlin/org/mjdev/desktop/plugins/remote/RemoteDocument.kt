@@ -17,6 +17,10 @@ data class RemoteDocument(
     val height: Float = DEFAULT_HEIGHT,
     /** Where the widget sits on the desktop, see [RemoteAlign]. */
     val anchor: String = RemoteAlign.BOTTOM_END.name,
+    /** Horizontal shift from the [anchor] place in dp (negative = left); 0 for older documents. */
+    val offsetX: Float = 0f,
+    /** Vertical shift from the [anchor] place in dp (negative = up); 0 for older documents. */
+    val offsetY: Float = 0f,
     /** Drawing instructions, painted in order. */
     val ops: List<RemoteOp> = emptyList(),
 ) {

@@ -9,12 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -27,6 +23,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,10 +35,13 @@ import kotlinx.coroutines.withContext
 import org.mjdev.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.mjdev.desktop.plugins.music.MusicDefaults
 import org.mjdev.desktop.plugins.music.MusicLibrary
+import org.mjdev.desktop.plugins.music.MusicTrackFolder
+import org.mjdev.desktop.plugins.music.MusicTrackLines
 
 /**
- * Music player card for the desktop: shows the current track of the user's music folder with a
- * seek bar and previous / play-pause / next buttons. Colors follow the wallpaper palette.
+ * Music player card for the desktop (design: screenshots/widgets/music.jpg): header with the
+ * playing time tab, raised card with the previous / current / next track, title with its folder,
+ * seek bar with times and previous / play-pause / next buttons. Colors follow the wallpaper palette.
  */
 @Suppress("FunctionName")
 @Composable
@@ -68,61 +69,77 @@ fun MusicPlayerWidget(modifier: Modifier = Modifier) = withDesktopContext {
         }
     }
 
-    var dragFraction by remember { mutableStateOf<Float?>(null) }
     val progress = if (live.duration > 0L) (live.position.toFloat() / live.duration).coerceIn(0f, 1f) else 0f
     val isPlaying = live.state == AudioPlayerState.PLAYING
+    val elapsed = formatMusicTime(live.position)
+    // colors come from the desktop palette, so the card follows the wallpaper like the rest
+    val accentColor = iconsTintColor
+    val onAccentColor = backgroundColor
+    val secondaryColor = textColor.copy(alpha = MusicDefaults.SECONDARY_ALPHA)
 
     Column(
         modifier =
             modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(MusicDefaults.CORNER_DP.dp))
-                .background(backgroundColor.copy(alpha = MusicDefaults.CARD_ALPHA))
-                .padding(MusicDefaults.PADDING_DP.dp),
+                .background(backgroundColor.copy(alpha = MusicDefaults.CARD_BG_ALPHA)),
         verticalArrangement = Arrangement.spacedBy(MusicDefaults.SPACING_DP.dp),
     ) {
-        Text(
-            text = controller.queue.current?.title ?: MusicDefaults.EMPTY_TITLE,
-            color = textColor,
-            fontSize = MusicDefaults.TITLE_SP.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+        // the tab shows the playing time of the track (no clock)
+        MusicHeader(
+            title = MusicDefaults.HEADER_TITLE,
+            time = elapsed,
+            accentColor = accentColor,
+            onAccentColor = onAccentColor,
+            textColor = textColor,
         )
-        Text(
-            text = "${formatMusicTime(live.position)} / ${formatMusicTime(live.duration)}",
-            color = textColor.copy(alpha = MusicDefaults.CARD_ALPHA),
-            fontSize = MusicDefaults.SUBTITLE_SP.sp,
+        MusicNowPlayingCard(
+            lines = MusicTrackLines.of(controller.queue),
+            cardColor = lerp(backgroundColor, textColor, MusicDefaults.INNER_CARD_BLEND),
+            accentColor = accentColor,
+            textColor = textColor,
+            modifier = Modifier.padding(horizontal = MusicDefaults.SPACING_DP.dp),
         )
-        Slider(
-            modifier = Modifier.fillMaxWidth(),
-            value = dragFraction ?: progress,
-            enabled = live.duration > 0L,
-            onValueChange = { fraction -> dragFraction = fraction },
-            onValueChangeFinished = {
-                dragFraction?.let { fraction -> controller.seekTo((fraction * live.duration).toLong()) }
-                dragFraction = null
-            },
-            colors =
-                SliderDefaults.colors(
-                    thumbColor = iconsTintColor,
-                    activeTrackColor = iconsTintColor,
-                ),
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            modifier = Modifier.padding(horizontal = MusicDefaults.PADDING_DP.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            MusicControlButton(Icons.Filled.SkipPrevious, MusicDefaults.PREVIOUS_LABEL, iconsTintColor) {
-                controller.previous()
+            Text(
+                text = controller.queue.current?.title ?: MusicDefaults.EMPTY_TITLE,
+                color = textColor,
+                fontSize = MusicDefaults.TITLE_SP.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = MusicTrackFolder.of(controller.queue.current),
+                color = secondaryColor,
+                fontSize = MusicDefaults.SUBTITLE_SP.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            MusicProgressBar(
+                progress = progress,
+                enabled = live.duration > 0L,
+                accentColor = accentColor,
+                onSeek = { fraction -> controller.seekTo((fraction * live.duration).toLong()) },
+            )
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(text = elapsed, color = secondaryColor, fontSize = MusicDefaults.TIME_SP.sp)
+                Text(text = formatMusicTime(live.duration), color = secondaryColor, fontSize = MusicDefaults.TIME_SP.sp)
             }
-            MusicControlButton(
-                imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                description = if (isPlaying) MusicDefaults.PAUSE_LABEL else MusicDefaults.PLAY_LABEL,
-                tint = iconsTintColor,
-            ) { controller.toggle(live.state) }
-            MusicControlButton(Icons.Filled.SkipNext, MusicDefaults.NEXT_LABEL, iconsTintColor) {
-                controller.next()
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(MusicDefaults.TRANSPORT_GAP_DP.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                MusicControlButton(Icons.Filled.SkipPrevious, MusicDefaults.PREVIOUS_LABEL, textColor) {
+                    controller.previous()
+                }
+                MusicPlayButton(isPlaying, accentColor, onAccentColor) { controller.toggle(live.state) }
+                MusicControlButton(Icons.Filled.SkipNext, MusicDefaults.NEXT_LABEL, textColor) {
+                    controller.next()
+                }
             }
         }
     }

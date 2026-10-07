@@ -17,9 +17,11 @@ import org.mjdev.desktop.plugins.remote.RemoteVariables
 class MusicWidgetPlugin : IDesktopPlugin {
     override val document: RemoteDocument =
         RemoteDocument(
-            width = MusicDefaults.WIDTH_DP,
-            height = MusicDefaults.HEIGHT_DP,
-            anchor = RemoteAlign.BOTTOM_START.name,
+            width = MusicDefaults.CARD_WIDTH_DP,
+            height = MusicDefaults.CARD_HEIGHT_DP,
+            // right column, stacked just above the memory widget (default document height)
+            anchor = RemoteAlign.BOTTOM_END.name,
+            offsetY = -(RemoteDocument.DEFAULT_HEIGHT + MusicDefaults.STACK_GAP_DP),
         )
 
     override val content: (@Composable (IDesktopContext) -> Unit) = { MusicPlayerWidget() }

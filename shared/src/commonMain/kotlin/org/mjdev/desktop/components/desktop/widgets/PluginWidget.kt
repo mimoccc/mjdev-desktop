@@ -2,6 +2,7 @@ package org.mjdev.desktop.components.desktop.widgets
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,7 +57,8 @@ fun PluginWidget(
             modifier =
                 Modifier
                     .size(document.width.dp, document.height.dp)
-                    .align(RemoteAlign.parse(document.anchor, RemoteAlign.BOTTOM_END).alignment),
+                    .align(RemoteAlign.parse(document.anchor, RemoteAlign.BOTTOM_END).alignment)
+                    .offset(document.offsetX.dp, document.offsetY.dp),
             initialPosition = positionKey?.let { key -> widgetPositions.position(key) } ?: Offset.Zero,
             onPositionChange = { offset -> positionKey?.let { key -> widgetPositions.save(key, offset) } },
         ) {
