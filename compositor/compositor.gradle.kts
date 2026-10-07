@@ -215,9 +215,14 @@ val aptLockTimeout: String =
         .get()
 val aptGet = "apt-get -o DPkg::Lock::Timeout=$aptLockTimeout"
 
+// the install script runs as root under pkexec without a TTY: tell debconf up front to use its
+// noninteractive frontend instead of failing through Dialog / Readline / Teletype on every apt call
+val debconfNoninteractive = "export DEBIAN_FRONTEND=noninteractive"
+
 fun sessionInstallLines(staged: File): List<String> = listOf(
     "#!/bin/sh",
     "set -e",
+    debconfNoninteractive,
     // runtime stack the compositor needs but a clean / GNOME box lacks (GNOME uses mutter,
     // not wlroots). dpkg can't resolve these, so apt-install them explicitly. libwlroots-0.18
     // pulls libdrm/libgbm/libinput/libseat/libxkbcommon/libwayland/libdisplay-info/libliftoff;
