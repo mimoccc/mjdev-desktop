@@ -29,6 +29,15 @@ import org.mjdev.desktop.extensions.StringExt.hexRgb
 import org.mjdev.desktop.helpers.system.shell.Shell
 import org.mjdev.desktop.log.Log
 import org.mjdev.desktop.managers.theme.base.ThemeManagerStub
+import org.mjdev.desktop.managers.theme.linux.gtk.Gtk2Rc
+import org.mjdev.desktop.managers.theme.linux.gtk.GtkCss
+import org.mjdev.desktop.managers.theme.linux.gtk.GtkCssLayer
+import org.mjdev.desktop.managers.theme.linux.gtk.GtkThemeColors
+import org.mjdev.desktop.managers.theme.linux.gtk.GtkToolkit
+import org.mjdev.desktop.managers.theme.linux.session.DesktopSession
+import org.mjdev.desktop.managers.theme.linux.shell.GnomeShellBase
+import org.mjdev.desktop.managers.theme.linux.shell.GnomeShellCss
+import java.io.File
 import java.util.concurrent.CompletableFuture.runAsync
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -52,8 +61,29 @@ class ThemeManagerLinux(
     private val systemGtk3CssFile = systemGtk3ThemeDir["gtk.css"]
     private val systemGtk4CssFile = systemGtk4ThemeDir["gtk.css"]
 
+    // GTK2 theme file (~/.themes/Mjdev/gtk-2.0/gtkrc)
+    private val gtk2RcFile = gtk2ThemeDir[Gtk2Rc.FILE_NAME]
+
+    // GNOME Shell stylesheet loaded by the User Themes extension
+    private val shellCssFile = themeDir[GnomeShellCss.DIR_NAME][GnomeShellCss.FILE_NAME]
+
+    // session decides window chrome rules and whether GNOME Shell is themed
+    private val session = DesktopSession.current()
+
+    // pushes the generated theme into running apps and GNOME Shell, restores old values on clear
+    private val switcher by lazy {
+        LiveThemeSwitcher.create(
+            themeName = themeName,
+            fallbackGtkTheme = THEME_ADWAITA,
+            homeDir = File(homeDir.toString()),
+            shellSupported = session.hasGnomeShell,
+        )
+    }
+
+    @Synchronized
     override fun clearSystemTheme() {
         runCatching {
+            switcher.restore()
 //            Log.i("Deleting : file:///${systemGtk3CssFile.absolutePath}")
             systemGtk3CssFile.delete()
 //            Log.i("Deleting : file:///${systemGtk4CssFile.absolutePath}")
@@ -67,19 +97,61 @@ class ThemeManagerLinux(
         }
     }
 
+    // old generator: colors only, no base theme (GTK3 / GTK4 apps ended up half unstyled), no GTK2,
+    // no GNOME Shell, titlebutton hiding also under GNOME - replaced by the version below
+//    override fun createFromPalette() {
+//        runCatching {
+//            createDesktopFile()
+//            createCssFile(gtk3CssFile)
+//            createCssFile(gtk4CssFile)
+//            createCssFile(systemGtk3CssFile)
+//            createCssFile(systemGtk4CssFile)
+//            // applyLiveGtkTheme()
+//        }.onFailure { e ->
+//            Log.e(e)
+//        }
+//    }
+
+    // Stock Ubuntu look (Yaru, Adwaita fallback) recolored from the palette for GTK2/3/4, libadwaita
+    // and GNOME Shell, then pushed live into open windows. Synchronized: palette updates may overlap.
+    @Synchronized
     override fun createFromPalette() {
         runCatching {
             createDesktopFile()
-            createCssFile(gtk3CssFile)
-            createCssFile(gtk4CssFile)
-            createCssFile(systemGtk3CssFile)
-            createCssFile(systemGtk4CssFile)
-            // applyLiveGtkTheme()
+            val colors = GtkThemeColors.from(palette)
+            val gtkChanged = writeGtkFiles(colors)
+            val shellChanged = session.hasGnomeShell && writeShellFile(colors)
+            switcher.apply(colors, gtkChanged, shellChanged)
         }.onFailure { e ->
             Log.e(e)
         }
     }
 
+    // writes every GTK file (no short circuit); true when any changed
+    private fun writeGtkFiles(colors: GtkThemeColors): Boolean = listOf(
+        ThemeFileWriter.writeIfChanged(gtk2RcFile, Gtk2Rc.build(colors)),
+        writeGtkCss(gtk3CssFile, GtkToolkit.GTK3, GtkCssLayer.THEME, colors),
+        writeGtkCss(gtk4CssFile, GtkToolkit.GTK4, GtkCssLayer.THEME, colors),
+        writeGtkCss(systemGtk3CssFile, GtkToolkit.GTK3, GtkCssLayer.USER, colors),
+        writeGtkCss(systemGtk4CssFile, GtkToolkit.GTK4, GtkCssLayer.USER, colors),
+    ).any { changed -> changed }
+
+    private fun writeGtkCss(
+        file: Path,
+        toolkit: GtkToolkit,
+        layer: GtkCssLayer,
+        colors: GtkThemeColors,
+    ): Boolean = ThemeFileWriter.writeIfChanged(
+        file,
+        GtkCss.build(toolkit, layer, colors, session.compositorDrawsFrame),
+    )
+
+    private fun writeShellFile(colors: GtkThemeColors): Boolean = ThemeFileWriter.writeIfChanged(
+        shellCssFile,
+        GnomeShellCss.build(colors, GnomeShellBase.forUbuntuMode(session.usesUbuntuShellMode)),
+    )
+
+    // replaced by LiveThemeSwitcher (also accent, GNOME Shell, restore on clear)
     private fun applyLiveGtkTheme() {
         val scheme =
             if (palette.backgroundColor.isLightColor) {
@@ -151,6 +223,7 @@ class ThemeManagerLinux(
         }
     }
 
+    // old stylesheet writer, replaced by GtkCss / writeGtkCss
     private fun createCssFile(file: Path) {
         runCatching {
             theme(file) {
@@ -193,6 +266,7 @@ class ThemeManagerLinux(
      */
     // ~/.config/gtk-3.0/gtk.css
     // ~/.config/gtk-4.0/gtk.css
+    // old stylesheet model, replaced by GtkThemeColors / GtkNamedColor / GtkCss
     @Suppress("MemberVisibilityCanBePrivate")
     class GtkTheme(
         val file: Path,
