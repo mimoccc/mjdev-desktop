@@ -25,11 +25,17 @@ android {
             libs.versions.android.target.sdk
                 .get()
                 .toInt()
+        // versionCode =
+        //     libs.versions.app.pkg.version
+        //         .get()
+        //         .replace(".", "")
+        //         .toInt()
+        // until 8 Oct 2026: 1.0.10 (1010) outranked 1.1.0 (110); now major * 10000 + minor * 100 + patch
         versionCode =
-            libs.versions.app.pkg.version
-                .get()
-                .replace(".", "")
-                .toInt()
+            VersionCode.of(
+                libs.versions.app.pkg.version
+                    .get(),
+            )
         versionName =
             libs.versions.app.pkg.version
                 .get()
