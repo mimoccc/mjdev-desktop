@@ -110,11 +110,22 @@ class ConnectivityManagerLinux(
         return result
     }
 
-    override fun setBluetoothPowered(powered: Boolean): Result<Boolean> = succeeded(
-        CMD_BLUETOOTHCTL,
-        "power",
-        if (powered) BTH_ON else BTH_OFF,
-    )
+    // old: powering on failed with org.bluez.Error.Blocked while the adapter was rfkill soft-blocked
+//    override fun setBluetoothPowered(powered: Boolean): Result<Boolean> = succeeded(
+//        CMD_BLUETOOTHCTL,
+//        "power",
+//        if (powered) BTH_ON else BTH_OFF,
+//    )
+
+    /** Powers the adapter, lifting an rfkill soft block first (bluez refuses to power a blocked adapter). */
+    override fun setBluetoothPowered(powered: Boolean): Result<Boolean> {
+        if (powered) succeeded(CMD_RFKILL, RFKILL_UNBLOCK, RFKILL_BLUETOOTH)
+        return succeeded(
+            CMD_BLUETOOTHCTL,
+            "power",
+            if (powered) BTH_ON else BTH_OFF,
+        )
+    }
 
     override fun setBluetoothDeviceConnected(
         address: String,
@@ -205,6 +216,11 @@ class ConnectivityManagerLinux(
         const val CMD_NMCLI = "nmcli"
         const val CMD_BLUETOOTHCTL = "bluetoothctl"
         const val CMD_BTH_SHOW = "show"
+
+        /** rfkill tool, the user owns /dev/rfkill in a logind seat so no root is needed. */
+        const val CMD_RFKILL = "rfkill"
+        private const val RFKILL_UNBLOCK = "unblock"
+        private const val RFKILL_BLUETOOTH = "bluetooth"
         val CMD_BTH_DEVICES = arrayOf("devices")
         val CMD_BTH_CONNECTED = arrayOf("devices", "Connected")
         val CMD_BTH_PAIRED = arrayOf("devices", "Paired")
