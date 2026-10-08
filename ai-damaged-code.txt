@@ -5,3 +5,7 @@
 - there should be greeter maded from logon screen
 - somehow there is uncommited code
 - commits should be one line, no description, no claude signs, no co strings no ":"
+- nested window is only black
+- many errors and warnings in build console
+- runIsoQemu damaged
+- unsupported plugin or kotlin version message
