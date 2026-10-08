@@ -58,6 +58,9 @@ fun GlassBackdrop(
         modifier =
             modifier
                 .clip(shape)
+                // opaque base: if the wallpaper picture fails to load the glass stays readable
+                // instead of fully transparent; a loaded wallpaper covers it completely (Crop)
+                .background(backgroundColor)
                 .onGloballyPositioned { origin = it.positionInWindow() }
                 .blur(blurRadius, BlurredEdgeTreatment.Rectangle),
     ) {
