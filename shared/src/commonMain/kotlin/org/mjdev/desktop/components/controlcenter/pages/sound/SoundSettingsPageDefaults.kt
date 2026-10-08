@@ -36,4 +36,28 @@ object SoundSettingsPageDefaults {
 
     /** Accessibility description for the mute toggle button. */
     const val muteToggleDescription: String = "Toggle mute"
+
+    /** Title of the input section (Ubuntu Settings wording). */
+    const val inputTitle: String = "Input"
+
+    /** Label of the output device list. */
+    const val outputDeviceLabel: String = "Output Device"
+
+    /** Label of the input device list. */
+    const val inputDeviceLabel: String = "Input Device"
+
+    /** Label of the output volume slider. */
+    const val outputVolumeLabel: String = "Output Volume"
+
+    /** Label of the input volume slider. */
+    const val inputVolumeLabel: String = "Input Volume"
+
+    /** Label of the sound card configuration (profile) list. */
+    const val profileLabel: String = "Configuration"
+
+    /** Shown when the system reports no device of a kind. */
+    const val noDevices: String = "No devices found"
+
+    /** How often devices are re-read, so plugged / unplugged devices show up (ms). */
+    const val REFRESH_MS: Long = 2000L
 }
