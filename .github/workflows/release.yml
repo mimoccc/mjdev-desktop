@@ -67,7 +67,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: debian:trixie
-      options: --privileged
+      # options: --privileged  until 8 Oct 2026
+      # the live ISO needs a privileged container (root on the host); on the PSippr runner (act, event.act) it is skipped
+      options: ${{ github.event.act && '--init' || '--privileged' }}
     steps:
       - name: Install Debian build dependencies
         shell: bash
@@ -145,7 +147,11 @@ jobs:
       - name: Build linux artifacts
         shell: bash
         continue-on-error: true
-        run: ./gradlew packageAppImageFile :desktopApp:packageReleaseRpm packageFullDeb makeIso -PdepCheck=false --stacktrace --continue
+        # run: ./gradlew packageAppImageFile :desktopApp:packageReleaseRpm packageFullDeb makeIso -PdepCheck=false --stacktrace --continue
+        # 8 Oct 2026: no makeIso on the PSippr runner (owner: "skip iso")
+        env:
+          ISO_TASK: ${{ !github.event.act && 'makeIso' || '' }}
+        run: ./gradlew packageAppImageFile :desktopApp:packageReleaseRpm packageFullDeb $ISO_TASK -PdepCheck=false --stacktrace --continue
 
       # Primary source is releases/ (collectReleases + makeIso). Fall back to jpackage output
       # dirs for partial builds.
@@ -203,7 +209,9 @@ jobs:
               echo "::warning::linux artifact was not produced: $required"
             fi
           done
-          require_artifact "$BASE.iso"
+          # require_artifact "$BASE.iso"  until 8 Oct 2026; the PSippr runner builds no ISO
+          [ -n "${ACT:-}" ] || require_artifact "$BASE.iso"
+          require_artifact "$BASE.deb"
 
       - name: Upload build artifacts
         if: always()
@@ -235,6 +243,11 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      # 8 Oct 2026: the PSippr runner image has no Android SDK (GitHub's runners do); sets it up only where missing
+      - name: Set up Android SDK
+        if: matrix.target == 'android'
+        uses: android-actions/setup-android@v3
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
