@@ -1,0 +1,7 @@
+# here is list of ad artificial demency cyberattack that need to be fixed
+
+- open window is non resizable
+- window does not respon to close button, to min/max button, nothing
+- there should be greeter maded from logon screen
+- somehow there is uncommited code
+- commits should be one line, no description, no claude signs, no co strings no ":"
