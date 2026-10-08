@@ -57,6 +57,12 @@ interface IVolumeManager : IDelegate {
     /** Activates [profile] on its card. No-op where unsupported. */
     fun setProfile(profile: AudioProfile) {}
 
+    /**
+     * Calls [onChange] whenever the system reports a device / card / default change (event driven,
+     * no polling). Close the result to stop watching. No-op where unsupported.
+     */
+    fun watchChanges(onChange: () -> Unit): AutoCloseable = AutoCloseable {}
+
     companion object {
         /** No-op fallback used when no platform manager is available. */
         val EMPTY =

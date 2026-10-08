@@ -58,6 +58,6 @@ object SoundSettingsPageDefaults {
     /** Shown when the system reports no device of a kind. */
     const val noDevices: String = "No devices found"
 
-    /** How often devices are re-read, so plugged / unplugged devices show up (ms). */
+    /** Old polling interval (ms), no longer used: devices are re-read on system change events. */
     const val REFRESH_MS: Long = 2000L
 }

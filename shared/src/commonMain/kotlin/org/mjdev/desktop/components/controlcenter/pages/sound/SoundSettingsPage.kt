@@ -11,6 +11,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -98,8 +99,8 @@ import org.mjdev.desktop.managers.volume.AudioProfile
 /**
  * Control center Sound page laid out like Ubuntu Settings Sound: Output (device, configuration,
  * volume, mute) and Input (device, volume, mute), backed by [IDesktopContext.volumeManager].
- * Devices are re-read every [SoundSettingsPageDefaults.REFRESH_MS] so plugged devices appear;
- * all system calls run off the UI thread. Colored from the wallpaper palette.
+ * Devices are re-read only when the sound system reports a change ([IVolumeManager.watchChanges],
+ * no polling); all system calls run off the UI thread. Colored from the wallpaper palette.
  */
 @Suppress("FunctionName")
 fun SoundSettingsPage(context: IDesktopContext) = ControlCenterPage(
@@ -120,14 +121,33 @@ fun SoundSettingsPage(context: IDesktopContext) = ControlCenterPage(
             profiles = manager.profiles
         }
     }
+    // old: re-read everything every REFRESH_MS (polling, wasted resources)
+    // LaunchedEffect(Unit) {
+    //     while (isActive) {
+    //         withContext(Dispatchers.IO) {
+    //             output.reload()
+    //             input.reload()
+    //             profiles = manager.profiles
+    //         }
+    //         delay(SoundSettingsPageDefaults.REFRESH_MS)
+    //     }
+    // }
+    // event driven: load once, then only when the system reports a change; a burst of events
+    // collapses into one reload (conflated channel); the watch ends when the page closes
     LaunchedEffect(Unit) {
-        while (isActive) {
-            withContext(Dispatchers.IO) {
-                output.reload()
-                input.reload()
-                profiles = manager.profiles
+        val changes = Channel<Unit>(Channel.CONFLATED)
+        changes.trySend(Unit)
+        val watch = manager.watchChanges { changes.trySend(Unit) }
+        try {
+            for (change in changes) {
+                withContext(Dispatchers.IO) {
+                    output.reload()
+                    input.reload()
+                    profiles = manager.profiles
+                }
             }
-            delay(SoundSettingsPageDefaults.REFRESH_MS)
+        } finally {
+            watch.close()
         }
     }
     SettingsPageColumn {

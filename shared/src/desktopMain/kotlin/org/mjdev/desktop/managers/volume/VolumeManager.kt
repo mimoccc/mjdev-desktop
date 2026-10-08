@@ -3,6 +3,7 @@ package org.mjdev.desktop.managers.volume
 import org.mjdev.desktop.context.IDesktopContext
 import org.mjdev.desktop.managers.volume.pactl.Pactl
 import org.mjdev.desktop.managers.volume.pactl.PactlDevices
+import org.mjdev.desktop.managers.volume.pactl.PactlEvents
 import org.mjdev.desktop.managers.volume.pactl.PactlParser
 import org.mjdev.desktop.managers.volume.pactl.PactlTarget
 import java.io.BufferedReader
@@ -141,6 +142,8 @@ class VolumeManager(
     override fun setProfile(profile: AudioProfile) {
         Pactl.run(CMD_SET_CARD_PROFILE, profile.cardId, profile.id)
     }
+
+    override fun watchChanges(onChange: () -> Unit): AutoCloseable = PactlEvents.start(onChange)
 
     private fun runPactl(vararg args: String): String {
         val process = ProcessBuilder("pactl", *args).start()
