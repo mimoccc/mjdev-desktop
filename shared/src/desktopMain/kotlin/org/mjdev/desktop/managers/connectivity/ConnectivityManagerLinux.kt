@@ -157,10 +157,7 @@ class ConnectivityManagerLinux(
         .executeAndReadLines(
             CMD_NMCLI,
             *CMD_NMCLI_GET_NETWORKS,
-        ).map { ws ->
-            WifiNetwork(ws.split(":"))
-        }.distinctBy { it.ssid }
-        .sortedByDescending { it.isActive }
+        ).let(::parseWifiNetworks)
 
     override fun connectWifi(ssid: String): Result<Boolean> = Shell
         .execute(
@@ -193,6 +190,15 @@ class ConnectivityManagerLinux(
             }
 
     companion object {
+        /**
+         * Parses terse `nmcli dev wifi` lines into one network per SSID. An SSID broadcast by
+         * several access points keeps the active one, so the connected network is never dropped.
+         */
+        fun parseWifiNetworks(lines: List<String>): List<WifiNetwork> = lines
+            .map { ws -> WifiNetwork(ws.split(":")) }
+            .sortedByDescending { it.isActive }
+            .distinctBy { it.ssid }
+
         val netDevicesDir = "/sys/class/net/".toPath(true)
         val bthDevicesDir = "/sys/class/bluetooth/".toPath(true)
 
