@@ -2,7 +2,9 @@ package org.mjdev.desktop.helpers.system.shell
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.mjdev.desktop.data.App
 import org.mjdev.desktop.extensions.Custom.consoleOutput
 import org.mjdev.desktop.helpers.exception.ErrorException.Companion.error
@@ -41,37 +43,73 @@ class Shell(
         }
     }
 
+    // old: blocked a Dispatchers.Default thread in waitFor() for the app's whole life (8 running
+    // apps on 8 cores = no app could start any more) and never read the output pipe until exit,
+    // so a chatty app froze once the pipe buffer was full
+//    suspend fun startApp(
+//        app: App,
+//        onStarted: () -> Unit = {},
+//        onStopped: (e: Throwable) -> Unit = {},
+//    ) = ProcessBuilder(
+//        CMD_DEX,
+//        "-w",
+//        app.desktopFile.absolutePath,
+//    ).apply {
+//        environment().putAll(environment.toMap())
+//        redirectErrorStream(true)
+//    }.also { processBuilder ->
+//        runCatching<Process> {
+//            processBuilder.start().let { p ->
+//                onStarted()
+//                p.waitFor()
+//                p
+//            }
+//        }.onFailure { e ->
+//            onStopped(error(e))
+//        }.onSuccess { p ->
+//            if (p.exitValue() == 0) {
+//                onStopped(success(p.consoleOutput))
+//            } else {
+//                onStopped(error(p.consoleOutput))
+//            }
+//        }
+//    }
+
+    /**
+     * Starts [app] via dex and suspends until it exits, without holding a thread: the exit is
+     * awaited, the output goes to the session log instead of an unread pipe.
+     */
     suspend fun startApp(
         app: App,
         onStarted: () -> Unit = {},
         onStopped: (e: Throwable) -> Unit = {},
-    ) = ProcessBuilder(
-        CMD_DEX,
-        "-w",
-        app.desktopFile.absolutePath,
-    ).apply {
-        environment().putAll(environment.toMap())
-        redirectErrorStream(true)
-    }.also { processBuilder ->
-        runCatching<Process> {
-            processBuilder.start().let { p ->
-                onStarted()
-                p.waitFor()
-                p
-            }
+    ) {
+        val builder = ProcessBuilder(
+            CMD_DEX,
+            "-w",
+            app.desktopFile.absolutePath,
+        ).apply {
+            environment().putAll(environment.toMap())
+            redirectErrorStream(true)
+            redirectOutput(ProcessBuilder.Redirect.INHERIT)
+        }
+        runCatching {
+            val process = withContext(Dispatchers.IO) { builder.start() }
+            onStarted()
+            process.onExit().await()
         }.onFailure { e ->
             onStopped(error(e))
-        }.onSuccess { p ->
-            if (p.exitValue() == 0) {
-                onStopped(success(p.consoleOutput))
-            } else {
-                onStopped(error(p.consoleOutput))
-            }
+        }.onSuccess { process ->
+            val exit = "$EXIT_CODE_LABEL${process.exitValue()}"
+            if (process.exitValue() == 0) onStopped(success(exit)) else onStopped(error(exit))
         }
     }
 
     companion object {
         const val CMD_DEX = "dex"
+
+        /** Prefix of the stop message carrying the launched app's exit code. */
+        private const val EXIT_CODE_LABEL = "exit code "
 
         fun executeAndRead(
             cmd: String,
