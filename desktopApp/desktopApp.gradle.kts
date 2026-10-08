@@ -105,6 +105,10 @@ compose.desktop {
                 TargetFormat.Dmg, // macOS installer — only built on a macOS host
             )
             buildTypes.release.proguard {
+                // shrinking removed every class reached only through META-INF/services (coil svg +
+                // network fetchers, vlcj discovery, ktor engines, plugins), so the installed desktop
+                // could not load any image; release ships the same jars as the working dev run
+                isEnabled.set(false)
                 configurationFiles.from("desktopApp.pro")
                 // optional transitive deps (netty -> log4j2) defeat the optimizer's class
                 // hierarchy analysis (IncompleteClassHierarchyException); shrink+obfuscate stay on
