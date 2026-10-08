@@ -420,7 +420,7 @@ jobs:
 #         uses: softprops/action-gh-release@v2
 #         with:
 #           tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', steps.ver.outputs.version) }}
-#           name: mjdev-desktop v${{ steps.ver.outputs.version }}
+#           name: psippr-desktop v${{ steps.ver.outputs.version }}
 #           files: dist/**
 #           fail_on_unmatched_files: false
 #         env:

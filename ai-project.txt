@@ -1,2 +1,2 @@
-PROJECT_NAME=Mjdev Desktop
-PROJECT_PACKAGE=org.mjdev.desktop
+PROJECT_NAME=Psippr Desktop
+PROJECT_PACKAGE=org.psippr.desktop

@@ -1,0 +1,62 @@
+package org.psippr.desktop.components.installer
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import org.psippr.desktop.components.background.BackgroundImage
+import org.psippr.desktop.components.sliding.base.VisibilityState
+import org.psippr.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
+import org.psippr.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.psippr.desktop.extensions.Compose.preview
+
+@Composable
+fun Installer(
+    visibleState: VisibilityState = rememberVisibilityState(),
+    onInstallClick: () -> Unit = {},
+) = withDesktopContext {
+    Box(
+        modifier =
+            Modifier.fillMaxSize().clickable {
+                runAsync {
+                    visibleState.hide()
+                    onInstallClick()
+                }
+            },
+    ) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(backgroundColor),
+            contentAlignment = Alignment.Center,
+        ) {
+            BackgroundImage(
+                modifier = Modifier.fillMaxSize(),
+            )
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .background(iconsTintColor)
+                        .align(Alignment.BottomCenter),
+            ) {
+                // todo
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewInstaller() = preview(320, 320) {
+    Installer()
+}

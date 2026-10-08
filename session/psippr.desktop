@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Psippr Desktop
+Comment=Psippr desktop environment (wayland)
+Exec=psippr-session
+Type=Application
+DesktopNames=psippr

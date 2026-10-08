@@ -1,0 +1,77 @@
+package org.psippr.desktop.components.desktop.widgets
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
+import org.psippr.desktop.components.draggable.DraggableView
+import org.psippr.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.psippr.desktop.log.Log
+import org.psippr.desktop.plugins.IDesktopPlugin
+import org.psippr.desktop.plugins.remote.RemoteAlign
+import org.psippr.desktop.plugins.remote.RemoteDocumentPlayer
+import org.psippr.desktop.plugins.remote.RemoteVariables
+
+/**
+ * Draws one enabled [plugin] on the desktop: its document is rendered by [RemoteDocumentPlayer]
+ * and its variables are refreshed off the UI thread every [IDesktopPlugin.refreshMs]. The widget
+ * can be dragged like the other desktop widgets.
+ */
+@Suppress("FunctionName")
+@Composable
+fun PluginWidget(
+    plugin: IDesktopPlugin,
+    modifier: Modifier = Modifier,
+    // id the dragged position is saved under; null = position is not remembered
+    positionKey: String? = null,
+) = withDesktopContext {
+    val document = remember(plugin) { plugin.document }
+    var variables by remember(plugin) { mutableStateOf(RemoteVariables()) }
+    LaunchedEffect(plugin) {
+        while (isActive) {
+            // A failing plugin keeps its last values instead of crashing the desktop.
+            variables =
+                withContext(Dispatchers.Default) {
+                    runCatching { plugin.variables(context) }
+                        .onFailure { e -> Log.e(e) }
+                        .getOrDefault(variables)
+                }
+            delay(plugin.refreshMs)
+        }
+    }
+    Box(modifier = modifier.fillMaxSize()) {
+        DraggableView(
+            modifier =
+                Modifier
+                    .size(document.width.dp, document.height.dp)
+                    .align(RemoteAlign.parse(document.anchor, RemoteAlign.BOTTOM_END).alignment)
+                    .offset(document.offsetX.dp, document.offsetY.dp),
+            initialPosition = positionKey?.let { key -> widgetPositions.position(key) } ?: Offset.Zero,
+            onPositionChange = { offset -> positionKey?.let { key -> widgetPositions.save(key, offset) } },
+        ) {
+            val custom = plugin.content
+            if (custom != null) {
+                custom(context)
+            } else {
+                RemoteDocumentPlayer(
+                    document = document,
+                    variables = variables,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        }
+    }
+}

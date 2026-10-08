@@ -120,7 +120,7 @@ val appImageToolPath = rootDir.resolve(".gradle/tools/appimagetool-x86_64.AppIma
 // Downloads appimagetool before the build (only if not already present / on PATH).
 val ensureAppImageTool =
     tasks.register<EnsureAppImageToolTask>("ensureAppImageTool") {
-        group = "mjdev"
+        group = "psippr"
         description = "Downloads appimagetool (single-file .AppImage builder) if not already present."
         toolPath.set(appImageToolPath)
         outputs.file(appImageToolPath)
@@ -129,7 +129,7 @@ val ensureAppImageTool =
 // Wraps the jpackage app-image directory into a single, CLI-runnable .AppImage file.
 val packageAppImageFile =
     tasks.register<PackageAppImageTask>("packageAppImageFile") {
-        group = "mjdev"
+        group = "psippr"
         description = "Builds a single-file .AppImage from the jpackage app-image (skips if appimagetool unavailable)."
         dependsOn(ensureAppImageTool, ":desktopApp:packageReleaseAppImage")
         appName.set(appNameV)
@@ -142,7 +142,7 @@ val packageAppImageFile =
 
 // Turns the jpackage desktop .deb into a *complete, self-installable* package: injects the
 // compositor + session + wayland-sessions entry and declares the wayland runtime stack in
-// Depends, so `apt install ./mjdev-desktop.deb` on a clean console Linux pulls libwlroots/
+// Depends, so `apt install ./psippr-desktop.deb` on a clean console Linux pulls libwlroots/
 // xwayland/mesa/... and the desktop actually starts. Overwrites the deb in place so every
 // downstream consumer (collectReleases, makeIso, installDesktop) uses the full deb.
 // runtime wayland stack from the version catalog (single source of truth — not hardcoded here).
@@ -153,7 +153,7 @@ val compositorRuntimeDeps =
         .split(Regex("\\s+"))
 val packageFullDeb =
     tasks.register<PackageFullDebTask>("packageFullDeb") {
-        group = "mjdev"
+        group = "psippr"
         description =
             "Repacks the desktop .deb with the compositor + session + wayland runtime Depends (self-installable)."
         dependsOn(":desktopApp:packageReleaseDeb", ":compositor:stageSession")
@@ -165,10 +165,10 @@ val packageFullDeb =
     }
 
 // Copies all distributables into releases/ with version in the filename
-// (mjdev-desktop-<version>.<ext>). Copy = configuration-cache safe.
+// (psippr-desktop-<version>.<ext>). Copy = configuration-cache safe.
 val collectReleases =
     tasks.register<Copy>("collectReleases") {
-        group = "mjdev"
+        group = "psippr"
         description = "Copies the built distributables into releases/ (versioned filenames)."
         dependsOn(
             ":desktopApp:packageReleaseDistributionForCurrentOS",
@@ -209,8 +209,8 @@ val collectReleases =
 // returns 0, so it never breaks buildAll on a plain dev machine.
 val makeIso =
     tasks.register("makeIso") {
-        group = "mjdev"
-        description = "Builds the minimal bootable mjdev desktop live ISO into releases/ (needs root / pkexec)."
+        group = "psippr"
+        description = "Builds the minimal bootable psippr desktop live ISO into releases/ (needs root / pkexec)."
         dependsOn(packageFullDeb)
         // capture plain Strings at configuration time — the doLast closure must not reference
         // script-level vals (that captures the script instance, which is null under the
@@ -267,7 +267,7 @@ val makeIso =
                     "--deb",
                     deb.absolutePath,
                     "--compositor-bin",
-                    File(sessionStagePath, "mjdevc").absolutePath,
+                    File(sessionStagePath, "psipprc").absolutePath,
                     "--session-dir",
                     sessionStagePath,
                     "--extra-debs",
@@ -288,8 +288,8 @@ val makeIso =
 
 // Boots the built ISO in QEMU (no root needed).
 tasks.register("runIsoQemu") {
-    group = "mjdev"
-    description = "Boots the mjdev desktop ISO in QEMU."
+    group = "psippr"
+    description = "Boots the psippr desktop ISO in QEMU."
     val script = rootDir.resolve("run-iso-qemu.sh")
     doLast {
         val code = ProcessBuilder("/bin/bash", script.absolutePath).inheritIO().start().waitFor()
@@ -303,7 +303,7 @@ makeIso.configure { mustRunAfter(collectReleases) }
 
 val buildAll =
     tasks.register("buildAll") {
-        group = "mjdev"
+        group = "psippr"
         description =
             "Builds all distributables this host can produce, collects them into releases/ (stable names), and generates reports into reports/ — like every build."
         dependsOn(collectReleases, makeIso, postBuildCodeCheck)

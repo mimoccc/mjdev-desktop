@@ -5,13 +5,13 @@
  *  e: mj@mjdev.org
  *  w: https://mjdev.org
  *
- * Flat C API over wlroots for the mjdev compositor.
+ * Flat C API over wlroots for the psippr compositor.
  * This header is self contained (no wlroots includes) so it can be
  * processed by Kotlin/Native cinterop directly.
  */
 
-#ifndef MJDEV_COMPOSITOR_SHIM_H
-#define MJDEV_COMPOSITOR_SHIM_H
+#ifndef PSIPPR_COMPOSITOR_SHIM_H
+#define PSIPPR_COMPOSITOR_SHIM_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -131,4 +131,4 @@ void mjc_key(mjc_server *server, uint32_t keycode, bool pressed);
 }
 #endif
 
-#endif /* MJDEV_COMPOSITOR_SHIM_H */
+#endif /* PSIPPR_COMPOSITOR_SHIM_H */

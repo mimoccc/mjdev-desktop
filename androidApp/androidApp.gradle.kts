@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "org.mjdev.desktop"
+    namespace = "org.psippr.desktop"
     compileSdk =
         libs.versions.android.compile.sdk
             .get()
@@ -16,7 +16,7 @@ android {
     sourceSets["main"].assets.directories.add(rootDir.resolve("shared/src/commonMain/resources").path)
     sourceSets["main"].resources.directories.add(rootDir.resolve("shared/src/commonMain/composeResources").path)
     defaultConfig {
-        applicationId = "org.mjdev.desktop"
+        applicationId = "org.psippr.desktop"
         minSdk =
             libs.versions.android.min.sdk
                 .get()

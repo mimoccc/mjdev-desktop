@@ -3,20 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name="org.mjdev.desktop.app.App"
+        android:name="org.psippr.desktop.app.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Mjdev"
+        android:theme="@style/Theme.Psippr"
         tools:targetApi="31">
         
         <activity
-            android:name="org.mjdev.desktop.activity.MainActivity"
+            android:name="org.psippr.desktop.activity.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.Mjdev"
+            android:theme="@style/Theme.Psippr"
             android:configChanges="orientation|screenSize|keyboardHidden|navigation"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

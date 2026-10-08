@@ -1,4 +1,4 @@
-# Mjdev Desktop
+# Psippr Desktop
 
 An kotlin compose desktop environment like DDE Desktop.
 New desktop environment with many functionality i miss in another desktops.

@@ -59,7 +59,7 @@ val FOLDER_DISTRIBUTION = "distribution"
 
 val PLUGIN_FILE_NAME = "plugin.zip"
 
-val TASK_GROUP = "mjdev"
+val TASK_GROUP = "psippr"
 val TASK_BUILD_PLUGIN = "installPlugin"
 val PROJECT_IDE_PLUGIN = "studio-plugin"
 val DEPENDENCY_BUILD_SRC = ":$PROJECT_IDE_PLUGIN:$TASK_BUILD_PLUGIN"

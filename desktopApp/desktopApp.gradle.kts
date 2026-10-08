@@ -30,7 +30,7 @@ tasks.register("desktopRun") {
 compose.desktop {
     application {
         jvmArgs("-Dprism.order=sw")
-        mainClass = "org.mjdev.desktop.main.MainKt"
+        mainClass = "org.psippr.desktop.main.MainKt"
         // jpackage (createDistributable/packageDeb) needs a full JDK; the IDE's bundled JBR
         // (e.g. Android Studio's) ships without jpackage, so resolve a jpackage-capable JDK
         // explicitly. Override with JPACKAGE_HOME or JAVA_HOME; falls back to system JDKs.
@@ -77,7 +77,7 @@ compose.desktop {
             val macSignIdentity = System.getenv("MACOS_SIGN_IDENTITY")
             if (!macSignIdentity.isNullOrBlank()) {
                 macOS {
-                    bundleID = System.getenv("MACOS_BUNDLE_ID") ?: "org.mjdev.desktop"
+                    bundleID = System.getenv("MACOS_BUNDLE_ID") ?: "org.psippr.desktop"
                     signing {
                         sign.set(true)
                         identity.set(macSignIdentity)

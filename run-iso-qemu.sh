@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Boots mjdev-desktop-<version>.iso in QEMU so the wayland desktop can be tried
+# Boots psippr-desktop-<version>.iso in QEMU so the wayland desktop can be tried
 # without touching the host session. Uses KVM and virtio-gpu GL acceleration
 # when available (the desktop needs GL), falls back to plain emulation.
 #
@@ -9,9 +9,9 @@
 #                                     # grab + control (127.0.0.1:5900). egl-headless keeps
 #                                     # GL working without a host display. Connect with any
 #                                     # VNC client / vncsnapshot / gvncviewer.
-#   MJDEV_QEMU_VNC=1 ./run-iso-qemu.sh           # same via env
-#   MJDEV_QEMU_VNC_DISPLAY=2 ./run-iso-qemu.sh --vnc   # 127.0.0.1:5902
-#   MJDEV_QEMU_VNC_HOST=0.0.0.0 ./run-iso-qemu.sh --vnc  # listen on all interfaces
+#   PSIPPR_QEMU_VNC=1 ./run-iso-qemu.sh           # same via env
+#   PSIPPR_QEMU_VNC_DISPLAY=2 ./run-iso-qemu.sh --vnc   # 127.0.0.1:5902
+#   PSIPPR_QEMU_VNC_HOST=0.0.0.0 ./run-iso-qemu.sh --vnc  # listen on all interfaces
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -20,7 +20,7 @@ read_catalog() { sed -n "s/^$1 *= *\"\(.*\)\"/\1/p" "$CATALOG"; }
 APP_NAME="$(read_catalog app-name)"
 VERSION="$(read_catalog app-pkg-version)"
 
-VNC="${MJDEV_QEMU_VNC:-0}"
+VNC="${PSIPPR_QEMU_VNC:-0}"
 ISO=""
 for a in "$@"; do
     case "$a" in
@@ -29,12 +29,12 @@ for a in "$@"; do
     esac
 done
 ISO="${ISO:-$HERE/releases/$APP_NAME-$VERSION.iso}"
-RAM="${MJDEV_QEMU_RAM:-4096}"
-CPUS="${MJDEV_QEMU_CPUS:-4}"
-VNC_HOST="${MJDEV_QEMU_VNC_HOST:-127.0.0.1}"
-VNC_DISPLAY="${MJDEV_QEMU_VNC_DISPLAY:-0}"
-QEMU_WIDTH="${MJDEV_QEMU_WIDTH:-1024}"
-QEMU_HEIGHT="${MJDEV_QEMU_HEIGHT:-768}"
+RAM="${PSIPPR_QEMU_RAM:-4096}"
+CPUS="${PSIPPR_QEMU_CPUS:-4}"
+VNC_HOST="${PSIPPR_QEMU_VNC_HOST:-127.0.0.1}"
+VNC_DISPLAY="${PSIPPR_QEMU_VNC_DISPLAY:-0}"
+QEMU_WIDTH="${PSIPPR_QEMU_WIDTH:-1024}"
+QEMU_HEIGHT="${PSIPPR_QEMU_HEIGHT:-768}"
 
 command -v qemu-system-x86_64 >/dev/null 2>&1 || { echo "qemu-system-x86_64 not found (apt install qemu-system-x86)"; exit 1; }
 [ -f "$ISO" ] || { echo "iso not found: $ISO"; echo "build it first: ./gradlew makeIso"; exit 1; }

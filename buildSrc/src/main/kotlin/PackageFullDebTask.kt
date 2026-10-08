@@ -8,12 +8,12 @@ import java.security.MessageDigest
 
 /**
  * Turns the jpackage desktop `.deb` (which only carries the Compose app + its Java/X deps) into a
- * *complete, self-installable* mjdev-desktop package, in place:
+ * *complete, self-installable* psippr-desktop package, in place:
  *
- *  - injects the wayland compositor (`mjdevc`), the session launcher (`mjdev-session`) and the
+ *  - injects the wayland compositor (`psipprc`), the session launcher (`psippr-session`) and the
  *    `wayland-sessions` entry, so one deb is the whole desktop, not just the app;
  *  - rewrites `Depends`: strips the ubuntu-only `libjpeg-turbo8` (absent on Debian; Skiko bundles
- *    its codecs) and appends the wayland runtime stack, so `apt install ./mjdev-desktop.deb` on a
+ *    its codecs) and appends the wayland runtime stack, so `apt install ./psippr-desktop.deb` on a
  *    clean console Linux pulls libwlroots/xwayland/mesa/… and the desktop actually starts (plain
  *    `dpkg -i` can't resolve deps — that is why fresh installs black-screened);
  *  - adds `Recommends: seatd`, a postinst (drop the stale X11 session, enable seatd, ldconfig),
@@ -26,7 +26,7 @@ import java.security.MessageDigest
  */
 abstract class PackageFullDebTask : DefaultTask() {
     @get:Input abstract val debDir: Property<String>        // dir holding the jpackage .deb (overwritten in place)
-    @get:Input abstract val sessionDir: Property<String>    // stageSession output: mjdevc + mjdev-session + mjdev.desktop
+    @get:Input abstract val sessionDir: Property<String>    // stageSession output: psipprc + psippr-session + psippr.desktop
     @get:Input abstract val runtimeDepends: ListProperty<String> // wayland runtime stack to add to Depends
 
     @TaskAction
@@ -40,17 +40,17 @@ abstract class PackageFullDebTask : DefaultTask() {
         val deb = dir.listFiles { f -> f.extension == "deb" }?.firstOrNull()
         if (deb == null) { logger.lifecycle("[full-deb] no .deb in $dir — skipping"); return }
         val sess = File(sessionDir.get())
-        val mjdevc = File(sess, "mjdevc")
-        check(mjdevc.canExecute()) { "[full-deb] mjdevc not found in $sess (run :compositor:stageSession)" }
+        val psipprc = File(sess, "psipprc")
+        check(psipprc.canExecute()) { "[full-deb] psipprc not found in $sess (run :compositor:stageSession)" }
 
-        val work = File.createTempFile("mjdev-fulldeb", "").apply { delete(); mkdirs() }
+        val work = File.createTempFile("psippr-fulldeb", "").apply { delete(); mkdirs() }
         try {
             run(dpkgDeb, "-R", deb.absolutePath, work.absolutePath)
 
             // the whole desktop in one package
-            mjdevc.copyExec(File(work, "usr/bin/mjdevc"))
-            File(sess, "mjdev-session").copyExec(File(work, "usr/bin/mjdev-session"))
-            File(sess, "mjdev.desktop").copyInto(File(work, "usr/share/wayland-sessions/mjdev.desktop"), 420)
+            psipprc.copyExec(File(work, "usr/bin/psipprc"))
+            File(sess, "psippr-session").copyExec(File(work, "usr/bin/psippr-session"))
+            File(sess, "psippr.desktop").copyInto(File(work, "usr/share/wayland-sessions/psippr.desktop"), 420)
 
             rewriteControl(File(work, "DEBIAN/control"))
             writePostinst(File(work, "DEBIAN/postinst"))
@@ -90,8 +90,8 @@ abstract class PackageFullDebTask : DefaultTask() {
             #!/bin/sh
             set -e
             if [ "${'$'}1" = configure ]; then
-                rm -f /usr/share/xsessions/mjdev-desktop.desktop \
-                      /usr/share/gnome-session/sessions/mjdev-desktop.session 2>/dev/null || true
+                rm -f /usr/share/xsessions/psippr-desktop.desktop \
+                      /usr/share/gnome-session/sessions/psippr-desktop.session 2>/dev/null || true
                 systemctl enable seatd 2>/dev/null || true
                 ldconfig 2>/dev/null || true
             fi

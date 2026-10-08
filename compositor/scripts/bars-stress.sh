@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 # Randomized stress test for the shell bars (dock / control-center / apps menu), driven entirely
-# through the mjdev compositor IPC socket — no real mouse needed. It injects pointer moves, clicks
+# through the psippr compositor IPC socket — no real mouse needed. It injects pointer moves, clicks
 # and keys in randomized cycles mimicking real use:
 #   reveal dock, open menu (click menu icon), hover control center, click desktop centre,
 #   launch an app from the dock, close launched app windows.
 # It does NOT assert by itself — read the shell log afterwards (analyze section below) for
 # size flip-flops, position drift, show/hide floods and jams.
 #
-# Usage: bars-stress.sh [cycles]   (default 32). Requires a running nested/real mjdevc.
+# Usage: bars-stress.sh [cycles]   (default 32). Requires a running nested/real psipprc.
 set -u
 
-SOCK="${MJDEV_SOCK:-${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/mjdev-compositor.sock}"
+SOCK="${PSIPPR_SOCK:-${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/psippr-compositor.sock}"
 CYCLES="${1:-32}"
-W=1280; H=720                       # nested output (MJDEVC_OUTPUT)
+W=1280; H=720                       # nested output (PSIPPRC_OUTPUT)
 ESC=1                               # evdev KEY_ESC
 
 [ -S "$SOCK" ] || { echo "no compositor socket at $SOCK"; exit 1; }

@@ -74,7 +74,7 @@ val systemLibDirs =
 
 val generateProtocols =
     tasks.register<Exec>("generateProtocols") {
-        group = "mjdev"
+        group = "psippr"
         description = "Generates wayland protocol headers used by the compositor shim."
         val outDir = protocolsDir.get().asFile
         val xdgShellXml = "/usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml"
@@ -90,7 +90,7 @@ val generateProtocols =
 
 val compileShim =
     tasks.register<Exec>("compileShim") {
-        group = "mjdev"
+        group = "psippr"
         description = "Compiles the C shim over wlroots into a static library."
         dependsOn(generateProtocols)
         // capture everything as local values at configuration time so the doFirst closure
@@ -123,13 +123,13 @@ kotlin {
         compilations.getByName("main") {
             cinterops.create("shim") {
                 defFile(nativeDir.resolve("shim.def"))
-                packageName("mjdev.compositor.shim")
+                packageName("psippr.compositor.shim")
                 includeDirs(nativeDir)
             }
         }
         binaries {
-            executable("mjdevc") {
-                entryPoint = "eu.mjdev.compositor.main"
+            executable("psipprc") {
+                entryPoint = "eu.psippr.compositor.main"
                 // link against the system glibc instead of the old bundled
                 // sysroot, system libs (wlroots & co) need modern symbols
                 val gccVersion =
@@ -185,24 +185,24 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink>().configureEa
 // generated wayland protocol headers are needed just for compileShim
 
 tasks.register<Copy>("stageSession") {
-    group = "mjdev"
+    group = "psippr"
     description = "Stages the compositor binary and session files for installation."
-    dependsOn("linkMjdevcReleaseExecutableLinuxX64")
-    from(layout.buildDirectory.file("bin/linuxX64/mjdevcReleaseExecutable/mjdevc.kexe")) {
-        rename { "mjdevc" }
+    dependsOn("linkPsipprcReleaseExecutableLinuxX64")
+    from(layout.buildDirectory.file("bin/linuxX64/psipprcReleaseExecutable/psipprc.kexe")) {
+        rename { "psipprc" }
     }
-    from(rootProject.file("session/mjdev-session"))
-    from(rootProject.file("session/mjdev.desktop"))
+    from(rootProject.file("session/psippr-session"))
+    from(rootProject.file("session/psippr.desktop"))
     into(layout.buildDirectory.dir("session-install"))
 }
 
 // Privileged install steps for the compositor + wayland session. Installs the binary, the
 // session launcher and the wayland-sessions entry, and removes the stale 2024 X11
-// "mjdev-desktop" session that shadows ours (same display name) and breaks login. Lines are
+// "psippr-desktop" session that shadows ours (same display name) and breaks login. Lines are
 // built at configuration time (staged paths are static) so the Exec stays config-cache safe.
 // built at configuration time (staged paths are static) so referencing the result from doLast
 // stays configuration-cache safe (the function itself is never captured in the task action).
-// the wayland runtime stack mjdevc needs — from the version catalog (single source of truth,
+// the wayland runtime stack psipprc needs — from the version catalog (single source of truth,
 // shared with the deb Depends and make-iso.sh), never hardcoded here.
 val compositorRuntimeDeps: String =
     libs.versions.app.compositor.runtime.deps
@@ -227,7 +227,7 @@ fun sessionInstallLines(staged: File): List<String> = listOf(
     // not wlroots). dpkg can't resolve these, so apt-install them explicitly. libwlroots-0.18
     // pulls libdrm/libgbm/libinput/libseat/libxkbcommon/libwayland/libdisplay-info/libliftoff;
     // xwayland = X display for the AWT-based Compose shell; libgl1-mesa-dri = the GL/EGL driver
-    // (incl. llvmpipe software fallback). Without these mjdevc fails to even load -> black screen.
+    // (incl. llvmpipe software fallback). Without these psipprc fails to even load -> black screen.
     "$aptGet update || true",
     "$aptGet install --no-install-recommends -y $compositorRuntimeDeps seatd || " +
         "echo 'WARN: apt could not install the wayland runtime stack (offline or non-debian?) — the desktop may not start'",
@@ -237,19 +237,19 @@ fun sessionInstallLines(staged: File): List<String> = listOf(
     "_u=\"\$(getent passwd \"\${PKEXEC_UID:-\${SUDO_UID:-1000}}\" | cut -d: -f1)\"",
     "[ -n \"\$_u\" ] && usermod -aG video,input,render \"\$_u\" 2>/dev/null || true",
     "getent group seat >/dev/null 2>&1 && [ -n \"\$_u\" ] && usermod -aG seat \"\$_u\" 2>/dev/null || true",
-    "install -Dm755 '${staged.resolve("mjdevc")}' /usr/local/bin/mjdevc",
-    "install -Dm755 '${staged.resolve("mjdev-session")}' /usr/local/bin/mjdev-session",
-    "install -Dm644 '${staged.resolve("mjdev.desktop")}' /usr/share/wayland-sessions/mjdev.desktop",
-    "rm -f /usr/share/xsessions/mjdev-desktop.desktop " +
-        "/usr/share/gnome-session/sessions/mjdev-desktop.session " +
-        "/usr/share/applications/mjdev-desktop-mjdev-desktop.desktop",
+    "install -Dm755 '${staged.resolve("psipprc")}' /usr/local/bin/psipprc",
+    "install -Dm755 '${staged.resolve("psippr-session")}' /usr/local/bin/psippr-session",
+    "install -Dm644 '${staged.resolve("psippr.desktop")}' /usr/share/wayland-sessions/psippr.desktop",
+    "rm -f /usr/share/xsessions/psippr-desktop.desktop " +
+        "/usr/share/gnome-session/sessions/psippr-desktop.session " +
+        "/usr/share/applications/psippr-desktop-psippr-desktop.desktop",
 )
 
 // sudo can't read a password from the Gradle daemon (no TTY), so these tasks don't exec it —
 // they stage everything, write a self-contained install script under build/, and print the one
 // sudo command for the user to run in their own terminal.
 tasks.register("installSession") {
-    group = "mjdev"
+    group = "psippr"
     description = "Stages the compositor + wayland session, prints the sudo install command."
     dependsOn("stageSession")
     val staged =
@@ -267,11 +267,11 @@ tasks.register("installSession") {
 }
 
 // Complete (re)install: compositor + wayland session + the desktop app .deb (the session's
-// shell, /opt/mjdev-desktop), and the stale-session cleanup — one script run as root via a
+// shell, /opt/psippr-desktop), and the stale-session cleanup — one script run as root via a
 // pkexec (polkit) authentication dialog. pkexec needs no TTY (unlike sudo), so it works from
 // the detached Gradle daemon and prompts graphically; if it's missing we print the sudo command.
 tasks.register<Exec>("installDesktop") {
-    group = "mjdev"
+    group = "psippr"
     description = "Builds compositor + session + app .deb and installs it via a pkexec authentication dialog."
     dependsOn("stageSession", ":desktopApp:packageReleaseDeb", ":packageFullDeb")
     val staged =
@@ -306,7 +306,7 @@ tasks.register<Exec>("installDesktop") {
             listOf("/usr/bin/pkexec", "/usr/local/bin/pkexec")
                 .firstOrNull { File(it).canExecute() }
         if (pkexec != null) {
-            println("Installing the mjdev desktop — approve the authentication dialog…")
+            println("Installing the psippr desktop — approve the authentication dialog…")
             commandLine(pkexec, "sh", script.absolutePath)
         } else {
             println("pkexec not found. Install the desktop (single sudo prompt) with:")
@@ -318,19 +318,19 @@ tasks.register<Exec>("installDesktop") {
 }
 
 tasks.register<Exec>("runNested") {
-    group = "mjdev"
+    group = "psippr"
     description = "Runs the compositor nested inside the current Wayland session."
-    dependsOn("linkMjdevcDebugExecutableLinuxX64")
+    dependsOn("linkPsipprcDebugExecutableLinuxX64")
     val shellCmd = (project.findProperty("shellCmd") as String?)
     val binary =
         layout.buildDirectory
-            .file("bin/linuxX64/mjdevcDebugExecutable/mjdevc.kexe")
+            .file("bin/linuxX64/psipprcDebugExecutable/psipprc.kexe")
             .get()
             .asFile.absolutePath
     // x11 backend -> the host window manager decorates the nested window (frame + close +
     // move); 16:9 nested output (the compositor locks it against resize)
     environment("WLR_BACKENDS", "x11")
-    environment("MJDEVC_OUTPUT", "1280x720")
+    environment("PSIPPRC_OUTPUT", "1280x720")
     doFirst {
         // host X11 auth for the nested wlroots x11 backend, resolved at execution time:
         // the detached Gradle daemon often lacks a valid XAUTHORITY, and mutter writes a
@@ -358,14 +358,14 @@ tasks.register<Exec>("runNested") {
 
 // Runs the Compose desktop app as the shell client inside the nested compositor.
 // The desktop app is packaged with its own JRE (createDistributable) and launched via
-// XWayland, so it shows up as a window managed by mjdevc (fixed 16:9, movable, closable).
+// XWayland, so it shows up as a window managed by psipprc (fixed 16:9, movable, closable).
 tasks.register<Exec>("runNestedDesktop") {
-    group = "mjdev"
-    description = "Runs the mjdev desktop app as a client inside the nested compositor."
-    dependsOn("linkMjdevcDebugExecutableLinuxX64", ":desktopApp:createDistributable")
+    group = "psippr"
+    description = "Runs the psippr desktop app as a client inside the nested compositor."
+    dependsOn("linkPsipprcDebugExecutableLinuxX64", ":desktopApp:createDistributable")
     val binary =
         layout.buildDirectory
-            .file("bin/linuxX64/mjdevcDebugExecutable/mjdevc.kexe")
+            .file("bin/linuxX64/psipprcDebugExecutable/psipprc.kexe")
             .get()
             .asFile.absolutePath
     // desktopApp overrides outputBaseDir to <root>/packages, so createDistributable
@@ -373,7 +373,7 @@ tasks.register<Exec>("runNestedDesktop") {
     val appDir = rootProject.rootDir.resolve("packages/main/app")
     // x11 backend -> host-decorated nested window (frame + close + move); fixed 16:9 output
     environment("WLR_BACKENDS", "x11")
-    environment("MJDEVC_OUTPUT", "1280x720")
+    environment("PSIPPRC_OUTPUT", "1280x720")
     doFirst {
         // host X11 auth for the nested wlroots x11 backend, resolved at execution time:
         // the detached Gradle daemon often lacks a valid XAUTHORITY, and mutter writes a

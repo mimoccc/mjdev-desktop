@@ -73,7 +73,7 @@ kotlin {
 // resources config
 composeResources {
     publicResClass = true
-    packageOfResClass = "org.mjdev.desktop.resources"
+    packageOfResClass = "org.psippr.desktop.resources"
     generateResClass = always
 }
 
@@ -102,7 +102,7 @@ targets {
     }
 
     androidLibrary {
-        namespace = "org.mjdev.desktop.shared"
+        namespace = "org.psippr.desktop.shared"
         compileSdk =
             libs.versions.android.compile.sdk
                 .get()

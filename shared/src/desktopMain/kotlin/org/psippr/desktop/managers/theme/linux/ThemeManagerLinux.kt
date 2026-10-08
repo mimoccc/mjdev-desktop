@@ -1,0 +1,566 @@
+/*
+ * Copyright (c) Milan Jurkulák 2024.
+ *  Contact:
+ *  e: mimoccc@gmail.com
+ *  e: mj@mjdev.org
+ *  w: https://mjdev.org
+ */
+
+package org.psippr.desktop.managers.theme.linux
+
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import okio.Path
+import okio.Path.Companion.toPath
+import org.psippr.desktop.context.IDesktopContext
+import org.psippr.desktop.data.DesktopEntryType
+import org.psippr.desktop.data.DesktopFile.Companion.desktopFile
+import org.psippr.desktop.extensions.Colors.SuperDarkGray
+import org.psippr.desktop.extensions.Colors.darker
+import org.psippr.desktop.extensions.Colors.isLightColor
+import org.psippr.desktop.extensions.PathExt.absolutePath
+import org.psippr.desktop.extensions.PathExt.delete
+import org.psippr.desktop.extensions.PathExt.exists
+import org.psippr.desktop.extensions.PathExt.get
+import org.psippr.desktop.extensions.PathExt.mkdirs
+import org.psippr.desktop.extensions.PathExt.parentFile
+import org.psippr.desktop.extensions.PathExt.writeText
+import org.psippr.desktop.extensions.StringExt.hexRgb
+import org.psippr.desktop.helpers.system.shell.Shell
+import org.psippr.desktop.log.Log
+import org.psippr.desktop.managers.theme.base.ThemeManagerStub
+import org.psippr.desktop.managers.theme.linux.gtk.Gtk2Rc
+import org.psippr.desktop.managers.theme.linux.gtk.GtkCss
+import org.psippr.desktop.managers.theme.linux.gtk.GtkCssLayer
+import org.psippr.desktop.managers.theme.linux.gtk.GtkThemeColors
+import org.psippr.desktop.managers.theme.linux.gtk.GtkToolkit
+import org.psippr.desktop.managers.theme.linux.session.DesktopSession
+import org.psippr.desktop.managers.theme.linux.shell.GnomeShellBase
+import org.psippr.desktop.managers.theme.linux.shell.GnomeShellCss
+import java.io.File
+import java.util.concurrent.CompletableFuture.runAsync
+
+@Suppress("unused", "MemberVisibilityCanBePrivate")
+class ThemeManagerLinux(
+    context: IDesktopContext,
+) : ThemeManagerStub(context) {
+    private val palette = context.palette
+    private val themeName = THEME_PSIPPR
+    private val homeDir = context.currentUser?.homeDir ?: "/".toPath()
+    private val themesDir = homeDir[".themes"]
+    private val systemThemeDir = homeDir[".config"]
+    private val themeDir = themesDir[themeName]
+    private val themeDesktopFile = themeDir["index.theme"]
+    private val gtk2ThemeDir = themeDir["gtk-2.0"]
+    private val gtk3ThemeDir = themeDir["gtk-3.0"]
+    private val gtk4ThemeDir = themeDir["gtk-4.0"]
+    private val gtk3CssFile = gtk3ThemeDir["gtk.css"]
+    private val gtk4CssFile = gtk4ThemeDir["gtk.css"]
+    private val systemGtk3ThemeDir = systemThemeDir["gtk-3.0"]
+    private val systemGtk4ThemeDir = systemThemeDir["gtk-4.0"]
+    private val systemGtk3CssFile = systemGtk3ThemeDir["gtk.css"]
+    private val systemGtk4CssFile = systemGtk4ThemeDir["gtk.css"]
+
+    // GTK2 theme file (~/.themes/Psippr/gtk-2.0/gtkrc)
+    private val gtk2RcFile = gtk2ThemeDir[Gtk2Rc.FILE_NAME]
+
+    // GNOME Shell stylesheet loaded by the User Themes extension
+    private val shellCssFile = themeDir[GnomeShellCss.DIR_NAME][GnomeShellCss.FILE_NAME]
+
+    // session decides window chrome rules and whether GNOME Shell is themed
+    private val session = DesktopSession.current()
+
+    // pushes the generated theme into running apps and GNOME Shell, restores old values on clear
+    private val switcher by lazy {
+        LiveThemeSwitcher.create(
+            themeName = themeName,
+            fallbackGtkTheme = THEME_ADWAITA,
+            homeDir = File(homeDir.toString()),
+            shellSupported = session.hasGnomeShell,
+        )
+    }
+
+    @Synchronized
+    override fun clearSystemTheme() {
+        runCatching {
+            switcher.restore()
+//            Log.i("Deleting : file:///${systemGtk3CssFile.absolutePath}")
+            systemGtk3CssFile.delete()
+//            Log.i("Deleting : file:///${systemGtk4CssFile.absolutePath}")
+            systemGtk4CssFile.delete()
+//            Log.i("Deleting theme : file:///${themeDesktopFile.parentFile.absolutePath}")
+            themeDesktopFile.parentFile.delete()
+        }.onFailure { e ->
+            Log.e(e)
+        }.onSuccess {
+            Log.d("Custom system theme cleared.")
+        }
+    }
+
+    // old generator: colors only, no base theme (GTK3 / GTK4 apps ended up half unstyled), no GTK2,
+    // no GNOME Shell, titlebutton hiding also under GNOME - replaced by the version below
+//    override fun createFromPalette() {
+//        runCatching {
+//            createDesktopFile()
+//            createCssFile(gtk3CssFile)
+//            createCssFile(gtk4CssFile)
+//            createCssFile(systemGtk3CssFile)
+//            createCssFile(systemGtk4CssFile)
+//            // applyLiveGtkTheme()
+//        }.onFailure { e ->
+//            Log.e(e)
+//        }
+//    }
+
+    // Stock Ubuntu look (Yaru, Adwaita fallback) recolored from the palette for GTK2/3/4, libadwaita
+    // and GNOME Shell, then pushed live into open windows. Synchronized: palette updates may overlap.
+    @Synchronized
+    override fun createFromPalette() {
+        runCatching {
+            createDesktopFile()
+            val colors = GtkThemeColors.from(palette)
+            val gtkChanged = writeGtkFiles(colors)
+            val shellChanged = session.hasGnomeShell && writeShellFile(colors)
+            switcher.apply(colors, gtkChanged, shellChanged)
+        }.onFailure { e ->
+            Log.e(e)
+        }
+    }
+
+    // writes every GTK file (no short circuit); true when any changed
+    private fun writeGtkFiles(colors: GtkThemeColors): Boolean = listOf(
+        ThemeFileWriter.writeIfChanged(gtk2RcFile, Gtk2Rc.build(colors)),
+        writeGtkCss(gtk3CssFile, GtkToolkit.GTK3, GtkCssLayer.THEME, colors),
+        writeGtkCss(gtk4CssFile, GtkToolkit.GTK4, GtkCssLayer.THEME, colors),
+        writeGtkCss(systemGtk3CssFile, GtkToolkit.GTK3, GtkCssLayer.USER, colors),
+        writeGtkCss(systemGtk4CssFile, GtkToolkit.GTK4, GtkCssLayer.USER, colors),
+    ).any { changed -> changed }
+
+    private fun writeGtkCss(
+        file: Path,
+        toolkit: GtkToolkit,
+        layer: GtkCssLayer,
+        colors: GtkThemeColors,
+    ): Boolean = ThemeFileWriter.writeIfChanged(
+        file,
+        GtkCss.build(toolkit, layer, colors, session.compositorDrawsFrame),
+    )
+
+    private fun writeShellFile(colors: GtkThemeColors): Boolean = ThemeFileWriter.writeIfChanged(
+        shellCssFile,
+        GnomeShellCss.build(colors, GnomeShellBase.forUbuntuMode(session.usesUbuntuShellMode)),
+    )
+
+    // replaced by LiveThemeSwitcher (also accent, GNOME Shell, restore on clear)
+    private fun applyLiveGtkTheme() {
+        val scheme =
+            if (palette.backgroundColor.isLightColor) {
+                COLOR_SCHEME_PREFER_LIGHT
+            } else {
+                COLOR_SCHEME_PREFER_DARK
+            }
+        runCatching {
+            // GTK_THEME env var overrides gsettings and blocks live reload — theme name must
+            // come only from gsettings so open apps pick up rewritten gtk.css on notify.
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "color-scheme",
+                scheme,
+            )
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "gtk-theme",
+                THEME_PSIPPR,
+            )
+            // Brief hop away and back forces GTK to re-read ~/.themes/Psippr and gtk.css.
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "gtk-theme",
+                THEME_ADWAITA,
+            )
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "gtk-theme",
+                THEME_PSIPPR,
+            )
+            Log.d("Live GTK theme applied: $THEME_PSIPPR color-scheme=$scheme")
+        }.onFailure { e ->
+            Log.w("Live GTK theme apply failed (gsettings unavailable?): ${e.message}")
+        }
+    }
+
+    private fun createDesktopFile() = runAsync {
+        runCatching {
+            desktopFile(themeDesktopFile) {
+                mkDirs()
+                deleteFile()
+                desktopSection {
+                    Type = DesktopEntryType.Theme
+                    Name = THEME_PSIPPR
+                    Comment = "dynamic system theme"
+                    Encoding = Charsets.UTF_8.name()
+                }
+                themeSection {
+                    GtkTheme = THEME_PSIPPR
+                    MetacityTheme = THEME_ADWAITA_DARK
+                    IconTheme = THEME_ADWAITA_DARK
+                    CursorTheme = THEME_CURSOR_BLOOM
+                    ButtonLayout = "minimize,maximize,close:"
+                    UseOverlayScrollbars = true
+                }
+                write()
+            }
+        }.onFailure { e ->
+            Log.e(e)
+        }
+    }
+
+    // old stylesheet writer, replaced by GtkCss / writeGtkCss
+    private fun createCssFile(file: Path) {
+        runCatching {
+            theme(file) {
+                bgColor = palette.backgroundColor
+                fgColor = palette.textColor
+                baseColor = palette.baseColor
+                textColor = palette.textColor
+                borderColor = palette.borderColor
+                selectedBgColor = palette.selectedBgColor
+                selectedFgColor = palette.selectedFgColor
+                tooltipBgColor = palette.tooltipBgColor
+                tooltipFgColor = palette.tooltipFgColor
+                buttonBgColor = palette.backgroundColor.darker(0.1f)
+                buttonFgColor = if (buttonBgColor.isLightColor) Color.Black else Color.White
+                write()
+            }
+        }.onFailure { e ->
+            Log.e(e)
+        }
+    }
+
+    /**
+     @define-color accent_color #ffb49e;
+     @define-color accent_bg_color #ffb49e;
+     @define-color accent_fg_color #5e1703;
+     @define-color destructive_color #ffb4a9;
+     @define-color destructive_bg_color #930006;
+     @define-color destructive_fg_color #680003;
+     @define-color success_color #d9c58d;
+     @define-color success_bg_color #534619;
+     @define-color success_fg_color #f6e1a6;
+     @define-color warning_color #e7bdb2;
+     @define-color warning_bg_color #5d4038;
+     @define-color warning_fg_color #ffdacf;
+     @define-color error_color #ffb4a9;
+     @define-color error_bg_color #930006;
+     @define-color error_fg_color #680003;
+     @define-color shade_color rgba(0, 0, 0, 0.36);
+     @define-color scrollbar_outline_color rgba(160, 140, 135, 0.5);
+     */
+    // ~/.config/gtk-3.0/gtk.css
+    // ~/.config/gtk-4.0/gtk.css
+    // old stylesheet model, replaced by GtkThemeColors / GtkNamedColor / GtkCss
+    @Suppress("MemberVisibilityCanBePrivate")
+    class GtkTheme(
+        val file: Path,
+    ) {
+        var bgColor: Color = Color.SuperDarkGray
+        var fgColor: Color = Color.SuperDarkGray
+        var baseColor: Color = Color.SuperDarkGray
+        var textColor: Color = Color.SuperDarkGray
+        var borderColor: Color = Color.SuperDarkGray
+        var selectedBgColor: Color = Color.SuperDarkGray
+        var selectedFgColor: Color = Color.SuperDarkGray
+        var tooltipBgColor: Color = Color.SuperDarkGray
+        var tooltipFgColor: Color = Color.SuperDarkGray
+        var errorFgColor: Color = Color.White
+        var errorBgColor: Color = Color.Red
+        var successFgColor: Color = Color.White
+        var successBgColor: Color = Color.Red
+        var questionFgColor: Color = Color.White
+        var questionBgColor: Color = Color.Yellow
+        var warningFgColor: Color = Color.White
+        var warningBgColor: Color = Color.Magenta
+        var infoFgColor: Color = Color.Black
+        var infoBgColor: Color = Color.White
+        var osdFgColor: Color = Color.Black
+        var osdBgColor: Color = Color.SuperDarkGray
+        var buttonBgColor: Color = Color.SuperDarkGray
+        var buttonFgColor: Color = Color.White
+
+        fun asString(): String {
+            val buttonInsens = lerp(buttonBgColor, bgColor, 0.6f)
+            val backdropFg = lerp(bgColor, fgColor, 0.8f)
+            val backdropText = lerp(baseColor, textColor, 0.8f)
+            val backdropDarkFg = lerp(bgColor, fgColor, 0.75f)
+            val backdropDarkBg = lerp(bgColor, fgColor, 0.75f)
+            val backdropSelBg = bgColor.darker(0.08f)
+            return """
+                @define-color accent_color ${selectedBgColor.hexRgb};
+                @define-color accent_bg_color ${selectedBgColor.hexRgb};
+                @define-color accent_fg_color ${selectedFgColor.hexRgb};
+                @define-color destructive_color ${errorBgColor.hexRgb};
+                @define-color destructive_bg_color ${errorBgColor.hexRgb};
+                @define-color destructive_fg_color ${errorFgColor.hexRgb};
+                @define-color bg_color ${bgColor.hexRgb};
+                @define-color fg_color ${fgColor.hexRgb};
+                @define-color base_color ${baseColor.hexRgb};
+                @define-color text_color ${textColor.hexRgb};
+                @define-color selected_bg_color ${selectedBgColor.hexRgb};
+                @define-color selected_fg_color ${selectedFgColor.hexRgb};
+                @define-color tooltip_bg_color ${tooltipBgColor.hexRgb};
+                @define-color tooltip_fg_color ${tooltipFgColor.hexRgb};
+                @define-color info_fg_color ${infoFgColor.hexRgb};
+                @define-color info_bg_color ${infoBgColor.hexRgb};
+                @define-color warning_fg_color ${warningFgColor.hexRgb};
+                @define-color warning_bg_color ${warningBgColor.hexRgb};
+                @define-color question_fg_color ${questionFgColor.hexRgb};
+                @define-color question_bg_color ${questionBgColor.hexRgb};
+                @define-color error_fg_color ${errorFgColor.hexRgb};
+                @define-color error_bg_color ${errorBgColor.hexRgb};
+                @define-color success_color ${successBgColor.hexRgb};
+                @define-color error_color ${errorBgColor.hexRgb};
+                @define-color dark_bg_color ${bgColor.hexRgb};
+                @define-color dark_fg_color ${fgColor.hexRgb};
+                @define-color window_bg_color ${bgColor.hexRgb};
+                @define-color window_fg_color ${fgColor.hexRgb};
+                @define-color view_bg_color ${bgColor.hexRgb};
+                @define-color view_fg_color ${textColor.hexRgb};
+                @define-color headerbar_bg_color ${bgColor.hexRgb};
+                @define-color headerbar_fg_color ${fgColor.hexRgb};
+                @define-color headerbar_border_color ${borderColor.hexRgb};
+                @define-color headerbar_backdrop_color ${bgColor.hexRgb};
+                @define-color headerbar_shade_color ${borderColor.hexRgb};
+                @define-color card_bg_color ${bgColor.hexRgb};
+                @define-color card_fg_color ${fgColor.hexRgb};
+                @define-color card_shade_color ${borderColor.hexRgb};
+                @define-color osd_fg_color ${osdFgColor.hexRgb};
+                @define-color osd_bg_color ${osdBgColor.hexRgb};
+                @define-color osd_border_color ${borderColor.hexRgb};
+                @define-color dialog_bg_color ${bgColor.hexRgb};
+                @define-color dialog_fg_color ${fgColor.hexRgb};
+                @define-color popover_bg_color ${bgColor.hexRgb};
+                @define-color popover_fg_color ${fgColor.hexRgb};
+                @define-color link_color @selected_bg_color;
+                @define-color button_bg_color ${buttonBgColor.hexRgb};
+                @define-color notebook_button_bg_color ${buttonBgColor.hexRgb};
+                @define-color button_insensitive_bg_color ${buttonInsens.hexRgb};
+                @define-color backdrop_fg_color ${backdropFg.hexRgb};
+                @define-color backdrop_text_color ${backdropText.hexRgb};
+                @define-color backdrop_dark_fg_color ${backdropDarkFg.hexRgb};
+                @define-color backdrop_dark_bg_color ${backdropDarkBg.hexRgb};
+                @define-color backdrop_selected_bg_color ${backdropSelBg.hexRgb};
+                @define-color backdrop_selected_fg_color @fg_color;
+                @define-color focus_color ${selectedBgColor.hexRgb};
+                @define-color focus_bg_color ${bgColor.hexRgb};
+                @define-color shadow_color rgba(0, 0, 0, 0.5);
+                @define-color blue_1 #99c1f1;
+                @define-color blue_2 #62a0ea;
+                @define-color blue_3 #3584e4;
+                @define-color blue_4 #1c71d8;
+                @define-color blue_5 #1a5fb4;
+                @define-color green_1 #8ff0a4;
+                @define-color green_2 #57e389;
+                @define-color green_3 #33d17a;
+                @define-color green_4 #2ec27e;
+                @define-color green_5 #26a269;
+                @define-color yellow_1 #f9f06b;
+                @define-color yellow_2 #f8e45c;
+                @define-color yellow_3 #f6d32d;
+                @define-color yellow_4 #f5c211;
+                @define-color yellow_5 #e5a50a;
+                @define-color orange_1 #ffbe6f;
+                @define-color orange_2 #ffa348;
+                @define-color orange_3 #ff7800;
+                @define-color orange_4 #e66100;
+                @define-color orange_5 #c64600;
+                @define-color red_1 #f66151;
+                @define-color red_2 #ed333b;
+                @define-color red_3 #e01b24;
+                @define-color red_4 #c01c28;
+                @define-color red_5 #a51d2d;
+                @define-color purple_1 #dc8add;
+                @define-color purple_2 #c061cb;
+                @define-color purple_3 #9141ac;
+                @define-color purple_4 #813d9c;
+                @define-color purple_5 #613583;
+                @define-color brown_1 #cdab8f;
+                @define-color brown_2 #b5835a;
+                @define-color brown_3 #986a44;
+                @define-color brown_4 #865e3c;
+                @define-color brown_5 #63452c;
+                @define-color light_1 #ffffff;
+                @define-color light_2 #f6f5f4;
+                @define-color light_3 #deddda;
+                @define-color light_4 #c0bfbc;
+                @define-color light_5 #9a9996;
+                @define-color dark_1 #77767b;
+                @define-color dark_2 #5e5c64;
+                @define-color dark_3 #3d3846;
+                @define-color dark_4 #241f31;
+                @define-color dark_5 #000000;
+                
+                /* App content follows the wallpaper palette (compositor draws the outer frame). */
+                window {
+                    background-image: none;
+                    background-color: @window_bg_color;
+                    border-radius: 0;
+                    box-shadow: none;
+                    border: none;
+                    margin: 0;
+                    padding: 0;
+                }
+
+                /* Compositor draws min/max/close — hide client-side titlebuttons only. */
+                headerbar button.titlebutton,
+                headerbar .titlebutton {
+                    opacity: 0;
+                    min-width: 0;
+                    min-height: 0;
+                    padding: 0;
+                    margin: 0;
+                    border: none;
+                }
+
+                window.ssd headerbar {
+                    min-height: 0;
+                    padding: 0;
+                    margin: 0;
+                    border: none;
+                    box-shadow: none;
+                    background-image: none;
+                    background-color: @window_bg_color;
+                }
+
+                .titlebar, headerbar {
+                    padding-top: 2px;
+                    padding-bottom: 2px;
+                    background-image: none;
+                    background-color: @headerbar_bg_color;
+                }
+
+                toolbarview,
+                .toolbarview,
+                .background {
+                    background-color: @window_bg_color;
+                    color: @text_color;
+                }
+
+                entry, textview, label {
+                    color: @text_color;
+                }
+
+                button {
+                    background-color: @button_bg_color;
+                    opacity: 0.85;
+                    margin: 2px;
+                    padding: 4px;
+                    min-width: 24px;
+                    min-height: 24px;
+                    text-shadow: none;
+                    color: ${buttonFgColor.hexRgb};
+                    border-radius: 8px;
+                }
+
+                button:hover {
+                    opacity: 1;
+                }
+                """.trimIndent()
+        }
+    }
+
+    fun setColorScheme(schemeName: String) {
+        runAsync {
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "color-scheme",
+                schemeName,
+            )
+        }
+    }
+
+    fun setGTKTheme(themeName: String = THEME_YARU) {
+        runAsync {
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "gtk-theme",
+                themeName,
+            )
+        }
+    }
+
+//    fun getGTKTheme(): String = runAsync { Shell.executeAndRead(
+//        "gsettings",
+//        "get",
+//        "org.gnome.desktop.interface",
+//        "gtk-theme"
+//    ).replace("'", "").trim()
+//    }
+
+    fun setIconTheme(themeName: String = THEME_YARU) {
+        runAsync {
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.interface",
+                "icon-theme",
+                themeName,
+            )
+        }
+    }
+
+    fun setSoundTheme(themeName: String = THEME_YARU) {
+        runAsync {
+            Shell.executeAndRead(
+                "gsettings",
+                "set",
+                "org.gnome.desktop.sound",
+                "gtk-theme",
+                themeName,
+            )
+        }
+    }
+
+    fun setDarkColorScheme() {
+        setColorScheme(COLOR_SCHEME_PREFER_DARK)
+    }
+
+    companion object {
+        const val COLOR_SCHEME_PREFER_DARK = "prefer-dark"
+        const val COLOR_SCHEME_PREFER_LIGHT = "prefer-light"
+        const val COLOR_SCHEME_PSIPPR = "psippr"
+        const val THEME_YARU = "Yaru"
+        const val THEME_ADWAITA = "Adwaita"
+        const val THEME_ADWAITA_DARK = "Adwaita-dark"
+        const val THEME_PSIPPR = "Psippr"
+        const val THEME_CURSOR_BLOOM = "bloom"
+
+        private fun theme(
+            file: Path,
+            block: GtkTheme.() -> Unit,
+        ) = GtkTheme(file).apply(block)
+
+        private fun GtkTheme.write() {
+            file.apply {
+                if (!parentFile.exists) {
+                    parentFile.mkdirs()
+                }
+                delete()
+                val data = asString()
+                Log.i("Writing theme file: file://${file.absolutePath}")
+                writeText(data)
+            }
+        }
+    }
+}

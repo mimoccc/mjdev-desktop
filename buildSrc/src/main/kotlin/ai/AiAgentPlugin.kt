@@ -23,7 +23,7 @@ class AiAgentPlugin : Plugin<Project> {
         }
 
         project.tasks.register<RunAiAgentTask>("runAiAgent") {
-            group = "mjdev"
+            group = "psippr"
             description = "Reads ai-todo.txt and performs its tasks (pluggable AI: ollama / claude-code / mistral)."
             rootDir = root
         }

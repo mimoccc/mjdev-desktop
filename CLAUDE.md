@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-mjdev-desktop is a Kotlin Compose Multiplatform desktop environment targeting Linux (primary), Android, and Windows. It has two runtime layers:
+psippr-desktop is a Kotlin Compose Multiplatform desktop environment targeting Linux (primary), Android, and Windows. It has two runtime layers:
 
 1. **Kotlin/JVM shell** (`shared` + `desktopApp`) — the full desktop UI built with Jetpack Compose Desktop. This is the primary development surface.
-2. **Native Wayland compositor** (`compositor`) — a Kotlin/Native binary (`mjdevc`) wrapping wlroots via a thin C shim. Only handles seat/input/focus/surface layering — all desktop policy lives in the Kotlin shell.
+2. **Native Wayland compositor** (`compositor`) — a Kotlin/Native binary (`psipprc`) wrapping wlroots via a thin C shim. Only handles seat/input/focus/surface layering — all desktop policy lives in the Kotlin shell.
 
 ## Gradle Commands
 
@@ -55,9 +55,9 @@ mjdev-desktop is a Kotlin Compose Multiplatform desktop environment targeting Li
 | Module | Language | Purpose |
 |---|---|---|
 | `shared` | Kotlin Multiplatform (JVM + Android) | All UI components, managers, business logic |
-| `desktopApp` | Kotlin JVM | Entry point (`org.mjdev.desktop.main.MainKt`), compose desktop wiring |
+| `desktopApp` | Kotlin JVM | Entry point (`org.psippr.desktop.main.MainKt`), compose desktop wiring |
 | `androidApp` | Kotlin Android | Entry point for Android target |
-| `compositor` | Kotlin/Native (linuxX64) + C | Wayland compositor binary `mjdevc` |
+| `compositor` | Kotlin/Native (linuxX64) + C | Wayland compositor binary `psipprc` |
 | `buildSrc` | Kotlin DSL | Custom Gradle tasks: `PackageFullDebTask`, `PackageAppImageTask`, `EnsureAppImageToolTask`, `AiAgentPlugin` |
 
 Build file naming convention: each module uses `<name>.gradle.kts` (not `build.gradle.kts`).
@@ -105,7 +105,7 @@ All shared UI lives in `shared/src/commonMain/.../components/`. Platform-specifi
 
 ### Compositor (`compositor/`)
 
-The `mjdevc` binary is a **Kotlin/Native** executable. It:
+The `psipprc` binary is a **Kotlin/Native** executable. It:
 1. Wraps `wlroots-0.18` through `compositor/native/shim.c` (a flat C API compiled to `libmjcshim.a`)
 2. The Kotlin side (`compositor/src/linuxX64Main/`) receives view lifecycle callbacks (`WindowModel`, `Policy`, `GeometryStore`), manages IPC to the Kotlin shell (`Ipc.kt`), and handles session startup (`Session.kt`)
 3. The compositor launches the Kotlin desktop shell as a subprocess (`--shell-cmd`)
@@ -116,18 +116,18 @@ A behavior must work in plain `./gradlew :desktopApp:run` (JVM, no compositor) f
 
 ### Session & Installation
 
-The Wayland session entry is `session/mjdev.desktop` (installed to `/usr/share/wayland-sessions/`). The session launcher is `session/mjdev-session` (shell script). The compositor runtime requires: `libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session` — single source of truth in `gradle/libs.versions.toml` under `app-compositor-runtime-deps`.
+The Wayland session entry is `session/psippr.desktop` (installed to `/usr/share/wayland-sessions/`). The session launcher is `session/psippr-session` (shell script). The compositor runtime requires: `libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session` — single source of truth in `gradle/libs.versions.toml` under `app-compositor-runtime-deps`.
 
-Session logs go to `~/.cache/mjdev-desktop/session.log`.
+Session logs go to `~/.cache/psippr-desktop/session.log`.
 
 ### Packaging & Release
 
 `./gradlew buildAll` produces:
-- `releases/mjdev-desktop-<version>.deb` — full self-installable deb (includes compositor + session + wayland runtime `Depends`)
-- `releases/mjdev-desktop-<version>.AppImage`
-- `releases/mjdev-desktop-<version>.rpm`
-- `releases/mjdev-desktop-<version>.apk`
-- `releases/mjdev-desktop-<version>.iso` (if ISO tools present)
+- `releases/psippr-desktop-<version>.deb` — full self-installable deb (includes compositor + session + wayland runtime `Depends`)
+- `releases/psippr-desktop-<version>.AppImage`
+- `releases/psippr-desktop-<version>.rpm`
+- `releases/psippr-desktop-<version>.apk`
+- `releases/psippr-desktop-<version>.iso` (if ISO tools present)
 
 Output `packages/` directory structure: `packages/main-release/{deb,rpm,appimage}/` and `packages/main/app/` (distributable).
 

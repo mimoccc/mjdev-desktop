@@ -1,0 +1,145 @@
+/*
+ * Copyright (c) Milan Jurkulák 2026.
+ *  Contact:
+ *  e: mimoccc@gmail.com
+ *  e: mj@mjdev.org
+ *  w: https://mjdev.org
+ */
+
+@file:OptIn(ExperimentalForeignApi::class)
+
+package eu.psippr.compositor
+
+import kotlinx.cinterop.ExperimentalForeignApi
+import psippr.compositor.shim.MJC_LAYER_BACKGROUND
+import psippr.compositor.shim.MJC_LAYER_TOP
+import psippr.compositor.shim.MJC_MOD_ALT
+import psippr.compositor.shim.mjc_blur_supported
+import psippr.compositor.shim.mjc_view_close
+import psippr.compositor.shim.mjc_view_focus
+import psippr.compositor.shim.mjc_view_set_blur
+import psippr.compositor.shim.mjc_view_set_focusable
+import psippr.compositor.shim.mjc_view_set_layer
+
+/**
+ * Window management policy:
+ * - windows of the desktop shell app (recognized by WM_CLASS/app_id, or
+ *   a "psippr::<role>" title prefix) are placed into dedicated layers
+ * - everything else is a normal app window
+ */
+class Policy(
+    private val c: Compositor,
+) {
+    private val shellClasses =
+        setOf(
+            "psippr-desktop",
+            "org.psippr.desktop",
+            "eu.psippr.desktop",
+            // default AWT WM_CLASS of the Compose desktop main class
+            "eu-psippr-desktop-mainkt",
+        )
+
+    fun apply(info: WindowInfo) {
+        val appId = info.appId?.lowercase().orEmpty()
+        val titleRole =
+            info.title
+                ?.takeIf { it.startsWith(TITLE_PREFIX) }
+                ?.removePrefix(TITLE_PREFIX)
+                ?.substringBefore(' ')
+                ?.lowercase()
+        val isShell = appId in shellClasses || titleRole != null
+        info.shell = isShell
+        if (!isShell) {
+            return
+        }
+        info.role = titleRole ?: "window"
+        applyBlurFlag(info)
+        when (info.role) {
+            // ChromeWindow names: DesktopWindow/FullScreenWindow carry the wallpaper
+            "wallpaper", "background", "desktop",
+            "desktopwindow", "fullscreenwindow",
+            -> {
+                mjc_view_set_layer(info.ptr, MJC_LAYER_BACKGROUND)
+                mjc_view_set_focusable(info.ptr, false)
+            }
+
+            // the panel is click only - keeping it unfocusable means opening
+            // it never steals keyboard focus from the menu or from apps
+            "desktoppanel", "panel", "tooltip" -> {
+                mjc_view_set_layer(info.ptr, MJC_LAYER_TOP)
+                mjc_view_set_focusable(info.ptr, false)
+            }
+
+            // menus, control center & co stay above app windows
+            else -> {
+                mjc_view_set_layer(info.ptr, MJC_LAYER_TOP)
+            }
+        }
+    }
+
+    /**
+     * The shell asks for a blurred backdrop by appending a flag to the window title, e.g.
+     * "psippr::ControlCenter blur". The shell decides which windows are blurred, the compositor
+     * only renders it. A no-op when the compositor was built without scenefx.
+     */
+    private fun applyBlurFlag(info: WindowInfo) {
+        val wantsBlur =
+            info.title
+                ?.substringAfter(' ', "")
+                ?.split(' ')
+                ?.contains(FLAG_BLUR) == true
+        if (wantsBlur == info.blurFromTitle) {
+            return
+        }
+        info.blurFromTitle = wantsBlur
+        mjc_view_set_blur(info.ptr, wantsBlur && mjc_blur_supported())
+    }
+
+    fun handleKey(
+        keysym: UInt,
+        modifiers: UInt,
+        pressed: Boolean,
+    ): Boolean {
+        if (!pressed) {
+            return false
+        }
+        val alt = modifiers and MJC_MOD_ALT.toUInt() != 0u
+        return when {
+            alt && keysym == XKB_KEY_TAB -> {
+                focusNext()
+                true
+            }
+
+            alt && keysym == XKB_KEY_F4 -> {
+                c.windows.all().firstOrNull { it.focused }?.let {
+                    mjc_view_close(it.ptr)
+                }
+                true
+            }
+
+            else -> false
+        }
+    }
+
+    private fun focusNext() {
+        val cycle =
+            c.windows.all().filter {
+                it.mapped && !it.minimized && !it.shell
+            }
+        if (cycle.isEmpty()) {
+            return
+        }
+        val current = cycle.indexOfFirst { it.focused }
+        val next = cycle[(current + 1).mod(cycle.size)]
+        mjc_view_focus(next.ptr)
+    }
+
+    companion object {
+        const val TITLE_PREFIX = "psippr::"
+
+        /** title flag (after the role, separated by a space) that requests a blurred backdrop */
+        const val FLAG_BLUR = "blur"
+        val XKB_KEY_TAB = 0xff09u
+        val XKB_KEY_F4 = 0xffc1u
+    }
+}

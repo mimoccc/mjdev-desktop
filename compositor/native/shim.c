@@ -1351,10 +1351,10 @@ bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdat
 
     wlr_log_init(WLR_INFO, NULL);
 
-    /* nested-output size, 16:9 default; override with MJDEVC_OUTPUT=WIDTHxHEIGHT */
+    /* nested-output size, 16:9 default; override with PSIPPRC_OUTPUT=WIDTHxHEIGHT */
     server->output_w = 1280;
     server->output_h = 720;
-    const char *out_env = getenv("MJDEVC_OUTPUT");
+    const char *out_env = getenv("PSIPPRC_OUTPUT");
     if (out_env != NULL) {
         int w = 0, h = 0;
         if (sscanf(out_env, "%dx%d", &w, &h) == 2 && w > 0 && h > 0) {
@@ -1367,7 +1367,7 @@ bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdat
     server->loop = wl_display_get_event_loop(server->display);
     server->backend = wlr_backend_autocreate(server->loop, &server->session);
     if (server->backend == NULL) {
-        fprintf(stderr, "mjdevc: failed to create wlr_backend\n");
+        fprintf(stderr, "psipprc: failed to create wlr_backend\n");
         return false;
     }
 
@@ -1386,14 +1386,14 @@ bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdat
     server->renderer = wlr_renderer_autocreate(server->backend);
 #endif
     if (server->renderer == NULL) {
-        fprintf(stderr, "mjdevc: failed to create wlr_renderer\n");
+        fprintf(stderr, "psipprc: failed to create wlr_renderer\n");
         return false;
     }
     wlr_renderer_init_wl_display(server->renderer, server->display);
 
     server->allocator = wlr_allocator_autocreate(server->backend, server->renderer);
     if (server->allocator == NULL) {
-        fprintf(stderr, "mjdevc: failed to create wlr_allocator\n");
+        fprintf(stderr, "psipprc: failed to create wlr_allocator\n");
         return false;
     }
 
@@ -1457,7 +1457,7 @@ bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdat
 
     const char *socket = wl_display_add_socket_auto(server->display);
     if (socket == NULL) {
-        fprintf(stderr, "mjdevc: failed to create wayland socket\n");
+        fprintf(stderr, "psipprc: failed to create wayland socket\n");
         return false;
     }
     server->socket = socket;
@@ -1475,7 +1475,7 @@ bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdat
         SIGCHLD, handle_sigchld, server);
 
     if (!wlr_backend_start(server->backend)) {
-        fprintf(stderr, "mjdevc: failed to start backend\n");
+        fprintf(stderr, "psipprc: failed to start backend\n");
         return false;
     }
 
@@ -1492,10 +1492,10 @@ bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdat
     if (mjc_renderer_is_software(server->renderer)) {
 #endif
         setenv("SKIKO_RENDER_API", "SOFTWARE", true);
-        fprintf(stderr, "mjdevc: software GL renderer -> SKIKO_RENDER_API=SOFTWARE for the shell\n");
+        fprintf(stderr, "psipprc: software GL renderer -> SKIKO_RENDER_API=SOFTWARE for the shell\n");
     } else {
         unsetenv("SKIKO_RENDER_API");
-        fprintf(stderr, "mjdevc: hardware GL renderer -> shell uses Skiko OpenGL\n");
+        fprintf(stderr, "psipprc: hardware GL renderer -> shell uses Skiko OpenGL\n");
     }
 
     if (server->cbs.ready != NULL) {
