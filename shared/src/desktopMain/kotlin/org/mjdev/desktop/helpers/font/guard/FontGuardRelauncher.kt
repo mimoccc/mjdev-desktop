@@ -48,7 +48,9 @@ object FontGuardRelauncher {
                     environment()[FontconfigFileEnv.value] = guardConfig.toString()
                     environment()[GuardMarkerEnv.value] = GuardMarkerValue.value
                 }.start()
-        Runtime.getRuntime().addShutdownHook(Thread { child.destroy() })
+        // old hook: SIGTERM only - a child hung in shutdown stayed behind as an unstoppable orphan
+        // Runtime.getRuntime().addShutdownHook(Thread { child.destroy() })
+        Runtime.getRuntime().addShutdownHook(Thread { ChildProcessStopper.stop(child) })
         return child.waitFor()
     }
 }

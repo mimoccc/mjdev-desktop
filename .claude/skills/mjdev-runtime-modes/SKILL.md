@@ -35,3 +35,6 @@ description: How the mjdev desktop actually runs - plain JVM app, nested ("boxed
 
 ## Known: intermittent hang on SIGTERM (2026-10-08, plain app under GNOME/XWayland)
 The UI thread holds the AWT lock while blocked in skiko native `LinuxOpenGLRedrawer.setSwapInterval`; `AWT-XAWT` and `XToolkt-Shutdown-Thread` wait for that lock, so shutdown never finishes and only SIGKILL works. Seen 2 of 3 runs with the live theme switch, 0 of 7 without; external gsettings changes did not reproduce it.
+
+- The stuck call is skiko `LinuxOpenGLRedrawer.kt:147` = `setSwapInterval(0)`, the path every non-vsync window takes (all desktop windows but one). Disabling vsync (`skiko.vsync.enabled=false`) sends ALL windows through it - do not use it as a fix.
+- Mitigation in place: `FontGuardRelauncher` stops the child via `ChildProcessStopper` (SIGTERM, 5 s grace, then SIGKILL), so a hung child no longer survives as an unstoppable orphan.
