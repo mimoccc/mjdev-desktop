@@ -1,6 +1,9 @@
 package org.psippr.desktop.components.greeter
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -11,6 +14,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,7 +37,11 @@ fun LoginWindow(onLoggedIn: () -> Unit) {
     val store = remember { LastLoginStore() }
     val scope = rememberCoroutineScope()
     var user by remember { mutableStateOf(users.firstOrNull { it.userName == store.lastUser } ?: users.firstOrNull()) }
-    var session by remember(user) { mutableStateOf(sessions.firstOrNull { it.name == store.lastSession(user?.userName.orEmpty()) } ?: sessions.first()) }
+    var session by remember(user) {
+        mutableStateOf(
+            sessions.firstOrNull { it.name == store.lastSession(user?.userName.orEmpty()) } ?: sessions.first(),
+        )
+    }
     var message by remember { mutableStateOf(if (users.isEmpty()) LoginLabels.NoUsers.text else "") }
     var busy by remember { mutableStateOf(false) }
     val login: (IUser, String) -> Unit = { u, password ->
@@ -52,29 +60,52 @@ fun LoginWindow(onLoggedIn: () -> Unit) {
             }
         }
     }
+    // old: the desktop switch sat in the footer under the password field
+//    FullScreenWindow(name = WINDOW_NAME) {
+//        Greeter(
+//            onLogin = login,
+//            loginUser = user,
+//            users = users,
+//            onUserSelect = { picked -> user = picked },
+//            message = message,
+//            footer = {
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.Center,
+//                    verticalAlignment = Alignment.CenterVertically,
+//                ) {
+//                    // old: separate user switch icon, the shown user is clicked instead now
+////                    user?.takeIf { users.size > 1 }?.let { selected ->
+////                        UserSwitch(users = users, selected = selected, onSelect = { picked -> user = picked })
+////                    }
+//                    SessionSwitch(sessions = sessions, selected = session, onSelect = { picked -> session = picked })
+//                }
+//            },
+//        )
+//    }
     FullScreenWindow(name = WINDOW_NAME) {
-        Greeter(
-            onLogin = login,
-            loginUser = user,
-            users = users,
-            onUserSelect = { picked -> user = picked },
-            message = message,
-            footer = {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    // old: separate user switch icon, the shown user is clicked instead now
-//                    user?.takeIf { users.size > 1 }?.let { selected ->
-//                        UserSwitch(users = users, selected = selected, onSelect = { picked -> user = picked })
-//                    }
-                    SessionSwitch(sessions = sessions, selected = session, onSelect = { picked -> session = picked })
-                }
-            },
-        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            Greeter(
+                onLogin = login,
+                loginUser = user,
+                users = users,
+                onUserSelect = { picked -> user = picked },
+                message = message,
+            )
+            // the desktop switch in the bottom right corner of the screen
+            Box(
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(SESSION_SWITCH_MARGIN),
+            ) {
+                SessionSwitch(sessions = sessions, selected = session, onSelect = { picked -> session = picked })
+            }
+        }
     }
 }
 
-/** Window role name, turned into the `psippr::<name>` title the compositor layers by. */
+/** Distance of the desktop switch from the bottom right corner of the screen. */
+private val SESSION_SWITCH_MARGIN = 24.dp
+
 private const val WINDOW_NAME = "LoginWindow"
