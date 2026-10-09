@@ -151,6 +151,18 @@ val compositorRuntimeDeps =
         .get()
         .trim()
         .split(Regex("\\s+"))
+// names used before the rename to psippr (version catalog): the deb replaces those packages and
+// removes their files that were installed outside the package
+val legacyPackageNames =
+    libs.versions.app.legacy.packages
+        .get()
+        .trim()
+        .split(Regex("\\s+"))
+val legacyFileNames =
+    libs.versions.app.legacy.files
+        .get()
+        .trim()
+        .split(Regex("\\s+"))
 val packageFullDeb =
     tasks.register<PackageFullDebTask>("packageFullDeb") {
         group = "psippr"
@@ -160,6 +172,8 @@ val packageFullDeb =
         debDir.set(pkgDirV.resolve("deb").absolutePath)
         sessionDir.set(rootDir.resolve("compositor/build/session-install").absolutePath)
         runtimeDepends.set(compositorRuntimeDeps)
+        legacyPackages.set(legacyPackageNames)
+        legacyFiles.set(legacyFileNames)
         inputs.dir(rootDir.resolve("compositor/build/session-install"))
         outputs.dir(pkgDirV.resolve("deb"))
     }

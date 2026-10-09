@@ -24,6 +24,12 @@ app-compositor-scenefx-packages = "scenefx-0.2 scenefx-0.3 scenefx"
 # immediately when another apt/dpkg process holds it (unattended-upgrades, a parallel build, …).
 # Consumed by installDesktop/installSession (compositor.gradle.kts) and make-iso.sh.
 app-apt-lock-timeout = "600"
+# names the desktop was published under before the rename to psippr. The deb declares
+# Replaces/Conflicts/Provides for these packages, so installing the new one removes the old one;
+# the files below were installed outside the old package (installDesktop) and are removed on
+# install so GDM no longer offers the old session (it would start a removed binary).
+app-legacy-packages = "mjdev-desktop"
+app-legacy-files = "/usr/local/bin/mjdevc /usr/local/bin/mjdev-session /usr/share/wayland-sessions/mjdev.desktop /usr/share/xsessions/mjdev-desktop.desktop /usr/share/gnome-session/sessions/mjdev-desktop.session /usr/share/applications/mjdev-desktop-mjdev-desktop.desktop"
 java-language-version = "17"
 # app specific android
 android-compile-sdk = "36"

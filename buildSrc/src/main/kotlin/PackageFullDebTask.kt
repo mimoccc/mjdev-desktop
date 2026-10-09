@@ -28,6 +28,8 @@ abstract class PackageFullDebTask : DefaultTask() {
     @get:Input abstract val debDir: Property<String>        // dir holding the jpackage .deb (overwritten in place)
     @get:Input abstract val sessionDir: Property<String>    // stageSession output: psipprc + psippr-session + psippr.desktop
     @get:Input abstract val runtimeDepends: ListProperty<String> // wayland runtime stack to add to Depends
+    @get:Input abstract val legacyPackages: ListProperty<String> // old package names: Replaces/Conflicts/Provides
+    @get:Input abstract val legacyFiles: ListProperty<String>    // files of the old name installed outside the package
 
     @TaskAction
     fun build() {
@@ -81,6 +83,16 @@ abstract class PackageFullDebTask : DefaultTask() {
             dependsIdx = pkgIdx + 1
         }
         if (lines.none { it.startsWith("Recommends:") }) lines.add(dependsIdx + 1, "Recommends: seatd")
+        // upgrade from the old name: dpkg removes the old package in favour of this one
+        val legacy = legacyPackages.get().filter { it.isNotBlank() }
+        if (legacy.isNotEmpty()) {
+            val names = legacy.joinToString(", ")
+            LEGACY_FIELDS.forEach { field ->
+                // jpackage may already write the field (Provides): extend it, a second one is invalid
+                val idx = lines.indexOfFirst { it.startsWith("$field:") }
+                if (idx >= 0) lines[idx] = lines[idx] + ", " + names else lines.add(dependsIdx + 1, "$field: $names")
+            }
+        }
         ctrl.writeText(lines.joinToString("\n") + "\n")
     }
 
@@ -92,6 +104,7 @@ abstract class PackageFullDebTask : DefaultTask() {
             if [ "${'$'}1" = configure ]; then
                 rm -f /usr/share/xsessions/psippr-desktop.desktop \
                       /usr/share/gnome-session/sessions/psippr-desktop.session 2>/dev/null || true
+                rm -f ${legacyFiles.get().joinToString(" ")} 2>/dev/null || true
                 systemctl enable seatd 2>/dev/null || true
                 ldconfig 2>/dev/null || true
             fi
@@ -124,4 +137,9 @@ abstract class PackageFullDebTask : DefaultTask() {
     private fun which(bin: String): String? =
         ((System.getenv("PATH") ?: "").split(File.pathSeparator) + listOf("/usr/bin", "/bin"))
             .map { File(it, bin) }.firstOrNull { it.canExecute() }?.absolutePath
+
+    private companion object {
+        /** Control fields naming the old package, so an upgrade replaces it in place. */
+        val LEGACY_FIELDS = listOf("Provides", "Conflicts", "Replaces")
+    }
 }

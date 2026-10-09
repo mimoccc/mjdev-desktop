@@ -208,6 +208,11 @@ val compositorRuntimeDeps: String =
     libs.versions.app.compositor.runtime.deps
         .get()
 
+// files installed under the name used before the rename to psippr (version catalog)
+val legacyFileNames: String =
+    libs.versions.app.legacy.files
+        .get()
+
 // apt-get on the host must WAIT for the dpkg lock (unattended-upgrades, a parallel build, …)
 // instead of failing with "Could not get lock /var/lib/dpkg/lock-frontend" — catalog-driven.
 val aptLockTimeout: String =
@@ -243,6 +248,8 @@ fun sessionInstallLines(staged: File): List<String> = listOf(
     "rm -f /usr/share/xsessions/psippr-desktop.desktop " +
         "/usr/share/gnome-session/sessions/psippr-desktop.session " +
         "/usr/share/applications/psippr-desktop-psippr-desktop.desktop",
+    // files of the old mjdev name installed outside any package (GDM would offer a dead session)
+    "rm -f $legacyFileNames",
 )
 
 // sudo can't read a password from the Gradle daemon (no TTY), so these tasks don't exec it —
