@@ -2,7 +2,9 @@
 
 plugins {
     `kotlin-dsl`
-    alias(libs.plugins.kotlin.multiplatform) apply false
+    // old: put kotlin-gradle-plugin 2.4.10 next to kotlin-dsl's embedded kotlin, which printed
+    // "WARNING: Unsupported Kotlin plugin version." on every build; no buildSrc code uses it
+//    alias(libs.plugins.kotlin.multiplatform) apply false
 }
 
 repositories {
