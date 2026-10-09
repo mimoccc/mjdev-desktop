@@ -9,3 +9,7 @@
 - many errors and warnings in build console
 - runIsoQemu damaged
 - unsupported plugin or kotlin version message
+- root module everything should be psippr desktop
+- tab with bluetooth does not work
+- tab with wifi does not show active wifi network it blinks and loose that info
+
