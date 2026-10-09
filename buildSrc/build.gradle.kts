@@ -8,6 +8,9 @@ plugins {
 }
 
 repositories {
+    // google first: the Android Gradle Plugin (compileOnly here) lives only there
+    google()
+    mavenCentral()
     mavenLocal()
     gradlePluginPortal()
     mavenCentral()
@@ -17,7 +20,13 @@ repositories {
     maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
     maven("https://gitlab.com/api/v4/projects/38224197/packages/maven")
     maven("https://oss.sonatype.org/content/repositories/snapshots")
-    maven("https://jogamp.org/deployment/maven")
+    // old: unfiltered and before google(), AGP was looked up on jogamp.org first (timeouts)
+//    maven("https://jogamp.org/deployment/maven")
+    // jogamp only serves org.jogamp, never ask it for anything else
+    exclusiveContent {
+        forRepository { maven("https://jogamp.org/deployment/maven") }
+        filter { includeGroupByRegex("org\\.jogamp(\\..*)?") }
+    }
     maven("https://jitpack.io")
     maven("https://maven.mozilla.org/maven2/")
     maven("https://maven.pkg.github.com/tuProlog/2p-kt")
@@ -33,7 +42,8 @@ repositories {
 //                includeGroupAndSubgroups("com.google")
 //            }
 //        }
-    google()
+    // old: google() last
+//    google()
 }
 
 dependencies {

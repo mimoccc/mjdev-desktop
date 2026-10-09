@@ -12,6 +12,10 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 // <editor-fold desc="plugin management">------------------------------------------------------------
 pluginManagement {
     repositories {
+        // google first: the Android Gradle Plugin and com.android.tools live only there
+        google()
+        mavenCentral()
+        gradlePluginPortal()
         mavenLocal()
         gradlePluginPortal()
         mavenCentral()
@@ -21,7 +25,14 @@ pluginManagement {
         maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
         maven("https://gitlab.com/api/v4/projects/38224197/packages/maven")
         maven("https://oss.sonatype.org/content/repositories/snapshots")
-        maven("https://jogamp.org/deployment/maven")
+        // old: unfiltered and before google(), so AGP + com.android.tools were looked up on jogamp.org
+        // first - its timeouts broke the root project configuration of buildAll
+//        maven("https://jogamp.org/deployment/maven")
+        // jogamp only serves org.jogamp (gluegen / jogl), never ask it for anything else
+        exclusiveContent {
+            forRepository { maven("https://jogamp.org/deployment/maven") }
+            filter { includeGroupByRegex("org\\.jogamp(\\..*)?") }
+        }
         maven("https://jitpack.io")
         maven("https://maven.mozilla.org/maven2/")
         maven("https://maven.pkg.github.com/tuProlog/2p-kt")
@@ -37,7 +48,8 @@ pluginManagement {
 //                includeGroupAndSubgroups("com.google")
 //            }
 //        }
-        google()
+        // old: google() last - every repository above was asked for the Android plugin first
+//        google()
     }
 }
 plugins {
@@ -48,6 +60,9 @@ plugins {
 // <editor-fold desc="dependency management">--------------------------------------------------------
 dependencyResolutionManagement {
     repositories {
+        // google first: androidx / com.android / com.google live only there
+        google()
+        mavenCentral()
         mavenLocal()
         gradlePluginPortal()
         mavenCentral()
@@ -57,7 +72,14 @@ dependencyResolutionManagement {
         maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
         maven("https://gitlab.com/api/v4/projects/38224197/packages/maven")
         maven("https://oss.sonatype.org/content/repositories/snapshots")
-        maven("https://jogamp.org/deployment/maven")
+        // old: unfiltered and before google(), so AGP + com.android.tools were looked up on jogamp.org
+        // first - its timeouts broke the root project configuration of buildAll
+//        maven("https://jogamp.org/deployment/maven")
+        // jogamp only serves org.jogamp (gluegen / jogl), never ask it for anything else
+        exclusiveContent {
+            forRepository { maven("https://jogamp.org/deployment/maven") }
+            filter { includeGroupByRegex("org\\.jogamp(\\..*)?") }
+        }
         maven("https://jitpack.io")
         maven("https://maven.mozilla.org/maven2/")
         maven("https://maven.pkg.github.com/tuProlog/2p-kt")
@@ -73,7 +95,8 @@ dependencyResolutionManagement {
 //                includeGroupAndSubgroups("com.google")
 //            }
 //        }
-        google()
+        // old: google() last - every repository above was asked for the Android plugin first
+//        google()
     }
 }
 // </editor-fold>------------------------------------------------------------------------------------

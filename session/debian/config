@@ -1,0 +1,20 @@
+#!/bin/sh
+# debconf: the usual "Default display manager" question shared by gdm3 / lightdm / sddm
+set -e
+. /usr/share/debconf/confmodule
+db_metaget shared/default-x-display-manager owners
+OWNERS="$RET"
+db_metaget shared/default-x-display-manager choices
+CHOICES="$RET"
+if [ "$OWNERS" != "$CHOICES" ]; then
+    db_subst shared/default-x-display-manager choices "$OWNERS"
+    db_fset shared/default-x-display-manager seen false
+fi
+# keep the current display manager preselected
+if [ -s /etc/X11/default-display-manager ]; then
+    db_get shared/default-x-display-manager
+    [ -n "$RET" ] || db_set shared/default-x-display-manager "$(basename "$(cat /etc/X11/default-display-manager)")"
+fi
+db_input high shared/default-x-display-manager || true
+db_go || true
+exit 0
