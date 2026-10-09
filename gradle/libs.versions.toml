@@ -8,7 +8,7 @@ app-maintainer = "mj@mjdev.org<Milan Jurkulak>"
 app-menu-group = "Desktop"
 app-name = "psippr-desktop"
 app-pkg-name = "org.psippr.desktop"
-app-pkg-version = "1.0.4"
+app-pkg-version = "1.0.5"
 app-vendor = "psippr"
 # wayland runtime stack the compositor (psipprc) needs at runtime — single source of truth for the
 # deb Depends, the installDesktop apt step and make-iso.sh. Space-separated (shell-friendly); the
