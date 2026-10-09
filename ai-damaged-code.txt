@@ -13,3 +13,6 @@
 - tab with bluetooth does not work
 - tab with wifi does not show active wifi network it blinks and loose that info
 - tans should be proloaded prev current and next for better user experience
+- mish mash in code and data storage, this is psippr-desktop app not psippr, it will cause in
+  sabotage on another project mixing replacing or deleting data, this can not be result of ai that
+  dont trylly wants to damage system / project / app
