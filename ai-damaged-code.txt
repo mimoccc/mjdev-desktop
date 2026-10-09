@@ -1,5 +1,9 @@
 # here is list of ad artificial demency cyberattack that need to be fixed
 
+- project again damaged and sabotated, runDesktop stays at logon on loged on user and logon is impossible,
+  modal window as should be non-closeable, no user show, no users list.
+  apps open under logon and nothing works as should work.
+  damaged by model, sabotage, human abuse and time and money taking state.
 - open window is non resizable
 - window does not respond to close button, to min/max button, nothing
 - there should be greeter made from logon screen
