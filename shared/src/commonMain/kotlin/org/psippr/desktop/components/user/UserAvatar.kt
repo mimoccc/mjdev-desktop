@@ -39,6 +39,7 @@ import org.psippr.desktop.components.button.TransparentButton
 import org.psippr.desktop.components.image.ImageAny
 import org.psippr.desktop.components.text.TextAny
 import org.psippr.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.psippr.desktop.interfaces.IUser
 import org.psippr.desktop.extensions.Colors.SuperDarkGray
 import org.psippr.desktop.extensions.Colors.alpha
 import org.psippr.desktop.extensions.Compose.preview
@@ -65,8 +66,12 @@ fun UserAvatar(
     textAlign: TextAlign = TextAlign.Start,
     onUserAvatarClick: () -> Unit = {},
     onTooltip: (item: Any?) -> Unit = {},
+    // user shown; the login screen passes the account being logged in (the greeter itself runs
+    // as the greetd service account)
+    user: IUser? = null,
     actions: @Composable (RowScope.() -> Unit) = {},
 ) = withDesktopContext {
+    val shownUser = user ?: context.currentUser
     val content: @Composable () -> Unit = {
         AppBar(
             iconVerticalAlignment = iconVerticalAlignment,
@@ -109,9 +114,9 @@ fun UserAvatar(
                             Modifier
                                 .size(avatarSize)
                                 .circleBorder(circleBorder, textColor.alpha(0.5f)),
-                        src = context.currentUser.picture,
+                        src = shownUser.picture,
                         colorFilter =
-                            if (context.currentUser.picture is ImageVector) {
+                            if (shownUser.picture is ImageVector) {
                                 ColorFilter.tint(iconsTintColor)
                             } else {
                                 null
@@ -134,7 +139,7 @@ fun UserAvatar(
                 ) {
                     TextAny(
                         modifier = Modifier.fillMaxWidth(),
-                        text = context.currentUser.userName,
+                        text = shownUser.userName,
                         color = textColor,
                         textAlign = textAlign,
                         fontWeight = FontWeight.Bold,
