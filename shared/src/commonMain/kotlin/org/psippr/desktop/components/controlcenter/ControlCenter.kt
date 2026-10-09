@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -157,9 +158,17 @@ fun ControlCenter(
                                 Column(
                                     modifier = Modifier.width(controlCenterExpandedWidth),
                                 ) {
-                                    val page = pagesFiltered[pagerState.value]
+                                    // old: only the shown page existed, every tab switch loaded from scratch
+//                                    val page = pagesFiltered[pagerState.value]
+//                                    Box(modifier = Modifier.weight(1f)) {
+//                                        page.Render()
+//                                    }
                                     Box(modifier = Modifier.weight(1f)) {
-                                        page.Render()
+                                        PreloadedPages(
+                                            pages = pagesFiltered,
+                                            current = pagerState.value,
+                                            modifier = Modifier.fillMaxSize(),
+                                        )
                                     }
                                 }
                                 VerticalDivider(
