@@ -12,7 +12,7 @@ import org.psippr.desktop.interfaces.IUser
 import org.psippr.desktop.log.Log
 
 /**
- * Reads and writes the whole [DesktopConfigData] as JSON at `~/.psippr/desktop/config.json`.
+ * Reads and writes the whole [DesktopConfigData] as JSON at `~/.psippr-desktop/desktop/config.json`.
  * A missing or corrupt file falls back to defaults, so the desktop always has a valid config.
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
@@ -44,7 +44,11 @@ class DesktopConfigStore(
     }.let {}
 
     companion object {
-        const val CONFIG_DIR_NAME = ".psippr"
+        // old: shared its name with the separate psippr project, risking mixed or overwritten data
+//        const val CONFIG_DIR_NAME = ".psippr"
+
+        /** Per-user data dir of this app, named after the app so no other project shares it. */
+        const val CONFIG_DIR_NAME = ".psippr-desktop"
         const val CONFIG_SUBDIR_NAME = "desktop"
         const val CONFIG_FILE_NAME = "config.json"
     }

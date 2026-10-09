@@ -21,7 +21,7 @@ import java.net.URLClassLoader
 import java.util.ServiceLoader
 
 /**
- * Desktop (JVM) [IPluginManager]. External plugins are jars in `~/.psippr/plugins/`; a jar is only
+ * Desktop (JVM) [IPluginManager]. External plugins are jars in `~/.psippr-desktop/plugins/`; a jar is only
  * opened as a class loader once the user enables its plugin, and the loader is closed again on
  * disable. Plugins run with the desktop's own permissions, so only enable jars you trust.
  */

@@ -5,7 +5,7 @@ import org.psippr.desktop.plugins.IDesktopPlugin
 import org.psippr.desktop.plugins.PluginInfo
 
 /**
- * Discovers desktop widget plugins in `~/.psippr/plugins/`, remembers which ones the user enabled
+ * Discovers desktop widget plugins in `~/.psippr-desktop/plugins/`, remembers which ones the user enabled
  * and hands out live plugin instances. The [plugins] list is observable, so the control center
  * and the desktop update as soon as it changes.
  */

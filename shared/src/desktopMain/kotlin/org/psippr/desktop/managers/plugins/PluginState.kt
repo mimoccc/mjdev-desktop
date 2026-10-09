@@ -3,7 +3,7 @@ package org.psippr.desktop.managers.plugins
 import org.psippr.desktop.plugins.MemoryWidgetPlugin
 
 /**
- * Persisted plugin choices, stored as JSON in `~/.psippr/desktop/plugins.json`. Defaults keep the
+ * Persisted plugin choices, stored as JSON in `~/.psippr-desktop/desktop/plugins.json`. Defaults keep the
  * memory widget visible on a fresh install, matching the desktop before plugins existed.
  */
 data class PluginState(

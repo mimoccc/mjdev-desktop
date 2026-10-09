@@ -16,7 +16,7 @@ import org.psippr.desktop.extensions.Colors.alpha
 import org.psippr.desktop.extensions.Compose.preview
 
 /**
- * Control center page listing every plugin found in `~/.psippr/plugins/` (plus the built-in
+ * Control center page listing every plugin found in `~/.psippr-desktop/plugins/` (plus the built-in
  * ones). Each row shows the plugin image and label with a switch that shows or hides its widget
  * on the desktop; clicking the row expands its details.
  */

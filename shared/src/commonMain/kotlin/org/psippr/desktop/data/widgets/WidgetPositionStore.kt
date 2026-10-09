@@ -20,7 +20,7 @@ import org.psippr.desktop.log.Log
 
 /**
  * Remembers where the user dragged the desktop widgets, in its own file
- * (`~/.psippr/desktop/widgets.json`), so the control-center Save of the desktop config can never
+ * (`~/.psippr-desktop/desktop/widgets.json`), so the control-center Save of the desktop config can never
  * overwrite it. Reads once, keeps the positions in memory, writes in the background.
  *
  * @param file the JSON file

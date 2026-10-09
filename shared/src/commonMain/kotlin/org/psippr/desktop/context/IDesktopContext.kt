@@ -94,7 +94,7 @@ abstract class IDesktopContext : IDisposable {
     // System output volume / mute control - see IVolumeManager for platform implementations.
     open val volumeManager: IVolumeManager by this
 
-    // Discovers and toggles desktop widget plugins from ~/.psippr/plugins - see IPluginManager.
+    // Discovers and toggles desktop widget plugins from ~/.psippr-desktop/plugins - see IPluginManager.
     open val pluginManager: IPluginManager by this
 
     abstract var isFirstStart: Boolean

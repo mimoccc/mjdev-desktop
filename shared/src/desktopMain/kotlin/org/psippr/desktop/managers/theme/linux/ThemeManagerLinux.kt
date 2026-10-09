@@ -543,7 +543,11 @@ class ThemeManagerLinux(
         const val THEME_YARU = "Yaru"
         const val THEME_ADWAITA = "Adwaita"
         const val THEME_ADWAITA_DARK = "Adwaita-dark"
-        const val THEME_PSIPPR = "Psippr"
+        // old: ~/.themes/Psippr shared its name with the separate psippr project
+//        const val THEME_PSIPPR = "Psippr"
+
+        /** Generated GTK / shell theme (`~/.themes/<name>`), named after this app. */
+        const val THEME_PSIPPR = "Psippr-Desktop"
         const val THEME_CURSOR_BLOOM = "bloom"
 
         private fun theme(

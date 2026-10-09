@@ -85,7 +85,7 @@ class DesktopConfig(
         // cleared the first user's wallpapers; kept for compatibility, no longer used by load()
         private val DEFAULT = DesktopConfig {}
 
-        // Loads the per-user desktop config from ~/.psippr/desktop/config.json (defaults on first
+        // Loads the per-user desktop config from ~/.psippr-desktop/desktop/config.json (defaults on first
         // run), applies the persisted tunables to the theme and populates the enabled background
         // providers. Every user gets an own instance.
         fun load(user: IUser): DesktopConfig = configCache[user.userName] ?: DesktopConfig().apply {

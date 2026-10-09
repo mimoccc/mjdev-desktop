@@ -11,7 +11,7 @@ import kotlin.math.roundToInt
 /**
  * Serializable snapshot of the whole desktop configuration — every tunable that the desktop
  * shell exposes ([ITheme]) plus the background [ProviderConfig] list. Persisted as JSON via
- * [DesktopConfigStore] at `~/.psippr/desktop/config.json` and bridged to the live [ITheme]
+ * [DesktopConfigStore] at `~/.psippr-desktop/desktop/config.json` and bridged to the live [ITheme]
  * with [applyTo] / [fromTheme].
  *
  * Colors are stored as packed ARGB ints and Dp values as their raw float so the JSON stays

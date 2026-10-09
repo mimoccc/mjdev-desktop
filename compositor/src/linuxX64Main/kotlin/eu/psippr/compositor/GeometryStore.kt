@@ -26,12 +26,15 @@ import kotlinx.serialization.json.Json
 import psippr.compositor.shim.mjc_view_get_geometry
 import psippr.compositor.shim.mjc_view_is_maximized
 import psippr.compositor.shim.mjc_view_set_geometry
+import platform.posix.F_OK
+import platform.posix.access
 import platform.posix.fclose
 import platform.posix.fgets
 import platform.posix.fopen
 import platform.posix.fputs
 import platform.posix.getenv
 import platform.posix.mkdir
+import platform.posix.rename
 
 /**
  * Remembers the last user set geometry of app windows (keyed by app id)
@@ -49,10 +52,13 @@ class GeometryStore {
         val stateBase =
             getenv("XDG_STATE_HOME")?.toKString()
                 ?: "$home/.local/state"
-        val dir = "$stateBase/psippr"
+        // old: shared its name with the separate psippr project
+//        val dir = "$stateBase/psippr"
+        val dir = "$stateBase/$STATE_DIR_NAME"
         mkdir(stateBase, DIR_MODE)
         mkdir(dir, DIR_MODE)
-        path = "$dir/window-geometry.json"
+        path = "$dir/$FILE_NAME"
+        adoptLegacy(stateBase)
         load()
     }
 
@@ -117,6 +123,17 @@ class GeometryStore {
         }
     }
 
+    /** Moves (never copies or deletes) the store of an older dir name when this one has none yet. */
+    private fun adoptLegacy(stateBase: String) {
+        if (access(path, F_OK) == 0) {
+            return
+        }
+        LEGACY_DIR_NAMES
+            .map { name -> "$stateBase/$name/$FILE_NAME" }
+            .firstOrNull { legacy -> access(legacy, F_OK) == 0 }
+            ?.let { legacy -> rename(legacy, path) }
+    }
+
     private fun save() {
         val file = fopen(path, "w") ?: return
         fputs(json.encodeToString(serializer, entries), file)
@@ -125,6 +142,15 @@ class GeometryStore {
 
     companion object {
         private const val READ_CHUNK = 4096
+
+        /** State dir of this app, named after the app so no other project shares it. */
+        private const val STATE_DIR_NAME = "psippr-desktop"
+
+        /** Store file inside [STATE_DIR_NAME]. */
+        private const val FILE_NAME = "window-geometry.json"
+
+        /** State dirs of older names of this app, searched in order for a store to adopt. */
+        private val LEGACY_DIR_NAMES = listOf("mjdev", "psippr")
         private val DIR_MODE = 493u // 0755
     }
 }

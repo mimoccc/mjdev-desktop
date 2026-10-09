@@ -39,7 +39,7 @@ import org.psippr.desktop.icons.settings.SettingsMonitor
 
 /**
  * Control center page that configures the whole desktop. It loads the persisted
- * [org.psippr.desktop.data.DesktopConfigData] from `~/.psippr/desktop/config.json`, exposes every
+ * [org.psippr.desktop.data.DesktopConfigData] from `~/.psippr-desktop/desktop/config.json`, exposes every
  * tunable (background, panel, control center, app menu) and the background providers, and on
  * save writes the JSON back, applies it to the live theme and rebuilds the background sources.
  */
