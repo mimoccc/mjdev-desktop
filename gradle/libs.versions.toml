@@ -14,6 +14,9 @@ app-vendor = "psippr"
 # deb Depends, the installDesktop apt step and make-iso.sh. Space-separated (shell-friendly); the
 # deb packaging joins it with ", ". A clean/GNOME box lacks these (GNOME uses mutter, not wlroots),
 # so without them psipprc fails to load (libwlroots-0.18.so missing) and the session black-screens.
+# login screen: greetd runs the psippr greeter (psippr-greeter) as display manager when the user
+# picks psippr-desktop in the usual "Default display manager" dialog of the deb
+app-greeter-deps = "greetd"
 app-compositor-runtime-deps = "libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session"
 # Optional backdrop blur for compositor windows (https://github.com/wlrfx/scenefx). pkg-config names
 # tried in order, the first installed one is used (scenefx 0.2 targets wlroots 0.18). When none is

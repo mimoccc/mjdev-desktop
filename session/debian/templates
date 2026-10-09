@@ -1,0 +1,8 @@
+Template: shared/default-x-display-manager
+Type: select
+Choices: ${choices}
+Description: Default display manager:
+ A display manager is a program that provides graphical login capabilities.
+ .
+ Several display managers are installed. Choose the one started at boot.
+ Choose psippr-desktop for the psippr login screen.

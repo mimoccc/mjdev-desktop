@@ -28,6 +28,7 @@ abstract class PackageFullDebTask : DefaultTask() {
     @get:Input abstract val debDir: Property<String>        // dir holding the jpackage .deb (overwritten in place)
     @get:Input abstract val sessionDir: Property<String>    // stageSession output: psipprc + psippr-session + psippr.desktop
     @get:Input abstract val runtimeDepends: ListProperty<String> // wayland runtime stack to add to Depends
+    @get:Input abstract val greeterDepends: ListProperty<String> // login screen display manager (greetd)
     @get:Input abstract val legacyPackages: ListProperty<String> // old package names: Replaces/Conflicts/Provides
     @get:Input abstract val legacyFiles: ListProperty<String>    // files of the old name installed outside the package
 
@@ -53,9 +54,18 @@ abstract class PackageFullDebTask : DefaultTask() {
             psipprc.copyExec(File(work, "usr/bin/psipprc"))
             File(sess, "psippr-session").copyExec(File(work, "usr/bin/psippr-session"))
             File(sess, "psippr.desktop").copyInto(File(work, "usr/share/wayland-sessions/psippr.desktop"), 420)
+            // login screen: greetd greeter + its config, used when chosen as display manager
+            File(sess, "psippr-greeter").copyExec(File(work, "usr/bin/psippr-greeter"))
+            File(sess, "psippr-greetd.toml").copyInto(File(work, "etc/psippr-desktop/greetd.toml"), 420)
+            File(sess, "psippr-greetd.conf").copyInto(File(work, "etc/systemd/system/greetd.service.d/psippr.conf"), 420)
+            // the usual debconf "Default display manager" dialog
+            File(sess, "debian/templates").copyInto(File(work, "DEBIAN/templates"), 420)
+            File(sess, "debian/config").copyExec(File(work, "DEBIAN/config"))
 
             rewriteControl(File(work, "DEBIAN/control"))
-            writePostinst(File(work, "DEBIAN/postinst"))
+            // old: no display manager choice
+//            writePostinst(File(work, "DEBIAN/postinst"))
+            writePostinst(File(work, "DEBIAN/postinst"), File(sess, "debian/postinst-dm").readText())
             regenMd5sums(work)
 
             val tmpOut = File(dir, deb.name + ".full")
@@ -69,7 +79,9 @@ abstract class PackageFullDebTask : DefaultTask() {
 
     /** Strip libjpeg-turbo8, append the runtime stack to Depends (mid-stanza), add Recommends: seatd. */
     private fun rewriteControl(ctrl: File) {
-        val deps = runtimeDepends.get()
+        // old: wayland runtime stack only
+//        val deps = runtimeDepends.get()
+        val deps = runtimeDepends.get() + greeterDepends.get().filter { it.isNotBlank() }
         if (deps.isEmpty()) return
         val lines = ctrl.readLines().toMutableList()
         var dependsIdx = lines.indexOfFirst { it.startsWith("Depends:") }
@@ -93,10 +105,16 @@ abstract class PackageFullDebTask : DefaultTask() {
                 if (idx >= 0) lines[idx] = lines[idx] + ", " + names else lines.add(dependsIdx + 1, "$field: $names")
             }
         }
+        // a display manager: listed in the shared "Default display manager" debconf choice
+        val provides = lines.indexOfFirst { it.startsWith("Provides:") }
+        if (provides >= 0) lines[provides] = lines[provides] + ", " + DM_PROVIDES else lines.add(dependsIdx + 1, "Provides: $DM_PROVIDES")
         ctrl.writeText(lines.joinToString("\n") + "\n")
     }
 
-    private fun writePostinst(postinst: File) {
+    private fun writePostinst(
+        postinst: File,
+        dmChoice: String,
+    ) {
         postinst.writeText(
             """
             #!/bin/sh
@@ -108,8 +126,7 @@ abstract class PackageFullDebTask : DefaultTask() {
                 systemctl enable seatd 2>/dev/null || true
                 ldconfig 2>/dev/null || true
             fi
-            exit 0
-            """.trimIndent() + "\n",
+            """.trimIndent() + "\n" + dmChoice + "exit 0\n",
         )
         postinst.setExecutable(true, false)
     }
@@ -141,5 +158,8 @@ abstract class PackageFullDebTask : DefaultTask() {
     private companion object {
         /** Control fields naming the old package, so an upgrade replaces it in place. */
         val LEGACY_FIELDS = listOf("Provides", "Conflicts", "Replaces")
+
+        /** Virtual package of display managers (gdm3, lightdm, sddm provide it too). */
+        const val DM_PROVIDES = "x-display-manager"
     }
 }

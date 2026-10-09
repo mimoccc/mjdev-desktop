@@ -193,6 +193,13 @@ tasks.register<Copy>("stageSession") {
     }
     from(rootProject.file("session/psippr-session"))
     from(rootProject.file("session/psippr.desktop"))
+    // login screen (greetd greeter) + the display manager choice of the deb
+    from(rootProject.file("session/psippr-greeter"))
+    from(rootProject.file("session/psippr-greetd.toml"))
+    from(rootProject.file("session/psippr-greetd.conf"))
+    from(rootProject.file("session/debian")) {
+        into("debian")
+    }
     into(layout.buildDirectory.dir("session-install"))
 }
 

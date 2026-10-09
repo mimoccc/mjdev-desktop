@@ -42,6 +42,8 @@ SESSION_DIR="${PSIPPR_ISO_SESSION_DIR:-$HERE/compositor/build/session-install}"
 EXTRA_DEBS_DIR="${PSIPPR_ISO_EXTRA_DEBS:-$HERE/deb-packages}"
 OUT="${PSIPPR_ISO_OUT:-$HERE/releases/$APP_NAME-$VERSION.iso}"
 LIVE_USER="psippr"
+# default account of the image: user psippr / password psippr, a system administrator (sudo)
+LIVE_PASSWORD="${PSIPPR_ISO_PASSWORD:-psippr}"
 WORK=""
 
 while [ $# -gt 0 ]; do
@@ -179,6 +181,9 @@ sed -i -E 's/, *libjpeg-turbo8//; s/libjpeg-turbo8, *//; s/^(Depends:) *libjpeg-
 mkdir -p /usr/share/applications
 sed -i 's/^xdg-desktop-menu install .*/& || true/' /tmp/deb-fix/DEBIAN/postinst
 dpkg-deb -b /tmp/deb-fix /tmp/psippr-desktop-fixed.deb
+# the image has no other display manager: answer the deb's "Default display manager" question
+# with psippr-desktop, so greetd shows the psippr login screen at boot
+echo "psippr-desktop shared/default-x-display-manager select psippr-desktop" | debconf-set-selections
 apt-get install --no-install-recommends -y /tmp/psippr-desktop-fixed.deb
 install -Dm644 /opt/psippr-desktop/lib/psippr-desktop-psippr-desktop.desktop \
     /usr/share/applications/psippr-desktop.desktop 2>/dev/null || true
@@ -217,30 +222,47 @@ if [ -d /usr/share/sounds/psippr ]; then
     echo 'PSIPPR_SOUND_THEME=psippr' >> /etc/environment
 fi
 
-# passwordless live user, autologin tty1, straight into the wayland session
+# old: passwordless live user, autologin tty1 straight into the session - no login screen
+## passwordless live user, autologin tty1, straight into the wayland session
+#useradd -m -s /bin/bash $LIVE_USER
+#passwd -d $LIVE_USER
+## the compositor opens /dev/dri/card0 and /run/seatd.sock (group "video"); without
+## these groups the user gets no DRM seat and the session is a black screen. usermod,
+## not adduser — minbase ships usermod (passwd) but not the adduser wrapper.
+#usermod -aG video,input,render $LIVE_USER
+#getent group seat >/dev/null 2>&1 && usermod -aG seat $LIVE_USER || true
+#systemctl enable seatd
+#
+#mkdir -p /etc/systemd/system/getty@tty1.service.d
+#cat > /etc/systemd/system/getty@tty1.service.d/autologin.conf <<EOF
+#[Service]
+#ExecStart=
+#ExecStart=-/sbin/agetty --autologin $LIVE_USER --noclear %I \\\$TERM
+#EOF
+#
+#cat > /home/$LIVE_USER/.bash_profile <<EOF
+## start the psippr desktop on boot (tty1 only)
+#if [ -z "\\\$WAYLAND_DISPLAY" ] && [ "\\\$(tty)" = "/dev/tty1" ]; then
+#    exec psippr-session
+#fi
+#EOF
+#chown $LIVE_USER:$LIVE_USER /home/$LIVE_USER/.bash_profile
+
+# default account psippr / psippr, system administrator; login through the psippr login screen
+# (greetd, enabled by the deb's display manager choice above)
+apt-get install --no-install-recommends -y sudo
 useradd -m -s /bin/bash $LIVE_USER
-passwd -d $LIVE_USER
+echo "$LIVE_USER:$LIVE_PASSWORD" | chpasswd
 # the compositor opens /dev/dri/card0 and /run/seatd.sock (group "video"); without
 # these groups the user gets no DRM seat and the session is a black screen. usermod,
 # not adduser — minbase ships usermod (passwd) but not the adduser wrapper.
-usermod -aG video,input,render $LIVE_USER
+usermod -aG sudo,video,input,render $LIVE_USER
 getent group seat >/dev/null 2>&1 && usermod -aG seat $LIVE_USER || true
+# the greeter runs psipprc as _greetd: it needs the same seat / GPU groups
+usermod -aG video,input,render _greetd
+getent group seat >/dev/null 2>&1 && usermod -aG seat _greetd || true
 systemctl enable seatd
-
-mkdir -p /etc/systemd/system/getty@tty1.service.d
-cat > /etc/systemd/system/getty@tty1.service.d/autologin.conf <<EOF
-[Service]
-ExecStart=
-ExecStart=-/sbin/agetty --autologin $LIVE_USER --noclear %I \\\$TERM
-EOF
-
-cat > /home/$LIVE_USER/.bash_profile <<EOF
-# start the psippr desktop on boot (tty1 only)
-if [ -z "\\\$WAYLAND_DISPLAY" ] && [ "\\\$(tty)" = "/dev/tty1" ]; then
-    exec psippr-session
-fi
-EOF
-chown $LIVE_USER:$LIVE_USER /home/$LIVE_USER/.bash_profile
+systemctl set-default graphical.target
 PROVISION
 chmod +x "$ROOT/tmp/provision.sh"
 chroot "$ROOT" /tmp/provision.sh

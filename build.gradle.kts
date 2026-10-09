@@ -151,6 +151,12 @@ val compositorRuntimeDeps =
         .get()
         .trim()
         .split(Regex("\\s+"))
+// login screen display manager (version catalog)
+val greeterDeps =
+    libs.versions.app.greeter.deps
+        .get()
+        .trim()
+        .split(Regex("\\s+"))
 // names used before the rename to psippr (version catalog): the deb replaces those packages and
 // removes their files that were installed outside the package
 val legacyPackageNames =
@@ -172,6 +178,7 @@ val packageFullDeb =
         debDir.set(pkgDirV.resolve("deb").absolutePath)
         sessionDir.set(rootDir.resolve("compositor/build/session-install").absolutePath)
         runtimeDepends.set(compositorRuntimeDeps)
+        greeterDepends.set(greeterDeps)
         legacyPackages.set(legacyPackageNames)
         legacyFiles.set(legacyFileNames)
         inputs.dir(rootDir.resolve("compositor/build/session-install"))
