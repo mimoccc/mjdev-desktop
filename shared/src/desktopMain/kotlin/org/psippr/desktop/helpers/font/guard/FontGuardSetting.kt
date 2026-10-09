@@ -14,6 +14,12 @@ enum class FontGuardSetting(
     /** Marker environment variable set on the relaunched process, so it does not relaunch again. */
     GuardMarkerEnv("PSIPPR_FONT_GUARD"),
 
+    /**
+     * Marker the jpackage launcher sets on itself; a launcher that inherits it skips its config
+     * and starts java without a main class, so it must not reach the relaunched child.
+     */
+    JpackageLauncherEnv("_JPACKAGE_LAUNCHER"),
+
     /** Value of [GuardMarkerEnv] on the relaunched process. */
     GuardMarkerValue("1"),
 

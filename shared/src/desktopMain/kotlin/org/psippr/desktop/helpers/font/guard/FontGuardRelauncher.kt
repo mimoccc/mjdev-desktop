@@ -3,6 +3,7 @@ package org.psippr.desktop.helpers.font.guard
 import org.psippr.desktop.helpers.font.guard.FontGuardSetting.FontconfigFileEnv
 import org.psippr.desktop.helpers.font.guard.FontGuardSetting.GuardMarkerEnv
 import org.psippr.desktop.helpers.font.guard.FontGuardSetting.GuardMarkerValue
+import org.psippr.desktop.helpers.font.guard.FontGuardSetting.JpackageLauncherEnv
 import java.nio.file.Path
 
 /**
@@ -41,16 +42,31 @@ object FontGuardRelauncher {
         command: List<String>,
         guardConfig: Path,
     ): Int {
-        val child =
-            ProcessBuilder(command)
-                .inheritIO()
-                .apply {
-                    environment()[FontconfigFileEnv.value] = guardConfig.toString()
-                    environment()[GuardMarkerEnv.value] = GuardMarkerValue.value
-                }.start()
+        // old: the child inherited _JPACKAGE_LAUNCHER, so a packaged launcher printed the java
+        // usage and exited - the shell crash-looped inside the compositor (black nested window)
+//        val child =
+//            ProcessBuilder(command)
+//                .inheritIO()
+//                .apply {
+//                    environment()[FontconfigFileEnv.value] = guardConfig.toString()
+//                    environment()[GuardMarkerEnv.value] = GuardMarkerValue.value
+//                }.start()
+        val child = childProcess(command, guardConfig).start()
         // old hook: SIGTERM only - a child hung in shutdown stayed behind as an unstoppable orphan
         // Runtime.getRuntime().addShutdownHook(Thread { child.destroy() })
         Runtime.getRuntime().addShutdownHook(Thread { ChildProcessStopper.stop(child) })
         return child.waitFor()
     }
+
+    /** Process builder of the guarded child: guard env set, the launcher marker removed. */
+    internal fun childProcess(
+        command: List<String>,
+        guardConfig: Path,
+    ): ProcessBuilder = ProcessBuilder(command)
+        .inheritIO()
+        .apply {
+            environment()[FontconfigFileEnv.value] = guardConfig.toString()
+            environment()[GuardMarkerEnv.value] = GuardMarkerValue.value
+            environment().remove(JpackageLauncherEnv.value)
+        }
 }
