@@ -119,6 +119,8 @@ struct mjc_server {
     uint32_t resize_edges;
 
     struct wl_event_source *sigchld_source;
+    /* periodic reap of spawned children: SIGCHLD alone can be lost (see handle_reap_timer) */
+    struct wl_event_source *reap_timer;
 
     /* pids spawned via mjc_spawn; sigchld must reap only these,
      * other children (Xwayland) belong to wlroots */
@@ -1301,6 +1303,22 @@ static int handle_sigchld(int signal_number, void *data) {
     return 0;
 }
 
+/* Interval of the periodic child reap, in milliseconds: how long a lost SIGCHLD can delay
+ * noticing that a spawned child (e.g. the shell) exited. */
+#define MJC_REAP_INTERVAL_MS 500
+
+/* The SIGCHLD event source is a signalfd, which only sees the signal while every thread blocks
+ * it. The Kotlin/Native runtime threads (GC) start before main and leave SIGCHLD unblocked, so
+ * the kernel may deliver it there, where it is discarded: the exited shell stays a zombie and the
+ * compositor never ends (greetd then never starts the session after a login). Reaping on a timer
+ * as well makes child exits reliable whatever thread got the signal. */
+static int handle_reap_timer(void *data) {
+    struct mjc_server *server = data;
+    handle_sigchld(SIGCHLD, server);
+    wl_event_source_timer_update(server->reap_timer, MJC_REAP_INTERVAL_MS);
+    return 0;
+}
+
 /* True when the GLES2 renderer ended up on software rendering (llvmpipe/swrast) — i.e. there is
  * no usable hardware GL. In that case the Compose shell (Skiko) cannot create an OpenGL/GLX
  * context on the (also software) XWayland and must use its CPU raster backend, so the compositor
@@ -1473,6 +1491,10 @@ bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdat
 
     server->sigchld_source = wl_event_loop_add_signal(server->loop,
         SIGCHLD, handle_sigchld, server);
+    server->reap_timer = wl_event_loop_add_timer(server->loop, handle_reap_timer, server);
+    if (server->reap_timer != NULL) {
+        wl_event_source_timer_update(server->reap_timer, MJC_REAP_INTERVAL_MS);
+    }
 
     if (!wlr_backend_start(server->backend)) {
         fprintf(stderr, "psipprc: failed to start backend\n");
