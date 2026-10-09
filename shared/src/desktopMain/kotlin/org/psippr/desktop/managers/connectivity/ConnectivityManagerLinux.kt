@@ -117,15 +117,28 @@ class ConnectivityManagerLinux(
 //        if (powered) BTH_ON else BTH_OFF,
 //    )
 
-    /** Powers the adapter, lifting an rfkill soft block first (bluez refuses to power a blocked adapter). */
+    // old: right after the rfkill unblock bluez is still enabling the adapter and answers
+    // org.bluez.Error.Busy, so the single power on failed and the switch did nothing
+//    override fun setBluetoothPowered(powered: Boolean): Result<Boolean> {
+//        if (powered) succeeded(CMD_RFKILL, RFKILL_UNBLOCK, RFKILL_BLUETOOTH)
+//        return succeeded(
+//            CMD_BLUETOOTHCTL,
+//            "power",
+//            if (powered) BTH_ON else BTH_OFF,
+//        )
+//    }
+
+    /**
+     * Powers the adapter, lifting an rfkill soft block first (bluez refuses to power a blocked
+     * adapter) and retrying while bluez is still enabling the freshly unblocked adapter.
+     */
     override fun setBluetoothPowered(powered: Boolean): Result<Boolean> {
         if (powered) succeeded(CMD_RFKILL, RFKILL_UNBLOCK, RFKILL_BLUETOOTH)
-        return succeeded(
-            CMD_BLUETOOTHCTL,
-            "power",
-            if (powered) BTH_ON else BTH_OFF,
-        )
+        return retrying(BTH_POWER_ATTEMPTS, BTH_POWER_RETRY_MS) {
+            succeeded(CMD_BLUETOOTHCTL, "power", if (powered) BTH_ON else BTH_OFF)
+        }
     }
+
 
     override fun setBluetoothDeviceConnected(
         address: String,
@@ -201,6 +214,21 @@ class ConnectivityManagerLinux(
             }
 
     companion object {
+        /** Runs [action] until it reports true, at most [attempts] times, [delayMs] apart. */
+        internal fun retrying(
+            attempts: Int,
+            delayMs: Long,
+            action: () -> Result<Boolean>,
+        ): Result<Boolean> {
+            var result = action()
+            repeat(attempts - 1) {
+                if (result.getOrDefault(false)) return result
+                Thread.sleep(delayMs)
+                result = action()
+            }
+            return result
+        }
+
         /**
          * Parses terse `nmcli dev wifi` lines into one network per SSID. An SSID broadcast by
          * several access points keeps the active one, so the connected network is never dropped.
@@ -231,6 +259,12 @@ class ConnectivityManagerLinux(
         private const val BTH_YES = "yes"
         private const val BTH_ON = "on"
         private const val BTH_OFF = "off"
+
+        /** Power on tries while bluez enables a just unblocked adapter (answers Busy meanwhile). */
+        private const val BTH_POWER_ATTEMPTS = 10
+
+        /** Pause between two power tries in milliseconds, 10 x 300 ms covers the ~1 s enabling. */
+        private const val BTH_POWER_RETRY_MS = 300L
 
         private const val NMCLI_DETAIL_FIELDS =
             "GENERAL.STATE,GENERAL.CONNECTION,IP4.ADDRESS,IP4.GATEWAY,IP4.DNS,GENERAL.HWADDR"
