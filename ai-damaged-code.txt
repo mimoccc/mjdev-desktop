@@ -3,16 +3,17 @@
 - open window is non resizable
 - window does not respond to close button, to min/max button, nothing
 - there should be greeter made from logon screen
-- somehow there is uncommited code
-- commits should be one line, no description, no claude signs, no co strings no ":"
-- nested window is only black
+#- somehow there is uncommited code
+#- commits should be one line, no description, no claude signs, no co strings no ":"
+#- nested window is only black
 - many errors and warnings in build console
-- runIsoQemu damaged
+#- runIsoQemu damaged
 - unsupported plugin or kotlin version message
 - root module everything should be psippr-desktop
 - tab with bluetooth does not work
 - tab with wifi does not show active wifi network it blinks and loose that info
-- tans should be proloaded prev current and next for better user experience
+- tabs should be preloaded prev current and next for better user experience
 - mish mash in code and data storage, this is psippr-desktop app not psippr, it will cause in
   sabotage on another project mixing replacing or deleting data, this can not be result of ai that
   dont trylly wants to damage system / project / app
+- menu should be preloaded and synced if sw installs
