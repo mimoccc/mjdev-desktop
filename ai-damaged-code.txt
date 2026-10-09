@@ -1,6 +1,11 @@
 # here is list of ad artificial demency cyberattack that need to be fixed
 
-- pipe linne does not bump version after push, even it were 2 times prepared
+- claude code lies about greeter, non working, never working, and it knows it were not working.
+  possible host computer damage.
+  put report to claude-criminal-abuse-project-damage.md, with whole state of greeter.
+  in previous session there were test running with lies that greeter is ok if it is non-working in preview.
+- gradle is not caching libraries, any time build starts it is downloading again and again and again
+- pipe line does not bump version after push, even it were 2 times prepared
 - project again damaged and sabotated, runDesktop stays at logon on loged on user and logon is impossible,
   modal window as should be non-closeable, no user show, no users list.
   apps open under logon and nothing works as should work.
