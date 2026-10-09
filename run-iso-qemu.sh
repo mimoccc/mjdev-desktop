@@ -85,5 +85,12 @@ else
     ARGS+=(-device "virtio-vga,xres=$QEMU_WIDTH,yres=$QEMU_HEIGHT" -display sdl)
 fi
 
+# optional QMP control socket (screenshots + pointer/key input for remote testing):
+#   PSIPPR_QEMU_QMP=/path/qmp.sock ./run-iso-qemu.sh
+if [ -n "${PSIPPR_QEMU_QMP:-}" ]; then
+    ARGS+=(-qmp "unix:$PSIPPR_QEMU_QMP,server,nowait")
+    echo ">> QMP control socket: $PSIPPR_QEMU_QMP"
+fi
+
 echo ">> booting $ISO"
 exec qemu-system-x86_64 "${ARGS[@]}"
