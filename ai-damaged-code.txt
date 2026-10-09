@@ -1,5 +1,6 @@
 # here is list of ad artificial demency cyberattack that need to be fixed
 
+- pipe linne does not bump version after push, even it were 2 times prepared
 - project again damaged and sabotated, runDesktop stays at logon on loged on user and logon is impossible,
   modal window as should be non-closeable, no user show, no users list.
   apps open under logon and nothing works as should work.
