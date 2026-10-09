@@ -84,15 +84,16 @@ class Shell(
         onStarted: () -> Unit = {},
         onStopped: (e: Throwable) -> Unit = {},
     ) {
-        val builder = ProcessBuilder(
-            CMD_DEX,
-            "-w",
-            app.desktopFile.absolutePath,
-        ).apply {
-            environment().putAll(environment.toMap())
-            redirectErrorStream(true)
-            redirectOutput(ProcessBuilder.Redirect.INHERIT)
-        }
+        val builder =
+            ProcessBuilder(
+                CMD_DEX,
+                "-w",
+                app.desktopFile.absolutePath,
+            ).apply {
+                environment().putAll(environment.toMap())
+                redirectErrorStream(true)
+                redirectOutput(ProcessBuilder.Redirect.INHERIT)
+            }
         runCatching {
             val process = withContext(Dispatchers.IO) { builder.start() }
             onStarted()

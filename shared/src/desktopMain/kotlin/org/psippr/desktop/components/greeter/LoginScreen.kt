@@ -48,6 +48,7 @@ private const val SCREEN_ALPHA = 0.9f
 private const val SELECTED_ALPHA = 0.2f
 
 // old: own login layout, replaced by the psippr Greeter design (see LoginWindow); kept unused
+
 /**
  * Login screen of the greetd greeter: pick a user and a desktop, type the password; [login] runs
  * the greetd dialog off the UI thread and [onLoggedIn] ends the greeter so greetd starts the

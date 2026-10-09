@@ -47,19 +47,20 @@ class OSManagerLinux(
     override val kernel: String
         get() = Shell.executeAndRead("uname", "-r").trim()
     override val uptime: String
-        get() = runCatching {
-            File(UPTIME_FILE)
-                .readText()
-                .substringBefore(' ')
-                .toDouble()
-                .toLong()
-                .let { total ->
-                    val days = total / SECONDS_PER_DAY
-                    val hours = total % SECONDS_PER_DAY / SECONDS_PER_HOUR
-                    val minutes = total % SECONDS_PER_HOUR / SECONDS_PER_MINUTE
-                    "${days}d ${hours}h ${minutes}m"
-                }
-        }.getOrDefault("")
+        get() =
+            runCatching {
+                File(UPTIME_FILE)
+                    .readText()
+                    .substringBefore(' ')
+                    .toDouble()
+                    .toLong()
+                    .let { total ->
+                        val days = total / SECONDS_PER_DAY
+                        val hours = total % SECONDS_PER_DAY / SECONDS_PER_HOUR
+                        val minutes = total % SECONDS_PER_HOUR / SECONDS_PER_MINUTE
+                        "${days}d ${hours}h ${minutes}m"
+                    }
+            }.getOrDefault("")
     override val machineName
         get() = Shell.executeAndRead("hostname").trim()
 

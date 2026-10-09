@@ -115,6 +115,5 @@ object RemoteOpPainter {
         return result
     }
 
-    private fun Color.withAlpha(multiplier: Float) =
-        copy(alpha = alpha * multiplier.coerceIn(0f, 1f))
+    private fun Color.withAlpha(multiplier: Float) = copy(alpha = alpha * multiplier.coerceIn(0f, 1f))
 }

@@ -23,17 +23,18 @@ class ShellStartAppTest {
     fun chattyAppDoesNotHang() {
         // dex is a runtime dependency of the desktop; without it there is nothing to launch
         if (!File(DEX_PATH).canExecute()) return
-        val desktopFile = File.createTempFile("psippr-chatty", ".desktop").apply {
-            deleteOnExit()
-            writeText(
-                """
-                [Desktop Entry]
-                Type=Application
-                Name=Chatty
-                Exec=sh -c "head -c $outputBytes /dev/zero | tr '\\0' x"
-                """.trimIndent(),
-            )
-        }
+        val desktopFile =
+            File.createTempFile("psippr-chatty", ".desktop").apply {
+                deleteOnExit()
+                writeText(
+                    """
+                    [Desktop Entry]
+                    Type=Application
+                    Name=Chatty
+                    Exec=sh -c "head -c $outputBytes /dev/zero | tr '\\0' x"
+                    """.trimIndent(),
+                )
+            }
         var stopped = false
         runBlocking {
             withTimeout(timeoutMs) {

@@ -63,7 +63,11 @@ object GreetdLogin {
         error(reply.description ?: reply.authMessage ?: reply.errorType ?: reply.type)
     }
 
-    private fun socketPath(): Path? = System.getenv(GreetdSetting.SocketEnv.value)?.takeIf { it.isNotBlank() }?.let(Path::of)
+    private fun socketPath(): Path? = System
+        .getenv(GreetdSetting.SocketEnv.value)
+        ?.takeIf {
+            it.isNotBlank()
+        }?.let(Path::of)
 
     private const val NO_SOCKET = "not started by greetd"
 }

@@ -39,7 +39,6 @@ import org.psippr.desktop.components.button.TransparentButton
 import org.psippr.desktop.components.image.ImageAny
 import org.psippr.desktop.components.text.TextAny
 import org.psippr.desktop.context.DesktopContextScope.Companion.withDesktopContext
-import org.psippr.desktop.interfaces.IUser
 import org.psippr.desktop.extensions.Colors.SuperDarkGray
 import org.psippr.desktop.extensions.Colors.alpha
 import org.psippr.desktop.extensions.Compose.preview
@@ -47,6 +46,7 @@ import org.psippr.desktop.extensions.Modifier.circleBorder
 import org.psippr.desktop.extensions.Modifier.clipCircle
 import org.psippr.desktop.extensions.Modifier.conditional
 import org.psippr.desktop.helpers.compose.Orientation
+import org.psippr.desktop.interfaces.IUser
 
 @Suppress("FunctionName", "UNUSED_PARAMETER")
 @Composable

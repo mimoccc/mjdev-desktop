@@ -10,10 +10,11 @@ class BluetoothPowerRetryTest {
     @Test
     fun busyAnswersAreRetriedUntilSuccess() {
         var calls = 0
-        val result = ConnectivityManagerLinux.retrying(ATTEMPTS, NO_DELAY) {
-            calls++
-            Result.success(calls == SUCCESS_ON_CALL)
-        }
+        val result =
+            ConnectivityManagerLinux.retrying(ATTEMPTS, NO_DELAY) {
+                calls++
+                Result.success(calls == SUCCESS_ON_CALL)
+            }
         assertTrue(result.getOrDefault(false))
         assertEquals(SUCCESS_ON_CALL, calls)
     }
@@ -21,10 +22,11 @@ class BluetoothPowerRetryTest {
     @Test
     fun retriesStopAfterLimit() {
         var calls = 0
-        val result = ConnectivityManagerLinux.retrying(ATTEMPTS, NO_DELAY) {
-            calls++
-            Result.failure(IllegalStateException(BUSY))
-        }
+        val result =
+            ConnectivityManagerLinux.retrying(ATTEMPTS, NO_DELAY) {
+                calls++
+                Result.failure(IllegalStateException(BUSY))
+            }
         assertFalse(result.getOrDefault(false))
         assertEquals(ATTEMPTS, calls)
     }

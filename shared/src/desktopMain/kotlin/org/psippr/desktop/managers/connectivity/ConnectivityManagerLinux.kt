@@ -81,9 +81,10 @@ class ConnectivityManagerLinux(
         }
 
     override val isBluetoothPowered: Boolean
-        get() = Shell
-            .executeAndReadLines(CMD_BLUETOOTHCTL, CMD_BTH_SHOW)
-            .any { it.trim().startsWith(BTH_POWERED_PREFIX) && it.contains(BTH_YES) }
+        get() =
+            Shell
+                .executeAndReadLines(CMD_BLUETOOTHCTL, CMD_BTH_SHOW)
+                .any { it.trim().startsWith(BTH_POWERED_PREFIX) && it.contains(BTH_YES) }
 
     override fun setDeviceConnected(
         device: String,
@@ -138,7 +139,6 @@ class ConnectivityManagerLinux(
             succeeded(CMD_BLUETOOTHCTL, "power", if (powered) BTH_ON else BTH_OFF)
         }
     }
-
 
     override fun setBluetoothDeviceConnected(
         address: String,

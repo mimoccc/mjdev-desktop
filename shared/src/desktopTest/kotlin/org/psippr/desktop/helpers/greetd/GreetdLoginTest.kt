@@ -24,7 +24,10 @@ class GreetdLoginTest {
             thread {
                 server.accept().use { client ->
                     received += read(client)
-                    write(client, """{"type":"auth_message","auth_message_type":"secret","auth_message":"Password: "}""")
+                    write(
+                        client,
+                        """{"type":"auth_message","auth_message_type":"secret","auth_message":"Password: "}""",
+                    )
                     received += read(client)
                     write(client, """{"type":"success"}""")
                     received += read(client)
@@ -32,9 +35,27 @@ class GreetdLoginTest {
                 }
             }
         GreetdConnection(socket).use { connection ->
-            assertEquals(GreetdMessageType.AuthMessage.value, connection.send(GreetdRequest(GreetdMessageType.CreateSession.value, username = USER)).type)
-            assertEquals(GreetdMessageType.Success.value, connection.send(GreetdRequest(GreetdMessageType.PostAuthMessageResponse.value, response = PASSWORD)).type)
-            assertEquals(GreetdMessageType.Success.value, connection.send(GreetdRequest(GreetdMessageType.StartSession.value, cmd = listOf(GreetdSetting.SessionCommand.value))).type)
+            assertEquals(
+                GreetdMessageType.AuthMessage.value,
+                connection.send(GreetdRequest(GreetdMessageType.CreateSession.value, username = USER)).type,
+            )
+            assertEquals(
+                GreetdMessageType.Success.value,
+                connection
+                    .send(
+                        GreetdRequest(GreetdMessageType.PostAuthMessageResponse.value, response = PASSWORD),
+                    ).type,
+            )
+            assertEquals(
+                GreetdMessageType.Success.value,
+                connection
+                    .send(
+                        GreetdRequest(
+                            GreetdMessageType.StartSession.value,
+                            cmd = listOf(GreetdSetting.SessionCommand.value),
+                        ),
+                    ).type,
+            )
         }
         greetd.join()
         server.close()
@@ -57,7 +78,14 @@ class GreetdLoginTest {
         json: String,
     ) {
         val bytes = json.toByteArray(Charsets.UTF_8)
-        val buffer = ByteBuffer.allocate(Int.SIZE_BYTES + bytes.size).order(ByteOrder.nativeOrder()).putInt(bytes.size).put(bytes).flip()
+        val buffer =
+            ByteBuffer
+                .allocate(
+                    Int.SIZE_BYTES + bytes.size,
+                ).order(ByteOrder.nativeOrder())
+                .putInt(bytes.size)
+                .put(bytes)
+                .flip()
         while (buffer.hasRemaining()) channel.write(buffer)
     }
 

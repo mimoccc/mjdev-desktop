@@ -34,11 +34,15 @@ object LoginUsers {
     private val NO_LOGIN_SHELLS = listOf("nologin", "false")
 
     /** User names that can log in, in passwd order. */
-    fun names(passwd: File = File(PASSWD_FILE)): List<String> = runCatching { parse(passwd.readLines()) }.getOrDefault(emptyList())
+    fun names(passwd: File = File(PASSWD_FILE)): List<String> =
+        runCatching { parse(passwd.readLines()) }.getOrDefault(emptyList())
 
     /** Accounts that can log in (name, home, picture), in passwd order. */
-    fun users(passwd: File = File(PASSWD_FILE)): List<IUser> =
-        runCatching { passwd.readLines() }.getOrDefault(emptyList()).filter { line -> isHuman(line.split(SEPARATOR)) }.map(::User)
+    fun users(passwd: File = File(PASSWD_FILE)): List<IUser> = runCatching { passwd.readLines() }
+        .getOrDefault(emptyList())
+        .filter { line ->
+            isHuman(line.split(SEPARATOR))
+        }.map(::User)
 
     /** User names that can log in from passwd [lines]. */
     fun parse(lines: List<String>): List<String> = lines
@@ -47,8 +51,7 @@ object LoginUsers {
         .map { fields -> fields[NAME_FIELD] }
 
     // regular uid and a real login shell
-    private fun isHuman(fields: List<String>): Boolean =
-        fields.size == FIELD_COUNT &&
-            fields[UID_FIELD].toIntOrNull() in HUMAN_UIDS &&
-            NO_LOGIN_SHELLS.none { shell -> fields[SHELL_FIELD].endsWith(shell) }
+    private fun isHuman(fields: List<String>): Boolean = fields.size == FIELD_COUNT &&
+        fields[UID_FIELD].toIntOrNull() in HUMAN_UIDS &&
+        NO_LOGIN_SHELLS.none { shell -> fields[SHELL_FIELD].endsWith(shell) }
 }

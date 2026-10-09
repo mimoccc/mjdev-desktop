@@ -20,7 +20,6 @@ enum class NetDetail(
         private const val CONNECTED_MARK = "(connected)"
 
         /** True when [details] describe a device with an active connection. */
-        fun isConnected(details: Map<String, String>): Boolean =
-            details[State.key].orEmpty().contains(CONNECTED_MARK)
+        fun isConnected(details: Map<String, String>): Boolean = details[State.key].orEmpty().contains(CONNECTED_MARK)
     }
 }

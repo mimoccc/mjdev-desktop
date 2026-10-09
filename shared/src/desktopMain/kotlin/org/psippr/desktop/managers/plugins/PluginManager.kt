@@ -112,7 +112,11 @@ class PluginManager(
         return when {
             info == null || !info.enabled -> null
             instances.containsKey(id) -> instances[id]
-            info.builtIn -> builtInPlugins[id]?.also { instances[id] = it; it.onEnabled() }
+            info.builtIn ->
+                builtInPlugins[id]?.also {
+                    instances[id] = it
+                    it.onEnabled()
+                }
             else -> load(id)
         }
     }
