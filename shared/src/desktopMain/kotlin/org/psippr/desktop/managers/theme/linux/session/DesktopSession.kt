@@ -28,9 +28,18 @@ enum class DesktopSession(
     OTHER(null, false, false),
     ;
 
-    /** True when client-side titlebuttons must be hidden because the compositor draws them. */
+    // old: hid the titlebuttons and the resize margin of every GTK app in the psippr session, but
+    // psipprc draws no frame (shim.c grants client-side decorations only), so app windows lost
+    // their close / min / max buttons and could not be resized
+//    val compositorDrawsFrame: Boolean
+//        get() = this == PSIPPR
+
+    /**
+     * True when client-side titlebuttons must be hidden because the compositor draws them.
+     * No session does: psipprc forces client-side decorations, apps keep their own chrome.
+     */
     val compositorDrawsFrame: Boolean
-        get() = this == PSIPPR
+        get() = false
 
     companion object {
         /** Environment variable holding the colon separated desktop names. */

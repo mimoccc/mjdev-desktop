@@ -6,6 +6,7 @@ import org.psippr.desktop.managers.theme.linux.gtk.GtkCssLayer
 import org.psippr.desktop.managers.theme.linux.gtk.GtkNamedColor
 import org.psippr.desktop.managers.theme.linux.gtk.GtkThemeColors
 import org.psippr.desktop.managers.theme.linux.gtk.GtkToolkit
+import org.psippr.desktop.managers.theme.linux.session.DesktopSession
 import java.io.File
 import kotlin.io.path.createTempDirectory
 import kotlin.test.Test
@@ -75,6 +76,15 @@ class GtkCssTest {
         val psippr = GtkCss.build(GtkToolkit.GTK3, GtkCssLayer.USER, dark, true, noThemes)
         assertFalse(gnome.contains("titlebutton"))
         assertTrue(psippr.contains("titlebutton"))
+    }
+
+    /** Regression: psipprc draws no frame, so the psippr session must keep the client buttons. */
+    @Test
+    fun psipprSessionKeepsClientTitlebuttons() {
+        val session = DesktopSession.detect(DesktopSession.PSIPPR.marker)
+        val css = GtkCss.build(GtkToolkit.GTK3, GtkCssLayer.THEME, dark, session.compositorDrawsFrame, noThemes)
+        assertFalse(session.compositorDrawsFrame)
+        assertFalse(css.contains("titlebutton"))
     }
 
     @Test
