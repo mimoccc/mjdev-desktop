@@ -163,8 +163,16 @@ fun ControlCenter(
 //                                    Box(modifier = Modifier.weight(1f)) {
 //                                        page.Render()
 //                                    }
+                                    // old: the pager composed and drew every page over each other
+//                                    Box(modifier = Modifier.weight(1f)) {
+//                                        PreloadedPages(
+//                                            pages = pagesFiltered,
+//                                            current = pagerState.value,
+//                                            modifier = Modifier.fillMaxSize(),
+//                                        )
+//                                    }
                                     Box(modifier = Modifier.weight(1f)) {
-                                        PreloadedPages(
+                                        NeighbourPages(
                                             pages = pagesFiltered,
                                             current = pagerState.value,
                                             modifier = Modifier.fillMaxSize(),
