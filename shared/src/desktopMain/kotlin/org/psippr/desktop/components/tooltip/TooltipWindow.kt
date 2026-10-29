@@ -86,11 +86,19 @@ private fun pointerPosition(
     containerSize: DpSize,
 ): DpOffset {
     val pointer = runCatching { MouseInfo.getPointerInfo()?.location }.getOrNull()
-    val x = (pointer?.x ?: 0).dp + cursorOffset.x
-    val y = (pointer?.y ?: 0).dp + cursorOffset.y
-    return DpOffset(
-        x = x.coerceIn(0.dp, (containerSize.width - size.width).coerceAtLeast(0.dp)),
-        y = y.coerceIn(0.dp, (containerSize.height - size.height).coerceAtLeast(0.dp)),
+    // old: clamping at the screen edge pushed the window under the pointer, over the tab icons
+//    val x = (pointer?.x ?: 0).dp + cursorOffset.x
+//    val y = (pointer?.y ?: 0).dp + cursorOffset.y
+//    return DpOffset(
+//        x = x.coerceIn(0.dp, (containerSize.width - size.width).coerceAtLeast(0.dp)),
+//        y = y.coerceIn(0.dp, (containerSize.height - size.height).coerceAtLeast(0.dp)),
+//    )
+    return TooltipPlacement.position(
+        pointerX = (pointer?.x ?: 0).dp,
+        pointerY = (pointer?.y ?: 0).dp,
+        cursorOffset = cursorOffset,
+        size = size,
+        containerSize = containerSize,
     )
 }
 
