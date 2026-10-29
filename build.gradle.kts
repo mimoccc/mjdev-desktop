@@ -200,12 +200,16 @@ val collectReleases =
         // local copies so the rename closures capture plain Strings (configuration-cache safe)
         val base = "$appNameV-$versionV"
         into(layout.projectDirectory.dir("releases"))
+        // old: "*.deb" / "*.rpm" / "*.AppImage" also took files of the old app name left in the same
+        // dirs (mjdev-desktop.AppImage), all renamed to one release name -> duplicate entry failure
         from(pkgDirV.resolve("deb")) {
-            include("*.deb")
+//            include("*.deb")
+            include("${appNameV}_*.deb")
             rename { "$base.deb" }
         }
         from(pkgDirV.resolve("rpm")) {
-            include("*.rpm")
+//            include("*.rpm")
+            include("$appNameV-*.rpm")
             rename { "$base.rpm" }
         }
         from(pkgDirV.resolve("exe")) {
@@ -213,7 +217,8 @@ val collectReleases =
             rename { "$base.exe" }
         } // present only on a Windows host
         from(pkgDirV.resolve("appimage")) {
-            include("*.AppImage")
+//            include("*.AppImage")
+            include("$appNameV.AppImage")
             rename { "$base.AppImage" }
         }
         from(rootDir.resolve("androidApp/build/outputs/apk/release")) {
