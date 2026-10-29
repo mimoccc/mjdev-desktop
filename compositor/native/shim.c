@@ -325,8 +325,21 @@ static void clear_focus_if(struct mjc_server *server, struct mjc_view *view) {
 static struct mjc_view *desktop_view_at(struct mjc_server *server,
         double lx, double ly, struct wlr_surface **surface,
         double *sx, double *sy) {
+    /* old: the injected-input marker (a scene rect on top of everything) was hit first, so an
+     * injected click under it found no surface, cleared pointer focus and the press was lost */
+    /* struct wlr_scene_node *node =
+        wlr_scene_node_at(&server->scene->tree.node, lx, ly, sx, sy); */
+    struct wlr_scene_node *marker =
+        server->inject_marker != NULL ? &server->inject_marker->node : NULL;
+    bool marker_shown = marker != NULL && marker->enabled;
+    if (marker_shown) {
+        wlr_scene_node_set_enabled(marker, false);
+    }
     struct wlr_scene_node *node =
         wlr_scene_node_at(&server->scene->tree.node, lx, ly, sx, sy);
+    if (marker_shown) {
+        wlr_scene_node_set_enabled(marker, true);
+    }
     if (node == NULL || node->type != WLR_SCENE_NODE_BUFFER) {
         return NULL;
     }
@@ -1962,6 +1975,9 @@ void mjc_pointer_move(mjc_server *server, int x, int y) {
      * pointer focus, focus-follows-mouse and the ipc pointer broadcast all fire */
     wlr_cursor_warp_closest(server->cursor, NULL, (double) x, (double) y);
     process_cursor_motion(server, mjc_now_msec());
+    /* end the pointer event group like a real device does: without a frame XWayland held the
+     * motion back and delivered the next injected press at the previous pointer position */
+    wlr_seat_pointer_notify_frame(server->seat);
     inject_marker_show(server);
 }
 
