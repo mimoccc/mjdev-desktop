@@ -1,0 +1,23 @@
+#!/bin/sh
+# psippr login screen, run by greetd as its greeter user (see psippr-greetd.toml).
+# psipprc runs the psippr greeter app (psippr-greeter deb) as its only client; after a good
+# password the greeter exits, psipprc ends with it and greetd starts the chosen session.
+
+export XDG_CURRENT_DESKTOP=psippr
+export XDG_SESSION_TYPE=wayland
+export _JAVA_AWT_WM_NONREPARENTING=1
+# llvmpipe in a VM / without GPU, ignored on real hardware (same as psippr-session)
+export WLR_RENDERER_ALLOW_SOFTWARE=1
+
+# old: the desktop app doubled as the greeter when it saw GREETD_SOCK
+# SHELL_CMD="/opt/psippr-desktop/bin/psippr-desktop"
+SHELL_CMD="/opt/psippr-greeter/bin/psippr-greeter"
+PSIPPRC="$(command -v psipprc 2>/dev/null)"
+[ -z "$PSIPPRC" ] && PSIPPRC="/usr/bin/psipprc"
+
+# greeter log in the greeter account's home (/var/lib/greetd), previous run kept
+LOG_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/psippr-desktop"
+mkdir -p "$LOG_DIR"
+[ -f "$LOG_DIR/greeter.log" ] && mv -f "$LOG_DIR/greeter.log" "$LOG_DIR/greeter.log.1"
+# no --session: a shell exiting with 0 (successful login) terminates the compositor
+exec "$PSIPPRC" --shell-cmd "$SHELL_CMD" >"$LOG_DIR/greeter.log" 2>&1

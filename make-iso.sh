@@ -37,6 +37,8 @@ MIRROR="${PSIPPR_ISO_MIRROR:-http://deb.debian.org/debian}"
 KEYRING="/usr/share/keyrings/debian-archive-keyring.gpg"
 # the gradle task overrides these; the defaults match the in-tree build outputs
 DEB="${PSIPPR_ISO_DEB:-$(ls "$HERE"/packages/main-release/deb/*.deb 2>/dev/null | head -n1 || true)}"
+# the login screen package (greetd greeter, module :greeter); optional, the image then boots to a console
+GREETER_DEB="${PSIPPR_ISO_GREETER_DEB:-$(ls "$HERE"/packages/greeter/main-release/deb/*.deb 2>/dev/null | head -n1 || true)}"
 COMPOSITOR_BIN="${PSIPPR_ISO_COMPOSITOR_BIN:-$HERE/compositor/build/session-install/psipprc}"
 SESSION_DIR="${PSIPPR_ISO_SESSION_DIR:-$HERE/compositor/build/session-install}"
 EXTRA_DEBS_DIR="${PSIPPR_ISO_EXTRA_DEBS:-$HERE/deb-packages}"
@@ -49,6 +51,7 @@ WORK=""
 while [ $# -gt 0 ]; do
     case "$1" in
         --deb) DEB="$2"; shift 2;;
+        --greeter-deb) GREETER_DEB="$2"; shift 2;;
         --compositor-bin) COMPOSITOR_BIN="$2"; shift 2;;
         --session-dir) SESSION_DIR="$2"; shift 2;;
         --extra-debs) EXTRA_DEBS_DIR="$2"; shift 2;;
@@ -112,6 +115,7 @@ EOF
 # stage the desktop app deb, the compositor binary + session files, and every
 # extra deb (themes) into the chroot
 cp "$DEB" "$ROOT/tmp/psippr-desktop.deb"
+[ -n "$GREETER_DEB" ] && [ -f "$GREETER_DEB" ] && cp "$(readlink -f "$GREETER_DEB")" "$ROOT/tmp/psippr-greeter.deb"
 install -Dm755 "$COMPOSITOR_BIN" "$ROOT/tmp/session/psipprc"
 [ -f "$SESSION_DIR/psippr-session" ] && install -Dm755 "$SESSION_DIR/psippr-session" "$ROOT/tmp/session/psippr-session"
 [ -f "$SESSION_DIR/psippr.desktop" ] && install -Dm644 "$SESSION_DIR/psippr.desktop" "$ROOT/tmp/session/psippr.desktop"
@@ -181,10 +185,15 @@ sed -i -E 's/, *libjpeg-turbo8//; s/libjpeg-turbo8, *//; s/^(Depends:) *libjpeg-
 mkdir -p /usr/share/applications
 sed -i 's/^xdg-desktop-menu install .*/& || true/' /tmp/deb-fix/DEBIAN/postinst
 dpkg-deb -b /tmp/deb-fix /tmp/psippr-desktop-fixed.deb
-# the image has no other display manager: answer the deb's "Default display manager" question
-# with psippr-desktop, so greetd shows the psippr login screen at boot
-echo "psippr-desktop shared/default-x-display-manager select psippr-desktop" | debconf-set-selections
+# old: the desktop deb carried the login screen and asked the "Default display manager" question
+# echo "psippr-desktop shared/default-x-display-manager select psippr-desktop" | debconf-set-selections
 apt-get install --no-install-recommends -y /tmp/psippr-desktop-fixed.deb
+# the image has no other display manager: answer the greeter deb's "Default display manager"
+# question with psippr-greeter, so greetd shows the psippr login screen at boot
+if [ -f /tmp/psippr-greeter.deb ]; then
+    echo "psippr-greeter shared/default-x-display-manager select psippr-greeter" | debconf-set-selections
+    apt-get install --no-install-recommends -y /tmp/psippr-greeter.deb
+fi
 install -Dm644 /opt/psippr-desktop/lib/psippr-desktop-psippr-desktop.desktop \
     /usr/share/applications/psippr-desktop.desktop 2>/dev/null || true
 
@@ -285,7 +294,7 @@ CLEAN
     chmod +x "$ROOT/tmp/clean.sh"
     chroot "$ROOT" /tmp/clean.sh
     rm -rf "$ROOT/tmp/provision.sh" "$ROOT/tmp/clean.sh" \
-        "$ROOT/tmp/psippr-desktop.deb" "$ROOT/tmp/session" "$ROOT/tmp/extra-debs"
+        "$ROOT/tmp/psippr-desktop.deb" "$ROOT/tmp/psippr-greeter.deb" "$ROOT/tmp/session" "$ROOT/tmp/extra-debs"
 }
 clean_system
 

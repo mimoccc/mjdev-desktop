@@ -29,6 +29,7 @@ abstract class PackageFullDebTask : DefaultTask() {
     @get:Input abstract val sessionDir: Property<String>    // stageSession output: psipprc + psippr-session + psippr.desktop
     @get:Input abstract val runtimeDepends: ListProperty<String> // wayland runtime stack to add to Depends
     @get:Input abstract val greeterDepends: ListProperty<String> // login screen display manager (greetd)
+    @get:Input abstract val greeterPackage: Property<String>     // the login screen package, suggested
     @get:Input abstract val legacyPackages: ListProperty<String> // old package names: Replaces/Conflicts/Provides
     @get:Input abstract val legacyFiles: ListProperty<String>    // files of the old name installed outside the package
 
@@ -54,18 +55,22 @@ abstract class PackageFullDebTask : DefaultTask() {
             psipprc.copyExec(File(work, "usr/bin/psipprc"))
             File(sess, "psippr-session").copyExec(File(work, "usr/bin/psippr-session"))
             File(sess, "psippr.desktop").copyInto(File(work, "usr/share/wayland-sessions/psippr.desktop"), 420)
-            // login screen: greetd greeter + its config, used when chosen as display manager
-            File(sess, "psippr-greeter").copyExec(File(work, "usr/bin/psippr-greeter"))
-            File(sess, "psippr-greetd.toml").copyInto(File(work, "etc/psippr-desktop/greetd.toml"), 420)
-            File(sess, "psippr-greetd.conf").copyInto(File(work, "etc/systemd/system/greetd.service.d/psippr.conf"), 420)
-            // the usual debconf "Default display manager" dialog
-            File(sess, "debian/templates").copyInto(File(work, "DEBIAN/templates"), 420)
-            File(sess, "debian/config").copyExec(File(work, "DEBIAN/config"))
+            // old: the login screen (greetd greeter, its config and the display manager choice) shipped
+            // here; it is the psippr-greeter deb now (PackageGreeterDebTask)
+//            File(sess, "psippr-greeter").copyExec(File(work, "usr/bin/psippr-greeter"))
+//            File(sess, "psippr-greetd.toml").copyInto(File(work, "etc/psippr-desktop/greetd.toml"), 420)
+//            File(sess, "psippr-greetd.conf").copyInto(File(work, "etc/systemd/system/greetd.service.d/psippr.conf"), 420)
+//            File(sess, "debian/templates").copyInto(File(work, "DEBIAN/templates"), 420)
+//            File(sess, "debian/config").copyExec(File(work, "DEBIAN/config"))
+            // the desktop app on PATH (jpackage installs it only under /opt)
+            linkLauncher(work)
 
             rewriteControl(File(work, "DEBIAN/control"))
             // old: no display manager choice
 //            writePostinst(File(work, "DEBIAN/postinst"))
-            writePostinst(File(work, "DEBIAN/postinst"), File(sess, "debian/postinst-dm").readText())
+            // old: display manager choice, moved to the psippr-greeter deb
+//            writePostinst(File(work, "DEBIAN/postinst"), File(sess, "debian/postinst-dm").readText())
+            writePostinst(File(work, "DEBIAN/postinst"), "")
             regenMd5sums(work)
 
             val tmpOut = File(dir, deb.name + ".full")
@@ -81,7 +86,9 @@ abstract class PackageFullDebTask : DefaultTask() {
     private fun rewriteControl(ctrl: File) {
         // old: wayland runtime stack only
 //        val deps = runtimeDepends.get()
-        val deps = runtimeDepends.get() + greeterDepends.get().filter { it.isNotBlank() }
+        // old: plus greetd for the login screen, which is the psippr-greeter deb now
+//        val deps = runtimeDepends.get() + greeterDepends.get().filter { it.isNotBlank() }
+        val deps = runtimeDepends.get()
         if (deps.isEmpty()) return
         val lines = ctrl.readLines().toMutableList()
         var dependsIdx = lines.indexOfFirst { it.startsWith("Depends:") }
@@ -105,9 +112,11 @@ abstract class PackageFullDebTask : DefaultTask() {
                 if (idx >= 0) lines[idx] = lines[idx] + ", " + names else lines.add(dependsIdx + 1, "$field: $names")
             }
         }
-        // a display manager: listed in the shared "Default display manager" debconf choice
-        val provides = lines.indexOfFirst { it.startsWith("Provides:") }
-        if (provides >= 0) lines[provides] = lines[provides] + ", " + DM_PROVIDES else lines.add(dependsIdx + 1, "Provides: $DM_PROVIDES")
+        // old: a display manager, listed in the "Default display manager" choice - psippr-greeter is now
+//        val provides = lines.indexOfFirst { it.startsWith("Provides:") }
+//        if (provides >= 0) lines[provides] = lines[provides] + ", " + DM_PROVIDES else lines.add(dependsIdx + 1, "Provides: $DM_PROVIDES")
+        // the login screen package, offered but not forced (a gdm / lightdm user keeps theirs)
+        if (lines.none { it.startsWith("Suggests:") }) lines.add(dependsIdx + 1, "Suggests: ${greeterPackage.get()}")
         ctrl.writeText(lines.joinToString("\n") + "\n")
     }
 
@@ -131,10 +140,22 @@ abstract class PackageFullDebTask : DefaultTask() {
         postinst.setExecutable(true, false)
     }
 
+    /** `/usr/bin/<app>` -> `/opt/<app>/bin/<app>`, so the desktop app starts by name from a terminal. */
+    private fun linkLauncher(work: File) {
+        val app = File(work, "opt").listFiles()?.firstOrNull { File(it, "bin/${it.name}").exists() } ?: return
+        val link = File(work, "usr/bin/${app.name}").toPath()
+        java.nio.file.Files.createDirectories(link.parent)
+        java.nio.file.Files.deleteIfExists(link)
+        java.nio.file.Files.createSymbolicLink(link, java.nio.file.Paths.get("/opt/${app.name}/bin/${app.name}"))
+    }
+
     /** Regenerate DEBIAN/md5sums for everything we added (paths relative to root, no leading ./). */
     private fun regenMd5sums(work: File) {
         val sb = StringBuilder()
-        work.walkTopDown().filter { it.isFile && !it.path.startsWith(File(work, "DEBIAN").path) }.forEach { f ->
+        // symlinks are not hashed (dpkg lists regular files only; isFile would follow the link to the host)
+        work.walkTopDown().filter {
+            it.isFile && !java.nio.file.Files.isSymbolicLink(it.toPath()) && !it.path.startsWith(File(work, "DEBIAN").path)
+        }.forEach { f ->
             val md = MessageDigest.getInstance("MD5").digest(f.readBytes())
                 .joinToString("") { "%02x".format(it) }
             sb.append(md).append("  ").append(f.relativeTo(work).path).append('\n')
