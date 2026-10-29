@@ -58,7 +58,14 @@ class User(
         val NOBODY = User(":x:-1:-1:::")
         val DEFAULT = NOBODY
 
-        fun isLoggedIn(uname: String): Boolean = Shell.executeAndRead("whoami").trim().contentEquals(uname)
+        // old: ran whoami on every call; a failed run gave "" and the user counted as logged out
+        // fun isLoggedIn(uname: String): Boolean = Shell.executeAndRead("whoami").trim().contentEquals(uname)
+
+        /** True when [uname] is the account this process runs as (the logged-in desktop user). */
+        fun isLoggedIn(uname: String): Boolean = uname.isNotEmpty() && uname == System.getProperty(USER_NAME_PROPERTY)
+
+        /** JVM system property holding the account name of the running process. */
+        private const val USER_NAME_PROPERTY = "user.name"
 
         fun loadPicture(
             home: String,

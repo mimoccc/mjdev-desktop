@@ -225,7 +225,10 @@ fun MainWindow() = withDesktopContext {
     TooltipWindow(
         tooltipState = tooltipState,
     )
-    GreeterWindow()
+    // old: in-desktop login overlay; its login was a stub (no PAM) and it stuck on top of every app
+    // whenever the user lookup failed. The desktop runs only after the greetd / PAM login, so the
+    // login screen is the greeter (LoginWindow) alone.
+//    GreeterWindow()
     InfoWindow(
         visibleState = infoWindowState,
         showInstallWindow = {
