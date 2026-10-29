@@ -106,6 +106,8 @@ include(":shared")
 include(":androidApp")
 include(":desktopApp")
 include(":compositor")
+// login screen (greetd greeter) as its own app, packaged as the psippr-greeter deb
+include(":greeter")
 // </editor-fold>------------------------------------------------------------------------------------
 
 // <editor-fold desc="rename gradle build files">----------------------------------------------------
