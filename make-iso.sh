@@ -37,8 +37,10 @@ MIRROR="${PSIPPR_ISO_MIRROR:-http://deb.debian.org/debian}"
 KEYRING="/usr/share/keyrings/debian-archive-keyring.gpg"
 # the gradle task overrides these; the defaults match the in-tree build outputs
 DEB="${PSIPPR_ISO_DEB:-$(ls "$HERE"/packages/main-release/deb/*.deb 2>/dev/null | head -n1 || true)}"
-# the login screen package (greetd greeter, module :greeter); optional, the image then boots to a console
-GREETER_DEB="${PSIPPR_ISO_GREETER_DEB:-$(ls "$HERE"/packages/greeter/main-release/deb/*.deb 2>/dev/null | head -n1 || true)}"
+# old: the login screen as its own package (module :greeter), taken from the build outputs
+# GREETER_DEB="${PSIPPR_ISO_GREETER_DEB:-$(ls "$HERE"/packages/greeter/main-release/deb/*.deb 2>/dev/null | head -n1 || true)}"
+# the desktop deb carries the login screen again; only an explicitly given greeter deb is installed
+GREETER_DEB="${PSIPPR_ISO_GREETER_DEB:-}"
 COMPOSITOR_BIN="${PSIPPR_ISO_COMPOSITOR_BIN:-$HERE/compositor/build/session-install/psipprc}"
 SESSION_DIR="${PSIPPR_ISO_SESSION_DIR:-$HERE/compositor/build/session-install}"
 EXTRA_DEBS_DIR="${PSIPPR_ISO_EXTRA_DEBS:-$HERE/deb-packages}"
@@ -185,8 +187,9 @@ sed -i -E 's/, *libjpeg-turbo8//; s/libjpeg-turbo8, *//; s/^(Depends:) *libjpeg-
 mkdir -p /usr/share/applications
 sed -i 's/^xdg-desktop-menu install .*/& || true/' /tmp/deb-fix/DEBIAN/postinst
 dpkg-deb -b /tmp/deb-fix /tmp/psippr-desktop-fixed.deb
-# old: the desktop deb carried the login screen and asked the "Default display manager" question
-# echo "psippr-desktop shared/default-x-display-manager select psippr-desktop" | debconf-set-selections
+# the image has no other display manager: answer the desktop deb's "Default display manager"
+# question with psippr-desktop, so greetd shows the psippr login screen at boot
+echo "psippr-desktop shared/default-x-display-manager select psippr-desktop" | debconf-set-selections
 apt-get install --no-install-recommends -y /tmp/psippr-desktop-fixed.deb
 # the image has no other display manager: answer the greeter deb's "Default display manager"
 # question with psippr-greeter, so greetd shows the psippr login screen at boot

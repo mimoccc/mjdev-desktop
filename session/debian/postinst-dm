@@ -3,7 +3,10 @@
 . /usr/share/debconf/confmodule
 getent passwd _greetd >/dev/null 2>&1 && usermod -aG video,input,render _greetd 2>/dev/null || true
 db_get shared/default-x-display-manager || RET=""
-if [ "$RET" = psippr-desktop ]; then
+# old: only the desktop package name
+# if [ "$RET" = psippr-desktop ]; then
+# psippr-greeter: the choice name while the login screen was its own deb
+if [ "$RET" = psippr-desktop ] || [ "$RET" = psippr-greeter ]; then
     mkdir -p /etc/X11
     echo /usr/sbin/greetd > /etc/X11/default-display-manager
     ln -sf /usr/lib/systemd/system/greetd.service /etc/systemd/system/display-manager.service

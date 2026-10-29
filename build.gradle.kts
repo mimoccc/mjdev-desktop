@@ -186,28 +186,30 @@ val packageFullDeb =
         outputs.dir(pkgDirV.resolve("deb"))
     }
 
-// greeter app (module :greeter) and its deb, built into its own packages dir (version catalog names)
-val greeterNameV =
-    libs.versions.app.greeter.name
-        .get()
-val greeterPkgDirV = rootDir.resolve("packages/greeter/main-release")
-
-// Turns the jpackage greeter .deb into the psippr-greeter display manager package (greetd config,
-// launcher, "Default display manager" choice), so it installs and replaces gdm like any other one.
-val packageGreeterDeb =
-    tasks.register<PackageGreeterDebTask>("packageGreeterDeb") {
-        group = "psippr"
-        description = "Repacks the greeter .deb as the psippr-greeter display manager package (greetd login screen)."
-        dependsOn(":greeter:packageReleaseDeb")
-        debDir.set(greeterPkgDirV.resolve("deb").absolutePath)
-        sessionDir.set(rootDir.resolve("session/greeter").absolutePath)
-        greeterDepends.set(greeterDeps)
-        desktopPackage.set(appNameV)
-        // the desktop deb of this version is the first one without the greeter files
-        desktopSplitVersion.set(versionV)
-        inputs.dir(rootDir.resolve("session/greeter"))
-        outputs.dir(greeterPkgDirV.resolve("deb"))
-    }
+// old: the login screen as its own psippr-greeter deb (a second copy of the desktop app); the
+// desktop deb carries it again (PackageFullDebTask)
+//// greeter app (module :greeter) and its deb, built into its own packages dir (version catalog names)
+//val greeterNameV =
+//    libs.versions.app.greeter.name
+//        .get()
+//val greeterPkgDirV = rootDir.resolve("packages/greeter/main-release")
+//
+//// Turns the jpackage greeter .deb into the psippr-greeter display manager package (greetd config,
+//// launcher, "Default display manager" choice), so it installs and replaces gdm like any other one.
+//val packageGreeterDeb =
+//    tasks.register<PackageGreeterDebTask>("packageGreeterDeb") {
+//        group = "psippr"
+//        description = "Repacks the greeter .deb as the psippr-greeter display manager package (greetd login screen)."
+//        dependsOn(":greeter:packageReleaseDeb")
+//        debDir.set(greeterPkgDirV.resolve("deb").absolutePath)
+//        sessionDir.set(rootDir.resolve("session/greeter").absolutePath)
+//        greeterDepends.set(greeterDeps)
+//        desktopPackage.set(appNameV)
+//        // the desktop deb of this version is the first one without the greeter files
+//        desktopSplitVersion.set(versionV)
+//        inputs.dir(rootDir.resolve("session/greeter"))
+//        outputs.dir(greeterPkgDirV.resolve("deb"))
+//    }
 
 // Copies all distributables into releases/ with version in the filename
 // (psippr-desktop-<version>.<ext>). Copy = configuration-cache safe.
@@ -220,7 +222,8 @@ val collectReleases =
             ":androidApp:assembleRelease",
             packageAppImageFile,
             packageFullDeb,
-            packageGreeterDeb,
+            // old: the separate login screen deb
+//            packageGreeterDeb,
         )
         // local copies so the rename closures capture plain Strings (configuration-cache safe)
         val base = "$appNameV-$versionV"
@@ -246,12 +249,12 @@ val collectReleases =
             include("$appNameV.AppImage")
             rename { "$base.AppImage" }
         }
-        // the login screen package (display manager), next to the desktop packages
-        val greeterBase = "$greeterNameV-$versionV"
-        from(greeterPkgDirV.resolve("deb")) {
-            include("${greeterNameV}_*.deb")
-            rename { "$greeterBase.deb" }
-        }
+        // old: the separate login screen package, the desktop deb carries it again
+//        val greeterBase = "$greeterNameV-$versionV"
+//        from(greeterPkgDirV.resolve("deb")) {
+//            include("${greeterNameV}_*.deb")
+//            rename { "$greeterBase.deb" }
+//        }
         from(rootDir.resolve("androidApp/build/outputs/apk/release")) {
             include("*.apk")
             rename { "$base.apk" }
@@ -270,7 +273,9 @@ val makeIso =
         description = "Builds the minimal bootable psippr desktop live ISO into releases/ (needs root / pkexec)."
         // old: desktop deb only, it carried the login screen
 //        dependsOn(packageFullDeb)
-        dependsOn(packageFullDeb, packageGreeterDeb)
+        // old: plus the separate login screen deb
+//        dependsOn(packageFullDeb, packageGreeterDeb)
+        dependsOn(packageFullDeb)
         // capture plain Strings at configuration time — the doLast closure must not reference
         // script-level vals (that captures the script instance, which is null under the
         // configuration cache -> "Cannot invoke getDebDirV() because this$0 is null").

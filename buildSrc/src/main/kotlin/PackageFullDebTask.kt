@@ -29,7 +29,7 @@ abstract class PackageFullDebTask : DefaultTask() {
     @get:Input abstract val sessionDir: Property<String>    // stageSession output: psipprc + psippr-session + psippr.desktop
     @get:Input abstract val runtimeDepends: ListProperty<String> // wayland runtime stack to add to Depends
     @get:Input abstract val greeterDepends: ListProperty<String> // login screen display manager (greetd)
-    @get:Input abstract val greeterPackage: Property<String>     // the login screen package, suggested
+    @get:Input abstract val greeterPackage: Property<String>     // the old separate login screen package, replaced by this one
     @get:Input abstract val legacyPackages: ListProperty<String> // old package names: Replaces/Conflicts/Provides
     @get:Input abstract val legacyFiles: ListProperty<String>    // files of the old name installed outside the package
 
@@ -62,6 +62,13 @@ abstract class PackageFullDebTask : DefaultTask() {
 //            File(sess, "psippr-greetd.conf").copyInto(File(work, "etc/systemd/system/greetd.service.d/psippr.conf"), 420)
 //            File(sess, "debian/templates").copyInto(File(work, "DEBIAN/templates"), 420)
 //            File(sess, "debian/config").copyExec(File(work, "DEBIAN/config"))
+            // the login screen is the desktop app itself (it shows only the login window under greetd),
+            // so it ships here again instead of a second app copy in the psippr-greeter deb
+            File(sess, "psippr-greeter").copyExec(File(work, "usr/bin/psippr-greeter"))
+            File(sess, "psippr-greetd.toml").copyInto(File(work, "etc/psippr-desktop/greetd.toml"), 420)
+            File(sess, "psippr-greetd.conf").copyInto(File(work, "etc/systemd/system/greetd.service.d/psippr.conf"), 420)
+            File(sess, "debian/templates").copyInto(File(work, "DEBIAN/templates"), 420)
+            File(sess, "debian/config").copyExec(File(work, "DEBIAN/config"))
             // the desktop app on PATH (jpackage installs it only under /opt)
             linkLauncher(work)
 
@@ -70,7 +77,9 @@ abstract class PackageFullDebTask : DefaultTask() {
 //            writePostinst(File(work, "DEBIAN/postinst"))
             // old: display manager choice, moved to the psippr-greeter deb
 //            writePostinst(File(work, "DEBIAN/postinst"), File(sess, "debian/postinst-dm").readText())
-            writePostinst(File(work, "DEBIAN/postinst"), "")
+            // old: no display manager choice while the psippr-greeter deb carried it
+//            writePostinst(File(work, "DEBIAN/postinst"), "")
+            writePostinst(File(work, "DEBIAN/postinst"), File(sess, "debian/postinst-dm").readText())
             regenMd5sums(work)
 
             val tmpOut = File(dir, deb.name + ".full")
@@ -88,7 +97,9 @@ abstract class PackageFullDebTask : DefaultTask() {
 //        val deps = runtimeDepends.get()
         // old: plus greetd for the login screen, which is the psippr-greeter deb now
 //        val deps = runtimeDepends.get() + greeterDepends.get().filter { it.isNotBlank() }
-        val deps = runtimeDepends.get()
+        // old: wayland runtime stack only, while the psippr-greeter deb carried greetd
+//        val deps = runtimeDepends.get()
+        val deps = runtimeDepends.get() + greeterDepends.get().filter { it.isNotBlank() }
         if (deps.isEmpty()) return
         val lines = ctrl.readLines().toMutableList()
         var dependsIdx = lines.indexOfFirst { it.startsWith("Depends:") }
@@ -103,7 +114,10 @@ abstract class PackageFullDebTask : DefaultTask() {
         }
         if (lines.none { it.startsWith("Recommends:") }) lines.add(dependsIdx + 1, "Recommends: seatd")
         // upgrade from the old name: dpkg removes the old package in favour of this one
-        val legacy = legacyPackages.get().filter { it.isNotBlank() }
+        // old: old names only
+//        val legacy = legacyPackages.get().filter { it.isNotBlank() }
+        // plus the separate login screen package, whose files this deb carries again
+        val legacy = (legacyPackages.get() + greeterPackage.get()).filter { it.isNotBlank() }
         if (legacy.isNotEmpty()) {
             val names = legacy.joinToString(", ")
             LEGACY_FIELDS.forEach { field ->
@@ -115,8 +129,11 @@ abstract class PackageFullDebTask : DefaultTask() {
         // old: a display manager, listed in the "Default display manager" choice - psippr-greeter is now
 //        val provides = lines.indexOfFirst { it.startsWith("Provides:") }
 //        if (provides >= 0) lines[provides] = lines[provides] + ", " + DM_PROVIDES else lines.add(dependsIdx + 1, "Provides: $DM_PROVIDES")
-        // the login screen package, offered but not forced (a gdm / lightdm user keeps theirs)
-        if (lines.none { it.startsWith("Suggests:") }) lines.add(dependsIdx + 1, "Suggests: ${greeterPackage.get()}")
+        // old: the separate login screen package was suggested
+//        if (lines.none { it.startsWith("Suggests:") }) lines.add(dependsIdx + 1, "Suggests: ${greeterPackage.get()}")
+        // a display manager: listed in the shared "Default display manager" debconf choice
+        val provides = lines.indexOfFirst { it.startsWith("Provides:") }
+        if (provides >= 0) lines[provides] = lines[provides] + ", " + DM_PROVIDES else lines.add(dependsIdx + 1, "Provides: $DM_PROVIDES")
         ctrl.writeText(lines.joinToString("\n") + "\n")
     }
 
