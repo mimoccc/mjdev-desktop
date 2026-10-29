@@ -118,6 +118,38 @@ val compileShim =
         commandLine("true")
     }
 
+// system link setup of every compositor binary (psipprc and its unit test binary)
+fun org.jetbrains.kotlin.gradle.plugin.mpp.NativeBinary.linkSystemLibraries() {
+    // link against the system glibc instead of the old bundled
+    // sysroot, system libs (wlroots & co) need modern symbols
+    val gccVersion =
+        file("/usr/lib/gcc/x86_64-linux-gnu")
+            .listFiles()
+            ?.map { it.name }
+            ?.maxByOrNull { it.toIntOrNull() ?: 0 }
+    if (gccVersion != null) {
+        freeCompilerArgs +=
+            listOf(
+                "-Xoverride-konan-properties=" +
+                    "targetSysRoot.linux_x64=/;" +
+                    "libGcc.linux_x64=/usr/lib/gcc/x86_64-linux-gnu/$gccVersion;" +
+                    "crtFilesLocation.linux_x64=usr/lib/x86_64-linux-gnu",
+            )
+    }
+    linkerOpts(systemLibDirs)
+    linkerOpts(
+        shimDir
+            .get()
+            .asFile
+            .resolve("libmjcshim.a")
+            .absolutePath,
+    )
+    linkerOpts(wlrLibs)
+    // the shim queries GL_RENDERER via EGL to decide hardware vs software GL for the
+    // shell (SKIKO_RENDER_API), so link the EGL + GLES2 dispatchers explicitly.
+    linkerOpts("-lEGL", "-lGLESv2")
+}
+
 kotlin {
     linuxX64 {
         compilations.getByName("main") {
@@ -130,35 +162,11 @@ kotlin {
         binaries {
             executable("psipprc") {
                 entryPoint = "eu.psippr.compositor.main"
-                // link against the system glibc instead of the old bundled
-                // sysroot, system libs (wlroots & co) need modern symbols
-                val gccVersion =
-                    file("/usr/lib/gcc/x86_64-linux-gnu")
-                        .listFiles()
-                        ?.map { it.name }
-                        ?.maxByOrNull { it.toIntOrNull() ?: 0 }
-                if (gccVersion != null) {
-                    freeCompilerArgs +=
-                        listOf(
-                            "-Xoverride-konan-properties=" +
-                                "targetSysRoot.linux_x64=/;" +
-                                "libGcc.linux_x64=/usr/lib/gcc/x86_64-linux-gnu/$gccVersion;" +
-                                "crtFilesLocation.linux_x64=usr/lib/x86_64-linux-gnu",
-                        )
-                }
-                linkerOpts(systemLibDirs)
-                linkerOpts(
-                    shimDir
-                        .get()
-                        .asFile
-                        .resolve("libmjcshim.a")
-                        .absolutePath,
-                )
-                linkerOpts(wlrLibs)
-                // the shim queries GL_RENDERER via EGL to decide hardware vs software GL for the
-                // shell (SKIKO_RENDER_API), so link the EGL + GLES2 dispatchers explicitly.
-                linkerOpts("-lEGL", "-lGLESv2")
+                // old: the link setup lived here, moved to linkSystemLibraries() so the test binary shares it
+                linkSystemLibraries()
             }
+            // the unit test binary links the same shim and system libraries as psipprc
+            getTest(org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG).linkSystemLibraries()
         }
     }
 
@@ -166,6 +174,11 @@ kotlin {
         getByName("linuxX64Main") {
             dependencies {
                 implementation(catalog.findLibrary("kotlinx-serialization-json").get())
+            }
+        }
+        getByName("linuxX64Test") {
+            dependencies {
+                implementation(kotlin("test"))
             }
         }
     }

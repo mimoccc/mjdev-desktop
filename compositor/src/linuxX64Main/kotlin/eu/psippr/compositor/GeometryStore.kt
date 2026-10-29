@@ -74,6 +74,9 @@ class GeometryStore {
         }
     }
 
+    /** true when a geometry of the window's app is remembered */
+    fun has(info: WindowInfo): Boolean = keyOf(info)?.let { key -> key in entries } ?: false
+
     /** captures the current geometry of a window that is going away */
     fun remember(info: WindowInfo) {
         val key = keyOf(info) ?: return

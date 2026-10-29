@@ -101,6 +101,8 @@ bool mjc_view_is_xwayland(mjc_view *view);
 bool mjc_view_is_mapped(mjc_view *view);
 bool mjc_view_is_minimized(mjc_view *view);
 bool mjc_view_is_maximized(mjc_view *view);
+/* true for a child window (dialog, splash, popup toplevel) that has a parent toplevel */
+bool mjc_view_has_parent(mjc_view *view);
 bool mjc_view_is_focused(mjc_view *view);
 void mjc_view_get_geometry(mjc_view *view, int *x, int *y, int *width, int *height);
 

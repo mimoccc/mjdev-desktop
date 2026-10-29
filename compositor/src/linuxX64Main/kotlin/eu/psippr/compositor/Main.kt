@@ -15,6 +15,7 @@ import cnames.structs.mjc_view
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.IntVar
 import kotlinx.cinterop.StableRef
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.asStableRef
@@ -22,12 +23,16 @@ import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.staticCFunction
 import kotlinx.cinterop.toKString
+import kotlinx.cinterop.value
 import psippr.compositor.shim.mjc_callbacks
 import psippr.compositor.shim.mjc_create
 import psippr.compositor.shim.mjc_destroy
+import psippr.compositor.shim.mjc_output_size
 import psippr.compositor.shim.mjc_run
 import psippr.compositor.shim.mjc_start
 import psippr.compositor.shim.mjc_terminate
+import psippr.compositor.shim.mjc_view_has_parent
+import psippr.compositor.shim.mjc_view_set_geometry
 import platform.posix.SIGPIPE
 import platform.posix.SIG_IGN
 import platform.posix.getenv
@@ -116,6 +121,7 @@ class Compositor(
         ipc.start()
         mjc_run(server)
         Clog.log("event loop ended, shutting down")
+        rememberOpenWindows()
         ipc.stop()
         mjc_destroy(server)
         ref.dispose()
@@ -143,8 +149,12 @@ class Compositor(
         info.refresh()
         info.mapped = true
         policy.apply(info)
+        // old: every window of an app, dialogs too, got the one remembered geometry of the app
+//        if (!info.shell) {
+//            geometry.restore(info)
+//        }
         if (!info.shell) {
-            geometry.restore(info)
+            placeMainWindow(info)
         }
         Clog.v("view mapped: ${info.describe()} role=${info.role ?: "-"}")
         ipc.broadcastEvent("window-opened", info)
@@ -153,12 +163,47 @@ class Compositor(
     fun onViewUnmap(view: CPointer<mjc_view>) {
         val info = windows.get(view) ?: return
         info.mapped = false
-        if (!info.shell) {
+        // old: a closing dialog overwrote the remembered geometry of the app's main window
+//        if (!info.shell) {
+//            geometry.remember(info)
+//        }
+        if (isMainWindow(info)) {
             geometry.remember(info)
         }
         Clog.v("view unmapped: ${info.describe()}")
         ipc.broadcastEvent("window-closed", info)
     }
+
+    /** An app's own top window: not part of the shell and without a parent window (no dialog). */
+    private fun isMainWindow(info: WindowInfo): Boolean = !info.shell && !mjc_view_has_parent(info.ptr)
+
+    /** Reopens a main window where it was left, or centered at the default size the first time. */
+    private fun placeMainWindow(info: WindowInfo) {
+        if (!isMainWindow(info)) {
+            return
+        }
+        if (geometry.has(info)) {
+            geometry.restore(info)
+        } else {
+            placeDefault(info)
+        }
+    }
+
+    /** Centers the window at [WindowPlacement.DEFAULT_SIZE_PERCENT] of the output. */
+    private fun placeDefault(info: WindowInfo) = memScoped {
+        val width = alloc<IntVar>()
+        val height = alloc<IntVar>()
+        mjc_output_size(server, width.ptr, height.ptr)
+        WindowPlacement.initial(width.value, height.value)?.let { rect ->
+            mjc_view_set_geometry(info.ptr, rect.x, rect.y, rect.width, rect.height)
+        }
+    }
+
+    /** Stores the geometry of the main windows still open when the session ends (no unmap comes). */
+    private fun rememberOpenWindows() = windows
+        .all()
+        .filter { info -> info.mapped && isMainWindow(info) }
+        .forEach(geometry::remember)
 
     fun onViewDestroy(view: CPointer<mjc_view>) {
         val info = windows.remove(view) ?: return

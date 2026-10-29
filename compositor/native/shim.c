@@ -1704,6 +1704,13 @@ bool mjc_view_is_maximized(mjc_view *view) {
     return view->maximized;
 }
 
+bool mjc_view_has_parent(mjc_view *view) {
+    if (view->is_xwayland) {
+        return view->xsurface != NULL && view->xsurface->parent != NULL;
+    }
+    return view->xdg_toplevel != NULL && view->xdg_toplevel->parent != NULL;
+}
+
 bool mjc_view_is_focused(mjc_view *view) {
     return view->server->focused_view == view;
 }
