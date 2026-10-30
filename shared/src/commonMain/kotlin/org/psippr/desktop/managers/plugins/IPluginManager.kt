@@ -28,6 +28,15 @@ interface IPluginManager : IDelegate {
     /** Returns the loaded instance of an enabled plugin, loading it on first use, or null. */
     fun instance(id: String): IDesktopPlugin?
 
+    /**
+     * Installs the plugins of the zip archive (or single plugin jar) at [archivePath] into
+     * [pluginsDir], switched off; nothing of them runs until the user enables them.
+     */
+    fun install(archivePath: String): PluginInstallResult = PluginInstallResult.UNSUPPORTED
+
+    /** Lets the user pick a plugin archive; its path, or null when cancelled or unsupported. */
+    fun chooseArchive(): String? = null
+
     companion object {
         /** No-op fallback used when no platform manager is available. */
         val EMPTY =

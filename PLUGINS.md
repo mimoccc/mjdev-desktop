@@ -1,8 +1,20 @@
 # Desktop widget plugins
 
-Widgets are plugins. The memory chart is the built-in one; external plugins are jar files placed in
-`~/.psippr/plugins/`. The control center **Plugins** tab lists them (image, label, on/off switch,
+Widgets are plugins. The memory chart is the built-in one; external plugins are jar files in
+`~/.psippr-desktop/plugins/`. The control center **Plugins** tab lists them (image, label, on/off switch,
 expandable details) and the enabled ones are drawn on the desktop.
+
+## Installing
+
+Control center → **Plugins** → **Install plugins** → **Install…** opens a file dialog for a `.zip`
+archive or a single plugin `.jar`. Every `.jar` inside the zip (at any depth) that carries a valid
+`plugin.json` is copied into the plugins folder as `<id>.jar`; others are reported and skipped.
+
+- Installed plugins start **switched off**; nothing of them runs until switched on.
+- Only `.jar` entries are taken, by file name only (no path from the archive is used), each at most
+  50 MB.
+- A plugin installed again under the same id replaces the old jar, which is moved to
+  `plugins/replaced/` (not deleted). Built-in plugins cannot be replaced.
 
 ## Jar layout
 

@@ -121,6 +121,16 @@ class PluginManager(
         }
     }
 
+    override fun install(archivePath: String): PluginInstallResult {
+        val result = PluginArchiveInstaller.install(File(archivePath), File(pluginsDir), builtInPlugins.keys)
+        // a reinstalled plugin may still run from its old jar: drop that instance, next use loads the new one
+        result.installedIds.forEach(::unload)
+        refresh()
+        return result
+    }
+
+    override fun chooseArchive(): String? = PluginArchivePicker.choose()
+
     private fun load(id: String): IDesktopPlugin? = runCatching {
         val jar = jars[id] ?: return null
         val loader = URLClassLoader(arrayOf(jar.toURI().toURL()), IDesktopPlugin::class.java.classLoader)
