@@ -21,8 +21,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,6 +34,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.psippr.desktop.components.blur.BlurPanel
 import org.psippr.desktop.components.sliding.SlidingPanel
 import org.psippr.desktop.components.sliding.base.VisibilityState
@@ -63,8 +69,21 @@ fun ControlCenter(
     ) {
         (containerSize.width / 100f) * theme.controlCenterExpandedWidthPercent.orElse { 0 }
     }
-    val pagesFiltered by rememberCalculated(controlCenterPages) {
-        controlCenterPages.filter { p -> p.condition(context) }
+    // old: conditions read once, so a tab whose adapter or device came later never showed
+//    val pagesFiltered by rememberCalculated(controlCenterPages) {
+//        controlCenterPages.filter { p -> p.condition(context) }
+//    }
+    var pagesFiltered by remember(controlCenterPages) {
+        mutableStateOf(controlCenterPages.filter { p -> p.condition(context) })
+    }
+    // re-checked on every open, off the UI thread (a condition may ask nmcli); the open tab stays
+    LaunchedEffect(controlCenterState.isVisible) {
+        if (!controlCenterState.isVisible) return@LaunchedEffect
+        val fresh = withContext(Dispatchers.IO) { controlCenterPages.filter { p -> p.condition(context) } }
+        if (fresh != pagesFiltered) {
+            pagerState.value = PageSelection.indexAfterChange(pagesFiltered, fresh, pagerState.value)
+            pagesFiltered = fresh
+        }
     }
     SlidingPanel(
         modifier = modifier.fillMaxHeight(),
