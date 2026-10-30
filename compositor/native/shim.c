@@ -22,6 +22,8 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
 
 #include <wayland-server-core.h>
 #include <wlr/backend.h>
@@ -121,6 +123,8 @@ struct mjc_server {
     struct wl_event_source *sigchld_source;
     /* periodic reap of spawned children: SIGCHLD alone can be lost (see handle_reap_timer) */
     struct wl_event_source *reap_timer;
+    /* SIGTERM / SIGINT: a handler writes into this pipe, the loop ends on reading it */
+    struct wl_event_source *term_source;
 
     /* pids spawned via mjc_spawn; sigchld must reap only these,
      * other children (Xwayland) belong to wlroots */
@@ -1386,6 +1390,52 @@ mjc_server *mjc_create(void) {
     return server;
 }
 
+/* write end of the stop pipe; a signal handler may only touch this, nothing else */
+static int mjc_term_pipe[2] = {-1, -1};
+
+/* SIGTERM / SIGINT handler: async-signal-safe, it only wakes the event loop. The default action
+ * killed psipprc at once, so the socket stayed behind and open window positions were lost */
+static void handle_term_signal(int signo) {
+    (void) signo;
+    int saved = errno;
+    char byte = 1;
+    if (write(mjc_term_pipe[1], &byte, 1) < 0) {
+        /* pipe full: a stop is already pending */
+    }
+    errno = saved;
+}
+
+/* the stop pipe became readable: end the event loop, the normal shutdown path runs after it */
+static int handle_term_pipe(int fd, uint32_t mask, void *data) {
+    (void) mask;
+    char buffer[16];
+    while (read(fd, buffer, sizeof(buffer)) > 0) {
+    }
+    struct mjc_server *server = data;
+    fprintf(stderr, "psipprc: stop signal, shutting down\n");
+    wl_display_terminate(server->display);
+    return 0;
+}
+
+/* SIGTERM and SIGINT end the event loop like a normal exit instead of killing the process */
+static void install_term_handler(struct mjc_server *server) {
+    if (pipe(mjc_term_pipe) != 0) {
+        return;
+    }
+    for (int i = 0; i < 2; i++) {
+        fcntl(mjc_term_pipe[i], F_SETFD, FD_CLOEXEC);
+        fcntl(mjc_term_pipe[i], F_SETFL, O_NONBLOCK);
+    }
+    server->term_source = wl_event_loop_add_fd(server->loop, mjc_term_pipe[0],
+        WL_EVENT_READABLE, handle_term_pipe, server);
+    struct sigaction action = {0};
+    action.sa_handler = handle_term_signal;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags = SA_RESTART;
+    sigaction(SIGTERM, &action, NULL);
+    sigaction(SIGINT, &action, NULL);
+}
+
 bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdata) {
     server->cbs = *callbacks;
     server->ud = userdata;
@@ -1520,6 +1570,7 @@ bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdat
     if (server->reap_timer != NULL) {
         wl_event_source_timer_update(server->reap_timer, MJC_REAP_INTERVAL_MS);
     }
+    install_term_handler(server);
 
     if (!wlr_backend_start(server->backend)) {
         fprintf(stderr, "psipprc: failed to start backend\n");
