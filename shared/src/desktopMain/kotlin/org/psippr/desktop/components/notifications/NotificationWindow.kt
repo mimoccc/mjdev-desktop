@@ -34,6 +34,9 @@ private const val WIDTH_SHARE = 0.9f
 /** Height of the popup window; the card sits at its top. */
 private val WINDOW_HEIGHT = 140.dp
 
+/** Height of the popup of a question: room for its checkbox and buttons (140 dp cut them off). */
+private val QUESTION_HEIGHT = 230.dp
+
 /** Distance of the popup from the top and right screen edges (beside the control center strip). */
 private val MARGIN = 16.dp
 
@@ -55,8 +58,9 @@ fun NotificationWindow(controlCenterState: ChromeWindowState) = withDesktopConte
     val manager = context.notificationsManager
     val notification = manager.popup
     val windowState = rememberChromeWindowState()
-    // 90 % of the screen width, centered at the top
-    val windowSize = DpSize(containerSize.width * WIDTH_SHARE, WINDOW_HEIGHT)
+    // 90 % of the screen width, centered at the top; taller for a question
+    val height = if (notification?.actions.isNullOrEmpty()) WINDOW_HEIGHT else QUESTION_HEIGHT
+    val windowSize = DpSize(containerSize.width * WIDTH_SHARE, height)
     var shown by remember { mutableStateOf(false) }
     LaunchedEffect(notification?.id) {
         if (notification != null) {
