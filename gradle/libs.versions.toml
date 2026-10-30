@@ -24,7 +24,10 @@ app-greeter-description = "psippr login screen, a greetd greeter replacing gdm"
 # clean install or the ISO
 #app-compositor-runtime-deps = "libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session"
 # bluez: bluetoothctl, used by the bluetooth tab of the control center
-app-compositor-runtime-deps = "libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session bluez"
+# old: without adb the devices tab of the control center could not reach phones / tablets
+#app-compositor-runtime-deps = "libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session bluez"
+# adb: the devices tab of the control center (Android phones / tablets)
+app-compositor-runtime-deps = "libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session bluez adb"
 # Optional backdrop blur for compositor windows (https://github.com/wlrfx/scenefx). pkg-config names
 # tried in order, the first installed one is used (scenefx 0.2 targets wlroots 0.18). When none is
 # installed psipprc builds without blur exactly as before; the shell asks for blur per window via the

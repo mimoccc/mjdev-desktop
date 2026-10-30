@@ -35,6 +35,8 @@ import org.psippr.desktop.managers.apps.IAppsManager
 import org.psippr.desktop.managers.base.IDelegate
 import org.psippr.desktop.managers.connectivity.ConnectivityManager
 import org.psippr.desktop.managers.connectivity.IConnectivityManager
+import org.psippr.desktop.managers.devices.DevicesManager
+import org.psippr.desktop.managers.devices.IDevicesManager
 import org.psippr.desktop.managers.display.DisplayManager
 import org.psippr.desktop.managers.display.IDisplayManager
 import org.psippr.desktop.managers.keys.IKeyManager
@@ -286,6 +288,7 @@ class DesktopContext(
         IVolumeManager::class -> VolumeManager(this)
         IPluginManager::class -> PluginManager(this)
         IDisplayManager::class -> DisplayManager(this)
+        IDevicesManager::class -> DevicesManager(this)
         else -> createEmptyManager(cls)
     }
 

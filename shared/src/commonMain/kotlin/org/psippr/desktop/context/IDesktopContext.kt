@@ -36,6 +36,7 @@ import org.psippr.desktop.managers.apps.IAppsManager
 import org.psippr.desktop.managers.base.IDelegate
 import org.psippr.desktop.managers.base.ManagerCache
 import org.psippr.desktop.managers.connectivity.IConnectivityManager
+import org.psippr.desktop.managers.devices.IDevicesManager
 import org.psippr.desktop.managers.display.IDisplayManager
 import org.psippr.desktop.managers.keys.IKeyManager
 import org.psippr.desktop.managers.os.IOSManager
@@ -97,6 +98,9 @@ abstract class IDesktopContext : IDisposable {
 
     // Screen resolution of the main display - see IDisplayManager for platform implementations.
     open val displayManager: IDisplayManager by this
+
+    // Connected phones / tablets (ADB first, more providers later) - see IDevicesManager.
+    open val devicesManager: IDevicesManager by this
 
     // Discovers and toggles desktop widget plugins from ~/.psippr-desktop/plugins - see IPluginManager.
     open val pluginManager: IPluginManager by this
