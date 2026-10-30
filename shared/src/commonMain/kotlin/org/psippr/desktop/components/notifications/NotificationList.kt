@@ -45,6 +45,8 @@ fun NotificationList(
                     notification = notification,
                     time = NotificationTime.format(notification.createdAt, now),
                     onDismiss = { manager.dismiss(notification.id) },
+                    answerable = manager.isOpen(notification.id),
+                    onAction = { actionId, checked -> manager.answer(notification.id, actionId, checked) },
                 )
             }
         }

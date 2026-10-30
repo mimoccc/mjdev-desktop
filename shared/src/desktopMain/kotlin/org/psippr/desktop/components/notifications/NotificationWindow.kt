@@ -70,10 +70,13 @@ fun NotificationWindow(controlCenterState: ChromeWindowState) = withDesktopConte
             windowState.size = windowSize
             windowState.position = DpOffset((containerSize.width - windowSize.width) / 2, MARGIN)
             shown = true
-            delay(SHOW_MS)
-            shown = false
-            delay(FADE_MS.toLong())
-            manager.hidePopup()
+            // a question stays until it is answered; anything else hides by itself
+            if (!manager.isOpen(notification.id)) {
+                delay(SHOW_MS)
+                shown = false
+                delay(FADE_MS.toLong())
+                manager.hidePopup()
+            }
         } else {
             shown = false
         }
@@ -99,6 +102,8 @@ fun NotificationWindow(controlCenterState: ChromeWindowState) = withDesktopConte
                         notification = item,
                         time = NotificationTime.format(item.createdAt, currentTimeMillis),
                         onDismiss = { manager.dismiss(item.id) },
+                        answerable = manager.isOpen(item.id),
+                        onAction = { actionId, checked -> manager.answer(item.id, actionId, checked) },
                     )
                 }
             }

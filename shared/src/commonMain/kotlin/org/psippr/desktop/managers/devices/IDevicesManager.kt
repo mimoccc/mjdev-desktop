@@ -1,5 +1,6 @@
 package org.psippr.desktop.managers.devices
 
+import kotlinx.coroutines.CoroutineScope
 import org.psippr.desktop.managers.base.IDelegate
 
 /**
@@ -9,8 +10,14 @@ import org.psippr.desktop.managers.base.IDelegate
  * the UI thread.
  */
 interface IDevicesManager : IDelegate {
-    /** All connected devices of all providers. */
+    /** Connected devices of all providers the user allowed (connected or remembered). */
     fun devices(): List<ConnectedDevice>
+
+    /**
+     * Watches for newly connected devices in [scope] and asks about each unknown one with a
+     * notification (Connect / Dismiss, "Remember device"); no-op where unsupported.
+     */
+    fun startWatching(scope: CoroutineScope) {}
 
     /** Runs [action] on [device]; may open a file dialog first (e.g. to pick the files to send). */
     fun perform(

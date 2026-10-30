@@ -252,6 +252,11 @@ fun MainWindow() = withDesktopContext {
     LaunchedEffect(notificationPopup?.id) {
         desktopState.setNotificationShown(notificationPopup != null)
     }
+    // asks about every newly connected device (Connect / Dismiss, "Remember device")
+    DisposableEffect(Unit) {
+        context.devicesManager.startWatching(context.scope)
+        onDispose { }
+    }
     // the standard Linux notification service, so notify-send and libnotify apps show here too
     DisposableEffect(Unit) {
         val service = NotificationService(context.notificationsManager, context.scope)

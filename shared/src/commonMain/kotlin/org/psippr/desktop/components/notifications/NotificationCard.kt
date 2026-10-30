@@ -14,6 +14,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,7 +36,9 @@ private const val CLOSE = "Dismiss"
 
 /**
  * One [notification] as a card, drawn like the tooltip bubble (palette background and border):
- * title, message and time, with the close button ("x") in the top right corner.
+ * title, message and time, with the close button ("x") in the top right corner. A notification
+ * that asks something and can still be answered ([answerable]) also shows its checkbox and its
+ * buttons; a button reports its action and the checkbox state to [onAction].
  */
 @Suppress("FunctionName")
 @Composable
@@ -41,7 +47,10 @@ fun NotificationCard(
     time: String,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
+    answerable: Boolean = false,
+    onAction: (actionId: String, checked: Boolean) -> Unit = { _, _ -> },
 ) = withDesktopContext {
+    var checked by remember(notification.id) { mutableStateOf(false) }
     Box(
         modifier =
             modifier
@@ -59,6 +68,14 @@ fun NotificationCard(
                 TextAny(text = notification.message, color = textColor, fontSize = 12.sp, maxLines = 4)
             }
             TextAny(text = time, color = textColor.alpha(SECONDARY_ALPHA), fontSize = 10.sp)
+            if (answerable) {
+                NotificationQuestion(
+                    notification = notification,
+                    checked = checked,
+                    onCheckedChange = { checked = it },
+                    onAction = { actionId -> onAction(actionId, checked) },
+                )
+            }
         }
         Icon(
             imageVector = Icons.Filled.Close,

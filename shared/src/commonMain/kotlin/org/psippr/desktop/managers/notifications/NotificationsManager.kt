@@ -21,6 +21,9 @@ class NotificationsManager(
     private val store = NotificationStore(context.currentUser)
     private val items = mutableStateListOf<DesktopNotification>()
 
+    // answers of open questions, by notification id; in memory only (a restart ends the question)
+    private val answers = mutableMapOf<String, (String, Boolean) -> Unit>()
+
     override var popup: DesktopNotification? by mutableStateOf(null)
         private set
 
@@ -50,7 +53,45 @@ class NotificationsManager(
         return notification
     }
 
+    @OptIn(ExperimentalUuidApi::class)
+    override fun ask(
+        title: String,
+        message: String,
+        actions: List<NotificationAction>,
+        checkbox: String,
+        onAnswer: (actionId: String, checked: Boolean) -> Unit,
+    ): DesktopNotification {
+        val notification =
+            DesktopNotification(
+                id = Uuid.random().toString(),
+                title = title,
+                message = message,
+                createdAt = now(),
+                actions = actions,
+                checkbox = checkbox,
+            )
+        answers[notification.id] = onAnswer
+        items.add(notification)
+        popup = notification
+        save()
+        return notification
+    }
+
+    override fun answer(
+        id: String,
+        actionId: String,
+        checked: Boolean,
+    ) {
+        val onAnswer = answers.remove(id) ?: return
+        dismiss(id)
+        onAnswer(actionId, checked)
+    }
+
+    override fun isOpen(id: String): Boolean = id in answers
+
     override fun dismiss(id: String) {
+        // dismissing an open question without a button answers nothing; the asker just stops waiting
+        answers.remove(id)
         val updated = NotificationRules.dismiss(items, id)
         items.clear()
         items.addAll(updated)

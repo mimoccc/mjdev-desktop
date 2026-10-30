@@ -9,6 +9,8 @@ package org.psippr.desktop.managers.notifications
  * @property message what happened
  * @property createdAt creation time in epoch milliseconds
  * @property dismissed true once dismissed or expired; never deleted, only flagged
+ * @property actions buttons of a notification that asks something, empty for plain ones
+ * @property checkbox label of its checkbox (e.g. "Remember device"), empty for none
  */
 data class DesktopNotification(
     val id: String = "",
@@ -16,4 +18,6 @@ data class DesktopNotification(
     val message: String = "",
     val createdAt: Long = 0L,
     val dismissed: Boolean = false,
+    val actions: List<NotificationAction> = emptyList(),
+    val checkbox: String = "",
 )

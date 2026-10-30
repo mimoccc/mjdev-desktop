@@ -19,6 +19,29 @@ interface INotificationsManager : IDelegate {
         message: String,
     ): DesktopNotification
 
+    /**
+     * Shows a notification that asks something: [actions] as buttons and, when [checkbox] is not
+     * empty, a checkbox. The pressed action and the checkbox state go to [onAnswer]; then the entry
+     * is dismissed. Its popup stays until it is answered.
+     */
+    fun ask(
+        title: String,
+        message: String,
+        actions: List<NotificationAction>,
+        checkbox: String = "",
+        onAnswer: (actionId: String, checked: Boolean) -> Unit,
+    ): DesktopNotification = notify(title, message)
+
+    /** Answers the question [id] with the action [actionId] and the checkbox state [checked]. */
+    fun answer(
+        id: String,
+        actionId: String,
+        checked: Boolean,
+    ) {}
+
+    /** True while [id] asks something that can still be answered (its asker is waiting). */
+    fun isOpen(id: String): Boolean = false
+
     /** Flags the entry [id] dismissed (it stays stored). */
     fun dismiss(id: String)
 
