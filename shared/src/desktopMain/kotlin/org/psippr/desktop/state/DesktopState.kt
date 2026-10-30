@@ -54,6 +54,7 @@ class DesktopState(
     // facts about the world
     private var barOverlapped = false
     private var notificationShown = false
+    private var deviceShown = false
     private var pointerInBarZone = false
     private var pointerWasInBarZone = false
     private var pointerWasInCcHotspot = false
@@ -179,6 +180,16 @@ class DesktopState(
         reconcile()
     }
 
+    /**
+     * The screen of a connected device appeared on the desktop ([shown] true) or went away; while
+     * shown the bar steps aside, hovering its edge brings it back.
+     */
+    fun setDeviceShown(shown: Boolean) {
+        if (deviceShown == shown) return
+        deviceShown = shown
+        reconcile()
+    }
+
     /** The compositor tells us whether a real window now overlaps the bar strip. */
     fun setBarOverlapped(overlapped: Boolean) {
         if (barOverlapped != overlapped) {
@@ -198,6 +209,7 @@ class DesktopState(
                     barOverlapped = barOverlapped,
                     pointerInBarRevealZone = pointerInBarZone,
                     notificationShown = notificationShown,
+                    deviceShown = deviceShown,
                 ),
             )
         scope.launch {

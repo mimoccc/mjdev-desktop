@@ -39,9 +39,13 @@ fun AdbScreenMirror(
             scope = scope,
             allowedIds = LocalDesktopContext.current.devicesManager::allowedIds,
         ),
+    // the device screen appeared (true) or went away
+    onShownChange: (Boolean) -> Unit = {},
 ) = withDesktopContext {
     if (isAndroid()) return@withDesktopContext
     val image = deviceState.imageBitmap
+    val shown = image != null
+    LaunchedEffect(shown) { onShownChange(shown) }
     if (image != null) {
         Box(
             modifier = modifier,

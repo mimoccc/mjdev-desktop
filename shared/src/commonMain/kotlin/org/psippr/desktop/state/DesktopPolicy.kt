@@ -16,6 +16,8 @@ package org.psippr.desktop.state
  *     only if it is overlapped (handled by re-evaluating after the intent flags clear).
  *  6. While a notification popup is shown the bar hides like an overlapped one (back on hover);
  *     the control center and menu are closed when it appears (see DesktopState).
+ *  7. While a connected device's screen is shown on the desktop the bar hides the same way, so
+ *     it does not cover the device screen (back on hover); nothing else closes.
  */
 object DesktopPolicy {
     fun decide(input: DesktopInputs): DesktopDecision {
@@ -28,7 +30,8 @@ object DesktopPolicy {
                 menu -> true // rule 2: an open menu keeps the bar up
                 // old: only a covering window hid the bar
 //                !input.barOverlapped -> true // rules 1 & 4: nothing covers it -> visible
-                !input.barOverlapped && !input.notificationShown -> true // rules 1, 4 & 6
+//                !input.barOverlapped && !input.notificationShown -> true // rules 1, 4 & 6
+                !input.barOverlapped && !input.notificationShown && !input.deviceShown -> true // rules 1, 4, 6 & 7
                 else -> input.pointerInBarRevealZone // rule 1: covered -> reveal only on hover
             }
         return DesktopDecision(
@@ -53,6 +56,8 @@ data class DesktopInputs(
     val pointerInBarRevealZone: Boolean = false,
     // a notification popup is on screen: the bar steps aside until the pointer asks for it (rule 6)
     val notificationShown: Boolean = false,
+    // a connected device's screen is shown on the desktop: the bar steps aside too (rule 7)
+    val deviceShown: Boolean = false,
 )
 
 /** What each surface should actually be after applying [DesktopPolicy]. */

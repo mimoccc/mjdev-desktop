@@ -34,6 +34,8 @@ fun Desktop(
     onLeftMouseClick: () -> Unit = {},
     onRightMouseClick: () -> Unit = {},
     onBackgroundChange: (Color) -> Unit = {},
+    // a connected device's screen appeared (true) or went away on the desktop
+    onDeviceShown: (Boolean) -> Unit = {},
     // todo
     widgets: @Composable () -> Unit = {},
 ) = withDesktopContext {
@@ -104,6 +106,7 @@ fun Desktop(
                                 16.dp,
                             ),
                         ),
+                onShownChange = onDeviceShown,
             )
         }
     }

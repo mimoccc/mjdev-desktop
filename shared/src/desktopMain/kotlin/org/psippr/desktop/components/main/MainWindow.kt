@@ -170,6 +170,8 @@ fun MainWindow() = withDesktopContext {
     ) {
         Desktop(
             onTooltip = onTooltip,
+            // the bar steps aside while a connected device's screen is shown (back on hover)
+            onDeviceShown = desktopState::setDeviceShown,
             padding =
                 PaddingValues(
                     bottom = bottomPadding,
