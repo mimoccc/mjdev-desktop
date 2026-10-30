@@ -32,6 +32,9 @@ interface IPalette :
         transitionMs: Long,
     ) = update(src)
 
+    /** Computes the colors again from the current wallpaper, e.g. after the theme settings changed. */
+    fun refresh() {}
+
     companion object {
         val EMPTY =
             object : IPalette {

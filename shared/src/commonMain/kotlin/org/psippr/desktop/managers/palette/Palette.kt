@@ -19,6 +19,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.psippr.desktop.context.IDesktopContext
+import org.psippr.desktop.data.DesktopConfigStore
 import org.psippr.desktop.extensions.Colors.SuperDarkGray
 import org.psippr.desktop.extensions.Colors.darker
 import org.psippr.desktop.extensions.Colors.isLightColor
@@ -124,10 +125,16 @@ class Palette(
     override fun update(src: Any?) = update(src, NO_TRANSITION_MS)
 
     // todo cutPartPercent to user prefs as precision
+    // wallpaper of the last update, so a theme settings change can recompute from it
+    private var lastSource: Any? = null
+
+    override fun refresh() = update(lastSource, REFRESH_TRANSITION_MS)
+
     override fun update(
         src: Any?,
         transitionMs: Long,
     ) {
+        lastSource = src
         transitionJob?.cancel()
         transitionJob =
             scope.launch(Dispatchers.Default) {
@@ -146,7 +153,10 @@ class Palette(
                             dominantArgbColor(pixels, width, 0, height - cutHeight, cutWidth, cutHeight),
                             dominantArgbColor(pixels, width, width - cutWidth, height - cutHeight, cutWidth, cutHeight),
                         )
-                    val background = colors.darkestColor
+                    // old: always the wallpaper's own lightness and accent
+//                    val background = colors.darkestColor
+                    val config = DesktopConfigStore(context.currentUser).load()
+                    val background = PaletteTone.background(colors.darkestColor, ThemeMode.of(config.themeMode))
                     // Derive text from the NEW background (assigned below), not the stale state value,
                     // which made the derived colors lag one wallpaper behind.
                     val text =
@@ -155,8 +165,13 @@ class Palette(
                         } else {
                             background.lighter(textFactor)
                         }
+                    // old: the wallpaper's accent only
+//                    val accent =
+//                        PaletteAccent.pick(gridSamples(pixels, width, height), background.isLightColor)
+//                            ?: tintFor(background)
                     val accent =
-                        PaletteAccent.pick(gridSamples(pixels, width, height), background.isLightColor)
+                        PaletteTone.accent(ThemeAccent.of(config.themeAccent), background.isLightColor)
+                            ?: PaletteAccent.pick(gridSamples(pixels, width, height), background.isLightColor)
                             ?: tintFor(background)
                     transitionTo(background, text, accent, transitionMs)
                 }
@@ -219,6 +234,9 @@ class Palette(
     companion object {
         /** Transition time of an immediate palette change. */
         const val NO_TRANSITION_MS = 0L
+
+        /** Transition time when the theme settings change, so the switch is visible but quick. */
+        const val REFRESH_TRANSITION_MS = 400L
 
         /** Rows / columns of the grid sampled for the accent color. */
         const val GRID_CELLS = 3

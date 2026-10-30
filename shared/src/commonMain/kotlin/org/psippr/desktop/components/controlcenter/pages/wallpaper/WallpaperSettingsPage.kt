@@ -17,8 +17,9 @@ import org.psippr.desktop.icons.settings.SettingsMonitor
 import org.psippr.desktop.providers.background.WallpaperFolderScanner
 
 /**
- * Control center page for everything wallpaper related: the palette extracted from the current
- * wallpaper (moved here from the theme page) and the wallpaper sub-folders found in the standard background locations.
+ * Control center page for everything wallpaper related: the style (light / dark, accent, see
+ * [WallpaperStyleSection]), the palette extracted from the current wallpaper (moved here from the
+ * theme page) and the wallpaper sub-folders found in the standard background locations.
  * Each folder can be included/excluded with a switch; the choice is persisted in the desktop
  * config and the running desktop re-reads its backgrounds immediately.
  */
@@ -33,6 +34,8 @@ fun WallpaperSettingsPage(context: IDesktopContext) = ControlCenterPage(
     var excluded by remember { mutableStateOf(store.load().excludedWallpaperFolders.toSet()) }
 
     SettingsPageColumn {
+        // light / dark and accent, right above the colors they change
+        WallpaperStyleSection()
         SettingsSection(title = WallpaperPageDefaults.SECTION_PALETTE) {
             SettingsColorRow(WallpaperPageDefaults.COLOR_BACKGROUND, backgroundColor)
             SettingsColorRow(WallpaperPageDefaults.COLOR_TEXT, textColor)

@@ -6,6 +6,8 @@ import androidx.compose.ui.unit.dp
 import org.psippr.desktop.helpers.compose.ImagesProvider
 import org.psippr.desktop.interfaces.ITheme
 import org.psippr.desktop.interfaces.IUser
+import org.psippr.desktop.managers.palette.ThemeAccent
+import org.psippr.desktop.managers.palette.ThemeMode
 import kotlin.math.roundToInt
 
 /**
@@ -42,6 +44,9 @@ data class DesktopConfigData(
     var providers: MutableList<ProviderConfig> = ProviderConfig.defaults(),
     // keys (absolute paths) of local wallpaper folders the user switched off
     var excludedWallpaperFolders: MutableList<String> = mutableListOf(),
+    // theme tab: light / dark and accent on top of the wallpaper colors (ThemeMode / ThemeAccent names)
+    var themeMode: String = ThemeMode.WALLPAPER.name,
+    var themeAccent: String = ThemeAccent.WALLPAPER.name,
 ) {
     /** Writes every value back onto the live [theme] so the running desktop picks them up. */
     fun applyTo(theme: ITheme) {

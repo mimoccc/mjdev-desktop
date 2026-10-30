@@ -11,6 +11,13 @@ object WallpaperPageDefaults {
     /** Title of the folders section. */
     const val SECTION_FOLDERS = "Wallpaper folders"
 
+    /** Title of the style section (light / dark and accent on top of the wallpaper colors). */
+    const val SECTION_STYLE = "Style"
+
+    /** Style row labels. */
+    const val STYLE_MODE = "Mode"
+    const val STYLE_ACCENT = "Accent"
+
     /** Title of the palette section (colors extracted from the wallpaper). */
     const val SECTION_PALETTE = "Wallpaper palette"
 
