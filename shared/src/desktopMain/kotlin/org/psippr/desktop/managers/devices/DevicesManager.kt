@@ -54,7 +54,10 @@ class DevicesManager(
     override fun devices(): List<ConnectedDevice> {
         val all = allDevices()
         // Forget first: forgetting devices is what this list is mostly for
-        val connected = gate.visible(all).map { device -> device.copy(actions = listOf(DeviceAction.FORGET) + device.actions) }
+        val connected =
+            gate.visible(all).map { device ->
+                device.copy(actions = listOf(DeviceAction.FORGET) + device.actions)
+            }
         val absent = gate.rememberedAbsent(all.map { it.id }).map(::absentDevice)
         return connected + absent
     }
