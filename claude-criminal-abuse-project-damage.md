@@ -160,3 +160,20 @@ The user also reported printer activity. The host shows no print jobs and no CUP
    exit before dispose, ISO end-to-end check) were not re-checked in this session.
 4. Uncommitted formatting changes from before this session remain in `GreeterUserRow.kt`,
    `LoginWindow.kt`, `SessionSwitch.kt` and `NeighbourPages.kt`.
+
+---
+
+## 9. Real greetd + PAM login with the fixed build (2026-10-30 14:35)
+
+- **Where:** the ISO `releases/psippr-desktop-1.0.5.iso` (built 2026-10-29 22:21, still the broken
+  greeter) booted in QEMU; inside the VM the deb built from `main` at `16bbd88e`
+  (`packageFullDeb`, contains `ShellQuote`, installed jar checksum equal to the built one) was
+  installed with `dpkg -i` and `greetd` restarted. The host was not touched.
+- **Login:** the default live account typed into the psippr greeter on tty7 through QMP keys.
+- **Result:** `pam_unix(greetd:session): session opened for user psippr`, no "session closed";
+  logind session on seat0 / tty7; running `psippr-session` -> `psipprc --session` ->
+  `/opt/psippr-desktop/bin/psippr-desktop`; `session-psippr-desktop.log` records
+  `start: /bin/sh -c psippr-session`; the screen shows the psippr desktop (Home icon, bottom
+  bar, clock).
+- Section 8 point 1 is therefore done for the ISO. Still not done: the same login on the host.
+- Section 4 (bug B, logo colors) is rejected by the user as wrong; it is not a proven cause.
