@@ -211,6 +211,25 @@ val packageFullDeb =
 //        outputs.dir(greeterPkgDirV.resolve("deb"))
 //    }
 
+// Boot login screen switches (IDE run actions switchGreeterToPsippr / switchGreeterToGDM): run
+// session/switch-greeter.sh as root (pkexec dialog / sudo), effective on the next boot.
+val switchGreeterScript = rootDir.resolve("session/switch-greeter.sh").absolutePath
+val switchGreeterLog = layout.buildDirectory.file("switch-greeter.log").get().asFile.absolutePath
+tasks.register<SwitchGreeterTask>("switchGreeterToPsippr") {
+    group = "psippr"
+    description = "Makes the psippr login screen (greetd) the display manager of the next boot (needs root / pkexec)."
+    choice.set(GreeterChoice.Psippr)
+    scriptPath.set(switchGreeterScript)
+    logPath.set(switchGreeterLog)
+}
+tasks.register<SwitchGreeterTask>("switchGreeterToGDM") {
+    group = "psippr"
+    description = "Makes gdm the display manager of the next boot (needs root / pkexec)."
+    choice.set(GreeterChoice.Gdm)
+    scriptPath.set(switchGreeterScript)
+    logPath.set(switchGreeterLog)
+}
+
 // Copies all distributables into releases/ with version in the filename
 // (psippr-desktop-<version>.<ext>). Copy = configuration-cache safe.
 val collectReleases =
