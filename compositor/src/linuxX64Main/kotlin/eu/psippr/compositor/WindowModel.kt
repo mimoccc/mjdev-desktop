@@ -27,7 +27,9 @@ import psippr.compositor.shim.mjc_view_get_geometry
 import psippr.compositor.shim.mjc_view_id
 import psippr.compositor.shim.mjc_view_is_blurred
 import psippr.compositor.shim.mjc_view_is_maximized
+import psippr.compositor.shim.mjc_view_is_minimized
 import psippr.compositor.shim.mjc_view_pid
+import psippr.compositor.shim.mjc_view_set_minimized
 import psippr.compositor.shim.mjc_view_title
 
 class WindowInfo(
@@ -39,7 +41,14 @@ class WindowInfo(
     var title: String? = null
     var pid: Int = 0
     var mapped: Boolean = false
-    var minimized: Boolean = false
+    // old: a cached flag set only by IPC requests; a minimize the app asked for itself (its own
+    // title bar button) left it false, so activate never restored the hidden window
+//    var minimized: Boolean = false
+
+    /** Minimized state of the native view, also after the client's own minimize request. */
+    var minimized: Boolean
+        get() = mjc_view_is_minimized(ptr)
+        set(value) = mjc_view_set_minimized(ptr, value)
     var focused: Boolean = false
     var shell: Boolean = false
     var role: String? = null
