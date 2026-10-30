@@ -182,11 +182,31 @@ class Compositor(
         if (!isMainWindow(info)) {
             return
         }
-        if (geometry.has(info)) {
-            geometry.restore(info)
+        // old: the remembered geometry as stored, also when saved on a larger screen it put the
+        // window partly off this one (gnome-calculator at 841,267 360x616 on a 1280x720 output)
+//        if (geometry.has(info)) {
+//            geometry.restore(info)
+//        } else {
+//            placeDefault(info)
+//        }
+        val remembered = geometry.remembered(info)
+        if (remembered != null) {
+            placeRemembered(info, remembered)
         } else {
             placeDefault(info)
         }
+    }
+
+    /** Reopens the window at [rect], fitted onto the current output. */
+    private fun placeRemembered(
+        info: WindowInfo,
+        rect: WindowRect,
+    ) = memScoped {
+        val width = alloc<IntVar>()
+        val height = alloc<IntVar>()
+        mjc_output_size(server, width.ptr, height.ptr)
+        val fitted = WindowPlacement.fit(rect, width.value, height.value) ?: rect
+        mjc_view_set_geometry(info.ptr, fitted.x, fitted.y, fitted.width, fitted.height)
     }
 
     /** Centers the window at [WindowPlacement.DEFAULT_SIZE_PERCENT] of the output. */

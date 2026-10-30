@@ -19,6 +19,28 @@ object WindowPlacement {
     /** Divisor that splits the free space evenly on both sides (centering). */
     private const val CENTER_DIVISOR = 2
 
+    /**
+     * [rect] (a remembered geometry, maybe from another screen size) shrunk to the output and
+     * moved fully onto it; null while the output size is unknown.
+     */
+    fun fit(
+        rect: WindowRect,
+        outputWidth: Int,
+        outputHeight: Int,
+    ): WindowRect? {
+        if (outputWidth <= 0 || outputHeight <= 0) {
+            return null
+        }
+        val width = rect.width.coerceIn(1, outputWidth)
+        val height = rect.height.coerceIn(1, outputHeight)
+        return WindowRect(
+            x = rect.x.coerceIn(0, outputWidth - width),
+            y = rect.y.coerceIn(0, outputHeight - height),
+            width = width,
+            height = height,
+        )
+    }
+
     /** Centered rect of [DEFAULT_SIZE_PERCENT] of the output, null while the output size is unknown. */
     fun initial(
         outputWidth: Int,

@@ -74,6 +74,12 @@ class GeometryStore {
         }
     }
 
+    /** the remembered geometry of the window's app, null when none (or a broken entry) is stored */
+    fun remembered(info: WindowInfo): WindowRect? {
+        val geo = entries[keyOf(info) ?: return null] ?: return null
+        return if (geo.size == 4) WindowRect(geo[0], geo[1], geo[2], geo[3]) else null
+    }
+
     /** true when a geometry of the window's app is remembered */
     fun has(info: WindowInfo): Boolean = keyOf(info)?.let { key -> key in entries } ?: false
 
