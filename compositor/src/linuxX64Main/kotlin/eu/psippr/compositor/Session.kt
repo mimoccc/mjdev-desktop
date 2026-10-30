@@ -35,6 +35,10 @@ class Session(
         println("psipprc: WAYLAND_DISPLAY=$wayland DISPLAY=${x11 ?: "-"}")
 
         setenv("XDG_CURRENT_DESKTOP", "psippr", 1)
+        if (!c.config.sessionMode) {
+            // the nested shell must not change the host desktop's settings, see NestedSessionBus
+            setenv(NestedSessionBus.ENV_NESTED, NestedSessionBus.NESTED, 1)
+        }
         setenv("XDG_SESSION_TYPE", "wayland", 1)
 
         // old: exported in nested mode too, which overwrote the HOST session's activation

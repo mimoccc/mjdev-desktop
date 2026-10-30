@@ -15,6 +15,15 @@ package eu.psippr.compositor
  * the nested desktop instead and lives exactly as long as the shell.
  */
 object NestedSessionBus {
+    /**
+     * Environment variable marking the shell of a nested run, so it leaves the host desktop's
+     * settings alone (no GNOME / GTK theme changes); same name as the shell's NestedRun.
+     */
+    const val ENV_NESTED = "PSIPPR_NESTED"
+
+    /** Value of [ENV_NESTED] for a nested shell. */
+    const val NESTED = "1"
+
     /** Runs a command on a fresh session bus that ends with it (part of dbus). */
     private const val RUN_SESSION = "dbus-run-session --"
 
