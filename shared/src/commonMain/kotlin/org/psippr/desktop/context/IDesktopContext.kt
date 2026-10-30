@@ -39,6 +39,7 @@ import org.psippr.desktop.managers.connectivity.IConnectivityManager
 import org.psippr.desktop.managers.devices.IDevicesManager
 import org.psippr.desktop.managers.display.IDisplayManager
 import org.psippr.desktop.managers.keys.IKeyManager
+import org.psippr.desktop.managers.notifications.INotificationsManager
 import org.psippr.desktop.managers.os.IOSManager
 import org.psippr.desktop.managers.palette.IPalette
 import org.psippr.desktop.managers.plugins.IPluginManager
@@ -102,6 +103,9 @@ abstract class IDesktopContext : IDisposable {
     // Connected phones / tablets (ADB first, more providers later) - see IDevicesManager.
     open val devicesManager: IDevicesManager by this
 
+    // Notifications: popup + history on the control center home tab - see INotificationsManager.
+    open val notificationsManager: INotificationsManager by this
+
     // Discovers and toggles desktop widget plugins from ~/.psippr-desktop/plugins - see IPluginManager.
     open val pluginManager: IPluginManager by this
 
@@ -150,11 +154,16 @@ abstract class IDesktopContext : IDisposable {
         block: suspend CoroutineScope.() -> Unit,
     ) = scope.launch(context, start, block)
 
+    /**
+     * Shows a notification (popup, then kept in the home tab history). [id] is not used any more:
+     * every notification gets its own UUID.
+     */
     fun notify(
         message: String = "This is a test message",
         id: String = "1",
         title: String = "This is a test",
     ) {
+        notificationsManager.notify(title = title, message = message)
 //        val messageData = KNotifMessageData(
 //            id = id,
 //            title = title,

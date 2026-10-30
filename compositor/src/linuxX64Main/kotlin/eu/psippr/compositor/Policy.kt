@@ -65,7 +65,8 @@ class Policy(
 
             // the panel is click only - keeping it unfocusable means opening
             // it never steals keyboard focus from the menu or from apps
-            "desktoppanel", "panel", "tooltip" -> {
+            // notification popups too: they must never take the keyboard from the app in use
+            "desktoppanel", "panel", "tooltip", "notification" -> {
                 mjc_view_set_layer(info.ptr, MJC_LAYER_TOP)
                 mjc_view_set_focusable(info.ptr, false)
             }

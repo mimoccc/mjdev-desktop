@@ -25,6 +25,7 @@ import org.psippr.desktop.components.dockbar.DockBarWindow
 import org.psippr.desktop.components.greeter.GreeterWindow
 import org.psippr.desktop.components.info.InfoWindow
 import org.psippr.desktop.components.installer.InstallerWindow
+import org.psippr.desktop.components.notifications.NotificationWindow
 import org.psippr.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import org.psippr.desktop.components.tooltip.TooltipState
 import org.psippr.desktop.components.tooltip.TooltipWindow
@@ -241,6 +242,8 @@ fun MainWindow() = withDesktopContext {
     TooltipWindow(
         tooltipState = tooltipState,
     )
+    // Popup of the newest notification (auto-hiding); the history is on the control center home tab.
+    NotificationWindow(controlCenterState = controlCenterState)
     // old: in-desktop login overlay; its login was a stub (no PAM) and it stuck on top of every app
     // whenever the user lookup failed. The desktop runs only after the greetd / PAM login, so the
     // login screen is the greeter (LoginWindow) alone.

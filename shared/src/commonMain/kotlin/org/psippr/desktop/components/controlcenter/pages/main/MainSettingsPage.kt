@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import org.psippr.desktop.components.controlcenter.base.ControlCenterPage
 import org.psippr.desktop.components.custom.DateTime
 import org.psippr.desktop.components.custom.PowerBlock
+import org.psippr.desktop.components.notifications.NotificationList
 import org.psippr.desktop.components.user.UserAvatar
 import org.psippr.desktop.context.IDesktopContext
 import org.psippr.desktop.extensions.Colors.alpha
@@ -25,6 +26,9 @@ import org.psippr.desktop.extensions.Compose.preview
 import org.psippr.desktop.helpers.compose.Orientation
 import org.psippr.desktop.helpers.shape.BarShape
 import org.psippr.desktop.icons.settings.SettingsHome
+
+/** Highest the notification list on the home tab grows before it scrolls (room for the power block). */
+private val NOTIFICATIONS_MAX_HEIGHT = 420.dp
 
 @Suppress("FunctionName")
 fun MainSettingsPage(context: IDesktopContext) = ControlCenterPage(
@@ -97,6 +101,8 @@ fun MainSettingsPage(context: IDesktopContext) = ControlCenterPage(
                 dateTextColor = textColor,
                 backgroundColor = backgroundColor,
             )
+            // notification history under the clock, each with its close button
+            NotificationList(maxHeight = NOTIFICATIONS_MAX_HEIGHT)
         }
         Box(
             modifier =

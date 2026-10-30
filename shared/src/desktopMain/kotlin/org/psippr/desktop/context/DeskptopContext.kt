@@ -42,6 +42,8 @@ import org.psippr.desktop.managers.display.IDisplayManager
 import org.psippr.desktop.managers.keys.IKeyManager
 import org.psippr.desktop.managers.keys.KeysManager
 import org.psippr.desktop.managers.language.Translator
+import org.psippr.desktop.managers.notifications.INotificationsManager
+import org.psippr.desktop.managers.notifications.NotificationsManager
 import org.psippr.desktop.managers.os.IOSManager
 import org.psippr.desktop.managers.os.OsManager
 import org.psippr.desktop.managers.palette.IPalette
@@ -289,6 +291,7 @@ class DesktopContext(
         IPluginManager::class -> PluginManager(this)
         IDisplayManager::class -> DisplayManager(this)
         IDevicesManager::class -> DevicesManager(this)
+        INotificationsManager::class -> NotificationsManager(this)
         else -> createEmptyManager(cls)
     }
 
