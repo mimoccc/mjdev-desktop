@@ -68,9 +68,15 @@ fun ControlCenterWindow(
         onFocusChange = onFocusChange,
         position = position,
         size = size,
+        // old: separate setters; the size setter moves by the size difference from a stored
+        // position that moveBy never updates, so an expand could shift the panel twice (x = 652)
+//        onCreated = {
+//            controlCenterState.size = size
+//            controlCenterState.position = position
+//        },
+        // position and size together, absolute, like the dock: nothing relative to race
         onCreated = {
-            controlCenterState.size = size
-            controlCenterState.position = position
+            runAsync { controlCenterState.applyBounds(position, size) }
         },
     ) {
         ControlCenter(
@@ -88,8 +94,12 @@ fun ControlCenterWindow(
                 }
             },
         )
+        // old: only the size, moved relative to the stored position (see onCreated)
+//        LaunchedEffect(position, size) {
+//            controlCenterState.size = size
+//        }
         LaunchedEffect(position, size) {
-            controlCenterState.size = size
+            controlCenterState.applyBounds(position, size)
         }
     }
 }
