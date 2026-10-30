@@ -1589,6 +1589,99 @@ void mjc_output_size(mjc_server *server, int *width, int *height) {
     *height = box.height;
 }
 
+/* refresh difference (mHz) still counted as the same refresh: 59.951 Hz is asked for as 60 */
+#define MJC_REFRESH_TOLERANCE_MHZ 500
+
+/* the main screen: the first output of the layout, NULL before any output exists */
+static struct wlr_output *first_output(struct mjc_server *server) {
+    struct wlr_output_layout_output *l_output;
+    wl_list_for_each(l_output, &server->output_layout->outputs, link) {
+        return l_output->output;
+    }
+    return NULL;
+}
+
+int mjc_output_mode_count(mjc_server *server) {
+    struct wlr_output *output = first_output(server);
+    return output != NULL ? wl_list_length(&output->modes) : 0;
+}
+
+bool mjc_output_mode(mjc_server *server, int index, int *width, int *height, int *refresh_mhz) {
+    struct wlr_output *output = first_output(server);
+    if (output == NULL) {
+        return false;
+    }
+    int i = 0;
+    struct wlr_output_mode *mode;
+    wl_list_for_each(mode, &output->modes, link) {
+        if (i++ == index) {
+            *width = mode->width;
+            *height = mode->height;
+            *refresh_mhz = mode->refresh;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool mjc_output_current_mode(mjc_server *server, int *width, int *height, int *refresh_mhz) {
+    struct wlr_output *output = first_output(server);
+    if (output == NULL) {
+        return false;
+    }
+    *width = output->width;
+    *height = output->height;
+    *refresh_mhz = output->refresh;
+    return true;
+}
+
+/* listed mode of that size: the asked refresh, or the fastest one when refresh_mhz is 0 */
+static struct wlr_output_mode *find_mode(struct wlr_output *output, int width, int height,
+        int refresh_mhz) {
+    struct wlr_output_mode *best = NULL;
+    struct wlr_output_mode *mode;
+    wl_list_for_each(mode, &output->modes, link) {
+        if (mode->width != width || mode->height != height) {
+            continue;
+        }
+        if (refresh_mhz > 0) {
+            if (abs(mode->refresh - refresh_mhz) <= MJC_REFRESH_TOLERANCE_MHZ) {
+                return mode;
+            }
+        } else if (best == NULL || mode->refresh > best->refresh) {
+            best = mode;
+        }
+    }
+    return best;
+}
+
+bool mjc_output_set_mode(mjc_server *server, int width, int height, int refresh_mhz) {
+    struct wlr_output *output = first_output(server);
+    if (output == NULL || width <= 0 || height <= 0) {
+        return false;
+    }
+    struct wlr_output_state state;
+    wlr_output_state_init(&state);
+    if (wl_list_empty(&output->modes)) {
+        wlr_output_state_set_custom_mode(&state, width, height, refresh_mhz);
+    } else {
+        struct wlr_output_mode *mode = find_mode(output, width, height, refresh_mhz);
+        if (mode == NULL) {
+            wlr_output_state_finish(&state);
+            return false;
+        }
+        wlr_output_state_set_mode(&state, mode);
+    }
+    /* test first: a mode the backend refuses must not leave the screen without a picture */
+    bool ok = wlr_output_test_state(output, &state) && wlr_output_commit_state(output, &state);
+    wlr_output_state_finish(&state);
+    if (ok) {
+        server->output_w = output->width;
+        server->output_h = output->height;
+    }
+    return ok;
+}
+
 int mjc_spawn(mjc_server *server, const char *command) {
     pid_t pid = fork();
     if (pid < 0) {

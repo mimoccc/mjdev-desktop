@@ -81,6 +81,8 @@ private const val BLUR_NEUTRAL = 1.0f
  *   {"cmd":"move","id":1,"x":100,"y":100}          // move a window to absolute position
  *   {"cmd":"blur","id":3,"enabled":true}           // blur whatever is below any window
  *   {"cmd":"blur-config","passes":3,"radius":5}    // optional: noise, brightness, contrast, saturation
+ *   {"cmd":"list-modes"}                           // current + listed modes of the main screen
+ *   {"cmd":"set-mode","width":1920,"height":1080,"refresh":60000} // refresh in mHz, 0 = fastest
  *
  * Events (only for subscribed clients):
  *   {"event":"window-opened","window":{...}}
@@ -296,6 +298,22 @@ class IpcServer(
                         mjc_view_set_blur(info.ptr, enabled)
                     }
                 }
+
+            "list-modes" -> {
+                val modes = OutputModes.describe(c.server)
+                ok { modes.forEach { (key, value) -> put(key, value) } }
+            }
+
+            "set-mode" -> {
+                val width = request[OutputModes.KEY_WIDTH]?.jsonPrimitive?.int ?: return error("missing width")
+                val height = request[OutputModes.KEY_HEIGHT]?.jsonPrimitive?.int ?: return error("missing height")
+                val refresh = request[OutputModes.KEY_REFRESH]?.jsonPrimitive?.int ?: 0
+                if (OutputModes.set(c.server, width, height, refresh)) {
+                    ok { }
+                } else {
+                    error("mode ${width}x$height not available")
+                }
+            }
 
             "blur-config" ->
                 if (!mjc_blur_supported()) {

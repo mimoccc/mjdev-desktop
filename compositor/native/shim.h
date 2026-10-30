@@ -81,6 +81,15 @@ const char *mjc_socket_name(mjc_server *server);      /* WAYLAND_DISPLAY */
 const char *mjc_xwayland_display(mjc_server *server); /* DISPLAY or NULL */
 void mjc_output_size(mjc_server *server, int *width, int *height);
 
+/* screen modes of the first output (the main screen); refresh in mHz.
+ * nested backends (x11/wayland) list no modes and take any size as a custom mode */
+int mjc_output_mode_count(mjc_server *server);
+bool mjc_output_mode(mjc_server *server, int index, int *width, int *height, int *refresh_mhz);
+bool mjc_output_current_mode(mjc_server *server, int *width, int *height, int *refresh_mhz);
+/* switches the first output; refresh_mhz 0 picks the fastest listed refresh of that size.
+ * false when no output, no such mode, or the backend refuses it (nothing is changed then) */
+bool mjc_output_set_mode(mjc_server *server, int width, int height, int refresh_mhz);
+
 /* process spawning (inherits WAYLAND_DISPLAY/DISPLAY), returns pid or -1 */
 int mjc_spawn(mjc_server *server, const char *command);
 

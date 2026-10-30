@@ -53,6 +53,8 @@ import org.psippr.desktop.managers.theme.ThemeManager
 import org.psippr.desktop.managers.translations.ITranslator
 import org.psippr.desktop.managers.volume.IVolumeManager
 import org.psippr.desktop.managers.volume.VolumeManager
+import org.psippr.desktop.managers.display.DisplayManager
+import org.psippr.desktop.managers.display.IDisplayManager
 import java.awt.Desktop
 import java.awt.Toolkit
 import java.io.File
@@ -283,6 +285,7 @@ class DesktopContext(
         IRemoteDesktopManager::class -> RemoteDesktopManager(this)
         IVolumeManager::class -> VolumeManager(this)
         IPluginManager::class -> PluginManager(this)
+        IDisplayManager::class -> DisplayManager(this)
         else -> createEmptyManager(cls)
     }
 
