@@ -30,16 +30,22 @@ private object BluetoothLabels {
     const val ADAPTER = "Adapter"
     const val POWER = "Bluetooth on"
     const val DEVICES = "Devices"
-    const val NONE = "No devices found. Pair a device with the system tools first."
+    // old: sent the user to other tools, the page itself could not find new devices
+//    const val NONE = "No devices found. Pair a device with the system tools first."
+    const val NONE = "No devices found yet."
+    const val SEARCHING = "Searching for devices nearby…"
+    const val OFF = "Switch bluetooth on to see devices."
     const val PAIRED = " (paired)"
+    const val NEW = " (new)"
 }
 
 /** Period in milliseconds between two reads of the bluetooth state. */
 private const val REFRESH_MS = 5_000L
 
 /**
- * Control center page for bluetooth: switch the adapter on or off and connect or disconnect the
- * known devices. Hidden when the machine has no bluetooth adapter.
+ * Control center page for bluetooth: switch the adapter on or off, search for devices nearby
+ * while it is on, and connect or disconnect them (a new device is paired on its first connect).
+ * Hidden when the machine has no bluetooth adapter.
  */
 @Suppress("FunctionName")
 fun BluetoothSettingsPage(context: IDesktopContext) = ControlCenterPage(
@@ -60,10 +66,26 @@ fun BluetoothSettingsPage(context: IDesktopContext) = ControlCenterPage(
         powered = manager.isBluetoothPowered
         devices = manager.bthNetworks.values.sortedWith(compareBy({ !it.connected }, { it.name }))
     }
+    // old: only re-read the devices bluez already knew, a new device never showed up
+//    LaunchedEffect(Unit) {
+//        while (isActive) {
+//            reload()
+//            delay(REFRESH_MS)
+//        }
+//    }
+    var searching by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         while (isActive) {
             reload()
-            delay(REFRESH_MS)
+            if (powered && !busy) {
+                // a search blocks for its whole duration, the list refreshes right after it
+                searching = true
+                withContext(Dispatchers.Default) { manager.scanBluetooth() }
+                searching = false
+                reload()
+            } else {
+                delay(REFRESH_MS)
+            }
         }
     }
     SettingsPageColumn {
@@ -83,12 +105,20 @@ fun BluetoothSettingsPage(context: IDesktopContext) = ControlCenterPage(
             )
         }
         SettingsSection(title = BluetoothLabels.DEVICES) {
-            if (devices.isEmpty()) {
-                SettingsInfoRow(label = BluetoothLabels.NONE, value = "")
+            // old: one fixed hint, also while switched off or searching
+//            if (devices.isEmpty()) {
+//                SettingsInfoRow(label = BluetoothLabels.NONE, value = "")
+//            }
+            when {
+                !powered -> SettingsInfoRow(label = BluetoothLabels.OFF, value = "")
+                searching -> SettingsInfoRow(label = BluetoothLabels.SEARCHING, value = "")
+                devices.isEmpty() -> SettingsInfoRow(label = BluetoothLabels.NONE, value = "")
             }
             devices.forEach { device ->
                 SettingsSwitchRow(
-                    label = device.name + if (device.paired) BluetoothLabels.PAIRED else "",
+                    // old: new devices had no mark, switching one on only tried to connect it
+//                    label = device.name + if (device.paired) BluetoothLabels.PAIRED else "",
+                    label = device.name + if (device.paired) BluetoothLabels.PAIRED else BluetoothLabels.NEW,
                     checked = device.connected,
                     enabled = powered && !busy,
                     onCheckedChange = { connect ->

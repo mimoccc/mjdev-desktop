@@ -61,30 +61,45 @@ class ConnectivityManagerLinux(
             return getWifiNetworks().associateBy { wi -> wi.name }.toMutableMap()
         }
 
+    // old: bluetoothctl without a timeout (hung the page while bluetoothd was unreachable) and
+    // every nameless beacon of a scan listed under its address
+//    override val bthNetworks: MutableMap<String, BthDevice>
+//        get() {
+//            val connected = bluetoothAddresses(*CMD_BTH_CONNECTED)
+//            val paired = bluetoothAddresses(*CMD_BTH_PAIRED)
+//            return Shell
+//                .executeAndReadLines(CMD_BLUETOOTHCTL, *CMD_BTH_DEVICES)
+//                .mapNotNull { line -> BTH_LINE_REGEX.matchEntire(line.trim()) }
+//                .associate { match ->
+//                    val address = match.groupValues[1]
+//                    address to
+//                        BthDevice(
+//                            name = match.groupValues[2].ifBlank { address },
+//                            address = address,
+//                            connected = address in connected,
+//                            paired = address in paired,
+//                        )
+//                }.toMutableMap()
+//        }
+//
+//    override val isBluetoothPowered: Boolean
+//        get() =
+//            Shell
+//                .executeAndReadLines(CMD_BLUETOOTHCTL, CMD_BTH_SHOW)
+//                .any { it.trim().startsWith(BTH_POWERED_PREFIX) && it.contains(BTH_YES) }
+
     override val bthNetworks: MutableMap<String, BthDevice>
         get() {
-            val connected = bluetoothAddresses(*CMD_BTH_CONNECTED)
-            val paired = bluetoothAddresses(*CMD_BTH_PAIRED)
-            return Shell
-                .executeAndReadLines(CMD_BLUETOOTHCTL, *CMD_BTH_DEVICES)
-                .mapNotNull { line -> BTH_LINE_REGEX.matchEntire(line.trim()) }
-                .associate { match ->
-                    val address = match.groupValues[1]
-                    address to
-                        BthDevice(
-                            name = match.groupValues[2].ifBlank { address },
-                            address = address,
-                            connected = address in connected,
-                            paired = address in paired,
-                        )
-                }.toMutableMap()
+            val connected = BluetoothctlOutput.addresses(bluetoothctl(*CMD_BTH_CONNECTED))
+            val paired = BluetoothctlOutput.addresses(bluetoothctl(*CMD_BTH_PAIRED))
+            return BluetoothctlOutput
+                .devices(bluetoothctl(*CMD_BTH_DEVICES), connected, paired)
+                .associateBy { device -> device.address }
+                .toMutableMap()
         }
 
     override val isBluetoothPowered: Boolean
-        get() =
-            Shell
-                .executeAndReadLines(CMD_BLUETOOTHCTL, CMD_BTH_SHOW)
-                .any { it.trim().startsWith(BTH_POWERED_PREFIX) && it.contains(BTH_YES) }
+        get() = BluetoothctlOutput.isPowered(bluetoothctl(CMD_BTH_SHOW))
 
     override fun setDeviceConnected(
         device: String,
@@ -133,21 +148,64 @@ class ConnectivityManagerLinux(
      * Powers the adapter, lifting an rfkill soft block first (bluez refuses to power a blocked
      * adapter) and retrying while bluez is still enabling the freshly unblocked adapter.
      */
+    // old: bluetoothctl without a timeout, a hanging call froze the switch
+//    override fun setBluetoothPowered(powered: Boolean): Result<Boolean> {
+//        if (powered) succeeded(CMD_RFKILL, RFKILL_UNBLOCK, RFKILL_BLUETOOTH)
+//        return retrying(BTH_POWER_ATTEMPTS, BTH_POWER_RETRY_MS) {
+//            succeeded(CMD_BLUETOOTHCTL, "power", if (powered) BTH_ON else BTH_OFF)
+//        }
+//    }
     override fun setBluetoothPowered(powered: Boolean): Result<Boolean> {
         if (powered) succeeded(CMD_RFKILL, RFKILL_UNBLOCK, RFKILL_BLUETOOTH)
         return retrying(BTH_POWER_ATTEMPTS, BTH_POWER_RETRY_MS) {
-            succeeded(CMD_BLUETOOTHCTL, "power", if (powered) BTH_ON else BTH_OFF)
+            bluetoothctlSucceeded(BTH_TIMEOUT_S, BTH_POWER, if (powered) BTH_ON else BTH_OFF)
         }
     }
 
+    // discovery runs for BTH_SCAN_S seconds: bluetoothctl's own timeout ends the scan, the outer
+    // limit only guards against a hanging bluetoothd
+    override fun scanBluetooth(): Result<Boolean> =
+        bluetoothctlSucceeded(BTH_SCAN_LIMIT_S, BTH_TIMEOUT_OPTION, BTH_SCAN_S, BTH_SCAN, BTH_ON)
+
+    // old: connect only, a device found by a scan (not paired yet) could never be connected
+//    override fun setBluetoothDeviceConnected(
+//        address: String,
+//        connected: Boolean,
+//    ): Result<Boolean> = succeeded(
+//        CMD_BLUETOOTHCTL,
+//        if (connected) "connect" else "disconnect",
+//        address,
+//    )
+
+    /**
+     * Connects or disconnects [address]. A device not paired yet is paired and trusted first;
+     * trusted devices also reconnect by themselves when they come back in range.
+     */
     override fun setBluetoothDeviceConnected(
         address: String,
         connected: Boolean,
-    ): Result<Boolean> = succeeded(
-        CMD_BLUETOOTHCTL,
-        if (connected) "connect" else "disconnect",
-        address,
-    )
+    ): Result<Boolean> {
+        if (!connected) return bluetoothctlSucceeded(BTH_TIMEOUT_S, BTH_DISCONNECT, address)
+        if (address !in BluetoothctlOutput.addresses(bluetoothctl(*CMD_BTH_PAIRED))) {
+            val paired = bluetoothctlSucceeded(BTH_CONNECT_TIMEOUT_S, BTH_AGENT_OPTION, BTH_AGENT, BTH_PAIR, address)
+            if (!paired.getOrDefault(false)) return paired
+            bluetoothctlSucceeded(BTH_TIMEOUT_S, BTH_TRUST, address)
+        }
+        return bluetoothctlSucceeded(BTH_CONNECT_TIMEOUT_S, BTH_CONNECT, address)
+    }
+
+    /**
+     * bluetoothctl answer lines. The coreutils limit kills a call an unreachable bluetoothd would
+     * block forever; bluetoothctl's own --timeout is not used, it always waits its full length.
+     */
+    private fun bluetoothctl(vararg args: String): List<String> =
+        Shell.executeAndReadLines(CMD_TIMEOUT, BTH_TIMEOUT_S, CMD_BLUETOOTHCTL, *args)
+
+    /** Runs bluetoothctl for at most [timeoutSeconds] and reports whether it exited with 0. */
+    private fun bluetoothctlSucceeded(
+        timeoutSeconds: String,
+        vararg args: String,
+    ): Result<Boolean> = succeeded(CMD_TIMEOUT, timeoutSeconds, CMD_BLUETOOTHCTL, *args)
 
     private fun bluetoothAddresses(vararg args: String): Set<String> = Shell
         .executeAndReadLines(CMD_BLUETOOTHCTL, *args)
@@ -259,6 +317,36 @@ class ConnectivityManagerLinux(
         private const val BTH_YES = "yes"
         private const val BTH_ON = "on"
         private const val BTH_OFF = "off"
+
+        /** coreutils command killing a call that runs longer than its limit (exit code 124). */
+        private const val CMD_TIMEOUT = "timeout"
+
+        /** bluetoothctl option making a scan last a given number of seconds. */
+        private const val BTH_TIMEOUT_OPTION = "--timeout"
+
+        /** Seconds a plain bluetoothctl query or switch may take. */
+        private const val BTH_TIMEOUT_S = "5"
+
+        /** Seconds a pair or connect may take (the device answers slowly). */
+        private const val BTH_CONNECT_TIMEOUT_S = "20"
+
+        /** Seconds one device search runs. */
+        private const val BTH_SCAN_S = "8"
+
+        /** Seconds after which a device search is killed (search time plus start up). */
+        private const val BTH_SCAN_LIMIT_S = "15"
+
+        /** bluetoothctl option registering a pairing agent for the call. */
+        private const val BTH_AGENT_OPTION = "--agent"
+
+        /** Agent that pairs without asking for a PIN (headphones, speakers, mice). */
+        private const val BTH_AGENT = "NoInputNoOutput"
+        private const val BTH_POWER = "power"
+        private const val BTH_SCAN = "scan"
+        private const val BTH_PAIR = "pair"
+        private const val BTH_TRUST = "trust"
+        private const val BTH_CONNECT = "connect"
+        private const val BTH_DISCONNECT = "disconnect"
 
         /** Power on tries while bluez enables a just unblocked adapter (answers Busy meanwhile). */
         private const val BTH_POWER_ATTEMPTS = 10

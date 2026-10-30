@@ -50,6 +50,12 @@ interface IConnectivityManager : IDelegate {
     /** Switches the bluetooth adapter on or off; no-op where unsupported. */
     fun setBluetoothPowered(powered: Boolean): Result<Boolean> = Result.success(false)
 
+    /**
+     * Searches for bluetooth devices around for a few seconds (blocking), so devices never seen
+     * before show up in [bthNetworks]; no-op where unsupported.
+     */
+    fun scanBluetooth(): Result<Boolean> = Result.success(false)
+
     /** Connects or disconnects the bluetooth device with [address]; no-op where unsupported. */
     fun setBluetoothDeviceConnected(
         address: String,
