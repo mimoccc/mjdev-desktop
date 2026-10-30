@@ -48,6 +48,13 @@ class LoginSessionIconsTest {
         }
     }
 
+    /** Regression: the black text logo hid the session switch on the dark login screen. */
+    @Test
+    fun darkBackgroundLogoWinsOverPlainTextLogo() {
+        val names = SessionIconName.entries
+        assertTrue(names.indexOf(SessionIconName.LogoTextDarkSvg) < names.indexOf(SessionIconName.LogoTextSvg))
+    }
+
     @Test
     fun sessionWithoutLogoGetsVectorIcon() {
         assertEquals(Icons.Filled.DesktopWindows, LoginSessionIcons.resolve(UNKNOWN_ID))

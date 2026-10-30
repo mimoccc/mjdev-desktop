@@ -20,6 +20,13 @@ enum class SessionIconName(
     /** `<name>-logo.png` */
     LogoPng("-logo.png"),
 
+    /**
+     * `<name>-logo-text-dark.svg` (e.g. `gnome-logo-text-dark.svg`): the light logo made for dark
+     * backgrounds, tried first because the plain `gnome-logo-text.svg` is black and invisible on
+     * the dark login screen (the session switch looked missing).
+     */
+    LogoTextDarkSvg("-logo-text-dark.svg"),
+
     /** `<name>-logo-text.svg` (e.g. `gnome-logo-text.svg`) */
     LogoTextSvg("-logo-text.svg"),
 }
