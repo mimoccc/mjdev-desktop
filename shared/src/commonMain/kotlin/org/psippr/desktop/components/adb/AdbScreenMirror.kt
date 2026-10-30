@@ -14,6 +14,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import com.sun.jna.Platform.isAndroid
 import dadb.Dadb
+import dadb.adbserver.AdbServer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,6 +23,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.psippr.desktop.components.adb.DeviceState.Companion.rememberDeviceState
 import org.psippr.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.psippr.desktop.context.LocalDesktopContext
 import org.psippr.desktop.extensions.decodeImage
 
 @Preview
@@ -35,6 +37,7 @@ fun AdbScreenMirror(
         rememberDeviceState(
             refreshInterval = refreshInterval,
             scope = scope,
+            allowedIds = LocalDesktopContext.current.devicesManager::allowedIds,
         ),
 ) = withDesktopContext {
     if (isAndroid()) return@withDesktopContext
@@ -72,10 +75,18 @@ fun AdbScreenMirror(
     }
 }
 
+/**
+ * Mirrors the screen of an allowed adb device.
+ *
+ * @param allowedIds ids of the devices the user allowed (Connect on the question, or remembered
+ * and not forgotten); only their adb serials are mirrored. Empty by default: nothing is mirrored
+ * unless the caller says which devices are allowed.
+ */
 class DeviceState(
     private val scope: CoroutineScope,
     private val refreshInterval: Long,
     private val reconnectInterval: Long = 1000L,
+    private val allowedIds: () -> List<String> = { emptyList() },
 ) {
     var imageBitmap by mutableStateOf<ImageBitmap?>(null)
     var error by mutableStateOf<String?>(null)
@@ -91,10 +102,23 @@ class DeviceState(
         // dispatcher — on the Compose Main dispatcher it freezes the whole desktop.
         job =
             scope.launch(Dispatchers.IO) {
+                // round robin over the allowed serials, so an unplugged remembered device does not
+                // block the next one
+                var attempt = 0
                 while (isActive) {
+                    // old: connected to any device, even a dismissed or forgotten one
+//                    val dadb =
+//                        try {
+//                            Dadb.discover()
+//                        } catch (e: Exception) {
+//                            error = e.message
+//                            null
+//                        }
+                    val serials = allowedSerials()
+                    val serial = serials.getOrNull(attempt++ % serials.size.coerceAtLeast(1))
                     val dadb =
                         try {
-                            Dadb.discover()
+                            serial?.let(::connect)
                         } catch (e: Exception) {
                             error = e.message
                             null
@@ -110,7 +134,8 @@ class DeviceState(
                     isConnecting = false
                     error = null
                     try {
-                        while (isActive) {
+                        // stops at once when the device is forgotten or no longer allowed
+                        while (isActive && serial in allowedSerials()) {
                             val stream = dadb.open("exec:screencap -p")
                             val bytes = stream.source.readByteArray()
                             stream.close()
@@ -135,6 +160,14 @@ class DeviceState(
                 }
             }
     }
+
+    /** Adb serials of the allowed devices (ids of other providers are skipped). */
+    private fun allowedSerials(): List<String> = allowedIds()
+        .filter { it.startsWith(ADB_ID_PREFIX) }
+        .map { it.removePrefix(ADB_ID_PREFIX) }
+
+    /** Connects through the adb server to the device with [serial] only. */
+    private fun connect(serial: String): Dadb = AdbServer.createDadb(deviceQuery = TRANSPORT_QUERY + serial)
 
     fun stop() {
         job?.cancel()
@@ -163,12 +196,29 @@ class DeviceState(
     }
 
     companion object {
+        /** Prefix of the ids the adb devices provider gives its devices, followed by the serial. */
+        private const val ADB_ID_PREFIX = "adb:"
+
+        /** Adb server query selecting the device whose serial follows. */
+        private const val TRANSPORT_QUERY = "host:transport:"
+
+        // old: without the allowed devices
+//        @Composable
+//        fun rememberDeviceState(
+//            refreshInterval: Long = 200L,
+//            scope: CoroutineScope = rememberCoroutineScope(),
+//        ) = remember {
+//            DeviceState(scope, refreshInterval)
+//        }
+
+        /** Remembers a mirror state that mirrors only the devices of [allowedIds]. */
         @Composable
         fun rememberDeviceState(
             refreshInterval: Long = 200L,
             scope: CoroutineScope = rememberCoroutineScope(),
+            allowedIds: () -> List<String> = { emptyList() },
         ) = remember {
-            DeviceState(scope, refreshInterval)
+            DeviceState(scope, refreshInterval, allowedIds = allowedIds)
         }
     }
 }

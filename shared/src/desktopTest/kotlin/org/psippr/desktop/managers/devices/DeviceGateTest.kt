@@ -62,6 +62,19 @@ class DeviceGateTest {
         assertEquals(listOf(phone), gate.toAsk(listOf(phone)), "asked again after replug")
     }
 
+    /** Regression: the screen mirror showed a dismissed device; only Connect or Remember allow it. */
+    @Test
+    fun onlyConnectedOrRememberedDevicesAreAllowed() {
+        val gate = DeviceGate(emptyList<KnownDevice>())
+        gate.toAsk(listOf(phone, tablet))
+        assertTrue(gate.allowedIds().isEmpty(), "nothing allowed before the answer")
+        gate.dismiss(tablet.id)
+        gate.connect(phone, remember = true)
+        assertEquals(listOf(phone.id), gate.allowedIds())
+        gate.forget(phone.id)
+        assertTrue(gate.allowedIds().isEmpty(), "not allowed after Forget")
+    }
+
     @Test
     fun unpluggedRememberedDeviceIsListedForForget() {
         val gate = DeviceGate(emptyList<KnownDevice>())

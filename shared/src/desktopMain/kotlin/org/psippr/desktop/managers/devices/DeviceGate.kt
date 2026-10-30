@@ -27,6 +27,14 @@ class DeviceGate(
     @Synchronized
     fun rememberedIds(): List<String> = known.values.filterNot { it.forgotten }.map { it.id }
 
+    /**
+     * Ids of the devices the user allowed, plugged in or not: remembered and not forgotten, or
+     * connected this session. Used by features that talk to a device on their own (the screen
+     * mirror), so they never touch a dismissed, forgotten or not yet answered device.
+     */
+    @Synchronized
+    fun allowedIds(): List<String> = (rememberedIds() + connected).distinct()
+
     /** The devices of [devices] the user allowed. */
     @Synchronized
     fun visible(devices: List<ConnectedDevice>): List<ConnectedDevice> = devices.filter {

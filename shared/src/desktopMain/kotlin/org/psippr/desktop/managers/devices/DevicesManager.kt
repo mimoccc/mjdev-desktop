@@ -76,6 +76,8 @@ class DevicesManager(
             ),
     )
 
+    override fun allowedIds(): List<String> = gate.allowedIds()
+
     override fun startWatching(scope: CoroutineScope) {
         scope.launch(Dispatchers.IO) {
             while (isActive) {

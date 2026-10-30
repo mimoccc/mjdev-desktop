@@ -14,6 +14,12 @@ interface IDevicesManager : IDelegate {
     fun devices(): List<ConnectedDevice>
 
     /**
+     * Ids of the devices the user allowed (connected via the question or remembered, not
+     * forgotten), plugged in or not; cheap, no device is asked. Empty where unsupported.
+     */
+    fun allowedIds(): List<String> = emptyList()
+
+    /**
      * Watches for newly connected devices in [scope] and asks about each unknown one with a
      * notification (Connect / Dismiss, "Remember device"); no-op where unsupported.
      */
