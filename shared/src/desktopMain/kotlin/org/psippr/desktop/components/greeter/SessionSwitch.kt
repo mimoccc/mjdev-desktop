@@ -16,8 +16,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import org.psippr.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.psippr.desktop.helpers.greetd.LoginSession
 

@@ -47,18 +47,18 @@ private const val OTHER_ALPHA = 0.5f
 private const val SELECTED_ALPHA = 1f
 
 // old: the users were centered as a group, so the selected one sat off center
-///**
+// /**
 // * All [users] of the login screen as avatars in one horizontal, scrollable row, centered while
 // * they fit. [selected] is drawn larger and opaque and is kept scrolled into view; a click on an
 // * avatar reports its index to [onSelect].
 // */
-//@Composable
-//fun GreeterUserRow(
+// @Composable
+// fun GreeterUserRow(
 //    users: List<IUser>,
 //    selected: Int,
 //    onSelect: (index: Int) -> Unit,
 //    modifier: Modifier = Modifier,
-//) {
+// ) {
 //    val listState = rememberLazyListState()
 //    LaunchedEffect(selected) {
 //        if (selected in users.indices) listState.animateScrollToItem(selected)
@@ -82,7 +82,7 @@ private const val SELECTED_ALPHA = 1f
 //            )
 //        }
 //    }
-//}
+// }
 
 /**
  * All [users] of the login screen as avatars in one horizontal, scrollable row. [selected] is

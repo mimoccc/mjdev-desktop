@@ -2,10 +2,10 @@ package org.psippr.desktop.components.greeter
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,9 +75,9 @@ fun LoginWindow(onLoggedIn: () -> Unit) {
 //                    verticalAlignment = Alignment.CenterVertically,
 //                ) {
 //                    // old: separate user switch icon, the shown user is clicked instead now
-////                    user?.takeIf { users.size > 1 }?.let { selected ->
-////                        UserSwitch(users = users, selected = selected, onSelect = { picked -> user = picked })
-////                    }
+// //                    user?.takeIf { users.size > 1 }?.let { selected ->
+// //                        UserSwitch(users = users, selected = selected, onSelect = { picked -> user = picked })
+// //                    }
 //                    SessionSwitch(sessions = sessions, selected = session, onSelect = { picked -> session = picked })
 //                }
 //            },
