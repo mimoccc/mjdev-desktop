@@ -39,8 +39,14 @@ fun EthSettingsPage(context: IDesktopContext) = ControlCenterPage(
         if (devices.isEmpty()) {
             SettingsDeviceSection(ADAPTERS, devices.values)
         }
+        // old: connection switch and read-only details only
+//        devices.values.forEach { device ->
+//            SettingsNetDeviceSection(device, context.connectionManager)
+//        }
         devices.values.forEach { device ->
             SettingsNetDeviceSection(device, context.connectionManager)
+            // the adapter's IPv4 settings, changeable: DHCP or manual address, gateway, DNS
+            EthIpv4Section(device.name, context.connectionManager)
         }
     }
 }

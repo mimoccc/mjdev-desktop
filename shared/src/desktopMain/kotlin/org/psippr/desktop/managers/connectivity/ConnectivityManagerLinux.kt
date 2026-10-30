@@ -14,6 +14,8 @@ import okio.Path.Companion.toPath
 import org.psippr.desktop.context.IDesktopContext
 import org.psippr.desktop.data.BthDevice
 import org.psippr.desktop.data.EthNetwork
+import org.psippr.desktop.data.Ipv4Settings
+import org.psippr.desktop.data.NetDetail
 import org.psippr.desktop.data.NetDevice
 import org.psippr.desktop.data.WifiNetwork
 import org.psippr.desktop.extensions.PathExt.all
@@ -38,12 +40,21 @@ class ConnectivityManagerLinux(
                     e.value.isBluetooth
                 }.toMutableMap()
 
+    // old: NetDevice.isEth looks for a sysfs "ethernet" folder the kernel never creates, so no
+    // wired adapter was ever found and the Ethernet tab never showed
+//    override val ethDevices: MutableMap<String, NetDevice>
+//        get() =
+//            allDevices
+//                .filter { e ->
+//                    e.value.isEth
+//                }.toMutableMap()
+
+    /** Wired adapters as NetworkManager reports them (type ethernet, managed by it). */
     override val ethDevices: MutableMap<String, NetDevice>
-        get() =
-            allDevices
-                .filter { e ->
-                    e.value.isEth
-                }.toMutableMap()
+        get() {
+            val names = NmcliOutput.ethernetDevices(Shell.executeAndReadLines(CMD_NMCLI, *CMD_NMCLI_DEVICE_TYPES))
+            return allDevices.filterKeys { name -> name in names }.toMutableMap()
+        }
 
     override val wifiDevices: MutableMap<String, NetDevice>
         get() =
@@ -110,6 +121,28 @@ class ConnectivityManagerLinux(
         if (connected) "connect" else "disconnect",
         device,
     )
+
+    override fun ipv4Settings(device: String): Ipv4Settings? {
+        val connection = deviceDetails(device)[NetDetail.Connection.key] ?: return null
+        val lines =
+            Shell.executeAndReadLines(
+                CMD_NMCLI,
+                "-t",
+                "-f",
+                NmcliOutput.IPV4_FIELDS,
+                "connection",
+                "show",
+                connection,
+            )
+        return if (lines.isEmpty()) null else NmcliOutput.ipv4(connection, lines)
+    }
+
+    // modify the profile, then bring it up again so the new settings take effect at once
+    override fun applyIpv4Settings(settings: Ipv4Settings): Result<Boolean> {
+        val modified = succeeded(CMD_NMCLI, *NmcliOutput.modifyArgs(settings).toTypedArray())
+        if (!modified.getOrDefault(false)) return modified
+        return succeeded(CMD_NMCLI, "connection", "up", settings.connection)
+    }
 
     override fun deviceDetails(device: String): Map<String, String> {
         val result = linkedMapOf<String, String>()
@@ -359,6 +392,9 @@ class ConnectivityManagerLinux(
             "GENERAL.STATE,GENERAL.CONNECTION,IP4.ADDRESS,IP4.GATEWAY,IP4.DNS,GENERAL.HWADDR"
         private const val NMCLI_EMPTY = "--"
         val CMD_NMCLI_RESCAN = arrayOf("dev", "wifi", "rescan")
+
+        /** Device list with type and state, read by [NmcliOutput.ethernetDevices]. */
+        val CMD_NMCLI_DEVICE_TYPES = arrayOf("-t", "-f", "DEVICE,TYPE,STATE", "device")
         val CMD_NMCLI_GET_NETWORKS = arrayOf("-t", "-f", "ALL", "dev", "wifi")
     }
 

@@ -2,6 +2,7 @@ package org.psippr.desktop.managers.connectivity
 
 import org.psippr.desktop.data.BthDevice
 import org.psippr.desktop.data.EthNetwork
+import org.psippr.desktop.data.Ipv4Settings
 import org.psippr.desktop.data.NetDevice
 import org.psippr.desktop.data.WifiNetwork
 import org.psippr.desktop.managers.base.IDelegate
@@ -46,6 +47,12 @@ interface IConnectivityManager : IDelegate {
      * system field name, see [org.psippr.desktop.data.NetDetail]; empty when unsupported.
      */
     fun deviceDetails(device: String): Map<String, String> = emptyMap()
+
+    /** IPv4 settings of the connection [device] uses, null when it has none or it is unsupported. */
+    fun ipv4Settings(device: String): Ipv4Settings? = null
+
+    /** Applies [settings] to their connection and brings it up again; false when refused. */
+    fun applyIpv4Settings(settings: Ipv4Settings): Result<Boolean> = Result.success(false)
 
     /** Switches the bluetooth adapter on or off; no-op where unsupported. */
     fun setBluetoothPowered(powered: Boolean): Result<Boolean> = Result.success(false)
