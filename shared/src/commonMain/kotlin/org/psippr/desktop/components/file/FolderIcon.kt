@@ -45,6 +45,8 @@ fun FolderIcon(
     onDragEnd: () -> Unit = {},
     onContextMenuClick: () -> Unit = {},
     onClick: () -> Unit = {},
+    // a double click on the icon (e.g. open the file)
+    onDoubleClick: () -> Unit = {},
 ) = withDesktopContext {
     val iconName =
         remember(path) {
@@ -60,6 +62,7 @@ fun FolderIcon(
         modifier = modifier,
         dragEnabled = dragEnabled,
         onClick = onClick,
+        onDoubleTap = onDoubleClick,
         onContextMenuClick = onContextMenuClick,
         onDragStart = onDragStart,
         onDragEnd = onDragEnd,

@@ -21,12 +21,16 @@ import org.psippr.desktop.components.appsmenu.AppsMenuState.Companion.rememberAp
 import org.psippr.desktop.components.appsmenu.AppsMenuWindow
 import org.psippr.desktop.components.controlcenter.ControlCenterWindow
 import org.psippr.desktop.components.desktop.Desktop
+import org.psippr.desktop.components.desktop.DesktopMenuItem
 import org.psippr.desktop.components.desktop.widgets.PluginWidgets
 import org.psippr.desktop.components.desktoppanel.DesktopPanelWindow
 import org.psippr.desktop.components.dockbar.DockBarWindow
+import org.psippr.desktop.components.file.DesktopIconsSort
 import org.psippr.desktop.components.greeter.GreeterWindow
 import org.psippr.desktop.components.info.InfoWindow
 import org.psippr.desktop.components.installer.InstallerWindow
+import org.psippr.desktop.components.menu.ContextMenu
+import org.psippr.desktop.components.menu.base.ContextMenuState.Companion.rememberContextMenuState
 import org.psippr.desktop.components.notifications.NotificationWindow
 import org.psippr.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import org.psippr.desktop.components.tooltip.TooltipState
@@ -163,6 +167,7 @@ fun MainWindow() = withDesktopContext {
     LaunchedEffect(menuState.isVisible) {
         appsMenuState.isVisible = menuState.isVisible
     }
+    val desktopMenu = rememberContextMenuState(*DesktopMenuItem.entries.map { item -> item.label }.toTypedArray())
     DesktopWindow(
         panelState = panelState,
         controlCenterState = controlCenterState,
@@ -194,8 +199,22 @@ fun MainWindow() = withDesktopContext {
                 // desktop click = click outside every surface -> dismiss menu + control center
                 desktopState.dismissTransients()
             },
-            onRightMouseClick = {
-//                contextMenuState.show()
+            // old: no menu
+//            onRightMouseClick = {
+// //                contextMenuState.show()
+//            },
+            onRightMouseClick = { desktopMenu.show() },
+        )
+        // the desktop's right-click menu (at the pointer)
+        ContextMenu(
+            backgroundColor = backgroundColor,
+            textColor = textColor,
+            contextMenuState = desktopMenu,
+            onMenuItemClick = { label ->
+                when (DesktopMenuItem.of(label)) {
+                    DesktopMenuItem.SORT_ICONS -> DesktopIconsSort.request()
+                    null -> Unit
+                }
             },
         )
     }

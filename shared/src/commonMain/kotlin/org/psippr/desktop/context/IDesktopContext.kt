@@ -131,6 +131,12 @@ abstract class IDesktopContext : IDisposable {
 
     abstract suspend fun open(what: Any?)
 
+    /**
+     * Opens the file or folder [path] with the app associated to its type, when one is; tells the
+     * user with a notification otherwise. Returns at once. No-op where unsupported.
+     */
+    open fun openFile(path: String) {}
+
     abstract suspend fun logOut()
 
     abstract suspend fun restart()

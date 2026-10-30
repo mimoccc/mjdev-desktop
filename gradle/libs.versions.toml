@@ -33,7 +33,10 @@ app-greeter-description = "psippr login screen, a greetd greeter replacing gdm"
 # old: no notify-send, so scripts had no standard way to show a notification
 #app-compositor-runtime-deps = "libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session bluez adb network-manager"
 # libnotify-bin: notify-send, the standard CLI to show a notification (served by the desktop)
-app-compositor-runtime-deps = "libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session bluez adb network-manager libnotify-bin"
+# old: no xdg-utils, so desktop icons could not find the app associated with a file
+#app-compositor-runtime-deps = "libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session bluez adb network-manager libnotify-bin"
+# xdg-utils: xdg-mime / xdg-open, the default app of a file type (desktop icon double click)
+app-compositor-runtime-deps = "libwlroots-0.18 xwayland libegl1 libgles2 libgbm1 libinput10 libseat1 libxkbcommon0 libgl1-mesa-dri dbus dbus-user-session bluez adb network-manager libnotify-bin xdg-utils"
 # Optional backdrop blur for compositor windows (https://github.com/wlrfx/scenefx). pkg-config names
 # tried in order, the first installed one is used (scenefx 0.2 targets wlroots 0.18). When none is
 # installed psipprc builds without blur exactly as before; the shell asks for blur per window via the

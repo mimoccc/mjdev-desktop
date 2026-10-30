@@ -5,11 +5,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
@@ -24,6 +29,7 @@ import org.psippr.desktop.components.sliding.base.VisibilityState
 import org.psippr.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
 import org.psippr.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.psippr.desktop.data.DesktopFolderItem
+import org.psippr.desktop.data.widgets.WidgetKey
 import org.psippr.desktop.extensions.Colors.alpha
 import org.psippr.desktop.extensions.Compose.preview
 import org.psippr.desktop.extensions.PathExt.cwd
@@ -65,7 +71,17 @@ fun FolderView(
         },
     ) { size ->
         val rows = max(1, ((context.containerSize.height / size.height).toInt()))
-        val columns = max(1, (files.size.div(rows)))
+        // old: rounded down, so the last icons were stacked onto each other
+//        val columns = max(1, (files.size.div(rows)))
+        val columns = IconGrid.columns(files.size, rows)
+        // "Sort icons": every icon back to its grid cell (offset zero, kept in the store), then
+        // the icons are created again so they read it
+        var layout by remember { mutableIntStateOf(0) }
+        LaunchedEffect(DesktopIconsSort.requests) {
+            if (DesktopIconsSort.requests == 0) return@LaunchedEffect
+            files.forEach { file -> widgetPositions.save(WidgetKey.Folder.of(file.path.toString()), Offset.Zero) }
+            layout++
+        }
         Box(
             modifier = modifier,
             contentAlignment = Alignment.TopStart,
@@ -85,24 +101,27 @@ fun FolderView(
             ) {
                 files.forEach { file ->
                     item {
-                        FolderIcon(
-                            modifier =
-                                Modifier
-                                    .padding(iconSpacing),
-                            path = file.path,
-                            customName = file.customName,
-                            iconSize = iconSize,
-                            onDragStart = {
-                                runAsync {
-                                    guideVisibleState.show()
-                                }
-                            },
-                            onDragEnd = {
-                                runAsync {
-                                    guideVisibleState.hide()
-                                }
-                            },
-                        )
+                        key(layout) {
+                            FolderIcon(
+                                modifier =
+                                    Modifier
+                                        .padding(iconSpacing),
+                                path = file.path,
+                                customName = file.customName,
+                                iconSize = iconSize,
+                                onDragStart = {
+                                    runAsync {
+                                        guideVisibleState.show()
+                                    }
+                                },
+                                onDragEnd = {
+                                    runAsync {
+                                        guideVisibleState.hide()
+                                    }
+                                },
+                                onDoubleClick = { context.openFile(file.path.toString()) },
+                            )
+                        }
                     }
                 }
             }

@@ -18,6 +18,7 @@ import org.psippr.desktop.data.Category
 import org.psippr.desktop.data.User
 import org.psippr.desktop.extensions.Compose.isDesign
 import org.psippr.desktop.helpers.application.ApplicationScope
+import org.psippr.desktop.helpers.files.FileOpener
 import org.psippr.desktop.helpers.image.ImageLoader.asyncImageLoader
 import org.psippr.desktop.helpers.system.shell.Shell
 import org.psippr.desktop.interfaces.IApp
@@ -104,6 +105,13 @@ class DesktopContext(
 
     override suspend fun open(what: Any?) {
         open(what.toString())
+    }
+
+    override fun openFile(path: String) {
+        runAsync(Dispatchers.IO) {
+            val result = FileOpener.open(path)
+            if (result.message.isNotBlank()) notify(title = File(path).name, message = result.message)
+        }
     }
 
     // logged-in user, remembered once found: the process user cannot change while running, and
