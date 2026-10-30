@@ -4,12 +4,16 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
@@ -40,10 +44,15 @@ fun TooltipWindow(
     windowState: ChromeWindowState = rememberChromeWindowState(),
 ) = withDesktopContext {
     var contentVisible by remember { mutableStateOf(false) }
+    var alignment by remember { mutableStateOf(Alignment.TopStart) }
     val item = tooltipState.value
     LaunchedEffect(item) {
         if (item != null) {
-            windowState.position = pointerPosition(cursorOffset, size, containerSize)
+            // old: only the window flipped, the bubble stayed at its left edge, 360 dp away
+//            windowState.position = pointerPosition(cursorOffset, size, containerSize)
+            val spot = pointerSpot(cursorOffset, size, containerSize)
+            alignment = spot.alignment
+            windowState.position = spot.position
             contentVisible = true
             delay(hideDelay)
             contentVisible = false
@@ -65,12 +74,15 @@ fun TooltipWindow(
             windowState.size = size
         },
     ) {
-        AnimatedVisibility(
-            visible = contentVisible,
-            enter = fadeIn(tween(fadeDuration)),
-            exit = fadeOut(tween(fadeDuration)),
-        ) {
-            Tooltip(tooltipState = tooltipState)
+        // the bubble hugs the window side facing the pointer (see TooltipSpot)
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = alignment) {
+            AnimatedVisibility(
+                visible = contentVisible,
+                enter = fadeIn(tween(fadeDuration)),
+                exit = fadeOut(tween(fadeDuration)),
+            ) {
+                Tooltip(tooltipState = tooltipState)
+            }
         }
     }
 }
@@ -94,6 +106,22 @@ private fun pointerPosition(
 //        y = y.coerceIn(0.dp, (containerSize.height - size.height).coerceAtLeast(0.dp)),
 //    )
     return TooltipPlacement.position(
+        pointerX = (pointer?.x ?: 0).dp,
+        pointerY = (pointer?.y ?: 0).dp,
+        cursorOffset = cursorOffset,
+        size = size,
+        containerSize = containerSize,
+    )
+}
+
+/** Window position and bubble alignment next to the current mouse pointer, see [TooltipPlacement.spot]. */
+private fun pointerSpot(
+    cursorOffset: DpOffset,
+    size: DpSize,
+    containerSize: DpSize,
+): TooltipSpot {
+    val pointer = runCatching { MouseInfo.getPointerInfo()?.location }.getOrNull()
+    return TooltipPlacement.spot(
         pointerX = (pointer?.x ?: 0).dp,
         pointerY = (pointer?.y ?: 0).dp,
         cursorOffset = cursorOffset,

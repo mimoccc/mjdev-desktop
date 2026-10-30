@@ -1,5 +1,6 @@
 package org.psippr.desktop.components.tooltip
 
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
@@ -22,6 +23,36 @@ object TooltipPlacement {
         x = axis(pointerX, cursorOffset.x, size.width, containerSize.width),
         y = axis(pointerY, cursorOffset.y, size.height, containerSize.height),
     )
+
+    /**
+     * Window position as [position], plus where the bubble belongs inside the window: at the side
+     * facing the pointer, so a window flipped before the pointer still shows the bubble beside it.
+     */
+    fun spot(
+        pointerX: Dp,
+        pointerY: Dp,
+        cursorOffset: DpOffset,
+        size: DpSize,
+        containerSize: DpSize,
+    ): TooltipSpot {
+        val endX = !fitsAfter(pointerX, cursorOffset.x, size.width, containerSize.width)
+        val endY = !fitsAfter(pointerY, cursorOffset.y, size.height, containerSize.height)
+        val alignment =
+            when {
+                endX && endY -> Alignment.BottomEnd
+                endX -> Alignment.TopEnd
+                endY -> Alignment.BottomStart
+                else -> Alignment.TopStart
+            }
+        return TooltipSpot(position(pointerX, pointerY, cursorOffset, size, containerSize), alignment)
+    }
+
+    private fun fitsAfter(
+        pointer: Dp,
+        offset: Dp,
+        length: Dp,
+        screen: Dp,
+    ): Boolean = pointer + offset + length <= screen
 
     // after the pointer when it fits, else before it, clamped to the screen as the last resort
     private fun axis(
