@@ -14,6 +14,9 @@ object DevicesPageDefaults {
         "Connect an Android phone or tablet with USB debugging switched on (Developer options), " +
             "then allow this computer on its screen."
 
+    /** Title of the device list. */
+    const val LIST_TITLE = "Devices"
+
     /** Shown while an action runs. */
     const val RUNNING = "Working…"
 

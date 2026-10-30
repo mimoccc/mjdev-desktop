@@ -36,6 +36,7 @@ class AdbDeviceProvider(
             provider = PROVIDER,
             name = displayName(entry, info),
             state = entry.state,
+            summary = summary(entry, info),
             info = rows(entry, info),
             actions = AdbActions.available(entry),
         )
@@ -69,6 +70,20 @@ class AdbDeviceProvider(
         add(LABEL_ID to entry.serial)
     }
 
+    // "Android 14 · 87 %, charging" for the list; the state for a device not ready
+    private fun summary(
+        entry: AdbDeviceEntry,
+        info: AdbDeviceInfo?,
+    ): String {
+        if (entry.state != DeviceState.READY) return entry.state.short
+        val parts =
+            listOfNotNull(
+                info?.androidVersion?.ifBlank { null }?.let { "$ANDROID $it" },
+                info?.batteryPercent?.let { level -> "$level$PERCENT" + if (info.charging) CHARGING else "" },
+            )
+        return parts.joinToString(SUMMARY_SEPARATOR)
+    }
+
     private fun serialOf(device: ConnectedDevice): String = device.id.removePrefix(ID_PREFIX)
 
     companion object {
@@ -93,5 +108,6 @@ class AdbDeviceProvider(
         private const val CHARGING = ", charging"
         private const val USB = "USB cable"
         private const val WIRELESS = "Wireless"
+        private const val SUMMARY_SEPARATOR = " · "
     }
 }

@@ -83,7 +83,14 @@ fun DevicesPage(context: IDesktopContext) = ControlCenterPage(
                 )
             }
         }
-        devices.forEach { device -> DeviceSection(device = device, manager = manager) }
+        // old: every device as its own open section with all its details
+//        devices.forEach { device -> DeviceSection(device = device, manager = manager) }
+        if (devices.isNotEmpty()) {
+            // the list; a click on a device opens its info, details and actions
+            SettingsSection(title = DevicesPageDefaults.LIST_TITLE) {
+                devices.forEach { device -> DeviceRow(device = device, manager = manager) }
+            }
+        }
     }
 }
 
