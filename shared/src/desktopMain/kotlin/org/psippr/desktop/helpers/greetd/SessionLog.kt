@@ -34,6 +34,15 @@ object SessionLog {
         cmd: List<String>,
     ): List<String> = SHELL + SCRIPT + SCRIPT_NAME + logName(name) + cmd
 
+    /**
+     * [wrap] as greetd's `start_session` command: greetd joins the arguments with spaces and runs
+     * them through `/bin/sh -c`, so each one is shell quoted to reach the wrapper unchanged.
+     */
+    fun greetdCmd(
+        name: String,
+        cmd: List<String>,
+    ): List<String> = wrap(name, cmd).map(ShellQuote::quote)
+
     /** Log file name part of the session [name] (`Ubuntu on Wayland` -> `ubuntu-on-wayland`). */
     fun logName(name: String): String = name.lowercase().replace(UNSAFE_CHARS, NAME_SEPARATOR).trim(NAME_SEPARATOR.single())
 }

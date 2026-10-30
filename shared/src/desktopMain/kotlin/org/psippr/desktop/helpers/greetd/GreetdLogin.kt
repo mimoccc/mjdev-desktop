@@ -41,7 +41,10 @@ object GreetdLogin {
         if (reply.type != GreetdMessageType.Success.value) fail(connection, reply)
         // old: the session's output was dropped by greetd, a failing session left no trace
 //        val start = GreetdRequest(GreetdMessageType.StartSession.value, cmd = session.cmd, env = session.env)
-        val cmd = SessionLog.wrap(session.name, session.cmd)
+        // old: greetd joins the arguments with spaces for /bin/sh -c, the unquoted wrapper script
+        // fell apart there and the session ended at once without any output
+//        val cmd = SessionLog.wrap(session.name, session.cmd)
+        val cmd = SessionLog.greetdCmd(session.name, session.cmd)
         Log.i("$LOG_TAG start_session cmd=$cmd env=${session.env}")
         val start = GreetdRequest(GreetdMessageType.StartSession.value, cmd = cmd, env = session.env)
         val started = connection.send(start)
