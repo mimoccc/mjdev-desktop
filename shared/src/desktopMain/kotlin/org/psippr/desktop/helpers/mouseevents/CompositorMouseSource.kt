@@ -76,7 +76,9 @@ class CompositorMouseSource private constructor(
         if (pointerCount++ % POINTER_SAMPLE == 0L) {
             Log.d("CompositorMouseSource: pointer ($x, $y) [#$pointerCount]")
         }
-        onEvent(Point(x, y))
+        // old: compositor pixels passed on as AWT coordinates, wrong whenever AWT scales the UI
+//        onEvent(Point(x, y))
+        onEvent(CompositorPointerScale.toAwt(x, y))
     }
 
     private fun readInt(
