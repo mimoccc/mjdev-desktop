@@ -36,3 +36,4 @@
   zip archive, and or list of publicated plugins
 - tooltips does not show correctly near tooltip event sources, as an example icons on control center
   have tooltip buble somewhere in the middle of control center window
+- icons on desktop may be display ratio scalled and clickable opening associated app on double click
