@@ -867,6 +867,14 @@ static void view_free(struct mjc_view *view) {
 /* xdg shell views                                                     */
 /* ------------------------------------------------------------------ */
 
+/* xdg-shell version offered to clients: 5 is the first with wm_capabilities. Below it GTK 4.20
+ * treats maximize and minimize as unsupported: dimmed buttons, no double-click maximize. */
+#define MJC_XDG_SHELL_VERSION 5
+
+/* window management psipprc handles for every toplevel (no window menu: none is drawn) */
+#define MJC_XDG_WM_CAPABILITIES (WLR_XDG_TOPLEVEL_WM_CAPABILITIES_MAXIMIZE | \
+    WLR_XDG_TOPLEVEL_WM_CAPABILITIES_MINIMIZE | WLR_XDG_TOPLEVEL_WM_CAPABILITIES_FULLSCREEN)
+
 static void xdg_toplevel_map(struct wl_listener *listener, void *data) {
     (void) data;
     struct mjc_view *view = wl_container_of(listener, view, map);
@@ -888,6 +896,8 @@ static void xdg_toplevel_commit(struct wl_listener *listener, void *data) {
     (void) data;
     struct mjc_view *view = wl_container_of(listener, view, commit);
     if (view->xdg_toplevel->base->initial_commit) {
+        /* tell the client which title bar actions work, before its first configure */
+        wlr_xdg_toplevel_set_wm_capabilities(view->xdg_toplevel, MJC_XDG_WM_CAPABILITIES);
         if (view->xdg_toplevel->requested.maximized) {
             mjc_view_set_maximized(view, true);
         } else {
@@ -1450,7 +1460,9 @@ bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdat
         server->layers[MJC_LAYER_OVERLAY], 16, 16, marker_hidden);
     wlr_scene_node_set_enabled(&server->inject_marker->node, false);
 
-    server->xdg_shell = wlr_xdg_shell_create(server->display, 3);
+    /* old: version 3, without wm_capabilities GTK 4.20 disabled maximize / minimize */
+    /* server->xdg_shell = wlr_xdg_shell_create(server->display, 3); */
+    server->xdg_shell = wlr_xdg_shell_create(server->display, MJC_XDG_SHELL_VERSION);
     server->new_xdg_toplevel.notify = server_new_xdg_toplevel;
     wl_signal_add(&server->xdg_shell->events.new_toplevel, &server->new_xdg_toplevel);
     server->new_xdg_popup.notify = server_new_xdg_popup;
