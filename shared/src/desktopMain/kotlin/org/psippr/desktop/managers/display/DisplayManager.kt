@@ -1,6 +1,7 @@
 package org.psippr.desktop.managers.display
 
 import org.psippr.desktop.context.IDesktopContext
+import org.psippr.desktop.helpers.compositor.CompositorRequest
 import org.psippr.desktop.helpers.compositor.CompositorSocket
 import org.psippr.desktop.managers.display.mutter.MutterDisplayBackend
 import org.psippr.desktop.managers.theme.linux.session.DesktopSession
@@ -22,9 +23,16 @@ class DisplayManager(
 
     override fun setMode(mode: DisplayMode): Result<Boolean> = backend()?.setMode(mode) ?: Result.success(false)
 
+    // a socket file alone is no compositor: a killed run leaves it behind, and taking it for one
+    // hid mutter's modes in a plain GNOME run; only a compositor that answers counts
     private fun backend(): IDisplayBackend? = when {
-        CompositorSocket.path() != null -> CompositorDisplayBackend()
+        CompositorSocket.path() != null && CompositorRequest.send(PROBE) != null -> CompositorDisplayBackend()
         DesktopSession.current().hasGnomeShell -> MutterDisplayBackend()
         else -> null
+    }
+
+    private companion object {
+        /** Cheap request telling whether a compositor answers on the socket. */
+        const val PROBE = "{\"cmd\":\"list-modes\"}"
     }
 }
