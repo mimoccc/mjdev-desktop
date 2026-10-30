@@ -66,6 +66,8 @@ fun DockBarWindow(
     onAppContextMenuClick: (IApp) -> Unit = {},
     onLanguageClick: () -> Unit = {},
     onTooltip: (item: Any?) -> Unit = {},
+    // height of the shown dock, for the strip app windows must not cover (see DesktopState)
+    onShownHeight: (height: Dp) -> Unit = {},
 ) = withDesktopContext {
     val panelHeight: (visible: Boolean) -> Dp = { visible ->
         if (visible) {
@@ -140,6 +142,10 @@ fun DockBarWindow(
     // 12px line visible" race can't happen.
     LaunchedEffect(size, position) {
         panelState.applyBounds(position, size)
+    }
+    val shownHeight = panelHeight(true)
+    LaunchedEffect(shownHeight) {
+        onShownHeight(shownHeight)
     }
 }
 

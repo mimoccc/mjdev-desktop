@@ -41,6 +41,8 @@ class DesktopState(
         val focusOnShow: Boolean,
         val raiseOnShow: Boolean,
         val onApply: (visible: Boolean) -> Unit,
+        // the strip app windows must not cover (the bar when shown), null for surfaces without one
+        val overlapStrip: () -> ScreenRect? = { null },
     )
 
     private val surfaces = linkedMapOf<SurfaceKind, Surface>()
@@ -63,8 +65,11 @@ class DesktopState(
         focusOnShow: Boolean = false,
         raiseOnShow: Boolean = false,
         onApply: (visible: Boolean) -> Unit = {},
+        overlapStrip: () -> ScreenRect? = { null },
     ) {
-        surfaces[kind] = Surface(window, bounds, revealHotspot, focusOnShow, raiseOnShow, onApply)
+        // old: surfaces had no overlap strip, nothing ever reported the bar as overlapped
+//        surfaces[kind] = Surface(window, bounds, revealHotspot, focusOnShow, raiseOnShow, onApply)
+        surfaces[kind] = Surface(window, bounds, revealHotspot, focusOnShow, raiseOnShow, onApply, overlapStrip)
         reconcile()
     }
 
@@ -148,6 +153,15 @@ class DesktopState(
         controlCenterOpen = true
         menuOpen = false // opening the control center closes the menu (symmetric with openMenu)
         reconcile()
+    }
+
+    /**
+     * The app windows on screen changed (compositor feed): the bar counts as overlapped when one
+     * of them covers its shown strip.
+     */
+    fun onAppWindows(windows: List<ScreenRect>) {
+        val strip = surfaces[SurfaceKind.Bar]?.overlapStrip?.invoke() ?: return
+        setBarOverlapped(BarOverlap.overlaps(windows, strip))
     }
 
     /** The compositor tells us whether a real window now overlaps the bar strip. */

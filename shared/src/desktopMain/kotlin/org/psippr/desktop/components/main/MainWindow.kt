@@ -6,8 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,6 +61,8 @@ fun MainWindow() = withDesktopContext {
     // but never actually raise/render.
     val uiScope = rememberCoroutineScope()
     val desktopState = remember { DesktopState(uiScope) }
+    // height of the shown dock, reported by DockBarWindow; app windows covering it hide the dock
+    var dockShownHeight by remember { mutableStateOf(0.dp) }
     val menuState =
         rememberChromeWindowState(
             visible = isDesign,
@@ -117,6 +121,17 @@ fun MainWindow() = withDesktopContext {
                     PanelLocation.Left -> DesktopState.ScreenRect(0.0, 0.0, edge, ch)
                     PanelLocation.Right -> DesktopState.ScreenRect(cw - edge, 0.0, cw, ch)
                 }
+            },
+            // the shown dock along its edge: an app window covering it hides the dock (reveal on
+            // hover), so the dock no longer sits over the bottom of app windows
+            overlapStrip = {
+                val dock = dockShownHeight.value.toDouble()
+                when (panelLocation) {
+                    PanelLocation.Bottom -> DesktopState.ScreenRect(0.0, ch - dock, cw, ch)
+                    PanelLocation.Top -> DesktopState.ScreenRect(0.0, 0.0, cw, dock)
+                    PanelLocation.Left -> DesktopState.ScreenRect(0.0, 0.0, dock, ch)
+                    PanelLocation.Right -> DesktopState.ScreenRect(cw - dock, 0.0, cw, ch)
+                }.takeIf { dock > 0.0 }
             },
         )
         desktopState.register(
@@ -196,6 +211,7 @@ fun MainWindow() = withDesktopContext {
 //        )
     DockBarWindow(
         onTooltip = onTooltip,
+        onShownHeight = { height -> dockShownHeight = height },
         panelState = panelState,
         menuState = menuState,
         controlCenterState = controlCenterState,

@@ -3,6 +3,7 @@ package org.psippr.desktop.state
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import org.psippr.desktop.helpers.compositor.CompositorWindowSource
 import org.psippr.desktop.helpers.keyevents.GlobalKeyListener
 import org.psippr.desktop.helpers.mouseevents.CompositorMouseSource
 import org.psippr.desktop.helpers.mouseevents.GlobalClickListener
@@ -27,6 +28,8 @@ fun DesktopStateDriver(desktopState: DesktopState) {
             } else {
                 null
             }
+        // app windows covering the bar: only the compositor knows them, none in a plain JVM run
+        val appWindows = CompositorWindowSource.connect(scope) { windows -> desktopState.onAppWindows(windows) }
         val clicks = GlobalClickListener { x, y, _ -> desktopState.onClick(x, y) }
         val keys =
             GlobalKeyListener { event ->
@@ -44,6 +47,7 @@ fun DesktopStateDriver(desktopState: DesktopState) {
         onDispose {
             ipc?.dispose()
             awtPointer?.dispose()
+            appWindows?.dispose()
             clicks.dispose()
             keys.dispose()
         }

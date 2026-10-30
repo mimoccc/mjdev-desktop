@@ -2,6 +2,7 @@ package org.psippr.desktop.helpers.mouseevents
 
 import java.awt.GraphicsEnvironment
 import java.awt.Point
+import java.awt.geom.AffineTransform
 import kotlin.math.floor
 
 /**
@@ -29,17 +30,21 @@ object CompositorPointerScale {
     fun toAwt(
         x: Int,
         y: Int,
-    ): Point {
-        val transform =
-            runCatching {
-                GraphicsEnvironment
-                    .getLocalGraphicsEnvironment()
-                    .defaultScreenDevice
-                    .defaultConfiguration
-                    .defaultTransform
-            }.getOrNull()
-        return toAwt(x, y, transform?.scaleX ?: NO_SCALE, transform?.scaleY ?: NO_SCALE)
-    }
+    ): Point = toAwt(x, y, scaleX(), scaleY())
+
+    /** Horizontal AWT UI scale of the default screen, 1 when unknown. */
+    fun scaleX(): Double = screenTransform()?.scaleX ?: NO_SCALE
+
+    /** Vertical AWT UI scale of the default screen, 1 when unknown. */
+    fun scaleY(): Double = screenTransform()?.scaleY ?: NO_SCALE
+
+    private fun screenTransform(): AffineTransform? = runCatching {
+        GraphicsEnvironment
+            .getLocalGraphicsEnvironment()
+            .defaultScreenDevice
+            .defaultConfiguration
+            .defaultTransform
+    }.getOrNull()
 
     // a zero, negative or NaN scale would break the division: keep the pixels instead
     private fun valid(scale: Double): Double = if (scale > 0.0) scale else NO_SCALE
