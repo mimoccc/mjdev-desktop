@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.psippr.desktop.components.appsmenu.AppsMenuState.Companion.rememberAppsMenuState
 import org.psippr.desktop.components.appsmenu.AppsMenuWindow
 import org.psippr.desktop.components.controlcenter.ControlCenterWindow
@@ -37,6 +39,7 @@ import org.psippr.desktop.extensions.Compose.preview
 import org.psippr.desktop.extensions.MutableStateExt.rememberCalculated
 import org.psippr.desktop.helpers.system.shell.Shell
 import org.psippr.desktop.log.Log
+import org.psippr.desktop.managers.notifications.NotificationService
 import org.psippr.desktop.state.DesktopState
 import org.psippr.desktop.state.DesktopStateDriver
 import org.psippr.desktop.state.SurfaceKind
@@ -244,6 +247,17 @@ fun MainWindow() = withDesktopContext {
     )
     // Popup of the newest notification (auto-hiding); the history is on the control center home tab.
     NotificationWindow(controlCenterState = controlCenterState)
+    // while a notification popup is shown, the bar and the control center step aside (back on hover)
+    val notificationPopup = context.notificationsManager.popup
+    LaunchedEffect(notificationPopup?.id) {
+        desktopState.setNotificationShown(notificationPopup != null)
+    }
+    // the standard Linux notification service, so notify-send and libnotify apps show here too
+    DisposableEffect(Unit) {
+        val service = NotificationService(context.notificationsManager, context.scope)
+        context.scope.launch(Dispatchers.IO) { service.start() }
+        onDispose { service.stop() }
+    }
     // old: in-desktop login overlay; its login was a stub (no PAM) and it stuck on top of every app
     // whenever the user lookup failed. The desktop runs only after the greetd / PAM login, so the
     // login screen is the greeter (LoginWindow) alone.

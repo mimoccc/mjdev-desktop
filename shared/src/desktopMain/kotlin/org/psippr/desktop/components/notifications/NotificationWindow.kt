@@ -24,8 +24,15 @@ import org.psippr.desktop.windows.ChromeWindow
 import org.psippr.desktop.windows.ChromeWindowState
 import org.psippr.desktop.windows.ChromeWindowState.Companion.rememberChromeWindowState
 
-/** Size of the popup window; the card sits at its top. */
-private val WINDOW_SIZE = DpSize(360.dp, 140.dp)
+// old: a fixed 360 dp wide popup in the right corner
+// /** Size of the popup window; the card sits at its top. */
+// private val WINDOW_SIZE = DpSize(360.dp, 140.dp)
+
+/** Share of the screen width the popup takes. */
+private const val WIDTH_SHARE = 0.9f
+
+/** Height of the popup window; the card sits at its top. */
+private val WINDOW_HEIGHT = 140.dp
 
 /** Distance of the popup from the top and right screen edges (beside the control center strip). */
 private val MARGIN = 16.dp
@@ -40,7 +47,7 @@ private const val FADE_MS = 400
  * Popup of the newest notification in the top right corner, left of the control center (its
  * thin strip when closed, the whole panel when open, read from [controlCenterState]). It hides by
  * itself after [SHOW_MS]; the notification stays in the history on the control center's home
- * tab. Its close button dismisses it there too. Not focusable, so it never takes the keyboard.
+ * tab. Its close button dismisses it there too. The compositor never gives it the keyboard.
  */
 @Suppress("FunctionName")
 @Composable
@@ -48,15 +55,20 @@ fun NotificationWindow(controlCenterState: ChromeWindowState) = withDesktopConte
     val manager = context.notificationsManager
     val notification = manager.popup
     val windowState = rememberChromeWindowState()
+    // 90 % of the screen width, centered at the top
+    val windowSize = DpSize(containerSize.width * WIDTH_SHARE, WINDOW_HEIGHT)
     var shown by remember { mutableStateOf(false) }
     LaunchedEffect(notification?.id) {
         if (notification != null) {
             // old: beside the closed control center's strip only, so it covered the open panel
 //            windowState.position =
 //                DpOffset(containerSize.width - WINDOW_SIZE.width - controlCenterDividerWidth - MARGIN, MARGIN)
-            val controlCenterWidth = maxOf(controlCenterState.size.width, controlCenterDividerWidth)
-            windowState.position =
-                DpOffset(containerSize.width - WINDOW_SIZE.width - controlCenterWidth - MARGIN, MARGIN)
+            // old: right corner, left of the control center
+//            val controlCenterWidth = maxOf(controlCenterState.size.width, controlCenterDividerWidth)
+//            windowState.position =
+//                DpOffset(containerSize.width - WINDOW_SIZE.width - controlCenterWidth - MARGIN, MARGIN)
+            windowState.size = windowSize
+            windowState.position = DpOffset((containerSize.width - windowSize.width) / 2, MARGIN)
             shown = true
             delay(SHOW_MS)
             shown = false
@@ -70,13 +82,17 @@ fun NotificationWindow(controlCenterState: ChromeWindowState) = withDesktopConte
         name = WINDOW_NAME,
         visible = notification != null,
         transparent = true,
-        focusable = false,
+        // old: not focusable, like the tooltip, but then its buttons took no clicks
+//        focusable = false,
+        // clickable (its buttons must work); the compositor still never gives it the keyboard
+        // (window role "notification" in the compositor's Policy)
+        focusable = true,
         alwaysOnTop = true,
-        size = WINDOW_SIZE,
+        size = windowSize,
         windowState = windowState,
-        onCreated = { windowState.size = WINDOW_SIZE },
+        onCreated = { windowState.size = windowSize },
     ) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             AnimatedVisibility(visible = shown, enter = fadeIn(tween(FADE_MS)), exit = fadeOut(tween(FADE_MS))) {
                 notification?.let { item ->
                     NotificationCard(

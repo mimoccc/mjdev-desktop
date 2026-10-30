@@ -274,6 +274,32 @@ static void view_deactivate(struct mjc_view *view) {
     }
 }
 
+/* X decides which X window gets a click by its own stacking order, not by what the scene
+ * draws on top. Without this, an X window of the top layer that never takes focus (the
+ * notification popup) stayed below the full screen desktop window for X, and every click on
+ * it went to the desktop. Keeps X stacking in step with the layer: top / overlay above,
+ * background / bottom below. */
+static void xwayland_restack_for_layer(struct mjc_view *view) {
+    if (!view->is_xwayland || view->xsurface == NULL || view->scene_tree == NULL) {
+        return;
+    }
+    if (view->layer >= MJC_LAYER_TOP) {
+        wlr_xwayland_surface_restack(view->xsurface, NULL, XCB_STACK_MODE_ABOVE);
+    } else if (view->layer <= MJC_LAYER_BOTTOM) {
+        wlr_xwayland_surface_restack(view->xsurface, NULL, XCB_STACK_MODE_BELOW);
+    }
+}
+
+/* after an app window was raised for X, puts the X windows of the top layers back above it */
+static void xwayland_raise_top_layers(struct mjc_server *server) {
+    struct mjc_view *view;
+    wl_list_for_each(view, &server->views, link) {
+        if (view->mapped && view->layer >= MJC_LAYER_TOP) {
+            xwayland_restack_for_layer(view);
+        }
+    }
+}
+
 static void view_focus_internal(struct mjc_view *view, bool raise) {
     if (view == NULL || !view->focusable || view->minimized) {
         return;
@@ -294,6 +320,9 @@ static void view_focus_internal(struct mjc_view *view, bool raise) {
     if (view->is_xwayland) {
         wlr_xwayland_surface_activate(view->xsurface, true);
         wlr_xwayland_surface_restack(view->xsurface, NULL, XCB_STACK_MODE_ABOVE);
+        if (view->layer < MJC_LAYER_TOP) {
+            xwayland_raise_top_layers(server);
+        }
     } else {
         wlr_xdg_toplevel_set_activated(view->xdg_toplevel, true);
     }
@@ -1980,6 +2009,7 @@ void mjc_view_set_layer(mjc_view *view, mjc_layer layer) {
         wlr_scene_node_reparent(&view->scene_tree->node,
             view->server->layers[layer]);
     }
+    xwayland_restack_for_layer(view);
 }
 
 void mjc_view_set_focusable(mjc_view *view, bool focusable) {

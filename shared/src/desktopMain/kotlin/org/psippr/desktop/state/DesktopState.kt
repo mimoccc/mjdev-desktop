@@ -53,6 +53,7 @@ class DesktopState(
 
     // facts about the world
     private var barOverlapped = false
+    private var notificationShown = false
     private var pointerInBarZone = false
     private var pointerWasInBarZone = false
     private var pointerWasInCcHotspot = false
@@ -164,6 +165,20 @@ class DesktopState(
         setBarOverlapped(BarOverlap.overlaps(windows, strip))
     }
 
+    /**
+     * A notification popup appeared ([shown] true) or went away. When it appears the control
+     * center and the menu close and the bar steps aside; hovering their edges brings them back.
+     */
+    fun setNotificationShown(shown: Boolean) {
+        if (notificationShown == shown) return
+        notificationShown = shown
+        if (shown) {
+            controlCenterOpen = false
+            menuOpen = false
+        }
+        reconcile()
+    }
+
     /** The compositor tells us whether a real window now overlaps the bar strip. */
     fun setBarOverlapped(overlapped: Boolean) {
         if (barOverlapped != overlapped) {
@@ -182,6 +197,7 @@ class DesktopState(
                     controlCenterOpen = controlCenterOpen,
                     barOverlapped = barOverlapped,
                     pointerInBarRevealZone = pointerInBarZone,
+                    notificationShown = notificationShown,
                 ),
             )
         scope.launch {
