@@ -37,12 +37,24 @@ class Session(
         setenv("XDG_CURRENT_DESKTOP", "psippr", 1)
         setenv("XDG_SESSION_TYPE", "wayland", 1)
 
-        mjc_spawn(
-            c.server,
-            "dbus-update-activation-environment --systemd " +
-                "WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE " +
-                "2>/dev/null || true",
-        )
+        // old: exported in nested mode too, which overwrote the HOST session's activation
+        // environment: every app D-Bus starts there (gnome-terminal-server, nautilus, ...) then
+        // went to the nested display and, once that was gone, no window opened at all
+//        mjc_spawn(
+//            c.server,
+//            "dbus-update-activation-environment --systemd " +
+//                "WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE " +
+//                "2>/dev/null || true",
+//        )
+        if (c.config.sessionMode) {
+            // only the real session owns the user's bus; nested apps inherit the display directly
+            mjc_spawn(
+                c.server,
+                "dbus-update-activation-environment --systemd " +
+                    "WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE " +
+                    "2>/dev/null || true",
+            )
+        }
 
         if (c.config.sessionMode) {
             // portals deliver live gtk-theme/color-scheme changes to gtk apps;
@@ -57,7 +69,10 @@ class Session(
 
     private fun startShell() {
         val cmd = c.config.shellCmd ?: return
-        shellPid = mjc_spawn(c.server, cmd)
+        // old: a nested shell shared the host's session bus, so apps D-Bus starts (gnome-terminal)
+        // opened on the host display or, with the host's environment broken, not at all
+//        shellPid = mjc_spawn(c.server, cmd)
+        shellPid = mjc_spawn(c.server, if (c.config.sessionMode) cmd else NestedSessionBus.wrap(cmd))
         println("psipprc: shell started pid=$shellPid: $cmd")
     }
 
