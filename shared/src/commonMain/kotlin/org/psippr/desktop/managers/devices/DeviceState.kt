@@ -18,4 +18,7 @@ enum class DeviceState(
 
     /** Seen, but not answering. */
     OFFLINE("Not answering. Reconnect the cable or restart debugging on the device.", "Not answering"),
+
+    /** Remembered, but not connected now. */
+    NOT_CONNECTED("Remembered, but not connected now.", "Remembered, not connected"),
 }

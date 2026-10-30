@@ -37,4 +37,10 @@ enum class DeviceAction(
 
     /** Restart the device into its bootloader. */
     REBOOT_BOOTLOADER("Restart into bootloader", "Restart"),
+
+    /** Connect again to a remembered wireless device that is not connected now. */
+    RECONNECT("Reconnect over the network", "Reconnect"),
+
+    /** Stop remembering the device and hide it; connecting it again asks again. */
+    FORGET("Forget this device", "Forget"),
 }

@@ -24,6 +24,9 @@ class AdbActions(
         DeviceAction.OPEN_SHELL -> openShell(serial)
         DeviceAction.ENABLE_WIRELESS -> enableWireless(serial)
         DeviceAction.DISCONNECT -> result(AdbCli.run(null, "disconnect", serial), "Disconnected.")
+        DeviceAction.RECONNECT -> reconnect(serial)
+        // handled by the devices manager for every provider; nothing to do on the device
+        DeviceAction.FORGET -> DeviceActionResult(done = true)
         DeviceAction.REBOOT -> result(AdbCli.run(serial, "reboot"), "Restarting.")
         DeviceAction.REBOOT_RECOVERY -> result(AdbCli.run(serial, "reboot", "recovery"), "Restarting into recovery.")
         DeviceAction.REBOOT_BOOTLOADER ->
@@ -99,6 +102,20 @@ class AdbActions(
                 done = false,
                 message =
                     answer.lines.lastOrNull { it.isNotBlank() } ?: "Could not connect to $target.",
+            )
+        }
+    }
+
+    // adb connect to the remembered network address; success only when adb reports it connected
+    private fun reconnect(serial: String): DeviceActionResult {
+        val answer = AdbCli.run(null, "connect", serial)
+        return if (answer.ok && answer.lines.any { it.contains(CONNECTED_MARK) }) {
+            DeviceActionResult(done = true, message = "Connected over the network.")
+        } else {
+            DeviceActionResult(
+                done = false,
+                message =
+                    answer.lines.lastOrNull { it.isNotBlank() } ?: "Could not connect to $serial.",
             )
         }
     }

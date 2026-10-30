@@ -15,8 +15,12 @@ import org.psippr.desktop.managers.devices.ConnectedDevice
 import org.psippr.desktop.managers.devices.DeviceAction
 import org.psippr.desktop.managers.devices.IDevicesManager
 
-/** Actions that need a second click: restarting a device by a misclick would be annoying. */
-private val CONFIRMED_ACTIONS = setOf(DeviceAction.REBOOT, DeviceAction.REBOOT_RECOVERY, DeviceAction.REBOOT_BOOTLOADER)
+// old: restarts only
+// private val CONFIRMED_ACTIONS = setOf(DeviceAction.REBOOT, DeviceAction.REBOOT_RECOVERY, DeviceAction.REBOOT_BOOTLOADER)
+
+/** Actions that need a second click: restarting or forgetting a device by a misclick would be annoying. */
+private val CONFIRMED_ACTIONS =
+    setOf(DeviceAction.REBOOT, DeviceAction.REBOOT_RECOVERY, DeviceAction.REBOOT_BOOTLOADER, DeviceAction.FORGET)
 
 /**
  * One row per action [device] offers. Actions run off the UI thread through [manager], one at a

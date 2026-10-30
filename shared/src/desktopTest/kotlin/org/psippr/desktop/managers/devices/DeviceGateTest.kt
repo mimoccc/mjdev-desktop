@@ -14,7 +14,7 @@ class DeviceGateTest {
 
     @Test
     fun unknownDeviceIsAskedOnceAndHiddenUntilConnected() {
-        val gate = DeviceGate(emptyList())
+        val gate = DeviceGate(emptyList<KnownDevice>())
         assertEquals(listOf(phone), gate.toAsk(listOf(phone)))
         assertTrue(gate.toAsk(listOf(phone)).isEmpty(), "asked only once")
         assertTrue(gate.visible(listOf(phone)).isEmpty(), "not shown before Connect")
@@ -22,7 +22,7 @@ class DeviceGateTest {
 
     @Test
     fun connectShowsTheDevice() {
-        val gate = DeviceGate(emptyList())
+        val gate = DeviceGate(emptyList<KnownDevice>())
         gate.toAsk(listOf(phone))
         gate.connect(phone.id, remember = false)
         assertEquals(listOf(phone), gate.visible(listOf(phone, tablet)))
@@ -31,7 +31,7 @@ class DeviceGateTest {
 
     @Test
     fun dismissKeepsTheDeviceHiddenAndUnasked() {
-        val gate = DeviceGate(emptyList())
+        val gate = DeviceGate(emptyList<KnownDevice>())
         gate.toAsk(listOf(phone))
         gate.dismiss(phone.id)
         assertTrue(gate.visible(listOf(phone)).isEmpty())
@@ -40,7 +40,7 @@ class DeviceGateTest {
 
     @Test
     fun replugAsksAgainUnlessRemembered() {
-        val gate = DeviceGate(emptyList())
+        val gate = DeviceGate(emptyList<KnownDevice>())
         gate.toAsk(listOf(phone, tablet))
         gate.connect(phone.id, remember = false)
         gate.dismiss(tablet.id)
@@ -48,9 +48,39 @@ class DeviceGateTest {
         assertEquals(listOf(phone, tablet), gate.toAsk(listOf(phone, tablet)))
     }
 
+    /** Regression: a remembered device could not be removed; Forget flags it and asks again on replug. */
+    @Test
+    fun forgetHidesFlagsAndAsksAgainAfterReplug() {
+        val gate = DeviceGate(emptyList<KnownDevice>())
+        gate.toAsk(listOf(phone))
+        gate.connect(phone, remember = true)
+        gate.forget(phone.id)
+        assertTrue(gate.visible(listOf(phone)).isEmpty(), "hidden after Forget")
+        assertTrue(gate.toAsk(listOf(phone)).isEmpty(), "not asked again while still plugged in")
+        assertTrue(gate.knownDevices().single().forgotten, "flagged, not deleted")
+        gate.forgetGone(emptyList())
+        assertEquals(listOf(phone), gate.toAsk(listOf(phone)), "asked again after replug")
+    }
+
+    @Test
+    fun unpluggedRememberedDeviceIsListedForForget() {
+        val gate = DeviceGate(emptyList<KnownDevice>())
+        gate.connect(phone, remember = true)
+        assertEquals(listOf("Phone"), gate.rememberedAbsent(emptyList()).map { it.name })
+        assertTrue(gate.rememberedAbsent(listOf(phone.id)).isEmpty())
+    }
+
+    @Test
+    fun firstFormatIdsAreTakenOverAndGetTheirName() {
+        val gate = DeviceGate(KnownDevices(remembered = mutableListOf(phone.id)).entries())
+        assertEquals(listOf(phone), gate.visible(listOf(phone)))
+        assertTrue(gate.updateNames(listOf(phone)))
+        assertEquals("Phone", gate.knownDevices().single().name)
+    }
+
     @Test
     fun rememberedDeviceIsShownWithoutAsking() {
-        val gate = DeviceGate(emptyList())
+        val gate = DeviceGate(emptyList<KnownDevice>())
         gate.toAsk(listOf(phone))
         gate.connect(phone.id, remember = true)
         val next = DeviceGate(gate.rememberedIds())
