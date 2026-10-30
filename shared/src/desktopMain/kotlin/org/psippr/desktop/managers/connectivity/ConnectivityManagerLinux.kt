@@ -144,10 +144,6 @@ class ConnectivityManagerLinux(
 //        )
 //    }
 
-    /**
-     * Powers the adapter, lifting an rfkill soft block first (bluez refuses to power a blocked
-     * adapter) and retrying while bluez is still enabling the freshly unblocked adapter.
-     */
     // old: bluetoothctl without a timeout, a hanging call froze the switch
 //    override fun setBluetoothPowered(powered: Boolean): Result<Boolean> {
 //        if (powered) succeeded(CMD_RFKILL, RFKILL_UNBLOCK, RFKILL_BLUETOOTH)
@@ -155,6 +151,11 @@ class ConnectivityManagerLinux(
 //            succeeded(CMD_BLUETOOTHCTL, "power", if (powered) BTH_ON else BTH_OFF)
 //        }
 //    }
+
+    /**
+     * Powers the adapter, lifting an rfkill soft block first (bluez refuses to power a blocked
+     * adapter) and retrying while bluez is still enabling the freshly unblocked adapter.
+     */
     override fun setBluetoothPowered(powered: Boolean): Result<Boolean> {
         if (powered) succeeded(CMD_RFKILL, RFKILL_UNBLOCK, RFKILL_BLUETOOTH)
         return retrying(BTH_POWER_ATTEMPTS, BTH_POWER_RETRY_MS) {

@@ -57,11 +57,16 @@ object PluginArchiveInstaller {
                         .entries()
                         .asSequence()
                         .filter { entry -> !entry.isDirectory && entry.name.lowercase().endsWith(JAR_SUFFIX) }
-                        .map { entry -> installEntry(zip.getInputStream(entry), baseName(entry.name), pluginsDir, reservedIds) }
-                        .toList()
+                        .map { entry ->
+                            installEntry(zip.getInputStream(entry), baseName(entry.name), pluginsDir, reservedIds)
+                        }.toList()
                 }
             }.getOrElse { return PluginInstallResult(problems = listOf("${archive.name}: not a zip archive.")) }
-        if (results.isEmpty()) return PluginInstallResult(problems = listOf("${archive.name}: contains no plugin .jar."))
+        if (results.isEmpty()) {
+            return PluginInstallResult(
+                problems = listOf("${archive.name}: contains no plugin .jar."),
+            )
+        }
         return PluginInstallResult(
             installed = results.flatMap { it.installed },
             problems = results.flatMap { it.problems },
@@ -104,7 +109,15 @@ object PluginArchiveInstaller {
         replaceInstalled(metadata.id, pluginsDir)
         val target = File(pluginsDir, SAFE_NAME.replace(metadata.id, NAME_FILLER) + JAR_SUFFIX)
         Files.copy(jar.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)
-        return PluginInstallResult(installed = listOf(metadata.name.ifBlank { metadata.id }), installedIds = listOf(metadata.id))
+        return PluginInstallResult(
+            installed =
+                listOf(
+                    metadata.name.ifBlank {
+                        metadata.id
+                    },
+                ),
+            installedIds = listOf(metadata.id),
+        )
     }
 
     // jars already installed with the same id go to the replaced folder (kept, not deleted)
@@ -140,7 +153,8 @@ object PluginArchiveInstaller {
         }
     }
 
-    private fun baseName(entryName: String): String = entryName.substringAfterLast(ENTRY_SEPARATORS.first()).let { name ->
-        name.substringAfterLast(ENTRY_SEPARATORS.last())
-    }
+    private fun baseName(entryName: String): String =
+        entryName.substringAfterLast(ENTRY_SEPARATORS.first()).let { name ->
+            name.substringAfterLast(ENTRY_SEPARATORS.last())
+        }
 }

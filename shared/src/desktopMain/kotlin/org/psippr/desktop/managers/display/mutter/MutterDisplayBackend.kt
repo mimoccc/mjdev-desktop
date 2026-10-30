@@ -15,13 +15,18 @@ class MutterDisplayBackend(
 ) : IDisplayBackend {
     override fun currentMode(): DisplayMode? = state()?.mainMonitor?.currentMode?.let(::toDisplayMode)
 
-    override fun modes(): List<DisplayMode> = state()?.mainMonitor?.modes?.map(::toDisplayMode).orEmpty()
+    override fun modes(): List<DisplayMode> = state()
+        ?.mainMonitor
+        ?.modes
+        ?.map(::toDisplayMode)
+        .orEmpty()
 
     override fun setMode(mode: DisplayMode): Result<Boolean> {
         val state = state() ?: return Result.success(false)
         val monitor = state.mainMonitor ?: return Result.success(false)
         val target = monitor.modes.firstOrNull { candidate -> matches(candidate, mode) } ?: return Result.success(false)
-        val logical = MutterApplyConfig.logicalMonitors(state, monitor.connector, target) ?: return Result.success(false)
+        val logical =
+            MutterApplyConfig.logicalMonitors(state, monitor.connector, target) ?: return Result.success(false)
         return Shell
             .execute(
                 CMD_TIMEOUT,

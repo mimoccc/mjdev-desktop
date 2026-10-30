@@ -37,7 +37,12 @@ object MutterStateParser {
 
     /** The state in [text], null when it is not a GetCurrentState answer. */
     fun parse(text: String): MutterState? {
-        val serial = SERIAL.find(text.trim())?.groupValues?.get(1)?.toLongOrNull() ?: return null
+        val serial =
+            SERIAL
+                .find(text.trim())
+                ?.groupValues
+                ?.get(1)
+                ?.toLongOrNull() ?: return null
         val logical = LOGICAL.findAll(text).toList()
         val monitorsEnd = logical.firstOrNull()?.range?.first ?: text.length
         val headers = MONITOR.findAll(text).filter { header -> header.range.first < monitorsEnd }.toList()

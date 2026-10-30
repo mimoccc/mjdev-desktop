@@ -46,7 +46,8 @@ object PluginsPageDefaults {
     const val INSTALL_LABEL = "Plugin .zip or .jar"
     const val INSTALL_ACTION = "Install…"
     const val INSTALL_BUSY = "Installing…"
-    const val INSTALL_HINT = "Installed plugins start switched off. Only switch on plugins you trust: they run with the desktop's rights."
+    const val INSTALL_HINT =
+        "Installed plugins start switched off. Only switch on plugins you trust: they run with the desktop's rights."
     const val INSTALLED_PREFIX = "Installed: "
     const val LIST_SEPARATOR = ", "
 }

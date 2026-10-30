@@ -35,6 +35,8 @@ import org.psippr.desktop.managers.apps.IAppsManager
 import org.psippr.desktop.managers.base.IDelegate
 import org.psippr.desktop.managers.connectivity.ConnectivityManager
 import org.psippr.desktop.managers.connectivity.IConnectivityManager
+import org.psippr.desktop.managers.display.DisplayManager
+import org.psippr.desktop.managers.display.IDisplayManager
 import org.psippr.desktop.managers.keys.IKeyManager
 import org.psippr.desktop.managers.keys.KeysManager
 import org.psippr.desktop.managers.language.Translator
@@ -53,8 +55,6 @@ import org.psippr.desktop.managers.theme.ThemeManager
 import org.psippr.desktop.managers.translations.ITranslator
 import org.psippr.desktop.managers.volume.IVolumeManager
 import org.psippr.desktop.managers.volume.VolumeManager
-import org.psippr.desktop.managers.display.DisplayManager
-import org.psippr.desktop.managers.display.IDisplayManager
 import java.awt.Desktop
 import java.awt.Toolkit
 import java.io.File

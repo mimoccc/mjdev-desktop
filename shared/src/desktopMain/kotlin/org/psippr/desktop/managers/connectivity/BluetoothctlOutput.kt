@@ -65,8 +65,7 @@ object BluetoothctlOutput {
 
     private fun clean(line: String): String = EVENT_PREFIX.replace(COLOR_CODE.replace(line, "").trim(), "")
 
-    private fun isNameless(device: BthDevice): Boolean =
-        device.name.isBlank() ||
-            device.name.equals(device.address, ignoreCase = true) ||
-            device.name.equals(device.address.replace(ADDRESS_SEPARATOR, NAMELESS_SEPARATOR), ignoreCase = true)
+    private fun isNameless(device: BthDevice): Boolean = device.name.isBlank() ||
+        device.name.equals(device.address, ignoreCase = true) ||
+        device.name.equals(device.address.replace(ADDRESS_SEPARATOR, NAMELESS_SEPARATOR), ignoreCase = true)
 }

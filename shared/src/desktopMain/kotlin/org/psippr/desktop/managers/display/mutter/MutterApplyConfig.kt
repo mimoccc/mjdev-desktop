@@ -40,7 +40,10 @@ object MutterApplyConfig {
                             if (name == connector) {
                                 mode.id
                             } else {
-                                state.monitors.firstOrNull { it.connector == name }?.currentMode?.id ?: return null
+                                state.monitors
+                                    .firstOrNull { it.connector == name }
+                                    ?.currentMode
+                                    ?.id ?: return null
                             }
                         "('$name', '$modeId', $NO_PROPERTIES)"
                     }

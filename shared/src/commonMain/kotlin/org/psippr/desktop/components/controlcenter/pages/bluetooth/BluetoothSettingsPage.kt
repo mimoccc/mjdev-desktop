@@ -30,6 +30,7 @@ private object BluetoothLabels {
     const val ADAPTER = "Adapter"
     const val POWER = "Bluetooth on"
     const val DEVICES = "Devices"
+
     // old: sent the user to other tools, the page itself could not find new devices
 //    const val NONE = "No devices found. Pair a device with the system tools first."
     const val NONE = "No devices found yet."

@@ -50,7 +50,11 @@ class MutterDisplayConfigTest {
     @Test
     fun applyArgumentsSwitchOnlyTheMainMonitor() {
         val state = assertNotNull(MutterStateParser.parse(twoScreens))
-        val target = state.monitors.single { it.connector == "HDMI-1" }.modes.single { it.width == 1920 }
+        val target =
+            state.monitors
+                .single { it.connector == "HDMI-1" }
+                .modes
+                .single { it.width == 1920 }
         assertEquals(
             "[(0, 0, 1.0, uint32 0, false, [('eDP-1', '1920x1080@60.000', @a{sv} {})]), " +
                 "(1920, 0, 1.0, uint32 0, true, [('HDMI-1', '1920x1080@60.000', @a{sv} {})])]",
@@ -61,7 +65,11 @@ class MutterDisplayConfigTest {
     @Test
     fun scaleTheNewModeDoesNotAllowFallsBackToOne() {
         val state = assertNotNull(MutterStateParser.parse(laptop))
-        val small = state.monitors.single().modes.single { it.width == 800 }
+        val small =
+            state.monitors
+                .single()
+                .modes
+                .single { it.width == 800 }
         val logical = assertNotNull(MutterApplyConfig.logicalMonitors(state, "eDP-1", small))
         assertTrue(logical.startsWith("[(0, 0, 1.0, uint32 0, true,"), logical)
     }
@@ -69,7 +77,16 @@ class MutterDisplayConfigTest {
     @Test
     fun unknownConnectorGivesNoArguments() {
         val state = assertNotNull(MutterStateParser.parse(laptop))
-        assertNull(MutterApplyConfig.logicalMonitors(state, "DP-9", state.monitors.single().modes.first()))
+        assertNull(
+            MutterApplyConfig.logicalMonitors(
+                state,
+                "DP-9",
+                state.monitors
+                    .single()
+                    .modes
+                    .first(),
+            ),
+        )
     }
 
     @Test

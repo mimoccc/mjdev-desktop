@@ -80,7 +80,9 @@ fun PluginsSettingsPage(context: IDesktopContext) = ControlCenterPage(
             lastInstall?.let { result ->
                 if (result.succeeded) {
                     SettingsInfoRow(
-                        label = PluginsPageDefaults.INSTALLED_PREFIX + result.installed.joinToString(PluginsPageDefaults.LIST_SEPARATOR),
+                        label =
+                            PluginsPageDefaults.INSTALLED_PREFIX +
+                                result.installed.joinToString(PluginsPageDefaults.LIST_SEPARATOR),
                         value = "",
                     )
                 }

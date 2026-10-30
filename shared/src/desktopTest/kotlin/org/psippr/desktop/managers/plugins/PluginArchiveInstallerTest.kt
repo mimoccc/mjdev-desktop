@@ -66,7 +66,11 @@ class PluginArchiveInstallerTest {
     fun reinstallMovesTheOldJarAside() {
         pluginsDir.mkdirs()
         File(pluginsDir, "old-clock.jar").writeBytes(pluginJar(CLOCK_ID, "Clock 1"))
-        PluginArchiveInstaller.install(zip("clock.zip", "clock.jar" to pluginJar(CLOCK_ID, "Clock 2")), pluginsDir, BUILT_IN)
+        PluginArchiveInstaller.install(
+            zip("clock.zip", "clock.jar" to pluginJar(CLOCK_ID, "Clock 2")),
+            pluginsDir,
+            BUILT_IN,
+        )
         assertFalse(File(pluginsDir, "old-clock.jar").exists())
         assertTrue(File(pluginsDir, "$CLOCK_ID.jar").isFile)
         val kept = File(pluginsDir, PluginArchiveInstaller.REPLACED_DIR_NAME).listFiles().orEmpty()
@@ -78,7 +82,13 @@ class PluginArchiveInstallerTest {
         val text = File(root, "notes.txt").apply { writeText("hello") }
         assertFalse(PluginArchiveInstaller.install(text, pluginsDir, BUILT_IN).succeeded)
         val empty = zip("empty.zip", "readme.txt" to "nothing".toByteArray())
-        assertTrue(PluginArchiveInstaller.install(empty, pluginsDir, BUILT_IN).problems.single().contains("no plugin"))
+        assertTrue(
+            PluginArchiveInstaller
+                .install(empty, pluginsDir, BUILT_IN)
+                .problems
+                .single()
+                .contains("no plugin"),
+        )
     }
 
     private fun pluginJar(
