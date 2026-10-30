@@ -57,6 +57,9 @@ class DesktopState(
     private var deviceShown = false
     private var pointerInBarZone = false
     private var pointerWasInBarZone = false
+
+    // the pointer was in the bar zone outside the open control center (edge of BarZoneEntry)
+    private var pointerWasInBarZoneBesideCc = false
     private var pointerWasInCcHotspot = false
 
     fun register(
@@ -103,7 +106,13 @@ class DesktopState(
             } ?: false
         // moving down to the bar while the control center is open hides the control center and
         // brings the bar back (edge-triggered so it only fires on entering the zone).
-        if (inBarZone && !pointerWasInBarZone && controlCenterOpen) controlCenterOpen = false
+        // old: also fired at the bottom of the open control center (the bar zone covers it)
+//        if (inBarZone && !pointerWasInBarZone && controlCenterOpen) controlCenterOpen = false
+        val overControlCenter = surfaces[SurfaceKind.ControlCenter]?.bounds?.invoke()?.contains(px, py) == true
+        val inBarZoneBesideCc = inBarZone && !overControlCenter
+        val entered = inBarZoneBesideCc && !pointerWasInBarZoneBesideCc
+        if (BarZoneEntry.closesControlCenter(entered, controlCenterOpen, overControlCenter)) controlCenterOpen = false
+        pointerWasInBarZoneBesideCc = inBarZoneBesideCc
         pointerInBarZone = inBarZone
         pointerWasInBarZone = inBarZone
         reconcile()
