@@ -174,6 +174,17 @@ object Modifier {
         onEvent = onEvent,
     )
 
+    /** Runs [onEvent] when a mouse button goes down ([RightClickEvent]), where [onRightClick] works. */
+    @Composable
+    fun Modifier.onMouseDown(
+        pass: PointerEventPass = PointerEventPass.Main,
+        onEvent: AwaitPointerEventScope.(event: PointerEvent) -> Unit,
+    ): Modifier = onPointerEvent(
+        eventType = RightClickEvent,
+        pass = pass,
+        onEvent = onEvent,
+    )
+
     @Composable
     fun Modifier.onMouseLongPress(
         pass: PointerEventPass = PointerEventPass.Main,

@@ -203,7 +203,9 @@ fun MainWindow() = withDesktopContext {
 //            onRightMouseClick = {
 // //                contextMenuState.show()
 //            },
-            onRightMouseClick = { desktopMenu.show() },
+            // old: the menu opened at the top-left corner
+//            onRightMouseClick = { desktopMenu.show() },
+            onRightMouseClickAt = { position -> desktopMenu.show(position) },
         )
         // the desktop's right-click menu (at the pointer)
         ContextMenu(

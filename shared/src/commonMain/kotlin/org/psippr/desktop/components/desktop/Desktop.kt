@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,7 @@ import org.psippr.desktop.components.file.FolderView
 import org.psippr.desktop.context.DesktopContextScope.Companion.withDesktopContext
 import org.psippr.desktop.extensions.Compose.preview
 import org.psippr.desktop.extensions.Modifier.onLeftClick
+import org.psippr.desktop.extensions.Modifier.onMouseDown
 import org.psippr.desktop.extensions.Modifier.onMousePress
 import org.psippr.desktop.extensions.Modifier.onRightClick
 
@@ -33,6 +35,8 @@ fun Desktop(
     onTooltip: (item: Any?) -> Unit = {},
     onLeftMouseClick: () -> Unit = {},
     onRightMouseClick: () -> Unit = {},
+    // right click with where it happened, in pixels of the desktop
+    onRightMouseClickAt: (position: Offset) -> Unit = {},
     onBackgroundChange: (Color) -> Unit = {},
     // a connected device's screen appeared (true) or went away on the desktop
     onDeviceShown: (Boolean) -> Unit = {},
@@ -55,8 +59,14 @@ fun Desktop(
                         onLeftClick {
                             onLeftMouseClick()
                         }
+                        // old: read on the release, where the right button is already up
+//                        onRightClick {
+//                            onRightMouseClick()
+//                        }
+                    }.onMouseDown {
                         onRightClick {
                             onRightMouseClick()
+                            currentEvent.changes.firstOrNull()?.let { change -> onRightMouseClickAt(change.position) }
                         }
                     },
             switchDelay = theme.backgroundRotationDelay,

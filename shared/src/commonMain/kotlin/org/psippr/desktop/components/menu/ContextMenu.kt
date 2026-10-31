@@ -34,6 +34,7 @@ fun ContextMenu(
         CursorDropdownMenu(
             modifier = Modifier.background(color = backgroundColor, shape = RoundedCornerShape(16.dp)),
             expanded = contextMenuState.menuExpanded.value && isActive,
+            position = contextMenuState.position.value,
             onDismissRequest = {
                 if (isActive) {
                     contextMenuState.menuRenderCount.value += 1
