@@ -22,6 +22,9 @@ enum class GSettingsKey(
     /** GTK3 / GTK4 theme name, re-read live by running non-libadwaita GTK apps. */
     GTK_THEME("org.gnome.desktop.interface", "gtk-theme"),
 
+    /** Icon theme name, re-read live by running GTK apps. */
+    ICON_THEME("org.gnome.desktop.interface", "icon-theme"),
+
     /** GNOME Shell stylesheet name of the User Themes extension. */
     SHELL_THEME("org.gnome.shell.extensions.user-theme", "name", true),
 }

@@ -30,11 +30,15 @@ import org.psippr.desktop.helpers.files.XdgDir
 import org.psippr.desktop.helpers.system.shell.Shell
 import org.psippr.desktop.log.Log
 import org.psippr.desktop.managers.theme.base.ThemeManagerStub
+import org.psippr.desktop.managers.theme.linux.gsettings.GSettings
+import org.psippr.desktop.managers.theme.linux.gsettings.GSettingsKey
 import org.psippr.desktop.managers.theme.linux.gtk.Gtk2Rc
 import org.psippr.desktop.managers.theme.linux.gtk.GtkCss
 import org.psippr.desktop.managers.theme.linux.gtk.GtkCssLayer
 import org.psippr.desktop.managers.theme.linux.gtk.GtkThemeColors
 import org.psippr.desktop.managers.theme.linux.gtk.GtkToolkit
+import org.psippr.desktop.managers.theme.linux.icons.IconFontSource
+import org.psippr.desktop.managers.theme.linux.icons.IconThemeGenerator
 import org.psippr.desktop.managers.theme.linux.session.DesktopSession
 import org.psippr.desktop.managers.theme.linux.shell.GnomeShellBase
 import org.psippr.desktop.managers.theme.linux.shell.GnomeShellCss
@@ -130,8 +134,38 @@ class ThemeManagerLinux(
             val gtkChanged = writeGtkFiles(colors)
             val shellChanged = session.hasGnomeShell && writeShellFile(colors)
             switcher.apply(colors, gtkChanged, shellChanged)
+            applyIconTheme()
         }.onFailure { e ->
             Log.e(e)
+        }
+    }
+
+    // icon themes generated from the icon font, in the user's icon folder
+    private val iconThemes =
+        IconThemeGenerator(File(XdgDir.DATA_HOME.paths(System::getenv, homeDir.toString()).first(), ICONS_DIR))
+
+    // icon theme switched to last, and whether one is being generated
+    @Volatile
+    private var appliedIconTheme: String? = null
+
+    @Volatile
+    private var iconThemeRunning = false
+
+    // the icon font's theme, generated once per font in the background, then switched to
+    private fun applyIconTheme() {
+        val font = IconFontSource.of(context.theme.iconSet) ?: return
+        if (iconThemes.themeName(font.name) == appliedIconTheme || iconThemeRunning) return
+        iconThemeRunning = true
+        runAsync {
+            runCatching {
+                val current = GSettings.get(GSettingsKey.ICON_THEME)
+                val inherits = current?.takeUnless { name -> iconThemes.isGenerated(name) } ?: THEME_ADWAITA
+                iconThemes.generate(font, inherits)?.let { name ->
+                    switcher.applyIconTheme(name)
+                    appliedIconTheme = name
+                }
+            }.onFailure { e -> Log.e(e) }
+            iconThemeRunning = false
         }
     }
 
@@ -550,6 +584,9 @@ class ThemeManagerLinux(
         const val COLOR_SCHEME_PSIPPR = "psippr"
         const val THEME_YARU = "Yaru"
         const val THEME_ADWAITA = "Adwaita"
+
+        /** User icon themes folder under the data folder. */
+        const val ICONS_DIR = "icons"
         const val THEME_ADWAITA_DARK = "Adwaita-dark"
         // old: ~/.themes/Psippr shared its name with the separate psippr project
 //        const val THEME_PSIPPR = "Psippr"

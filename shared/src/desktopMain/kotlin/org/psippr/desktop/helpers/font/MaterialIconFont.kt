@@ -6,8 +6,9 @@ import org.psippr.desktop.interfaces.IFont
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual class MaterialIconFont actual constructor(
-    ttfFileName: String,
-    codepointsFileName: String,
+    // font and code point resources, also read by the icon theme generator
+    val ttfFileName: String,
+    val codepointsFileName: String,
 ) : IFont {
     private val fontFile: FontDescriptor by lazy {
         FontDescriptor(ttfFileName)

@@ -52,11 +52,19 @@ class LiveThemeSwitcher(
         Log.d("Live theme applied: $themeName dark=${colors.isDark} gtk=$gtkChanged shell=$shellChanged")
     }
 
+    /** Switches the icon theme to [name]; the previous one comes back with [restore]. */
+    fun applyIconTheme(name: String) {
+        set(GSettingsKey.ICON_THEME, name)
+        Log.d("Icon theme applied: $name")
+    }
+
     /** Puts back every value changed by [apply]; a value that already was ours is reset to default. */
     fun restore() {
         previous.forEach { (key, value) ->
             val dir = schemaDirFor(key)
-            if (value == null || value == themeName) {
+            // old: only our own theme name, a generated icon theme ("Psippr-...") was put back
+//            if (value == null || value == themeName) {
+            if (value == null || value == themeName || value.startsWith("$themeName$DERIVED_SEPARATOR")) {
                 GSettings.reset(key, dir)
             } else {
                 GSettings.set(key, value, dir)
@@ -94,6 +102,9 @@ class LiveThemeSwitcher(
 
         /** `color-scheme` value for light palettes. */
         const val COLOR_SCHEME_LIGHT = "prefer-light"
+
+        /** Joins our theme name and a part in names derived from it (`Psippr-MaterialSymbolsSharp`). */
+        const val DERIVED_SEPARATOR = "-"
 
         /** Empty User Themes name = stock shell theme, used for the reload hop. */
         const val SHELL_DEFAULT_THEME = ""
