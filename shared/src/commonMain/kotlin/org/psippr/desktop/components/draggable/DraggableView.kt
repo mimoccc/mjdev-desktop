@@ -10,11 +10,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
@@ -47,6 +52,11 @@ fun DraggableView(
     content: @Composable BoxScope.() -> Unit = {},
 ) {
     var position by rememberState(initialPosition)
+    val currentOnDoubleTap by rememberUpdatedState(onDoubleTap)
+    val doubleClick =
+        remember {
+            DoubleClickDetector(timeoutMillis = DOUBLE_CLICK_TIMEOUT_MS, slop = DOUBLE_CLICK_SLOP_PX)
+        }
     var isDragging by rememberState(false)
     var isPlaced by rememberState(false)
     Box(
@@ -74,12 +84,39 @@ fun DraggableView(
                     translationX = position.x,
                     translationY = position.y,
                 ).pointerInput(Unit) {
+                    // old: the double tap timed out on a busy UI thread, see DoubleClickDetector
+//                    detectTapGestures(
+//                        onTap = { onTap() },
+//                        onPress = { onClick() },
+//                        onDoubleTap = { onDoubleTap() },
+//                        onLongPress = { onContextMenuClick() },
+//                    )
                     detectTapGestures(
                         onTap = { onTap() },
                         onPress = { onClick() },
-                        onDoubleTap = { onDoubleTap() },
                         onLongPress = { onContextMenuClick() },
                     )
+                }.pointerInput(Unit) {
+                    // observed only (nothing consumed): taps and drags above still get the events
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent(PointerEventPass.Initial)
+                            val change = event.changes.firstOrNull() ?: continue
+                            when (event.type) {
+                                // left button only; a release without its press is ignored
+                                PointerEventType.Press ->
+                                    if (event.buttons.isPrimaryPressed) doubleClick.onPress(change.position)
+                                PointerEventType.Release ->
+                                    if (doubleClick.onRelease(
+                                            change.uptimeMillis,
+                                            change.position,
+                                        )
+                                    ) {
+                                        currentOnDoubleTap()
+                                    }
+                            }
+                        }
+                    }
                 }.pointerInput(Unit) {
                     detectDragGestures(
                         onDrag = { change, dragAmount ->
@@ -116,3 +153,9 @@ fun DraggableView(
 fun PreviewDraggableView() = preview {
     DraggableView()
 }
+
+/** Longest time between the clicks of a double click (the usual desktop default). */
+private const val DOUBLE_CLICK_TIMEOUT_MS = 400L
+
+/** Longest move of a click, and between the two clicks of a double click, in pixels. */
+private const val DOUBLE_CLICK_SLOP_PX = 8f
