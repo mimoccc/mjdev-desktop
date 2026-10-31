@@ -1,5 +1,7 @@
 package org.psippr.desktop.helpers.files
 
+import okio.Path.Companion.toPath
+import org.psippr.desktop.data.DesktopFile
 import org.psippr.desktop.log.Log
 
 /**
@@ -21,8 +23,14 @@ object FileOpener {
 //        return runCatching {
 //            ProcessBuilder(CMD_XDG_OPEN, path)
         val app = FileAssociation.defaultAppFile(path) ?: return FileOpenResult.NO_APP
+        // old: gio launch asks a D-Bus activatable app (Nautilus) over the bus and exits at once;
+        // an app not running yet never got the request (nested psippr session) and quit idle
+//        return runCatching {
+//            ProcessBuilder(CMD_GIO, GIO_LAUNCH, app.path, path)
+        val exec = DesktopFile(app.path.toPath()).desktopSection?.Exec.orEmpty()
+        val command = ExecLine.command(exec, path).ifEmpty { return FileOpenResult.NO_APP }
         return runCatching {
-            ProcessBuilder(CMD_GIO, GIO_LAUNCH, app.path, path)
+            ProcessBuilder(command)
                 .redirectErrorStream(true)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 .start()
