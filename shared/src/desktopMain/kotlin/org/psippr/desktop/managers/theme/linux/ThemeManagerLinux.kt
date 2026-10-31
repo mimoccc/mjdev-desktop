@@ -26,6 +26,7 @@ import org.psippr.desktop.extensions.PathExt.mkdirs
 import org.psippr.desktop.extensions.PathExt.parentFile
 import org.psippr.desktop.extensions.PathExt.writeText
 import org.psippr.desktop.extensions.StringExt.hexRgb
+import org.psippr.desktop.helpers.files.XdgDir
 import org.psippr.desktop.helpers.system.shell.Shell
 import org.psippr.desktop.log.Log
 import org.psippr.desktop.managers.theme.base.ThemeManagerStub
@@ -48,7 +49,14 @@ class ThemeManagerLinux(
     private val themeName = THEME_PSIPPR
     private val homeDir = context.currentUser?.homeDir ?: "/".toPath()
     private val themesDir = homeDir[".themes"]
-    private val systemThemeDir = homeDir[".config"]
+
+    // old: always ~/.config, also when XDG_CONFIG_HOME names another folder (nested run)
+//    private val systemThemeDir = homeDir[".config"]
+    private val systemThemeDir =
+        XdgDir.CONFIG_HOME
+            .paths(System::getenv, homeDir.toString())
+            .first()
+            .toPath()
     private val themeDir = themesDir[themeName]
     private val themeDesktopFile = themeDir["index.theme"]
     private val gtk2ThemeDir = themeDir["gtk-2.0"]

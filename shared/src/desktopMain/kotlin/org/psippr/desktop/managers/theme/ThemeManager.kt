@@ -32,7 +32,9 @@ import org.psippr.desktop.managers.theme.linux.ThemeManagerLinux
  */
 @Suppress("FunctionName")
 fun ThemeManager(context: IDesktopContext) = when {
-    NestedRun.isNested() -> ThemeManagerStub(context)
+    // old: every nested run, also one with its own config folder
+//    NestedRun.isNested() -> ThemeManagerStub(context)
+    NestedRun.isNested() && !NestedRun.hasOwnConfig() -> ThemeManagerStub(context)
     hostOs == OS.Linux -> ThemeManagerLinux(context)
     else -> ThemeManagerStub(context)
 }

@@ -18,6 +18,29 @@ class NestedRunTest {
         assertFalse(NestedRun.isNested(mapOf(NestedRun.ENV_NESTED to "0")))
     }
 
+    /** Regression: nested apps were never themed; with its own config folder a nested run may theme. */
+    @Test
+    fun nestedRunWithItsOwnConfigMayTheme() {
+        val env =
+            mapOf(
+                NestedRun.ENV_NESTED to NestedRun.NESTED,
+                NestedRun.ENV_CONFIG_HOME to "/h/.cache/psippr-desktop/nested-config",
+            )
+        assertTrue(NestedRun.hasOwnConfig(env, home = "/h"))
+    }
+
+    @Test
+    fun nestedRunOnTheHostConfigMayNotTheme() {
+        assertFalse(NestedRun.hasOwnConfig(mapOf(NestedRun.ENV_NESTED to NestedRun.NESTED), home = "/h"))
+        val hostConfig = mapOf(NestedRun.ENV_NESTED to NestedRun.NESTED, NestedRun.ENV_CONFIG_HOME to "/h/.config")
+        assertFalse(NestedRun.hasOwnConfig(hostConfig, home = "/h"))
+    }
+
+    @Test
+    fun ownConfigOutsideANestedRunChangesNothing() {
+        assertFalse(NestedRun.hasOwnConfig(mapOf(NestedRun.ENV_CONFIG_HOME to "/elsewhere"), home = "/h"))
+    }
+
     /** The compositor sets the variable under this name (NestedSessionBus.ENV_NESTED). */
     @Test
     fun nameMatchesTheCompositor() {

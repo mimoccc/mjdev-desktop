@@ -417,6 +417,8 @@ tasks.register<Exec>("runNestedDesktop") {
                 add(File(System.getProperty("user.home"), ".Xauthority"))
             }
         xauthCandidates.firstOrNull { it.isFile }?.let { environment("XAUTHORITY", it.absolutePath) }
+        // own config folder: the nested theme recolors the nested apps, never the host desktop
+        environment("XDG_CONFIG_HOME", NestedConfigHome.prepare(File(System.getProperty("user.home"))).absolutePath)
         val launcher =
             appDir
                 .walkTopDown()
