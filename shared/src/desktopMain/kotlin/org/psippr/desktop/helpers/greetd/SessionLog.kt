@@ -44,5 +44,6 @@ object SessionLog {
     ): List<String> = wrap(name, cmd).map(ShellQuote::quote)
 
     /** Log file name part of the session [name] (`Ubuntu on Wayland` -> `ubuntu-on-wayland`). */
-    fun logName(name: String): String = name.lowercase().replace(UNSAFE_CHARS, NAME_SEPARATOR).trim(NAME_SEPARATOR.single())
+    fun logName(name: String): String =
+        name.lowercase().replace(UNSAFE_CHARS, NAME_SEPARATOR).trim(NAME_SEPARATOR.single())
 }
