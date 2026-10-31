@@ -1,6 +1,7 @@
 package org.psippr.desktop.helpers.files
 
 import org.psippr.desktop.helpers.system.shell.Shell
+import java.io.File
 
 /**
  * The app the system associates with a file, as `xdg-mime` reports it (the user's and the
@@ -17,6 +18,20 @@ object FileAssociation {
 
     /** Ending of a desktop entry id. */
     private const val DESKTOP_SUFFIX = ".desktop"
+
+    /**
+     * Desktop file of the installed default app for [path], or null when none is set. Blocks.
+     * Unlike [defaultApp] it skips defaults that are not installed and also asks the distro's
+     * lists, because `xdg-mime` in a psippr session falls back to any app claiming the type.
+     */
+    fun defaultAppFile(
+        path: String,
+        lookup: MimeAppsLookup = MimeAppsLookup(),
+    ): File? {
+        val mimeType = Shell.executeAndRead(CMD_XDG_MIME, QUERY, FILE_TYPE, path).trim()
+        if (mimeType.isEmpty()) return null
+        return lookup.defaultApp(mimeType)
+    }
 
     /** Desktop entry id of the default app for [path], or null when none is set. Blocks. */
     fun defaultApp(path: String): String? {
