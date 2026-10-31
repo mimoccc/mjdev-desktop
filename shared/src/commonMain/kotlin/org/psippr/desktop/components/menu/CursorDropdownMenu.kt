@@ -21,20 +21,24 @@ fun CursorDropdownMenu(
     position: Offset = Offset.Zero,
     onDismissRequest: () -> Unit,
     content: @Composable () -> Unit,
-) = AnimatedVisibility(
-    visible = expanded,
-    // old: drawn at the top-left corner, as wide as the window
-//    modifier = modifier,
-    modifier =
-        Modifier
-            .offset { IntOffset(position.x.roundToInt(), position.y.roundToInt()) }
-            .then(modifier)
-            .width(IntrinsicSize.Max),
 ) {
-    // old: the items were laid over each other
+    // a press outside the open menu closes it (old: onDismissRequest was never called)
+    if (expanded) MenuDismissLayer(onDismiss = onDismissRequest)
+    AnimatedVisibility(
+        visible = expanded,
+        // old: drawn at the top-left corner, as wide as the window
+//    modifier = modifier,
+        modifier =
+            Modifier
+                .offset { IntOffset(position.x.roundToInt(), position.y.roundToInt()) }
+                .then(modifier)
+                .width(IntrinsicSize.Max),
+    ) {
+        // old: the items were laid over each other
 //    content()
-    Column {
-        content()
+        Column {
+            content()
+        }
     }
 }
 

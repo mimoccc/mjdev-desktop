@@ -134,7 +134,25 @@ class DesktopState(
         }
     }
 
-    fun onEscape() = dismissTransients()
+    // old: Escape only closed the surfaces registered here
+//    fun onEscape() = dismissTransients()
+    fun onEscape() {
+        escapeListeners.toList().forEach { listener -> listener() }
+        dismissTransients()
+    }
+
+    /** Listeners told about Escape, e.g. the desktop menu, which is no registered surface. */
+    private val escapeListeners = mutableListOf<() -> Unit>()
+
+    /** Tells [listener] about every Escape until [removeEscapeListener]. */
+    fun addEscapeListener(listener: () -> Unit) {
+        escapeListeners += listener
+    }
+
+    /** Stops telling [listener] about Escape. */
+    fun removeEscapeListener(listener: () -> Unit) {
+        escapeListeners -= listener
+    }
 
     /** Dismiss the menu + control center (e.g. a click on empty desktop, or Escape). */
     fun dismissTransients() {

@@ -168,6 +168,12 @@ fun MainWindow() = withDesktopContext {
         appsMenuState.isVisible = menuState.isVisible
     }
     val desktopMenu = rememberContextMenuState(*DesktopMenuItem.entries.map { item -> item.label }.toTypedArray())
+    // Escape closes the desktop menu too
+    DisposableEffect(desktopState, desktopMenu) {
+        val hideMenu = { desktopMenu.hide() }
+        desktopState.addEscapeListener(hideMenu)
+        onDispose { desktopState.removeEscapeListener(hideMenu) }
+    }
     DesktopWindow(
         panelState = panelState,
         controlCenterState = controlCenterState,
