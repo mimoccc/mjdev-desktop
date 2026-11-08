@@ -1,0 +1,430 @@
+/*
+ * Copyright (c) Milan Jurkulák 2026.
+ *  Contact:
+ *  e: mimoccc@gmail.com
+ *  e: mj@mjdev.org
+ *  w: https://mjdev.org
+ */
+
+import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
+
+plugins {
+    // kotlin + serialization come from the root build classpath (declared apply-false there)
+    kotlin("multiplatform")
+    kotlin("plugin.serialization")
+}
+
+// identity from the shared version catalog (gradle/libs.versions.toml)
+val catalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
+group = catalog.findVersion("app-pkg-name").get().requiredVersion
+version = catalog.findVersion("app-pkg-version").get().requiredVersion
+
+val nativeDir = project.file("native")
+val protocolsDir = layout.buildDirectory.dir("generated/protocols")
+val shimDir = layout.buildDirectory.dir("shim")
+
+// pkg-config is queried lazily and never fails configuration,
+// so the JVM desktop build stays usable on machines without wlroots.
+// providers.exec (not ProcessBuilder) keeps the call configuration-cache compatible —
+// gradle records it as a build input instead of reporting an external-process problem.
+fun pkgConfig(vararg args: String): List<String> = runCatching {
+    val exec =
+        providers.exec {
+            commandLine(listOf("pkg-config") + args)
+            isIgnoreExitValue = true
+        }
+    if (exec.result.get().exitValue != 0) {
+        emptyList()
+    } else {
+        exec.standardOutput.asText
+            .get()
+            .trim()
+            .split(Regex("\\s+"))
+            .filter { it.isNotBlank() }
+    }
+}.getOrElse { emptyList() }
+
+// scenefx adds backdrop blur and is optional: the first installed candidate from the version
+// catalog is linked in and switches the shim to its renderer (-DMJC_WITH_SCENEFX); without it the
+// shim builds exactly as before and blur requests are ignored.
+val scenefxPackage: String? =
+    libs.versions.app.compositor.scenefx.packages
+        .get()
+        .split(" ")
+        .firstOrNull { candidate -> pkgConfig("--modversion", candidate).isNotEmpty() }
+val scenefxDefine: String = if (scenefxPackage != null) "-DMJC_WITH_SCENEFX" else ""
+
+val wlrPackages =
+    listOfNotNull("wlroots-0.18", "wayland-server", "xkbcommon", "pixman-1", scenefxPackage).toTypedArray()
+val wlrCflags: List<String>
+    get() = pkgConfig("--cflags", *wlrPackages)
+val wlrLibs: List<String>
+    get() =
+        pkgConfig("--libs", *wlrPackages).ifEmpty {
+            listOf("-lwlroots-0.18", "-lwayland-server", "-lxkbcommon")
+        }
+
+// the kotlin/native bundled linker does not search the system lib dirs
+val systemLibDirs =
+    listOf(
+        "/usr/lib/x86_64-linux-gnu",
+        "/usr/lib",
+        "/usr/local/lib",
+    ).filter { file(it).isDirectory }.map { "-L$it" }
+
+val generateProtocols =
+    tasks.register<Exec>("generateProtocols") {
+        group = "psippr"
+        description = "Generates wayland protocol headers used by the compositor shim."
+        val outDir = protocolsDir.get().asFile
+        val xdgShellXml = "/usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml"
+        inputs.files(xdgShellXml).optional()
+        outputs.dir(outDir)
+        commandLine(
+            "bash",
+            "-c",
+            "mkdir -p '$outDir' && " +
+                "wayland-scanner server-header '$xdgShellXml' '$outDir/xdg-shell-protocol.h'",
+        )
+    }
+
+val compileShim =
+    tasks.register<Exec>("compileShim") {
+        group = "psippr"
+        description = "Compiles the C shim over wlroots into a static library."
+        dependsOn(generateProtocols)
+        // capture everything as local values at configuration time so the doFirst closure
+        // never reaches back into the build script (required for configuration-cache safety)
+        val shimC = nativeDir.resolve("shim.c")
+        val shimH = nativeDir.resolve("shim.h")
+        val outDir = shimDir.get().asFile
+        val protoDir = protocolsDir.get().asFile
+        val includeDir = nativeDir
+        val cflags = (wlrCflags + scenefxDefine).filter { it.isNotBlank() }.joinToString(" ")
+        inputs.files(shimC, shimH)
+        outputs.file(outDir.resolve("libmjcshim.a"))
+        doFirst {
+            commandLine(
+                "bash",
+                "-c",
+                "mkdir -p '$outDir' && " +
+                    "cc -O2 -fPIC -DWLR_USE_UNSTABLE -std=c11 " +
+                    "-I'$protoDir' -I'$includeDir' $cflags " +
+                    "-c '$shimC' -o '$outDir/shim.o' && " +
+                    "ar rcs '$outDir/libmjcshim.a' '$outDir/shim.o'",
+            )
+        }
+        // placeholder, replaced in doFirst (Exec requires a commandLine at configuration)
+        commandLine("true")
+    }
+
+// system link setup of every compositor binary (psipprc and its unit test binary)
+fun org.jetbrains.kotlin.gradle.plugin.mpp.NativeBinary.linkSystemLibraries() {
+    // link against the system glibc instead of the old bundled
+    // sysroot, system libs (wlroots & co) need modern symbols
+    val gccVersion =
+        file("/usr/lib/gcc/x86_64-linux-gnu")
+            .listFiles()
+            ?.map { it.name }
+            ?.maxByOrNull { it.toIntOrNull() ?: 0 }
+    if (gccVersion != null) {
+        freeCompilerArgs +=
+            listOf(
+                "-Xoverride-konan-properties=" +
+                    "targetSysRoot.linux_x64=/;" +
+                    "libGcc.linux_x64=/usr/lib/gcc/x86_64-linux-gnu/$gccVersion;" +
+                    "crtFilesLocation.linux_x64=usr/lib/x86_64-linux-gnu",
+            )
+    }
+    linkerOpts(systemLibDirs)
+    linkerOpts(
+        shimDir
+            .get()
+            .asFile
+            .resolve("libmjcshim.a")
+            .absolutePath,
+    )
+    linkerOpts(wlrLibs)
+    // the shim queries GL_RENDERER via EGL to decide hardware vs software GL for the
+    // shell (SKIKO_RENDER_API), so link the EGL + GLES2 dispatchers explicitly.
+    linkerOpts("-lEGL", "-lGLESv2")
+}
+
+kotlin {
+    linuxX64 {
+        compilations.getByName("main") {
+            cinterops.create("shim") {
+                defFile(nativeDir.resolve("shim.def"))
+                packageName("psippr.compositor.shim")
+                includeDirs(nativeDir)
+            }
+        }
+        binaries {
+            executable("psipprc") {
+                entryPoint = "eu.psippr.compositor.main"
+                // old: the link setup lived here, moved to linkSystemLibraries() so the test binary shares it
+                linkSystemLibraries()
+            }
+            // the unit test binary links the same shim and system libraries as psipprc
+            getTest(org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG).linkSystemLibraries()
+        }
+    }
+
+    sourceSets {
+        getByName("linuxX64Main") {
+            dependencies {
+                implementation(catalog.findLibrary("kotlinx-serialization-json").get())
+            }
+        }
+        getByName("linuxX64Test") {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+    }
+}
+
+// the static shim library must exist before linking the executable; it is passed via
+// linkerOpts (an absolute path), which Kotlin/Native does not track — so register it as an
+// explicit input, otherwise editing shim.c rebuilds the .a but never relinks the binary
+// (you would keep running a stale executable).
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink>().configureEach {
+    dependsOn(compileShim)
+    inputs
+        .file(shimDir.map { it.file("libmjcshim.a") })
+        .withPropertyName("mjcShimLibrary")
+}
+// note: cinterop parses only the self contained shim.h,
+// generated wayland protocol headers are needed just for compileShim
+
+tasks.register<Copy>("stageSession") {
+    group = "psippr"
+    description = "Stages the compositor binary and session files for installation."
+    dependsOn("linkPsipprcReleaseExecutableLinuxX64")
+    from(layout.buildDirectory.file("bin/linuxX64/psipprcReleaseExecutable/psipprc.kexe")) {
+        rename { "psipprc" }
+    }
+    from(rootProject.file("session/psippr-session"))
+    from(rootProject.file("session/psippr.desktop"))
+    // login screen (greetd greeter) + the display manager choice of the deb
+    from(rootProject.file("session/psippr-greeter"))
+    from(rootProject.file("session/psippr-greetd.toml"))
+    from(rootProject.file("session/psippr-greetd.conf"))
+    from(rootProject.file("session/debian")) {
+        into("debian")
+    }
+    into(layout.buildDirectory.dir("session-install"))
+}
+
+// Privileged install steps for the compositor + wayland session. Installs the binary, the
+// session launcher and the wayland-sessions entry, and removes the stale 2024 X11
+// "psippr-desktop" session that shadows ours (same display name) and breaks login. Lines are
+// built at configuration time (staged paths are static) so the Exec stays config-cache safe.
+// built at configuration time (staged paths are static) so referencing the result from doLast
+// stays configuration-cache safe (the function itself is never captured in the task action).
+// the wayland runtime stack psipprc needs — from the version catalog (single source of truth,
+// shared with the deb Depends and make-iso.sh), never hardcoded here.
+val compositorRuntimeDeps: String =
+    libs.versions.app.compositor.runtime.deps
+        .get()
+
+// files installed under the name used before the rename to psippr (version catalog)
+val legacyFileNames: String =
+    libs.versions.app.legacy.files
+        .get()
+
+// apt-get on the host must WAIT for the dpkg lock (unattended-upgrades, a parallel build, …)
+// instead of failing with "Could not get lock /var/lib/dpkg/lock-frontend" — catalog-driven.
+val aptLockTimeout: String =
+    libs.versions.app.apt.lock.timeout
+        .get()
+val aptGet = "apt-get -o DPkg::Lock::Timeout=$aptLockTimeout"
+
+// the install script runs as root under pkexec without a TTY: tell debconf up front to use its
+// noninteractive frontend instead of failing through Dialog / Readline / Teletype on every apt call
+val debconfNoninteractive = "export DEBIAN_FRONTEND=noninteractive"
+
+fun sessionInstallLines(staged: File): List<String> = listOf(
+    "#!/bin/sh",
+    "set -e",
+    debconfNoninteractive,
+    // runtime stack the compositor needs but a clean / GNOME box lacks (GNOME uses mutter,
+    // not wlroots). dpkg can't resolve these, so apt-install them explicitly. libwlroots-0.18
+    // pulls libdrm/libgbm/libinput/libseat/libxkbcommon/libwayland/libdisplay-info/libliftoff;
+    // xwayland = X display for the AWT-based Compose shell; libgl1-mesa-dri = the GL/EGL driver
+    // (incl. llvmpipe software fallback). Without these psipprc fails to even load -> black screen.
+    "$aptGet update || true",
+    "$aptGet install --no-install-recommends -y $compositorRuntimeDeps seatd || " +
+        "echo 'WARN: apt could not install the wayland runtime stack (offline or non-debian?) — the desktop may not start'",
+    // the compositor opens /dev/dri/card0 + the seatd socket (group video); seatd must run and
+    // the logged-in user must be in video/input/render (+ seat if present) or the session is black.
+    "systemctl enable --now seatd 2>/dev/null || true",
+    "_u=\"\$(getent passwd \"\${PKEXEC_UID:-\${SUDO_UID:-1000}}\" | cut -d: -f1)\"",
+    "[ -n \"\$_u\" ] && usermod -aG video,input,render \"\$_u\" 2>/dev/null || true",
+    "getent group seat >/dev/null 2>&1 && [ -n \"\$_u\" ] && usermod -aG seat \"\$_u\" 2>/dev/null || true",
+    "install -Dm755 '${staged.resolve("psipprc")}' /usr/local/bin/psipprc",
+    "install -Dm755 '${staged.resolve("psippr-session")}' /usr/local/bin/psippr-session",
+    "install -Dm644 '${staged.resolve("psippr.desktop")}' /usr/share/wayland-sessions/psippr.desktop",
+    "rm -f /usr/share/xsessions/psippr-desktop.desktop " +
+        "/usr/share/gnome-session/sessions/psippr-desktop.session " +
+        "/usr/share/applications/psippr-desktop-psippr-desktop.desktop",
+    // files of the old mjdev name installed outside any package (GDM would offer a dead session)
+    "rm -f $legacyFileNames",
+)
+
+// sudo can't read a password from the Gradle daemon (no TTY), so these tasks don't exec it —
+// they stage everything, write a self-contained install script under build/, and print the one
+// sudo command for the user to run in their own terminal.
+tasks.register("installSession") {
+    group = "psippr"
+    description = "Stages the compositor + wayland session, prints the sudo install command."
+    dependsOn("stageSession")
+    val staged =
+        layout.buildDirectory
+            .dir("session-install")
+            .get()
+            .asFile
+    val lines = sessionInstallLines(staged)
+    doLast {
+        val script = staged.resolve("install.sh")
+        script.writeText(lines.joinToString("\n") + "\n")
+        println("Session staged. Install it (single sudo prompt) with:")
+        println("  sudo sh '${script.absolutePath}'")
+    }
+}
+
+// Complete (re)install: compositor + wayland session + the desktop app .deb (the session's
+// shell, /opt/psippr-desktop), and the stale-session cleanup — one script run as root via a
+// pkexec (polkit) authentication dialog. pkexec needs no TTY (unlike sudo), so it works from
+// the detached Gradle daemon and prompts graphically; if it's missing we print the sudo command.
+tasks.register<Exec>("installDesktop") {
+    group = "psippr"
+    description = "Builds compositor + session + app .deb and installs it via a pkexec authentication dialog."
+    dependsOn("stageSession", ":desktopApp:packageReleaseDeb", ":packageFullDeb")
+    val staged =
+        layout.buildDirectory
+            .dir("session-install")
+            .get()
+            .asFile
+    val lines = sessionInstallLines(staged)
+    // captured as a local val (not referenced from the script's top-level `aptGet` inside
+    // doFirst below) — the configuration cache cannot deserialize a script-object reference,
+    // and referencing a top-level val from inside doFirst implicitly captures one. See
+    // https://docs.gradle.org/9.2.1/userguide/configuration_cache_requirements.html#config_cache:requirements:disallowed_types
+    val aptGetCmd = aptGet
+    // desktopApp overrides compose outputBaseDir to <root>/packages, so the .deb is written
+    // to packages/main-release/deb (not desktopApp/build/compose/binaries/…)
+    val debDir = rootProject.rootDir.resolve("packages/main-release/deb")
+    isIgnoreExitValue = false
+    doFirst {
+        val deb =
+            debDir.listFiles { f -> f.extension == "deb" }?.firstOrNull()
+                ?: error("desktop .deb not found in $debDir — run :desktopApp:packageReleaseDeb")
+        val script = staged.resolve("install-desktop.sh")
+        // install the deb via apt so its Depends (the wayland runtime stack baked in by
+        // packageFullDeb) are resolved; fall back to dpkg + apt -f if the apt form is unavailable.
+        val installDeb =
+            "$aptGetCmd install --no-install-recommends -y '${deb.absolutePath}' || " +
+                "{ dpkg -i '${deb.absolutePath}' || true; $aptGetCmd install -f -y; }"
+        script.writeText((lines + installDeb).joinToString("\n") + "\n")
+        // pkexec pops a graphical polkit auth dialog and runs the script as root; needs a polkit
+        // agent in the session but no terminal. Fall back to a printed sudo command if absent.
+        val pkexec =
+            listOf("/usr/bin/pkexec", "/usr/local/bin/pkexec")
+                .firstOrNull { File(it).canExecute() }
+        if (pkexec != null) {
+            println("Installing the psippr desktop — approve the authentication dialog…")
+            commandLine(pkexec, "sh", script.absolutePath)
+        } else {
+            println("pkexec not found. Install the desktop (single sudo prompt) with:")
+            println("  sudo sh '${script.absolutePath}'")
+            commandLine("true")
+        }
+    }
+    commandLine("true")
+}
+
+tasks.register<Exec>("runNested") {
+    group = "psippr"
+    description = "Runs the compositor nested inside the current Wayland session."
+    dependsOn("linkPsipprcDebugExecutableLinuxX64")
+    val shellCmd = (project.findProperty("shellCmd") as String?)
+    val binary =
+        layout.buildDirectory
+            .file("bin/linuxX64/psipprcDebugExecutable/psipprc.kexe")
+            .get()
+            .asFile.absolutePath
+    // x11 backend -> the host window manager decorates the nested window (frame + close +
+    // move); 16:9 nested output (the compositor locks it against resize)
+    environment("WLR_BACKENDS", "x11")
+    environment("PSIPPRC_OUTPUT", "1280x720")
+    doFirst {
+        // host X11 auth for the nested wlroots x11 backend, resolved at execution time:
+        // the detached Gradle daemon often lacks a valid XAUTHORITY, and mutter writes a
+        // per-session, randomly-suffixed auth file under XDG_RUNTIME_DIR
+        environment("DISPLAY", System.getenv("DISPLAY") ?: ":0")
+        val xauthCandidates =
+            buildList {
+                System.getenv("XAUTHORITY")?.let { add(File(it)) }
+                System.getenv("XDG_RUNTIME_DIR")?.let { dir ->
+                    File(dir).listFiles()?.forEach { f ->
+                        if (f.name.startsWith(".mutter-Xwaylandauth.")) add(f)
+                    }
+                }
+                add(File(System.getProperty("user.home"), ".Xauthority"))
+            }
+        xauthCandidates.firstOrNull { it.isFile }?.let { environment("XAUTHORITY", it.absolutePath) }
+        val args = mutableListOf(binary)
+        if (shellCmd != null) {
+            args += listOf("--shell-cmd", shellCmd)
+        }
+        commandLine(args)
+    }
+    commandLine("true")
+}
+
+// Runs the Compose desktop app as the shell client inside the nested compositor.
+// The desktop app is packaged with its own JRE (createDistributable) and launched via
+// XWayland, so it shows up as a window managed by psipprc (fixed 16:9, movable, closable).
+tasks.register<Exec>("runNestedDesktop") {
+    group = "psippr"
+    description = "Runs the psippr desktop app as a client inside the nested compositor."
+    dependsOn("linkPsipprcDebugExecutableLinuxX64", ":desktopApp:createDistributable")
+    val binary =
+        layout.buildDirectory
+            .file("bin/linuxX64/psipprcDebugExecutable/psipprc.kexe")
+            .get()
+            .asFile.absolutePath
+    // desktopApp overrides outputBaseDir to <root>/packages, so createDistributable
+    // writes the app image to packages/main/app/<name>/bin/<name> (not build/compose/…)
+    val appDir = rootProject.rootDir.resolve("packages/main/app")
+    // x11 backend -> host-decorated nested window (frame + close + move); fixed 16:9 output
+    environment("WLR_BACKENDS", "x11")
+    environment("PSIPPRC_OUTPUT", "1280x720")
+    doFirst {
+        // host X11 auth for the nested wlroots x11 backend, resolved at execution time:
+        // the detached Gradle daemon often lacks a valid XAUTHORITY, and mutter writes a
+        // per-session, randomly-suffixed auth file under XDG_RUNTIME_DIR
+        environment("DISPLAY", System.getenv("DISPLAY") ?: ":0")
+        val xauthCandidates =
+            buildList {
+                System.getenv("XAUTHORITY")?.let { add(File(it)) }
+                System.getenv("XDG_RUNTIME_DIR")?.let { dir ->
+                    File(dir).listFiles()?.forEach { f ->
+                        if (f.name.startsWith(".mutter-Xwaylandauth.")) add(f)
+                    }
+                }
+                add(File(System.getProperty("user.home"), ".Xauthority"))
+            }
+        xauthCandidates.firstOrNull { it.isFile }?.let { environment("XAUTHORITY", it.absolutePath) }
+        // own config folder: the nested theme recolors the nested apps, never the host desktop
+        environment("XDG_CONFIG_HOME", NestedConfigHome.prepare(File(System.getProperty("user.home"))).absolutePath)
+        val launcher =
+            appDir
+                .walkTopDown()
+                .firstOrNull { it.isFile && it.parentFile?.name == "bin" && it.canExecute() }
+                ?: error("desktop launcher not found under $appDir — run :desktopApp:createDistributable")
+        commandLine(binary, "--shell-cmd", launcher.absolutePath)
+    }
+    commandLine("true")
+}

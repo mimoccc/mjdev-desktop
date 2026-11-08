@@ -1,0 +1,73 @@
+*.iml
+.kotlin
+.gradle
+**/build/
+xcuserdata
+!src/**/build/
+local.properties
+.idea
+.DS_Store
+captures
+.externalNativeBuild
+.cxx
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+### Packages ###
+packages
+packages/
+/packages
+/packages/
+
+### Resources ###
+src/main/resources/dependencies/linux/usr/share/backgrounds
+/src/main/resources/dependencies/linux/usr/share/backgrounds
+/src/main/resources/dependencies/linux/usr/share/backgrounds/
+
+### cache ###
+/cache
+/cache/
+cache/
+
+### kcef ###
+kcef-bundle/
+/kcef-bundle
+/kcef-bundle/
+MediaDeviceSalts
+MediaDeviceSalts-journal
+
+### sources
+sources/
+/sources
+/sources/
+
+### no keys
+composeApp/src/commonMain/resources/keys/*.key
+/composeApp/src/commonMain/resources/keys/*.key
+.intellijPlatform/
+.intellijPlatform
+
+### ai
+!.claude
+!.claude/
+!/.claude
+!/.claude/
+!.claude/*
+
+### reports
+/reports/
+
+### releases
+/releases/
+
+### iso images (never commit — GitHub rejects git blobs >100 MB; ship as a release asset)
+*.iso
+
+### ideas & fixes
+/ideas/
+/fix-it/
+.aider*

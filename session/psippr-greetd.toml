@@ -1,0 +1,8 @@
+# greetd config of the psippr desktop, used through the greetd.service drop-in
+# (psippr-greetd.conf); the greetd package's own /etc/greetd/config.toml stays untouched.
+[terminal]
+vt = 7
+
+[default_session]
+command = "/usr/bin/psippr-greeter"
+user = "_greetd"

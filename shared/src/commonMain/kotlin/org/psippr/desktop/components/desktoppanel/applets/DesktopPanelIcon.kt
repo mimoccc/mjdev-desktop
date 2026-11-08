@@ -1,0 +1,132 @@
+package org.psippr.desktop.components.desktoppanel.applets
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
+import org.psippr.desktop.components.fonticon.FontIcon
+import org.psippr.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.psippr.desktop.extensions.ButtonDefaults.color
+import org.psippr.desktop.extensions.ButtonDefaults.noElevation
+import org.psippr.desktop.extensions.Colors.alpha
+import org.psippr.desktop.extensions.Compose.preview
+import org.psippr.desktop.extensions.Modifier.circleBorder
+import org.psippr.desktop.extensions.Modifier.clipRect
+import org.psippr.desktop.extensions.Modifier.onLeftClick
+import org.psippr.desktop.extensions.Modifier.onMouseEnter
+import org.psippr.desktop.extensions.Modifier.onMouseLeave
+import org.psippr.desktop.extensions.Modifier.onMousePress
+import org.psippr.desktop.extensions.Modifier.onRightClick
+import org.psippr.desktop.extensions.MutableStateExt.rememberCalculated
+import org.psippr.desktop.extensions.MutableStateExt.rememberState
+import org.psippr.desktop.extensions.PaddingValues.size
+import org.psippr.desktop.interfaces.IApp
+
+// todo paddings
+@Composable
+fun DesktopPanelIcon(
+    app: IApp? = null,
+    iconName: String? = null,
+    iconColor: Color = Color.Black,
+    iconBackgroundColor: Color = Color.White,
+    iconBackgroundHover: Color = Color.White,
+    iconColorRunning: Color = Color.White,
+    iconSize: DpSize = DpSize(48.dp, 48.dp),
+    iconPadding: PaddingValues = PaddingValues(4.dp),
+    iconOuterPadding: PaddingValues = PaddingValues(4.dp),
+    iconState: MutableState<Boolean> = rememberState(false),
+    contentDescription: String? = null,
+    innerPadding: PaddingValues = PaddingValues(4.dp),
+    outerPadding: PaddingValues = PaddingValues(4.dp),
+    onTooltip: (item: Any?) -> Unit = {},
+    onContextMenuClick: () -> Unit = {},
+    onClick: () -> Unit = {},
+) = withDesktopContext {
+    val materialIcon: Int =
+        remember(app, iconName) {
+            val icn = app?.name ?: iconName // todo better guess
+            iconSet.iconForName(icn) ?: 0
+        }
+    val background =
+        when {
+            iconState.value -> iconBackgroundHover
+            else -> Color.Transparent
+        }
+    val isStarting by rememberCalculated(app) { app?.isStarting ?: false }
+    val isRunning by rememberCalculated(app) {
+        app?.isRunning == true // || processManager.hasAppProcess(app) // todo
+    }
+    Box(
+        modifier =
+            Modifier
+                .size(iconSize + iconPadding.size + iconOuterPadding.size)
+                .clipRect()
+                .onMouseEnter {
+                    iconState.value = true
+                    onTooltip(app ?: contentDescription)
+                }.onMouseLeave {
+                    iconState.value = false
+                }.onMousePress {
+                    iconState.value = false
+                    onLeftClick {
+                        onClick()
+                    }
+                    onRightClick {
+                        onContextMenuClick()
+                    }
+                },
+    ) {
+        Button(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .circleBorder(
+                        2.dp,
+                        textColor.alpha(0.5f),
+                    ),
+            contentPadding = PaddingValues(2.dp),
+            colors = ButtonDefaults.color(background),
+            elevation = ButtonDefaults.noElevation(),
+            onClick = {},
+        ) {
+            FontIcon(
+                modifier = Modifier.fillMaxSize(),
+                iconId = materialIcon,
+                iconColor = iconColor,
+                iconBackgroundColor = if (isRunning) iconColorRunning else iconBackgroundColor,
+                iconSize = iconSize,
+                innerPadding = iconPadding,
+                outerPadding = iconOuterPadding,
+            )
+        }
+        if (isStarting || isRunning) {
+            CircularProgressIndicator(
+                modifier = Modifier.padding(4.dp).fillMaxSize(),
+                color = iconColor,
+                strokeWidth = 4.dp,
+                backgroundColor = Color.Transparent,
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewDesktopPanelIcon() = preview {
+    DesktopPanelIcon(
+        app = null, // App.Test
+    )
+}

@@ -1,0 +1,182 @@
+package org.psippr.desktop.components.file
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
+import okio.Path
+import org.psippr.desktop.components.custom.MeasureUnconstrainedView
+import org.psippr.desktop.components.grid.GridPlaced
+import org.psippr.desktop.components.grid.base.GridPlacedCells
+import org.psippr.desktop.components.grid.base.GridPlacedPlacementPolicy
+import org.psippr.desktop.components.guide.GuideLines
+import org.psippr.desktop.components.sliding.base.VisibilityState
+import org.psippr.desktop.components.sliding.base.VisibilityState.Companion.rememberVisibilityState
+import org.psippr.desktop.context.DesktopContextScope.Companion.withDesktopContext
+import org.psippr.desktop.data.DesktopFolderItem
+import org.psippr.desktop.data.widgets.WidgetKey
+import org.psippr.desktop.extensions.Colors.alpha
+import org.psippr.desktop.extensions.Compose.preview
+import org.psippr.desktop.extensions.PathExt.cwd
+import org.psippr.desktop.extensions.PathExt.isDirectory
+import org.psippr.desktop.extensions.PathExt.listFiles
+import kotlin.math.max
+
+// todo orientation
+@Suppress("FunctionName")
+@Composable
+fun FolderView(
+    modifier: Modifier = Modifier,
+    showHidden: Boolean = false,
+    directoryFirst: Boolean = true,
+    showHomeFolder: Boolean = false,
+    iconSpacing: Dp = 2.dp,
+    iconSize: DpSize = DpSize(128.dp, 128.dp),
+    innerIconPadding: PaddingValues = PaddingValues(8.dp),
+    outerIconPadding: PaddingValues = PaddingValues(4.dp),
+    path: Path = cwd,
+//    orientation: Orientation = Orientation.Vertical, // todo
+    guideVisibleState: VisibilityState = rememberVisibilityState(false),
+) = withDesktopContext {
+    val files by rememberFiles(
+        path,
+        context.currentUser.homeDir,
+        showHidden,
+        directoryFirst,
+        showHomeFolder,
+    )
+    MeasureUnconstrainedView(
+        viewToMeasure = {
+            FolderIcon(
+                modifier = Modifier.padding(iconSpacing),
+                iconSize = iconSize,
+                outerPadding = outerIconPadding,
+                innerPadding = innerIconPadding,
+            )
+        },
+    ) { size ->
+        val rows = max(1, ((context.containerSize.height / size.height).toInt()))
+        // old: rounded down, so the last icons were stacked onto each other
+//        val columns = max(1, (files.size.div(rows)))
+        val columns = IconGrid.columns(files.size, rows)
+        // "Sort icons": every icon back to its grid cell (offset zero, kept in the store), then
+        // the icons are created again so they read it
+        var layout by remember { mutableIntStateOf(0) }
+        LaunchedEffect(DesktopIconsSort.requests) {
+            if (DesktopIconsSort.requests == 0) return@LaunchedEffect
+            files.forEach { file -> widgetPositions.save(WidgetKey.Folder.of(file.path.toString()), Offset.Zero) }
+            layout++
+        }
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.TopStart,
+        ) {
+            GridPlaced(
+                cells =
+                    GridPlacedCells(
+                        rowCount = rows,
+                        columnCount = columns,
+                    ),
+                placementPolicy =
+                    GridPlacedPlacementPolicy(
+                        mainAxis = GridPlacedPlacementPolicy.MainAxis.VERTICAL,
+                        horizontalDirection = GridPlacedPlacementPolicy.HorizontalDirection.START_END,
+                        verticalDirection = GridPlacedPlacementPolicy.VerticalDirection.TOP_BOTTOM,
+                    ),
+            ) {
+                files.forEach { file ->
+                    item {
+                        key(layout) {
+                            FolderIcon(
+                                modifier =
+                                    Modifier
+                                        .padding(iconSpacing),
+                                path = file.path,
+                                customName = file.customName,
+                                iconSize = iconSize,
+                                onDragStart = {
+                                    runAsync {
+                                        guideVisibleState.show()
+                                    }
+                                },
+                                onDragEnd = {
+                                    runAsync {
+                                        guideVisibleState.hide()
+                                    }
+                                },
+                                onDoubleClick = { context.openFile(file.path.toString()) },
+                            )
+                        }
+                    }
+                }
+            }
+            GuideLines(
+                modifier = modifier,
+                cellSize = size,
+                color = iconsTintColor.alpha(0.5f),
+                lineSize = 1.dp,
+                visible = guideVisibleState.isVisible,
+            )
+        }
+    }
+}
+
+@Suppress("SimplifyBooleanWithConstants")
+@Composable
+private fun rememberFiles(
+    path: Path = cwd,
+    homeDir: Path = cwd,
+    showHidden: Boolean = true,
+    directoryFirst: Boolean = true,
+    showHomeFolder: Boolean = true,
+) = remember(path, homeDir, showHidden, directoryFirst, showHomeFolder) {
+    derivedStateOf {
+        path
+            .listFiles()
+            .sorted()
+            .filter { f ->
+                showHidden == true || (!f.name.startsWith("."))
+            }.sortedByDescending {
+                directoryFirst == false || it.isDirectory
+            }.map { path ->
+                DesktopFolderItem(path)
+            }.toMutableList()
+            .apply {
+                if (showHomeFolder) {
+                    add(
+                        DesktopFolderItem(
+                            path = homeDir,
+                            customName = "Home",
+                            priority = 1,
+                        ),
+                    )
+                }
+            }.sortedByDescending {
+                it.priority
+            }
+    }
+}
+
+// todo
+@Preview
+@Composable
+fun PreviewFolderView() = preview {
+    FolderView(
+        modifier = Modifier.fillMaxSize(),
+    )
+}

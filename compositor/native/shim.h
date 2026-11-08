@@ -1,0 +1,145 @@
+/*
+ * Copyright (c) Milan Jurkulák 2026.
+ *  Contact:
+ *  e: mimoccc@gmail.com
+ *  e: mj@mjdev.org
+ *  w: https://mjdev.org
+ *
+ * Flat C API over wlroots for the psippr compositor.
+ * This header is self contained (no wlroots includes) so it can be
+ * processed by Kotlin/Native cinterop directly.
+ */
+
+#ifndef PSIPPR_COMPOSITOR_SHIM_H
+#define PSIPPR_COMPOSITOR_SHIM_H
+
+#include <stdint.h>
+#include <stdbool.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct mjc_server mjc_server;
+typedef struct mjc_view mjc_view;
+
+typedef enum mjc_layer {
+    MJC_LAYER_BACKGROUND = 0,
+    MJC_LAYER_BOTTOM = 1,
+    MJC_LAYER_NORMAL = 2,
+    MJC_LAYER_TOP = 3,
+    MJC_LAYER_OVERLAY = 4,
+} mjc_layer;
+
+/* mask values for fd events, mirror wayland WL_EVENT_* */
+#define MJC_EVENT_READABLE 0x01
+#define MJC_EVENT_WRITABLE 0x02
+#define MJC_EVENT_HANGUP   0x04
+#define MJC_EVENT_ERROR    0x08
+
+/* keyboard modifiers, mirror wlroots WLR_MODIFIER_* */
+#define MJC_MOD_SHIFT 0x01
+#define MJC_MOD_CAPS  0x02
+#define MJC_MOD_CTRL  0x04
+#define MJC_MOD_ALT   0x08
+#define MJC_MOD_MOD2  0x10
+#define MJC_MOD_MOD3  0x20
+#define MJC_MOD_LOGO  0x40
+#define MJC_MOD_MOD5  0x80
+
+typedef struct mjc_callbacks {
+    /* view lifecycle */
+    void (*view_new)(void *ud, mjc_view *view, bool xwayland);
+    void (*view_map)(void *ud, mjc_view *view);
+    void (*view_unmap)(void *ud, mjc_view *view);
+    void (*view_destroy)(void *ud, mjc_view *view);
+    void (*view_title)(void *ud, mjc_view *view, const char *title);
+    void (*view_app_id)(void *ud, mjc_view *view, const char *app_id);
+    /* focus changed; view may be NULL when nothing is focused */
+    void (*focus_change)(void *ud, mjc_view *view);
+    /* keyboard binding hook, return true when the combo was consumed */
+    bool (*key)(void *ud, uint32_t keysym, uint32_t modifiers, bool pressed);
+    /* fd registered via mjc_loop_add_fd became ready */
+    int (*fd_event)(void *ud, int fd, uint32_t mask);
+    /* a child process spawned via mjc_spawn exited */
+    void (*child_exit)(void *ud, int pid, int status);
+    /* backend started, sockets exported - safe to spawn clients */
+    void (*ready)(void *ud);
+    /* pointer moved, in compositor layout coordinates (throttled) */
+    void (*pointer)(void *ud, int x, int y);
+} mjc_callbacks;
+
+/* lifecycle */
+mjc_server *mjc_create(void);
+bool mjc_start(mjc_server *server, const mjc_callbacks *callbacks, void *userdata);
+void mjc_run(mjc_server *server);
+void mjc_terminate(mjc_server *server);
+void mjc_destroy(mjc_server *server);
+
+/* environment */
+const char *mjc_socket_name(mjc_server *server);      /* WAYLAND_DISPLAY */
+const char *mjc_xwayland_display(mjc_server *server); /* DISPLAY or NULL */
+void mjc_output_size(mjc_server *server, int *width, int *height);
+
+/* screen modes of the first output (the main screen); refresh in mHz.
+ * nested backends (x11/wayland) list no modes and take any size as a custom mode */
+int mjc_output_mode_count(mjc_server *server);
+bool mjc_output_mode(mjc_server *server, int index, int *width, int *height, int *refresh_mhz);
+bool mjc_output_current_mode(mjc_server *server, int *width, int *height, int *refresh_mhz);
+/* switches the first output; refresh_mhz 0 picks the fastest listed refresh of that size.
+ * false when no output, no such mode, or the backend refuses it (nothing is changed then) */
+bool mjc_output_set_mode(mjc_server *server, int width, int height, int refresh_mhz);
+
+/* process spawning (inherits WAYLAND_DISPLAY/DISPLAY), returns pid or -1 */
+int mjc_spawn(mjc_server *server, const char *command);
+
+/* event loop integration for the IPC server */
+bool mjc_loop_add_fd(mjc_server *server, int fd, uint32_t mask);
+void mjc_loop_remove_fd(mjc_server *server, int fd);
+
+/* unix socket helpers (sockaddr_un is unavailable in kotlin/native posix) */
+int mjc_unix_listen(const char *path, int backlog); /* nonblocking fd or -1 */
+int mjc_unix_accept(int server_fd);                 /* nonblocking fd or -1 */
+
+/* views */
+uint64_t mjc_view_id(mjc_view *view);
+int mjc_view_pid(mjc_view *view);
+const char *mjc_view_title(mjc_view *view);
+const char *mjc_view_app_id(mjc_view *view);
+bool mjc_view_is_xwayland(mjc_view *view);
+bool mjc_view_is_mapped(mjc_view *view);
+bool mjc_view_is_minimized(mjc_view *view);
+bool mjc_view_is_maximized(mjc_view *view);
+/* true for a child window (dialog, splash, popup toplevel) that has a parent toplevel */
+bool mjc_view_has_parent(mjc_view *view);
+bool mjc_view_is_focused(mjc_view *view);
+void mjc_view_get_geometry(mjc_view *view, int *x, int *y, int *width, int *height);
+
+void mjc_view_focus(mjc_view *view);
+void mjc_view_close(mjc_view *view);
+void mjc_view_set_minimized(mjc_view *view, bool minimized);
+void mjc_view_set_maximized(mjc_view *view, bool maximized);
+void mjc_view_set_layer(mjc_view *view, mjc_layer layer);
+void mjc_view_set_focusable(mjc_view *view, bool focusable);
+void mjc_view_set_position(mjc_view *view, int x, int y);
+void mjc_view_set_geometry(mjc_view *view, int x, int y, int width, int height);
+
+/* backdrop blur: everything rendered below the view is blurred. Needs the compositor to be
+ * built with scenefx; without it mjc_blur_supported() is false and the rest are no-ops. The
+ * view must have transparent pixels (an alpha window) for the blur to be visible. */
+bool mjc_blur_supported(void);
+void mjc_blur_configure(mjc_server *server, int passes, int radius, float noise,
+    float brightness, float contrast, float saturation);
+void mjc_view_set_blur(mjc_view *view, bool enabled);
+bool mjc_view_is_blurred(mjc_view *view);
+
+/* input injection (ipc-driven, for automated/headless testing) */
+void mjc_pointer_move(mjc_server *server, int x, int y);
+void mjc_pointer_button(mjc_server *server, uint32_t button, bool pressed);
+void mjc_key(mjc_server *server, uint32_t keycode, bool pressed);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* PSIPPR_COMPOSITOR_SHIM_H */

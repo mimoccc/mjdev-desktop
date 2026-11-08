@@ -1,0 +1,2 @@
+headers = shim.h
+package = psippr.compositor.shim
