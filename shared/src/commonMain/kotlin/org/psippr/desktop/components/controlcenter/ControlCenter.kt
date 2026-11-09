@@ -30,6 +30,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -138,7 +140,7 @@ fun ControlCenter(
                                             .padding(vertical = 8.dp)
                                             .size(controlCenterIconSize)
                                             .background(
-                                                color = if (pagerState.value == idx) iconsTintColor else borderColor,
+                                                color = if (pagerState.value == idx) iconsTintColor else Transparent,
                                                 shape = RoundedCornerShape(8.dp),
                                             ).onMouseEnter {
                                                 onTooltip(page.name)
