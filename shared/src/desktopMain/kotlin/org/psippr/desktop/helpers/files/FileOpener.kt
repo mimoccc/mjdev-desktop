@@ -2,6 +2,7 @@ package org.psippr.desktop.helpers.files
 
 import okio.Path.Companion.toPath
 import org.psippr.desktop.data.DesktopFile
+import org.psippr.desktop.helpers.system.environment.InheritedGdkBackend
 import org.psippr.desktop.log.Log
 
 /**
@@ -31,6 +32,7 @@ object FileOpener {
         val command = ExecLine.command(exec, path).ifEmpty { return FileOpenResult.NO_APP }
         return runCatching {
             ProcessBuilder(command)
+                .apply { InheritedGdkBackend.restore(environment()) }
                 .redirectErrorStream(true)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 .start()

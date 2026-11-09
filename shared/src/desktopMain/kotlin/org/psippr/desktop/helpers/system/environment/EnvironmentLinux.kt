@@ -15,6 +15,8 @@ class EnvironmentLinux(
         sessionBusAddress()?.let { address -> data[DBUS_SESSION_BUS_ADDRESS] = address }
         data[XDG_CURRENT_DESKTOP] = DESKTOP_UBUNTU_GNOME
         data[GTK_THEME] = THEME_PSIPPR
+        // the x11 backend Java's AWT put into this process is not passed on to started apps
+        InheritedGdkBackend.restore(data)
     }
 
     /** The session's bus address when set, else the user bus socket in the runtime dir. */
