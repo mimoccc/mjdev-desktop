@@ -53,6 +53,9 @@ dependencies {
     compileOnly(libs.gradle)
     compileOnly(libs.gradle.api)
     compileOnly(libs.gradle.kotlin.plugin)
+
+    // unit tests of the build helpers (the mock greetd of runNestedGreeter)
+    testImplementation(kotlin("test"))
 }
 
 gradlePlugin {

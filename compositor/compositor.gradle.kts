@@ -428,3 +428,54 @@ tasks.register<Exec>("runNestedDesktop") {
     }
     commandLine("true")
 }
+
+// Runs the login screen (greeter) inside the nested compositor. The desktop app shows only its
+// login window when GREETD_SOCK is set; behind that socket runs MockGreetd (buildSrc), which
+// accepts one test password and starts no session. A good login ends the greeter and with it the
+// nested compositor, as on a real boot. It can NOT prove a real greetd / PAM login.
+tasks.register<Exec>("runNestedGreeter") {
+    group = "psippr"
+    description =
+        "Runs the psippr login screen inside the nested compositor against a mock greetd " +
+        "(password '${MockGreetd.ACCEPTED_PASSWORD}', no PAM, no session started)."
+    dependsOn("linkPsipprcDebugExecutableLinuxX64", ":desktopApp:createDistributable")
+    val binary =
+        layout.buildDirectory
+            .file("bin/linuxX64/psipprcDebugExecutable/psipprc.kexe")
+            .get()
+            .asFile.absolutePath
+    // same app image as runNestedDesktop: packages/main/app/<name>/bin/<name>
+    val appDir = rootProject.rootDir.resolve("packages/main/app")
+    // x11 backend -> host-decorated nested window (frame + close + move); fixed 16:9 output
+    environment("WLR_BACKENDS", "x11")
+    environment("PSIPPRC_OUTPUT", "1280x720")
+    doFirst {
+        // host X11 auth for the nested wlroots x11 backend, resolved at execution time (see runNested)
+        environment("DISPLAY", System.getenv("DISPLAY") ?: ":0")
+        val xauthCandidates =
+            buildList {
+                System.getenv("XAUTHORITY")?.let { add(File(it)) }
+                System.getenv("XDG_RUNTIME_DIR")?.let { dir ->
+                    File(dir).listFiles()?.forEach { f ->
+                        if (f.name.startsWith(".mutter-Xwaylandauth.")) add(f)
+                    }
+                }
+                add(File(System.getProperty("user.home"), ".Xauthority"))
+            }
+        xauthCandidates.firstOrNull { it.isFile }?.let { environment("XAUTHORITY", it.absolutePath) }
+        // own config folder: the nested theme recolors the nested apps, never the host desktop
+        environment("XDG_CONFIG_HOME", NestedConfigHome.prepare(File(System.getProperty("user.home"))).absolutePath)
+        // the greeter talks to the mock greetd instead of a real daemon
+        val greetdSocket = MockGreetd.socketPath(System.getenv("XDG_RUNTIME_DIR"))
+        MockGreetd.start(greetdSocket)
+        environment(MockGreetd.SOCKET_ENV, greetdSocket.toString())
+        val launcher =
+            appDir
+                .walkTopDown()
+                .firstOrNull { it.isFile && it.parentFile?.name == "bin" && it.canExecute() }
+                ?: error("desktop launcher not found under $appDir — run :desktopApp:createDistributable")
+        commandLine(binary, "--shell-cmd", launcher.absolutePath)
+    }
+    doLast { MockGreetd.stop() }
+    commandLine("true")
+}
